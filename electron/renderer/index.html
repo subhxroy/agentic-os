@@ -495,12 +495,13 @@
         }
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
         const recognition = new SpeechRecognition();
-        recognition.continuous = true;
+        recognition.continuous = false;
         recognition.interimResults = true;
         recognition.lang = 'en-US';
 
-        document.getElementById('transcript').textContent = 'Say "Hey Jarvis" to activate...';
-        wakeWordActive = false;
+        if (!wakeWordActive) {
+            document.getElementById('transcript').textContent = 'Say "Hey Jarvis" to activate...';
+        }
 
         recognition.onresult = (e) => {
             let interimTranscript = '';
@@ -534,10 +535,9 @@
 
                     if (command) {
                         document.getElementById('transcript').textContent = command;
-                        if (finalTranscript) {
+                        if (e.results[0].isFinal) {
                             sendMessage(command);
                             wakeWordActive = false;
-                            document.getElementById('transcript').textContent = 'Say "Hey Jarvis" to activate...';
                         }
                     } else {
                         document.getElementById('transcript').textContent = "I'm listening...";
@@ -548,20 +548,27 @@
                 if (currentText) {
                     document.getElementById('transcript').textContent = currentText;
                 }
-                if (finalTranscript) {
+                if (e.results[0].isFinal && currentText) {
                     sendMessage(currentText);
                     wakeWordActive = false;
-                    document.getElementById('transcript').textContent = 'Say "Hey Jarvis" to activate...';
                 }
             }
         };
-        recognition.onend = () => { if (state === 'listening') startSpeechRecognition(); };
-        recognition.onerror = (e) => { 
-            console.error('Speech error:', e); 
-            if (e.error !== 'no-speech') {
+
+        recognition.onend = () => {
+            if (state === 'listening') {
+                setTimeout(startSpeechRecognition, 100);
+            }
+        };
+
+        recognition.onerror = (e) => {
+            console.error('Speech error:', e);
+            if (e.error !== 'no-speech' && e.error !== 'aborted') {
+                document.getElementById('transcript').textContent = 'Speech Error: ' + e.error;
                 stopListening();
             }
         };
+
         recognition.start();
         recognitionInstance = recognition;
     }
