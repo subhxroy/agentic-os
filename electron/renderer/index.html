@@ -66,6 +66,11 @@
         }
         .orb.thinking { animation: spin-glow 2s linear infinite; }
         .orb.speaking { animation: speak-pulse 0.8s ease-in-out infinite; }
+        .orb.activated {
+            background: radial-gradient(circle at 40% 40%, var(--accent-bright), var(--accent)) !important;
+            box-shadow: 0 0 80px var(--accent-bright), 0 0 160px rgba(124,58,237,0.4) !important;
+            transform: scale(1.15) !important;
+        }
         @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.08); } }
         @keyframes spin-glow { 0% { box-shadow: 0 0 40px var(--accent-glow); } 50% { box-shadow: 0 0 80px var(--accent-glow), 0 0 120px rgba(124,58,237,0.3); } 100% { box-shadow: 0 0 40px var(--accent-glow); } }
         @keyframes speak-pulse { 0%, 100% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.05); opacity: 0.85; } }
@@ -427,6 +432,7 @@
     let audioContext = null;
     let wakeWordActive = false;
     let pythonVoiceActive = false;
+    let recognitionInstance = null;
 
     async function toggleListening() {
         if (state === 'listening') {
@@ -456,6 +462,7 @@
             mediaStream = await navigator.mediaDevices.getUserMedia({ audio: true });
             audioContext = new AudioContext();
             setState('listening');
+            document.getElementById('btn-voice').classList.add('active');
             startSpeechRecognition();
         } catch(e) {
             console.error('Mic access denied:', e);
@@ -467,6 +474,11 @@
         if (pythonVoiceActive) {
             try { await api('POST', '/api/voice/stop', {}); } catch(e) {}
             pythonVoiceActive = false;
+        }
+        if (recognitionInstance) {
+            recognitionInstance.onend = null; // Prevent auto-restart
+            recognitionInstance.stop();
+            recognitionInstance = null;
         }
         if (mediaStream) {
             mediaStream.getTracks().forEach(t => t.stop());
@@ -483,23 +495,75 @@
         }
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
         const recognition = new SpeechRecognition();
-        recognition.continuous = false;
+        recognition.continuous = true;
         recognition.interimResults = true;
         recognition.lang = 'en-US';
 
+        document.getElementById('transcript').textContent = 'Say "Hey Jarvis" to activate...';
+        wakeWordActive = false;
+
         recognition.onresult = (e) => {
-            let transcript = '';
-            for (let i = 0; i < e.results.length; i++) {
-                transcript += e.results[i][0].transcript;
+            let interimTranscript = '';
+            let finalTranscript = '';
+
+            for (let i = e.resultIndex; i < e.results.length; ++i) {
+                if (e.results[i].isFinal) {
+                    finalTranscript += e.results[i][0].transcript;
+                } else {
+                    interimTranscript += e.results[i][0].transcript;
+                }
             }
-            document.getElementById('transcript').textContent = transcript;
-            if (e.results[0].isFinal) {
-                sendMessage(transcript);
+
+            const currentText = (finalTranscript || interimTranscript).trim();
+            const currentLower = currentText.toLowerCase();
+
+            if (!wakeWordActive) {
+                if (currentLower.includes('hey jarvis') || currentLower.includes('jarvis')) {
+                    wakeWordActive = true;
+                    // Flash the orb to indicate activation
+                    const orb = document.getElementById('orb');
+                    orb.classList.add('activated');
+                    setTimeout(() => orb.classList.remove('activated'), 1000);
+                    
+                    // Extract command if any
+                    let command = '';
+                    const jarvisIndex = currentLower.indexOf('jarvis');
+                    if (jarvisIndex !== -1) {
+                        command = currentText.substring(jarvisIndex + 6).trim();
+                    }
+
+                    if (command) {
+                        document.getElementById('transcript').textContent = command;
+                        if (finalTranscript) {
+                            sendMessage(command);
+                            wakeWordActive = false;
+                            document.getElementById('transcript').textContent = 'Say "Hey Jarvis" to activate...';
+                        }
+                    } else {
+                        document.getElementById('transcript').textContent = "I'm listening...";
+                    }
+                }
+            } else {
+                // Wake word already active, capture the command
+                if (currentText) {
+                    document.getElementById('transcript').textContent = currentText;
+                }
+                if (finalTranscript) {
+                    sendMessage(currentText);
+                    wakeWordActive = false;
+                    document.getElementById('transcript').textContent = 'Say "Hey Jarvis" to activate...';
+                }
             }
         };
-        recognition.onend = () => { if (state === 'listening') stopListening(); };
-        recognition.onerror = (e) => { console.error('Speech error:', e); stopListening(); };
+        recognition.onend = () => { if (state === 'listening') startSpeechRecognition(); };
+        recognition.onerror = (e) => { 
+            console.error('Speech error:', e); 
+            if (e.error !== 'no-speech') {
+                stopListening();
+            }
+        };
         recognition.start();
+        recognitionInstance = recognition;
     }
 
     async function sendMessage(text) {

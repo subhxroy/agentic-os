@@ -742,9 +742,14 @@ def run_migrations(conn):
     cur = conn.cursor()
     for statement in SCHEMA_SQL.split(";"):
         stmt = statement.strip()
-        if stmt and not stmt.startswith("--"):
+        if not stmt:
+            continue
+        # Remove comment lines
+        lines = [line for line in stmt.splitlines() if not line.strip().startswith("--")]
+        stmt_clean = "\n".join(lines).strip()
+        if stmt_clean:
             try:
-                cur.execute(stmt)
+                cur.execute(stmt_clean)
             except Exception as e:
                 # Skip benign errors (e.g., duplicate index)
                 if "already exists" not in str(e).lower():

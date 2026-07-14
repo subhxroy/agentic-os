@@ -8,7 +8,7 @@ let tray = null;
 let pythonProcess = null;
 let isQuitting = false;
 
-const PYTHON_PORT = 8000;
+const PYTHON_PORT = 8088;
 const HEALTH_URL = `http://127.0.0.1:${PYTHON_PORT}/api/developer/status`;
 const DATA_DIR = app.getPath('userData');
 
@@ -27,7 +27,8 @@ function startPythonBackend() {
       ...process.env,
       AGENTOS_DATA_DIR: DATA_DIR,
       PORT: String(PYTHON_PORT),
-      GEMINI_API_KEY: process.env.GEMINI_API_KEY || '',
+      PYTHONUNBUFFERED: '1',
+      ...(process.env.GEMINI_API_KEY ? { GEMINI_API_KEY: process.env.GEMINI_API_KEY } : {}),
       DEBUG: 'false',
     },
     stdio: ['ignore', 'pipe', 'pipe'],

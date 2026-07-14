@@ -52,6 +52,17 @@ class VoicePipeline:
         self._tts_model = None
         self._thread: Optional[threading.Thread] = None
 
+    @classmethod
+    def is_available(cls) -> bool:
+        """Check if required packages (pyaudio, openwakeword, faster_whisper) are installed."""
+        try:
+            import pyaudio
+            import openwakeword
+            import faster_whisper
+            return True
+        except ImportError:
+            return False
+
     def start(self):
         """Start voice pipeline in background thread."""
         if self._running:

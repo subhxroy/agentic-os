@@ -99,7 +99,7 @@ def _adapt_sql(sql: str) -> str:
 
     # Replace NOW() with datetime('now')
     result = result.replace('NOW()', "datetime('now')")
-    result = re.sub(r"to_timestamp\(\?*\)", "datetime('now')", result)
+    result = re.sub(r"to_timestamp\(\s*(\?)\s*\)", r"datetime(\1, 'unixepoch')", result)
 
     # Remove ::jsonb and ::vector casts
     result = re.sub(r'::jsonb', '', result)
@@ -148,7 +148,7 @@ def _adapt_sql(sql: str) -> str:
 
 def _adapt_returning(sql: str) -> tuple[bool, str]:
     """Check if query uses RETURNING. Returns (has_returning, adapted_sql)."""
-    match = re.search(r'\bRETURNING\s+(\*|\w+(?:\s*,\s*\w+)*)\b', sql, re.IGNORECASE)
+    match = re.search(r'\bRETURNING\s+(\*|\w+(?:\s*,\s*\w+)*)', sql, re.IGNORECASE)
     if match:
         returning_cols = match.group(1)
         adapted = re.sub(r'\s*RETURNING\s+\*\s*$', '', sql, flags=re.IGNORECASE)
@@ -192,6 +192,7 @@ def pg_execute(sql: str, params: tuple = ()):
     try:
         cur = conn.cursor()
         cur.execute(adapted, params)
+        cur.close()
         conn.commit()
     except Exception:
         conn.rollback()
@@ -202,11 +203,13 @@ def pg_execute(sql: str, params: tuple = ()):
 
 def pg_execute_returning(sql: str, params: tuple = ()) -> Optional[dict]:
     has_returning, adapted, cols = _adapt_returning(sql)
+    adapted = _adapt_sql(adapted)
     conn = _get_conn()
     try:
         cur = conn.cursor()
         cur.execute(adapted, params)
         row_id = cur.lastrowid
+        cur.close()
         conn.commit()
         if has_returning:
             table = _extract_table_from_insert(adapted)

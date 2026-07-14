@@ -1,5 +1,10 @@
 import os
 import sys
+from dotenv import load_dotenv
+
+# Load environment variables from .env
+load_dotenv(os.path.join(os.path.dirname(__file__), ".env"), override=True)
+
 import uuid
 import time
 from flask import Flask, request, jsonify, send_from_directory, g
@@ -34,6 +39,8 @@ planner = PlanningEngine()
 # ============================================================
 @app.errorhandler(Exception)
 def handle_exception(e):
+    import traceback
+    traceback.print_exc()
     if hasattr(e, "code") and hasattr(e, "description"):
         return jsonify({"error": e.description}), e.code
     return jsonify({"error": "Internal server error", "type": type(e).__name__}), 500
@@ -1475,18 +1482,20 @@ _voice_pipeline = None
 def _init_voice_pipeline():
     """Initialize voice pipeline on first use."""
     global _voice_pipeline
-    if _voice_pipeline is None:
-        try:
-            from voice.pipeline import VoicePipeline
+    try:
+        from voice.pipeline import VoicePipeline
+        if not VoicePipeline.is_available():
+            return None
+        if _voice_pipeline is None:
             _voice_pipeline = VoicePipeline(
                 on_wakeword=lambda: socketio.emit("voice.wake", namespace="/"),
                 on_stt=lambda text: socketio.emit("voice.stt", {"text": text}, namespace="/"),
                 on_tts_start=lambda: socketio.emit("voice.tts_start", namespace="/"),
                 on_tts_end=lambda: socketio.emit("voice.tts_end", namespace="/"),
             )
-        except ImportError:
-            pass
-    return _voice_pipeline
+        return _voice_pipeline
+    except ImportError:
+        return None
 
 @app.route("/api/voice/start", methods=["POST"])
 @require_auth

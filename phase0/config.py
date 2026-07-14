@@ -1,4 +1,8 @@
 import os
+from dotenv import load_dotenv
+
+# Load environment variables from .env in the same directory
+load_dotenv(os.path.join(os.path.dirname(__file__), ".env"), override=True)
 
 class Config:
     # SQLite replaces Postgres

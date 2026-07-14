@@ -18,9 +18,9 @@ sentence-transformers==3.1.0
 torch>=2.0.0
 
 # Voice pipeline
-openwakeword>=0.6.0
-faster-whisper==1.0.3
-piper-tts==1.2.0
+# openwakeword>=0.6.0
+# faster-whisper==1.0.3
+# piper-tts==1.2.0
 
 # Phase 7 expanded tools
 mss==9.0.2            # screenshots
