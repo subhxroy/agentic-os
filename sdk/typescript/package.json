@@ -1,0 +1,17 @@
+{
+  "name": "agentos",
+  "version": "1.0.0",
+  "description": "AgentOS TypeScript SDK — build and integrate intelligent agents",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": ["dist"],
+  "scripts": {
+    "build": "tsc",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": ["agentos", "agent", "ai", "llm", "sdk"],
+  "license": "MIT",
+  "devDependencies": {
+    "typescript": "^5.0.0"
+  }
+}

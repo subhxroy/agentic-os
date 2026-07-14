@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AgentOS Developer Portal</title>
+    <style>
+        :root { --bg: #0d1117; --card: #161b22; --border: #30363d; --text: #c9d1d9; --muted: #8b949e; --accent: #58a6ff; --green: #3fb950; --orange: #d29922; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; }
+        .nav { position: fixed; top: 0; left: 0; right: 0; background: var(--card); border-bottom: 1px solid var(--border); padding: 12px 24px; display: flex; align-items: center; gap: 32px; z-index: 100; }
+        .nav-brand { font-size: 18px; font-weight: 700; color: var(--accent); text-decoration: none; }
+        .nav-links { display: flex; gap: 20px; }
+        .nav-links a { color: var(--muted); text-decoration: none; font-size: 14px; }
+        .nav-links a:hover { color: var(--text); }
+        .container { max-width: 960px; margin: 0 auto; padding: 80px 24px 40px; }
+        h1 { font-size: 36px; margin-bottom: 8px; }
+        h2 { font-size: 24px; margin: 40px 0 16px; color: var(--accent); }
+        h3 { font-size: 18px; margin: 24px 0 12px; }
+        p, li { color: var(--text); font-size: 15px; margin-bottom: 8px; }
+        .subtitle { color: var(--muted); font-size: 18px; margin-bottom: 32px; }
+        .card { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 24px; margin-bottom: 16px; }
+        .card h3 { margin-top: 0; }
+        code { background: #1c2128; padding: 2px 6px; border-radius: 4px; font-size: 13px; font-family: 'SF Mono', Consolas, monospace; }
+        pre { background: #1c2128; border: 1px solid var(--border); border-radius: 6px; padding: 16px; overflow-x: auto; margin: 12px 0; }
+        pre code { background: none; padding: 0; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; margin-bottom: 24px; }
+        .badge { display: inline-block; padding: 2px 8px; border-radius: 12px; font-size: 12px; font-weight: 600; }
+        .badge-green { background: rgba(63,185,80,0.15); color: var(--green); }
+        .badge-orange { background: rgba(210,153,34,0.15); color: var(--orange); }
+        .badge-blue { background: rgba(88,166,255,0.15); color: var(--accent); }
+        .endpoint { display: flex; align-items: center; gap: 8px; padding: 8px 0; border-bottom: 1px solid var(--border); }
+        .method { font-weight: 700; font-size: 12px; padding: 2px 8px; border-radius: 4px; min-width: 50px; text-align: center; }
+        .method-get { background: rgba(63,185,80,0.15); color: var(--green); }
+        .method-post { background: rgba(88,166,255,0.15); color: var(--accent); }
+        .method-put { background: rgba(210,153,34,0.15); color: var(--orange); }
+        .method-delete { background: rgba(248,81,73,0.15); color: #f85149; }
+        table { width: 100%; border-collapse: collapse; margin: 12px 0; }
+        th, td { padding: 10px 12px; border-bottom: 1px solid var(--border); text-align: left; font-size: 14px; }
+        th { color: var(--muted); font-weight: 600; font-size: 12px; text-transform: uppercase; }
+        .status-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-right: 6px; }
+        .status-operational { background: var(--green); }
+        #status-services { margin-top: 16px; }
+    </style>
+</head>
+<body>
+    <nav class="nav">
+        <a href="/developer" class="nav-brand">AgentOS Dev Portal</a>
+        <div class="nav-links">
+            <a href="#quickstart">Quickstart</a>
+            <a href="#api-reference">API Reference</a>
+            <a href="#sdks">SDKs</a>
+            <a href="#plugins">Plugins</a>
+            <a href="#status">Status</a>
+            <a href="#changelog">Changelog</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <h1>AgentOS Developer Portal</h1>
+        <p class="subtitle">Build, integrate, and extend intelligent agents.</p>
+
+        <div class="grid">
+            <div class="card">
+                <h3>Authentication</h3>
+                <p>JWT-based auth with API keys for server-to-server.</p>
+                <span class="badge badge-green">Ready</span>
+            </div>
+            <div class="card">
+                <h3>Python SDK</h3>
+                <p>Full-featured typed client for Python 3.9+.</p>
+                <span class="badge badge-blue">v1.0.0</span>
+            </div>
+            <div class="card">
+                <h3>TypeScript SDK</h3>
+                <p>Full-featured typed client for Node.js 18+.</p>
+                <span class="badge badge-blue">v1.0.0</span>
+            </div>
+        </div>
+
+        <!-- Quickstart -->
+        <h2 id="quickstart">Quickstart</h2>
+        <div class="card">
+            <h3>1. Install SDK</h3>
+            <pre><code># Python
+pip install agentos
+
+# TypeScript
+npm install agentos</code></pre>
+
+            <h3>2. Authenticate</h3>
+            <pre><code># Python
+from agentos import AgentOS
+client = AgentOS(base_url="http://localhost:8000")
+client.register("you@example.com", "your-password")
+
+# TypeScript
+import { AgentOS } from "agentos";
+const client = new AgentOS({ baseUrl: "http://localhost:8000" });
+await client.register("you@example.com", "your-password");</code></pre>
+
+            <h3>3. Chat with the Agent</h3>
+            <pre><code># Python
+response = client.chat("What is the meaning of life?")
+print(response.response)
+
+# TypeScript
+const response = await client.chat("What is the meaning of life?");
+console.log(response.response);</code></pre>
+
+            <h3>4. Upload Knowledge</h3>
+            <pre><code># Python
+doc = client.upload_document("./my-policy.txt")
+results = client.search_knowledge("What is the refund policy?")
+
+# TypeScript
+const doc = await client.uploadDocument(fileBuffer, "policy.txt");
+const results = await client.searchKnowledge("What is the refund policy?");</code></pre>
+
+            <h3>5. Build a Custom Plugin</h3>
+            <pre><code># plugin.py
+def get_weather(city: str) -> str:
+    """Get current weather for a city."""
+    return f"Weather in {city}: Sunny, 22C"
+
+# manifest.json
+{
+  "name": "weather",
+  "version": "1.0.0",
+  "description": "Weather plugin",
+  "author": "you",
+  "tools": [{"name": "get_weather", "description": "Get weather", "parameters": {"city": {"type": "string"}}}]
+}</code></pre>
+        </div>
+
+        <!-- API Reference -->
+        <h2 id="api-reference">API Reference</h2>
+        <div class="card">
+            <h3>Authentication</h3>
+            <div class="endpoint">
+                <span class="method method-post">POST</span>
+                <code>/api/auth/register</code>
+                <span style="color:var(--muted);font-size:13px">Register new user</span>
+            </div>
+            <div class="endpoint">
+                <span class="method method-post">POST</span>
+                <code>/api/auth/login</code>
+                <span style="color:var(--muted);font-size:13px">Login, get JWT token</span>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3>Chat</h3>
+            <div class="endpoint">
+                <span class="method method-post">POST</span>
+                <code>/api/chat</code>
+                <span style="color:var(--muted);font-size:13px">Send message to agent</span>
+            </div>
+            <div class="endpoint">
+                <span class="method method-get">GET</span>
+                <code>/api/sessions</code>
+                <span style="color:var(--muted);font-size:13px">List chat sessions</span>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3>Knowledge</h3>
+            <div class="endpoint">
+                <span class="method method-post">POST</span>
+                <code>/api/knowledge/upload</code>
+                <span style="color:var(--muted);font-size:13px">Upload document (multipart)</span>
+            </div>
+            <div class="endpoint">
+                <span class="method method-post">POST</span>
+                <code>/api/knowledge/search</code>
+                <span style="color:var(--muted);font-size:13px">Semantic search</span>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3>Developer</h3>
+            <div class="endpoint">
+                <span class="method method-get">GET</span>
+                <code>/api/developer/apps</code>
+                <span style="color:var(--muted);font-size:13px">List your apps</span>
+            </div>
+            <div class="endpoint">
+                <span class="method method-post">POST</span>
+                <code>/api/developer/apps</code>
+                <span style="color:var(--muted);font-size:13px">Create app</span>
+            </div>
+            <div class="endpoint">
+                <span class="method method-post">POST</span>
+                <code>/api/developer/keys</code>
+                <span style="color:var(--muted);font-size:13px">Create API key</span>
+            </div>
+            <div class="endpoint">
+                <span class="method method-get">GET</span>
+                <code>/api/developer/usage</code>
+                <span style="color:var(--muted);font-size:13px">Usage analytics</span>
+            </div>
+            <div class="endpoint">
+                <span class="method method-get">GET</span>
+                <code>/api/developer/openapi.json</code>
+                <span style="color:var(--muted);font-size:13px">OpenAPI 3.0 spec</span>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3>Plugins</h3>
+            <div class="endpoint">
+                <span class="method method-get">GET</span>
+                <code>/api/developer/plugins</code>
+                <span style="color:var(--muted);font-size:13px">List published plugins</span>
+            </div>
+            <div class="endpoint">
+                <span class="method method-post">POST</span>
+                <code>/api/developer/plugins</code>
+                <span style="color:var(--muted);font-size:13px">Create plugin</span>
+            </div>
+            <div class="endpoint">
+                <span class="method method-post">POST</span>
+                <code>/api/developer/plugins/:id/install</code>
+                <span style="color:var(--muted);font-size:13px">Install plugin</span>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3>GDPR & Enterprise</h3>
+            <div class="endpoint">
+                <span class="method method-post">POST</span>
+                <code>/api/gdpr/export</code>
+                <span style="color:var(--muted);font-size:13px">Request data export (ZIP)</span>
+            </div>
+            <div class="endpoint">
+                <span class="method method-post">POST</span>
+                <code>/api/gdpr/delete</code>
+                <span style="color:var(--muted);font-size:13px">Request data deletion</span>
+            </div>
+        </div>
+
+        <!-- SDKs -->
+        <h2 id="sdks">SDKs</h2>
+        <div class="grid">
+            <div class="card">
+                <h3>Python SDK</h3>
+                <p><code>pip install agentos</code></p>
+                <p>Zero dependencies. Python 3.9+. Typed dataclasses. Full API coverage.</p>
+                <pre><code>from agentos import AgentOS
+client = AgentOS(token="your-jwt")
+response = client.chat("Hello")</code></pre>
+            </div>
+            <div class="card">
+                <h3>TypeScript SDK</h3>
+                <p><code>npm install agentos</code></p>
+                <p>Zero runtime deps. Node.js 18+. Full type definitions. Full API coverage.</p>
+                <pre><code>import { AgentOS } from "agentos";
+const client = new AgentOS({ token: "your-jwt" });
+const response = await client.chat("Hello");</code></pre>
+            </div>
+        </div>
+
+        <!-- Plugins -->
+        <h2 id="plugins">Plugin Development</h2>
+        <div class="card">
+            <h3>Plugin Manifest</h3>
+            <pre><code>{
+  "name": "my-plugin",
+  "version": "1.0.0",
+  "description": "Does something useful",
+  "author": "you",
+  "tools": [
+    {
+      "name": "my_tool",
+      "description": "A useful tool",
+      "parameters": {
+        "input": { "type": "string", "description": "The input" }
+      }
+    }
+  ],
+  "hooks": ["on_message", "on_response"],
+  "config_schema": {
+    "api_key": { "type": "string", "required": true }
+  }
+}</code></pre>
+
+            <h3>Tool Code</h3>
+            <pre><code># plugin.py
+def my_tool(input: str) -> str:
+    """Process the input and return a result."""
+    return f"Processed: {input}"
+
+def on_message(message: str) -> str:
+    """Hook: called before agent processes message."""
+    return message  # pass through, or modify</code></pre>
+
+            <h3>Testing</h3>
+            <pre><code>from developer.plugins import PluginLoader, PluginSandbox
+
+loader = PluginLoader()
+manifest = loader.load_plugin("./my-plugin/")
+tool = loader.get_tool("my_tool")
+
+sandbox = PluginSandbox(timeout=5)
+result = sandbox.execute_tool(tool, {"input": "hello"})
+print(result)  # {"success": True, "result": "Processed: hello"}</code></pre>
+        </div>
+
+        <!-- Status -->
+        <h2 id="status">System Status</h2>
+        <div class="card">
+            <p>Check real-time system status:</p>
+            <pre><code>GET /api/developer/status</code></pre>
+            <div id="status-services"></div>
+        </div>
+
+        <!-- Changelog -->
+        <h2 id="changelog">Changelog</h2>
+        <div class="card">
+            <div id="changelog-list"></div>
+        </div>
+    </div>
+
+    <script>
+        fetch('/api/developer/status').then(r => r.json()).then(data => {
+            const el = document.getElementById('status-services');
+            let html = '';
+            for (const [name, svc] of Object.entries(data.services)) {
+                html += `<div style="padding:6px 0"><span class="status-dot status-operational"></span>${name}: <span style="color:var(--green)">${svc.status}</span> (${svc.latency_ms}ms)</div>`;
+            }
+            html += `<p style="margin-top:8px;color:var(--muted);font-size:13px">Version: ${data.version}</p>`;
+            el.innerHTML = html;
+        });
+
+        fetch('/api/developer/changelog').then(r => r.json()).then(data => {
+            const el = document.getElementById('changelog-list');
+            let html = '';
+            for (const entry of data) {
+                html += `<div style="margin-bottom:16px"><strong>${entry.version}</strong> <span style="color:var(--muted)">${entry.date}</span><ul style="margin-top:4px;padding-left:20px">`;
+                for (const change of entry.changes) {
+                    html += `<li style="font-size:14px">${change}</li>`;
+                }
+                html += '</ul></div>';
+            }
+            el.innerHTML = html;
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,16 @@
+[
+  {
+    "id": "77b12969-41d9-4803-bddd-4944bbb38dbd",
+    "org_id": "fd2b58c9-827e-4004-8d1f-71b32dcde457",
+    "user_id": "5884d9e9-8c37-44b0-af27-f399d10ef3c1",
+    "action": "test.action",
+    "resource_type": null,
+    "resource_id": null,
+    "details": {
+      "key": "value"
+    },
+    "ip_address": null,
+    "created_at": "2026-07-13 18:10:35.753360",
+    "user_email": "ent_admin_0b4bb709@test.com"
+  }
+]
