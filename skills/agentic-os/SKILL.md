@@ -3,7 +3,7 @@ name: agentic-os
 description: Agentic OS voice mode and Obsidian brain integration.
 platforms: [linux, macos, windows]
 metadata:
-  hermes:
+  agentic-os:
     tags: [voice, obsidian, brain, agentic]
     category: productivity
 ---

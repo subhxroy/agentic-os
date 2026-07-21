@@ -1,11 +1,11 @@
-"""ACP auth helpers — detect and advertise Hermes authentication methods."""
+"""ACP auth helpers — detect and advertise Agentic OS authentication methods."""
 
 from __future__ import annotations
 
 from typing import Any, Optional
 
 
-TERMINAL_SETUP_AUTH_METHOD_ID = "hermes-setup"
+TERMINAL_SETUP_AUTH_METHOD_ID = "agentic-os-setup"
 
 
 def detect_provider() -> Optional[str]:

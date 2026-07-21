@@ -230,23 +230,23 @@ azure-identity = ["azure-identity==1.25.3"]
 termux = [
   # Baseline Android / Termux path for reliable fresh installs.
   "python-telegram-bot[webhooks]==22.6",
-  "hermes-agent[cron]",
-  "hermes-agent[cli]",
-  "hermes-agent[pty]",
-  "hermes-agent[mcp]",
-  "hermes-agent[honcho]",
-  "hermes-agent[acp]",
+  "agentic-os[cron]",
+  "agentic-os[cli]",
+  "agentic-os[pty]",
+  "agentic-os[mcp]",
+  "agentic-os[honcho]",
+  "agentic-os[acp]",
 ]
 termux-all = [
   # Best-effort "install all" profile for Termux. Same policy as [all]:
   # only includes extras that aren't covered by `tools/lazy_deps.py`.
   # Backends like telegram/slack/dingtalk/feishu/honcho lazy-install at
   # first use, so they're no longer eager-installed here.
-  "hermes-agent[termux]",
-  "hermes-agent[google]",
-  "hermes-agent[homeassistant]",
-  "hermes-agent[sms]",
-  "hermes-agent[web]",
+  "agentic-os[termux]",
+  "agentic-os[google]",
+  "agentic-os[homeassistant]",
+  "agentic-os[sms]",
+  "agentic-os[web]",
 ]
 dingtalk = ["dingtalk-stream==0.24.3", "alibabacloud-dingtalk==2.2.42", "qrcode==7.4.2"]
 feishu = ["lark-oapi==1.6.8", "qrcode==7.4.2"]
@@ -292,22 +292,22 @@ all = [
   # [all], `uv sync --locked` on Windows tried to build it from sdist
   # and failed on `make`. Lazy-install routes that build to first use,
   # where the user is expected to have a toolchain available.
-  "hermes-agent[cron]",
-  "hermes-agent[cli]",
-  "hermes-agent[pty]",
-  "hermes-agent[mcp]",
-  "hermes-agent[homeassistant]",
-  "hermes-agent[sms]",
-  "hermes-agent[acp]",
-  "hermes-agent[google]",
-  "hermes-agent[web]",
-  "hermes-agent[youtube]",
+  "agentic-os[cron]",
+  "agentic-os[cli]",
+  "agentic-os[pty]",
+  "agentic-os[mcp]",
+  "agentic-os[homeassistant]",
+  "agentic-os[sms]",
+  "agentic-os[acp]",
+  "agentic-os[google]",
+  "agentic-os[web]",
+  "agentic-os[youtube]",
 ]
 
 [project.scripts]
 agentic-os = "agentic_os_cli.main:main"
-hermes-agent = "run_agent:main"
-hermes-acp = "acp_adapter.entry:main"
+agentic-os-agent = "run_agent:main"
+agentic-os-acp = "acp_adapter.entry:main"
 
 [tool.setuptools]
 py-modules = ["run_agent", "model_tools", "toolsets", "batch_runner", "trajectory_compressor", "toolset_distributions", "cli", "agentic_os_bootstrap", "agentic_os_constants", "agentic_os_state", "agentic_os_time", "agentic_os_logging", "utils", "mcp_serve"]

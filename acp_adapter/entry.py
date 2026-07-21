@@ -1,4 +1,4 @@
-"""CLI entry point for the hermes-agent ACP adapter.
+"""CLI entry point for the agentic-os ACP adapter.
 
 Loads environment variables from ``~/.hermes/.env``, configures logging
 to write to stderr (so stdout is reserved for ACP JSON-RPC transport),
@@ -8,9 +8,7 @@ Usage::
 
     python -m acp_adapter.entry
     # or
-    hermes acp
-    # or
-    hermes-acp
+    agentic-os acp
 """
 
 # IMPORTANT: agentic_os_bootstrap must be the very first import — UTF-8 stdio
