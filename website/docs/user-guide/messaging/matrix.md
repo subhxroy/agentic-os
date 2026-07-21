@@ -188,7 +188,7 @@ You can also run Hermes as your own user. This means the bot posts as you — us
 
 ## Step 2: Get an Access Token
 
-Hermes needs an access token to authenticate with the homeserver. You have two options:
+Agentic OS needs an access token to authenticate with the homeserver. You have two options:
 
 ### Option A: Access Token (Recommended)
 

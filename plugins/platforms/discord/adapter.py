@@ -6640,7 +6640,7 @@ class DiscordAdapter(BasePlatformAdapter):
                 body = body[: max_desc - 3] + "..."
 
             embed = discord.Embed(
-                title="❓ Hermes needs your input",
+                title="❓ Agentic OS needs your input",
                 description=body,
                 color=discord.Color.orange(),
             )
@@ -6709,7 +6709,7 @@ class DiscordAdapter(BasePlatformAdapter):
                 else "\n\nReply in this channel with your answer."
             )
             content = self._self_contained_prompt_content(
-                "❓ **Hermes needs your input**", str(question or "").strip(),
+                "❓ **Agentic OS needs your input**", str(question or "").strip(),
                 tail=clarify_tail,
             )
             msg = await channel.send(content=content, embed=embed, view=view) if view else await channel.send(content=content, embed=embed)

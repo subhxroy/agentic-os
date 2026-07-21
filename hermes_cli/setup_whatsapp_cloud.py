@@ -465,7 +465,7 @@ def run_whatsapp_cloud_setup() -> int:
     print("SETUP COMPLETE — Next steps")
     print("─" * 50)
     print()
-    print("  Hermes needs a public HTTPS URL to receive WhatsApp messages.")
+    print("  Agentic OS needs a public HTTPS URL to receive WhatsApp messages.")
     print("  The recommended path is Cloudflare Tunnel (free, no port")
     print("  forwarding, no DNS setup).")
     print()

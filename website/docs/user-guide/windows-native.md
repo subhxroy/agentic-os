@@ -53,7 +53,7 @@ Use the desktop installer when you want a familiar Windows install experience or
 
 On first launch (and on demand when a missing tool is detected), Hermes runs a small Python bootstrapper — `hermes_cli/dep_ensure.py` — that checks for and lazily installs the non-Python dependencies it needs. On Windows, the relevant ones are:
 
-| Dependency | Why Hermes needs it |
+| Dependency | Why Agentic OS needs it |
 |---|---|
 | **PortableGit** | Provides `bash.exe` for the terminal tool and `git` for in-session clones. Provisioned at install time, not by `dep_ensure`. |
 | **Node.js 22** | Required for the browser tool (`agent-browser`), the TUI's web bridge, and the WhatsApp bridge. |

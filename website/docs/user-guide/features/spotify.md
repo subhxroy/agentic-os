@@ -66,7 +66,7 @@ When the dashboard opens, click **Create app** and fill in:
 | Redirect URI | `http://127.0.0.1:43827/spotify/callback` |
 | Which API/SDKs? | check **Web API** |
 
-Agree to the terms and click **Save**. On the next page click **Settings** → copy the **Client ID** and paste it into the Hermes prompt. That's the only value Hermes needs — PKCE doesn't use a client secret.
+Agree to the terms and click **Save**. On the next page click **Settings** → copy the **Client ID** and paste it into the Hermes prompt. That's the only value Agentic OS needs — PKCE doesn't use a client secret.
 
 ### Running over SSH / in a headless environment
 
