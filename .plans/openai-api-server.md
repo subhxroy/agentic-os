@@ -1,4 +1,4 @@
-# OpenAI-Compatible API Server for Hermes Agent
+# OpenAI-Compatible API Server for Agentic OS
 
 ## Motivation
 

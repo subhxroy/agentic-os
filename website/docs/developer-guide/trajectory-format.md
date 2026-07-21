@@ -1,6 +1,6 @@
 # Trajectory Format
 
-Hermes Agent saves conversation trajectories in ShareGPT-compatible JSONL format
+Agentic OS saves conversation trajectories in ShareGPT-compatible JSONL format
 for use as training data, debugging artifacts, and reinforcement learning datasets.
 
 Source files: `agent/trajectory.py`, `run_agent.py` (search for `_save_trajectory`), `batch_runner.py`

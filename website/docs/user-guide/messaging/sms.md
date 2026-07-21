@@ -2,7 +2,7 @@
 sidebar_position: 8
 sidebar_label: "SMS (Twilio)"
 title: "SMS (Twilio)"
-description: "Set up Hermes Agent as an SMS chatbot via Twilio"
+description: "Set up Agentic OS as an SMS chatbot via Twilio"
 ---
 
 # SMS Setup (Twilio)

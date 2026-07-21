@@ -17,7 +17,7 @@ Drive Blender via the catalog blender MCP, with bpy recipes.
 | Source | Optional — install with `hermes skills install official/creative/blender-mcp` |
 | Path | `optional-skills/creative/blender-mcp` |
 | Version | `2.1.0` |
-| Author | alireza78a + kshitijk4poor + Hermes Agent |
+| Author | alireza78a + kshitijk4poor + Agentic OS |
 | Platforms | linux, macos, windows |
 
 ## Reference: full SKILL.md

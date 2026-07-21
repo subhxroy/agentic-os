@@ -150,7 +150,7 @@ hermes gateway status --system         # 仅 Linux：显式检查系统服务
 | `/rollback [number]` | 列出或恢复文件系统检查点 |
 | `/background <prompt>` | 在独立后台会话中运行 prompt（提示词） |
 | `/reload-mcp` | 从配置重新加载 MCP 服务器 |
-| `/update` | 将 Hermes Agent 更新至最新版本 |
+| `/update` | 将 Agentic OS 更新至最新版本 |
 | `/help` | 显示可用命令 |
 | `/<skill-name>` | 调用任意已安装的技能 |
 

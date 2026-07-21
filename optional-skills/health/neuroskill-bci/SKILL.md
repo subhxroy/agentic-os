@@ -8,7 +8,7 @@ description: >
   running locally.
 platforms: [linux, macos, windows]
 version: 1.0.0
-author: Hermes Agent + Nous Research
+author: Agentic OS + Nous Research
 license: MIT
 metadata:
   hermes:

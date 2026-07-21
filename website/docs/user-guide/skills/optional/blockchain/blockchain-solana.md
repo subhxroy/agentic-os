@@ -17,7 +17,7 @@ Query Solana blockchain data with USD pricing — wallet balances, token portfol
 | Source | Optional — install with `hermes skills install official/blockchain/solana` |
 | Path | `optional-skills/blockchain/solana` |
 | Version | `0.2.0` |
-| Author | Deniz Alagoz (gizdusum), enhanced by Hermes Agent |
+| Author | Deniz Alagoz (gizdusum), enhanced by Agentic OS |
 | License | MIT |
 | Platforms | linux, macos, windows |
 | Tags | `Solana`, `Blockchain`, `Crypto`, `Web3`, `RPC`, `DeFi`, `NFT` |

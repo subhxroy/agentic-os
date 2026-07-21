@@ -17,7 +17,7 @@ GitHub PR lifecycle: branch, commit, open, CI, merge.
 | Source | Bundled (installed by default) |
 | Path | `skills/github/github-pr-workflow` |
 | Version | `1.1.0` |
-| Author | Hermes Agent |
+| Author | Agentic OS |
 | License | MIT |
 | Platforms | linux, macos, windows |
 | Tags | `GitHub`, `Pull-Requests`, `CI/CD`, `Git`, `Automation`, `Merge` |

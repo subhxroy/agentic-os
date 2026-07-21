@@ -3,7 +3,7 @@ label: WeCom (Enterprise WeChat)
 kind: platform
 version: 1.0.0
 description: >
-  WeCom / Enterprise WeChat gateway adapter for Hermes Agent. Registers two
+  WeCom / Enterprise WeChat gateway adapter for Agentic OS. Registers two
   platforms: ``wecom`` (Smart Robot over WebSocket) and ``wecom_callback``
   (self-built apps over an HTTP callback endpoint with AES message crypto).
   Relays messages between WeCom chats and the Hermes agent.

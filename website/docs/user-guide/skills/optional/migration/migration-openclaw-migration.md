@@ -1,14 +1,14 @@
 ---
-title: "Openclaw Migration — Migrate a user's OpenClaw customization footprint into Hermes Agent"
+title: "Openclaw Migration — Migrate a user's OpenClaw customization footprint into Agentic OS"
 sidebar_label: "Openclaw Migration"
-description: "Migrate a user's OpenClaw customization footprint into Hermes Agent"
+description: "Migrate a user's OpenClaw customization footprint into Agentic OS"
 ---
 
 {/* This page is auto-generated from the skill's SKILL.md by website/scripts/generate-skill-docs.py. Edit the source SKILL.md, not this page. */}
 
 # Openclaw Migration
 
-Migrate a user's OpenClaw customization footprint into Hermes Agent. Imports Hermes-compatible memories, SOUL.md, command allowlists, user skills, and selected workspace assets from ~/.openclaw, then reports exactly what could not be migrated and why.
+Migrate a user's OpenClaw customization footprint into Agentic OS. Imports Hermes-compatible memories, SOUL.md, command allowlists, user skills, and selected workspace assets from ~/.openclaw, then reports exactly what could not be migrated and why.
 
 ## Skill metadata
 
@@ -17,7 +17,7 @@ Migrate a user's OpenClaw customization footprint into Hermes Agent. Imports Her
 | Source | Optional — install with `hermes skills install official/migration/openclaw-migration` |
 | Path | `optional-skills/migration/openclaw-migration` |
 | Version | `1.0.0` |
-| Author | Hermes Agent (Nous Research) |
+| Author | Agentic OS (Nous Research) |
 | License | MIT |
 | Platforms | linux, macos, windows |
 | Tags | `Migration`, `OpenClaw`, `Hermes`, `Memory`, `Persona`, `Import` |
@@ -31,7 +31,7 @@ The following is the complete skill definition that Hermes loads when this skill
 
 # OpenClaw -> Hermes Migration
 
-Use this skill when a user wants to move their OpenClaw setup into Hermes Agent with minimal manual cleanup.
+Use this skill when a user wants to move their OpenClaw setup into Agentic OS with minimal manual cleanup.
 
 ## CLI Command
 

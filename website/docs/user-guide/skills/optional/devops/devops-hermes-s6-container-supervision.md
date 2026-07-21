@@ -1,14 +1,14 @@
 ---
 title: "Hermes S6 Container Supervision"
 sidebar_label: "Hermes S6 Container Supervision"
-description: "Modify, debug, or extend the s6-overlay supervision tree inside the Hermes Agent Docker image — adding new services, debugging profile gateways, understandin..."
+description: "Modify, debug, or extend the s6-overlay supervision tree inside the Agentic OS Docker image — adding new services, debugging profile gateways, understandin..."
 ---
 
 {/* This page is auto-generated from the skill's SKILL.md by website/scripts/generate-skill-docs.py. Edit the source SKILL.md, not this page. */}
 
 # Hermes S6 Container Supervision
 
-Modify, debug, or extend the s6-overlay supervision tree inside the Hermes Agent Docker image — adding new services, debugging profile gateways, understanding the Architecture B main-program pattern.
+Modify, debug, or extend the s6-overlay supervision tree inside the Agentic OS Docker image — adding new services, debugging profile gateways, understanding the Architecture B main-program pattern.
 
 ## Skill metadata
 
@@ -17,7 +17,7 @@ Modify, debug, or extend the s6-overlay supervision tree inside the Hermes Agent
 | Source | Optional — install with `hermes skills install official/devops/hermes-s6-container-supervision` |
 | Path | `optional-skills/devops/hermes-s6-container-supervision` |
 | Version | `1.0.0` |
-| Author | Hermes Agent |
+| Author | Agentic OS |
 | License | MIT |
 | Platforms | linux |
 | Tags | `docker`, `s6`, `supervision`, `gateway`, `profiles` |
@@ -40,7 +40,7 @@ Load this skill when you're working on:
 - Modifying `cont-init.d` boot scripts (UID remap, volume seeding, profile reconciliation)
 - Changing the rendered run-script for per-profile gateways (Phase 4)
 
-If you're just running the Hermes Agent and want to use Docker, see `website/docs/user-guide/docker.md` instead.
+If you're just running the Agentic OS and want to use Docker, see `website/docs/user-guide/docker.md` instead.
 
 ## Architecture at a glance
 

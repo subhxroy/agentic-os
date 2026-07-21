@@ -1,12 +1,12 @@
 ---
 sidebar_position: 7
 title: "Docker"
-description: "在 Docker 中运行 Hermes Agent 以及将 Docker 用作终端后端"
+description: "在 Docker 中运行 Agentic OS 以及将 Docker 用作终端后端"
 ---
 
-# Hermes Agent — Docker
+# Agentic OS — Docker
 
-Docker 与 Hermes Agent 的交集有两种截然不同的方式：
+Docker 与 Agentic OS 的交集有两种截然不同的方式：
 
 1. **在 Docker 中运行 Hermes** — agent 本身在容器内运行（本页的主要内容）
 2. **Docker 作为终端后端** — agent 在宿主机上运行，但将每条命令在单个持久化 Docker 沙箱容器中执行，该容器在工具调用、`/new` 和子 agent 之间保持存活，直至 Hermes 进程结束（参见 [配置 → Docker 后端](./configuration.md#docker-backend)）
@@ -15,7 +15,7 @@ Docker 与 Hermes Agent 的交集有两种截然不同的方式：
 
 ## 快速开始
 
-如果这是你第一次运行 Hermes Agent，请在宿主机上创建一个数据目录，并以交互方式启动容器以运行设置向导：
+如果这是你第一次运行 Agentic OS，请在宿主机上创建一个数据目录，并以交互方式启动容器以运行设置向导：
 
 ```sh
 mkdir -p ~/.hermes
@@ -415,7 +415,7 @@ networks:
 
 ### 广泛有用的工具——提交 issue 或 pull request
 
-如果某个工具可能对大多数 Hermes Agent 用户有用，考虑将其贡献到上游，而不是在私有派生镜像中维护。在 [hermes-agent 仓库](https://github.com/NousResearch/hermes-agent)提交 issue 或 pull request，描述该工具及其使用场景。被纳入官方镜像的工具惠及所有用户，并避免了维护下游 fork 的开销。
+如果某个工具可能对大多数 Agentic OS 用户有用，考虑将其贡献到上游，而不是在私有派生镜像中维护。在 [hermes-agent 仓库](https://github.com/NousResearch/hermes-agent)提交 issue 或 pull request，描述该工具及其使用场景。被纳入官方镜像的工具惠及所有用户，并避免了维护下游 fork 的开销。
 
 ## 连接本地推理服务器（vLLM、Ollama 等）
 

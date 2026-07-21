@@ -406,7 +406,7 @@ class TestBackup:
         # Add a nested hermes-agent directory inside skills (like the real layout)
         nested = hermes_home / "skills" / "autonomous-ai-agents" / "hermes-agent"
         nested.mkdir(parents=True)
-        (nested / "SKILL.md").write_text("# Hermes Agent Skill\n")
+        (nested / "SKILL.md").write_text("# Agentic OS Skill\n")
         (nested / "sub").mkdir()
         (nested / "sub" / "item.txt").write_text("nested content\n")
 

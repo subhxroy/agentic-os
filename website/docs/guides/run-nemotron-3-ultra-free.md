@@ -1,12 +1,12 @@
 ---
 sidebar_position: 0
-title: "Run Nemotron 3 Ultra free in Hermes Agent"
-description: "Try NVIDIA Nemotron 3 Ultra on Nous Portal — free June 4–18 — with day 0 support in Hermes Agent"
+title: "Run Nemotron 3 Ultra free in Agentic OS"
+description: "Try NVIDIA Nemotron 3 Ultra on Nous Portal — free June 4–18 — with day 0 support in Agentic OS"
 ---
 
-# Run Nemotron 3 Ultra free in Hermes Agent
+# Run Nemotron 3 Ultra free in Agentic OS
 
-Nous Research has been inducted into the **Nemotron Coalition** of leading AI labs working with **NVIDIA** to advance open frontier foundation models. In honor of this, we've partnered with **Nebius** to provide **Nemotron 3 Ultra** free on [Nous Portal](https://portal.nousresearch.com) for two weeks (**June 4th – June 18th**). Follow the instructions below to try the model in your Hermes Agent today.
+Nous Research has been inducted into the **Nemotron Coalition** of leading AI labs working with **NVIDIA** to advance open frontier foundation models. In honor of this, we've partnered with **Nebius** to provide **Nemotron 3 Ultra** free on [Nous Portal](https://portal.nousresearch.com) for two weeks (**June 4th – June 18th**). Follow the instructions below to try the model in your Agentic OS today.
 
 :::info Limited-time offer
 The `nvidia/nemotron-3-ultra:free` tier is available from **June 4th to June 18th**. The `:free` tag is what keeps it on the no-cost plan — pick that exact variant.
@@ -44,7 +44,7 @@ Click **Start chatting**. That's it — you're talking to Nemotron 3 Ultra, free
 
 Prefer the terminal?
 
-### 1. Install Hermes Agent
+### 1. Install Agentic OS
 
 On macOS/Linux/WSL2/Android, run
 
@@ -80,7 +80,7 @@ In the browser, create a [Nous Portal](https://portal.nousresearch.com) account 
 
 ### 4. Connect your account
 
-When prompted to connect your account to Hermes Agent, click **Connect**. You'll see a confirmation once it's linked.
+When prompted to connect your account to Agentic OS, click **Connect**. You'll see a confirmation once it's linked.
 
 ### 5. Select the free Nemotron 3 Ultra model
 
@@ -118,6 +118,6 @@ Already set up with another model?
 ## See also
 
 - **[Desktop App](/user-guide/desktop)** — The native one-click app (macOS, Windows, Linux)
-- **[Run Hermes Agent with Nous Portal](/guides/run-hermes-with-nous-portal)** — Full Portal walkthrough: models, Tool Gateway, and verification
+- **[Run Agentic OS with Nous Portal](/guides/run-hermes-with-nous-portal)** — Full Portal walkthrough: models, Tool Gateway, and verification
 - **[Nous Portal integration](/integrations/nous-portal)** — What's in the subscription
 - **[Quickstart](/getting-started/quickstart)** — Install-to-chat in under 5 minutes

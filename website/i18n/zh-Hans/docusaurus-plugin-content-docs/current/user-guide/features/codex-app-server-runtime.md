@@ -373,7 +373,7 @@ tool_timeout_sec = 600.0
 
 ## 限制
 
-此运行时为**可选启用的 beta 功能**。以下功能在 Hermes Agent 2026.5 + Codex CLI 0.130.0 上已验证可用：
+此运行时为**可选启用的 beta 功能**。以下功能在 Agentic OS 2026.5 + Codex CLI 0.130.0 上已验证可用：
 
 - 多轮对话
 - 通过 Hermes UI 进行 `commandExecution` 和 `fileChange`（apply_patch）审批

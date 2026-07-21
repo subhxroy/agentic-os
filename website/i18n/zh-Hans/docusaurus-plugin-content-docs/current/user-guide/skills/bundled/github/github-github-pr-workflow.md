@@ -17,7 +17,7 @@ GitHub PR 生命周期：分支、提交、开启、CI、合并。
 | 来源 | 内置（默认安装） |
 | 路径 | `skills/github/github-pr-workflow` |
 | 版本 | `1.1.0` |
-| 作者 | Hermes Agent |
+| 作者 | Agentic OS |
 | 许可证 | MIT |
 | 平台 | linux, macos, windows |
 | 标签 | `GitHub`, `Pull-Requests`, `CI/CD`, `Git`, `Automation`, `Merge` |

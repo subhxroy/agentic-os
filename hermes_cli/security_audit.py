@@ -1,4 +1,4 @@
-"""On-demand supply-chain audit for Hermes Agent installs.
+"""On-demand supply-chain audit for Agentic OS installs.
 
 Scans three surfaces a Hermes user actually controls and we can map to
 upstream advisories without auth or extra binaries:

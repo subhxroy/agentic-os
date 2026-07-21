@@ -1,7 +1,7 @@
 ---
 sidebar_position: 19
 title: "Raft"
-description: "Connect Hermes Agent to Raft as an external agent via wake-channel bridge"
+description: "Connect Agentic OS to Raft as an external agent via wake-channel bridge"
 ---
 
 # Raft Setup

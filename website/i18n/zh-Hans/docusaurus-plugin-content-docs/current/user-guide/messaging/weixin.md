@@ -1,7 +1,7 @@
 ---
 sidebar_position: 15
 title: "微信（Weixin）"
-description: "通过 iLink Bot API 将 Hermes Agent 连接到个人微信账号"
+description: "通过 iLink Bot API 将 Agentic OS 连接到个人微信账号"
 ---
 
 # 微信（Weixin / WeChat）

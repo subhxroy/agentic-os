@@ -1,12 +1,12 @@
 ---
 sidebar_position: 11
 title: "ACP Editor Integration"
-description: "Use Hermes Agent inside ACP-compatible editors such as VS Code, Zed, and JetBrains"
+description: "Use Agentic OS inside ACP-compatible editors such as VS Code, Zed, and JetBrains"
 ---
 
 # ACP Editor Integration
 
-Hermes Agent can run as an ACP server, letting ACP-compatible editors talk to Hermes over stdio and render:
+Agentic OS can run as an ACP server, letting ACP-compatible editors talk to Hermes over stdio and render:
 
 - chat messages
 - tool activity
@@ -108,7 +108,7 @@ Install the [ACP Client](https://marketplace.visualstudio.com/items?itemName=for
 To connect:
 
 1. Open the ACP Client panel from the Activity Bar.
-2. Select **Hermes Agent** from the built-in agent list.
+2. Select **Agentic OS** from the built-in agent list.
 3. Connect and start chatting.
 
 If you want to define Hermes manually, add it through VS Code settings under `acp.agents`:
@@ -116,7 +116,7 @@ If you want to define Hermes manually, add it through VS Code settings under `ac
 ```json
 {
   "acp.agents": {
-    "Hermes Agent": {
+    "Agentic OS": {
       "command": "hermes",
       "args": ["acp"]
     }
@@ -130,7 +130,7 @@ Zed v0.221.x and newer installs external agents through the official ACP Registr
 
 1. Open the Agent Panel.
 2. Click **Add Agent**, or run the `zed: acp registry` command.
-3. Search for **Hermes Agent**.
+3. Search for **Agentic OS**.
 4. Install it and start a new Hermes external-agent thread.
 
 Prerequisites:
@@ -239,7 +239,7 @@ The ACP bridge maps these options onto Hermes' internal approval semantics — `
 
 Check:
 
-- In Zed, open the ACP Registry with `zed: acp registry` and search for **Hermes Agent**.
+- In Zed, open the ACP Registry with `zed: acp registry` and search for **Agentic OS**.
 - For manual/local development, verify the custom `agent_servers` command points to `hermes acp`.
 - Hermes is installed and on your PATH.
 - The ACP extra is installed (`pip install -e '.[acp]'`).
@@ -268,7 +268,7 @@ or by editing `~/.hermes/.env`. Registry clients can also trigger Hermes' termin
 
 ### Zed registry launcher cannot find uv
 
-Install `uv` from the official uv installation docs, then retry the Hermes Agent thread from Zed.
+Install `uv` from the official uv installation docs, then retry the Agentic OS thread from Zed.
 
 ## See also
 

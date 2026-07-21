@@ -17,7 +17,7 @@ description: "编写/验证/导出 Google 的 DESIGN"
 | 来源 | 内置（默认安装） |
 | 路径 | `skills/creative/design-md` |
 | 版本 | `1.0.0` |
-| 作者 | Hermes Agent |
+| 作者 | Agentic OS |
 | 许可证 | MIT |
 | 平台 | linux, macos, windows |
 | 标签 | `design`, `design-system`, `tokens`, `ui`, `accessibility`, `wcag`, `tailwind`, `dtcg`, `google` |

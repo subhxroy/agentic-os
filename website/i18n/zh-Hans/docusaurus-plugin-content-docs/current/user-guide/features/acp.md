@@ -1,12 +1,12 @@
 ---
 sidebar_position: 11
 title: "ACP 编辑器集成"
-description: "在 VS Code、Zed 和 JetBrains 等兼容 ACP 的编辑器中使用 Hermes Agent"
+description: "在 VS Code、Zed 和 JetBrains 等兼容 ACP 的编辑器中使用 Agentic OS"
 ---
 
 # ACP 编辑器集成
 
-Hermes Agent 可作为 ACP 服务器运行，让兼容 ACP 的编辑器通过 stdio 与 Hermes 通信并渲染：
+Agentic OS 可作为 ACP 服务器运行，让兼容 ACP 的编辑器通过 stdio 与 Hermes 通信并渲染：
 
 - 聊天消息
 - 工具活动
@@ -106,7 +106,7 @@ hermes acp --setup-browser --yes     # 非交互式接受下载
 连接步骤：
 
 1. 从活动栏打开 ACP Client 面板。
-2. 从内置 agent 列表中选择 **Hermes Agent**。
+2. 从内置 agent 列表中选择 **Agentic OS**。
 3. 连接并开始聊天。
 
 如需手动定义 Hermes，通过 VS Code 设置在 `acp.agents` 下添加：
@@ -114,7 +114,7 @@ hermes acp --setup-browser --yes     # 非交互式接受下载
 ```json
 {
   "acp.agents": {
-    "Hermes Agent": {
+    "Agentic OS": {
       "command": "hermes",
       "args": ["acp"]
     }
@@ -128,7 +128,7 @@ Zed v0.221.x 及更新版本通过官方 ACP Registry 安装外部 agent。
 
 1. 打开 Agent 面板。
 2. 点击 **Add Agent**，或运行 `zed: acp registry` 命令。
-3. 搜索 **Hermes Agent**。
+3. 搜索 **Agentic OS**。
 4. 安装后启动新的 Hermes 外部 agent 线程。
 
 前提条件：
@@ -237,7 +237,7 @@ ACP 桥接将这些选项映射到 Hermes 的内部审批语义——`allow_alwa
 
 检查：
 
-- 在 Zed 中，使用 `zed: acp registry` 打开 ACP Registry 并搜索 **Hermes Agent**。
+- 在 Zed 中，使用 `zed: acp registry` 打开 ACP Registry 并搜索 **Agentic OS**。
 - 对于手动/本地开发，验证自定义 `agent_servers` 命令是否指向 `hermes acp`。
 - Hermes 已安装且在 PATH 中。
 - ACP 扩展已安装（`pip install -e '.[acp]'`）。
@@ -266,7 +266,7 @@ hermes model
 
 ### Zed registry 启动器找不到 uv
 
-从官方 uv 安装文档安装 `uv`，然后从 Zed 重试 Hermes Agent 线程。
+从官方 uv 安装文档安装 `uv`，然后从 Zed 重试 Agentic OS 线程。
 
 ## 另请参阅
 

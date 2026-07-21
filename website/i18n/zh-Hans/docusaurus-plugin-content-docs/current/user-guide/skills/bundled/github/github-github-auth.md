@@ -17,7 +17,7 @@ GitHub auth 设置：HTTPS 令牌、SSH 密钥、gh CLI 登录。
 | 来源 | 内置（默认安装） |
 | 路径 | `skills/github/github-auth` |
 | 版本 | `1.1.0` |
-| 作者 | Hermes Agent |
+| 作者 | Agentic OS |
 | 许可证 | MIT |
 | 平台 | linux, macos, windows |
 | 标签 | `GitHub`, `Authentication`, `Git`, `gh-cli`, `SSH`, `Setup` |

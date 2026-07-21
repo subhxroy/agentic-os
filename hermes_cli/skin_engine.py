@@ -65,10 +65,10 @@ All fields are optional. Missing values inherit from the ``default`` skin.
 
     # Branding: text strings used throughout the CLI
     branding:
-      agent_name: "Hermes Agent"          # Banner title, status display
+      agent_name: "Agentic OS"          # Banner title, status display
       welcome: "Welcome message"          # Shown at CLI startup
       goodbye: "Goodbye! ⚕"              # Shown on exit
-      response_label: " ⚕ Hermes "       # Response box header label
+      response_label: " agentic "       # Response box header label
       prompt_symbol: "❯"                 # Input prompt symbol (bare token; renderers add trailing space)
       help_header: "(^_^)? Commands"      # /help header text
 
@@ -90,7 +90,7 @@ USAGE
 
     skin = get_active_skin()
     print(skin.colors["banner_title"])    # "#FFD700"
-    print(skin.get_branding("agent_name"))  # "Hermes Agent"
+    print(skin.get_branding("agent_name"))  # "Agentic OS"
 
     set_active_skin("ares")               # Switch to built-in ares skin
     set_active_skin("mytheme")            # Switch to user skin from ~/.hermes/skins/
@@ -162,6 +162,49 @@ class SkinConfig:
 # =============================================================================
 
 _BUILTIN_SKINS: Dict[str, Dict[str, Any]] = {
+    "agentic-os": {
+        "name": "agentic-os",
+        "description": "Agentic OS — monochrome black, white, and gray",
+        "colors": {
+            "banner_border": "#555555",
+            "banner_title": "#FFFFFF",
+            "banner_accent": "#BBBBBB",
+            "banner_dim": "#666666",
+            "banner_text": "#E0E0E0",
+            "ui_accent": "#FFFFFF",
+            "ui_label": "#AAAAAA",
+            "ui_ok": "#888888",
+            "ui_error": "#CC3333",
+            "ui_warn": "#AA8833",
+            "prompt": "#E0E0E0",
+            "input_rule": "#555555",
+            "response_border": "#777777",
+            "status_bar_bg": "#0A0A0A",
+            "session_label": "#CCCCCC",
+            "session_border": "#444444",
+        },
+        "spinner": {
+            "waiting_faces": ["( )", "(·)", "( )", "(·)", "( )"],
+            "thinking_faces": ["( )", "(·)", "( )", "(·)", "( )"],
+            "thinking_verbs": [
+                "processing", "thinking", "reasoning", "analyzing",
+                "computing", "working", "processing", "thinking",
+            ],
+            "wings": [
+                ["⟨ ", " ⟩"],
+                ["[ ", " ]"],
+            ],
+        },
+        "branding": {
+            "agent_name": "Agentic OS",
+            "welcome": "Agentic OS ready. Type your message or /help for commands.",
+            "goodbye": "Goodbye.",
+            "response_label": " agentic ",
+            "prompt_symbol": "▸",
+            "help_header": "Commands",
+        },
+        "tool_prefix": "│",
+    },
     "default": {
         "name": "default",
         "description": "Classic Hermes — gold and kawaii",
@@ -187,10 +230,10 @@ _BUILTIN_SKINS: Dict[str, Dict[str, Any]] = {
             # Empty = use hardcoded defaults in display.py
         },
         "branding": {
-            "agent_name": "Hermes Agent",
-            "welcome": "Welcome to Hermes Agent! Type your message or /help for commands.",
+            "agent_name": "Agentic OS",
+            "welcome": "Welcome to Agentic OS! Type your message or /help for commands.",
             "goodbye": "Goodbye! ⚕",
-            "response_label": " ⚕ Hermes ",
+            "response_label": " agentic ",
             "prompt_symbol": "❯",
             "help_header": "(^_^)? Available Commands",
         },
@@ -298,10 +341,10 @@ _BUILTIN_SKINS: Dict[str, Dict[str, Any]] = {
         },
         "spinner": {},
         "branding": {
-            "agent_name": "Hermes Agent",
-            "welcome": "Welcome to Hermes Agent! Type your message or /help for commands.",
+            "agent_name": "Agentic OS",
+            "welcome": "Welcome to Agentic OS! Type your message or /help for commands.",
             "goodbye": "Goodbye! ⚕",
-            "response_label": " ⚕ Hermes ",
+            "response_label": " agentic ",
             "prompt_symbol": "❯",
             "help_header": "[?] Available Commands",
         },
@@ -337,10 +380,10 @@ _BUILTIN_SKINS: Dict[str, Dict[str, Any]] = {
         },
         "spinner": {},
         "branding": {
-            "agent_name": "Hermes Agent",
-            "welcome": "Welcome to Hermes Agent! Type your message or /help for commands.",
+            "agent_name": "Agentic OS",
+            "welcome": "Welcome to Agentic OS! Type your message or /help for commands.",
             "goodbye": "Goodbye! ⚕",
-            "response_label": " ⚕ Hermes ",
+            "response_label": " agentic ",
             "prompt_symbol": "❯",
             "help_header": "(^_^)? Available Commands",
         },
@@ -374,10 +417,10 @@ _BUILTIN_SKINS: Dict[str, Dict[str, Any]] = {
         },
         "spinner": {},
         "branding": {
-            "agent_name": "Hermes Agent",
-            "welcome": "Welcome to Hermes Agent! Type your message or /help for commands.",
+            "agent_name": "Agentic OS",
+            "welcome": "Welcome to Agentic OS! Type your message or /help for commands.",
             "goodbye": "Goodbye! ⚕",
-            "response_label": " ⚕ Hermes ",
+            "response_label": " agentic ",
             "prompt_symbol": "❯",
             "help_header": "[?] Available Commands",
         },
@@ -411,8 +454,8 @@ _BUILTIN_SKINS: Dict[str, Dict[str, Any]] = {
         },
         "spinner": {},
         "branding": {
-            "agent_name": "Hermes Agent",
-            "welcome": "Welcome to Hermes Agent! Type your message or /help for commands.",
+            "agent_name": "Agentic OS",
+            "welcome": "Welcome to Agentic OS! Type your message or /help for commands.",
             "goodbye": "Goodbye! \u2695",
             "response_label": " \u2695 Hermes ",
             "prompt_symbol": "\u276f",

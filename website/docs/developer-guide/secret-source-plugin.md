@@ -1,7 +1,7 @@
 ---
 sidebar_position: 9
 title: "Secret Source Plugins"
-description: "How to build a secret-manager backend plugin for Hermes Agent"
+description: "How to build a secret-manager backend plugin for Agentic OS"
 ---
 
 # Building a Secret Source Plugin

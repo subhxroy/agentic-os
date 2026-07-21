@@ -2,7 +2,7 @@
 name: 1password
 description: Set up and use 1Password CLI (op). Use when installing the CLI, enabling desktop app integration, signing in, and reading/injecting secrets for commands.
 version: 1.0.0
-author: arceus77-7, enhanced by Hermes Agent
+author: arceus77-7, enhanced by Agentic OS
 license: MIT
 platforms: [linux, macos, windows]
 metadata:

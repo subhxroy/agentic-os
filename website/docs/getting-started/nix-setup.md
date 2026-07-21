@@ -1,7 +1,7 @@
 ---
 sidebar_position: 3
 title: "Nix & NixOS Setup"
-description: "Install and deploy Hermes Agent with Nix — from quick `nix run` to fully declarative NixOS module with container mode"
+description: "Install and deploy Agentic OS with Nix — from quick `nix run` to fully declarative NixOS module with container mode"
 ---
 
 # Nix & NixOS Setup
@@ -12,7 +12,7 @@ Nix and NixOS are [Tier 2 platforms](./platform-support.md#tier-2). The flake an
 For a supported setup, use one of the standard [installation](./installation.md) paths - either Docker or an FHS environment.
 :::
 
-Hermes Agent ships a Nix flake & a NixOS module.
+Agentic OS ships a Nix flake & a NixOS module.
 
 | Level | Who it's for | What you get |
 |-------|-------------|--------------|

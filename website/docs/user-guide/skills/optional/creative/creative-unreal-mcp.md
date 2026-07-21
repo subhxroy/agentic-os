@@ -17,7 +17,7 @@ Use when the user wants to do anything in Unreal Engine through Epic's official 
 | Source | Optional — install with `hermes skills install official/creative/unreal-mcp` |
 | Path | `optional-skills/creative/unreal-mcp` |
 | Version | `1.0.0` |
-| Author | Hermes Agent |
+| Author | Agentic OS |
 | License | MIT |
 | Platforms | linux, macos, windows |
 | Tags | `unreal`, `unreal-engine`, `ue5`, `3d`, `mcp`, `scenes`, `cinematics`, `lighting`, `gamedev` |

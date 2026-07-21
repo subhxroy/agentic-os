@@ -17,7 +17,7 @@ Build, test, inspect, install, and deploy MCP servers with FastMCP in Python. Us
 | Source | Optional — install with `hermes skills install official/mcp/fastmcp` |
 | Path | `optional-skills/mcp/fastmcp` |
 | Version | `1.0.0` |
-| Author | Hermes Agent |
+| Author | Agentic OS |
 | License | MIT |
 | Platforms | linux, macos, windows |
 | Tags | `MCP`, `FastMCP`, `Python`, `Tools`, `Resources`, `Prompts`, `Deployment` |

@@ -7,7 +7,7 @@ sidebar_position: 6
 
 # 网页搜索与提取
 
-Hermes Agent 内置两个可供模型调用的网页工具，由多个提供商支持：
+Agentic OS 内置两个可供模型调用的网页工具，由多个提供商支持：
 
 - **`web_search`** — 搜索网页并返回排序结果
 - **`web_extract`** — 从一个或多个 URL 获取并提取可读内容

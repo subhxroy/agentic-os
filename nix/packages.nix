@@ -1,4 +1,4 @@
-# nix/packages.nix — Hermes Agent package built with uv2nix
+# nix/packages.nix — Agentic OS package built with uv2nix
 { inputs, ... }:
 {
   perSystem =

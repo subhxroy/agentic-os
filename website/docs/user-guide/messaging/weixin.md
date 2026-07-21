@@ -1,7 +1,7 @@
 ---
 sidebar_position: 15
 title: "Weixin (WeChat)"
-description: "Connect Hermes Agent to personal WeChat accounts via the iLink Bot API"
+description: "Connect Agentic OS to personal WeChat accounts via the iLink Bot API"
 ---
 
 # Weixin (WeChat)

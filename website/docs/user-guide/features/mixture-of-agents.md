@@ -87,7 +87,7 @@ moa:
         model: anthropic/claude-opus-4.8
       # Optional: pin sampling temperatures. When omitted (the default),
       # temperature is NOT sent and each model uses its provider default —
-      # the same behavior as a single-model Hermes agent.
+      # the same behavior as a single-model Agentic OS.
       # reference_temperature: 0.6
       # aggregator_temperature: 0.4
       max_tokens: 4096

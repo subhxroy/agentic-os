@@ -1,12 +1,12 @@
 ---
 sidebar_position: 11
 title: "飞书 / Lark"
-description: "将 Hermes Agent 配置为飞书或 Lark 机器人"
+description: "将 Agentic OS 配置为飞书或 Lark 机器人"
 ---
 
 # 飞书 / Lark 配置
 
-Hermes Agent 可作为全功能机器人与飞书和 Lark 集成。连接后，你可以在私信或群聊中与 Agent 对话，在 home chat 中接收 cron job 结果，并通过标准 gateway 流程发送文本、图片、音频和文件附件。
+Agentic OS 可作为全功能机器人与飞书和 Lark 集成。连接后，你可以在私信或群聊中与 Agent 对话，在 home chat 中接收 cron job 结果，并通过标准 gateway 流程发送文本、图片、音频和文件附件。
 
 该集成支持两种连接模式：
 

@@ -1,7 +1,7 @@
 """
 Doctor command for hermes CLI.
 
-Diagnoses issues with Hermes Agent setup.
+Diagnoses issues with Agentic OS setup.
 """
 
 import os
@@ -1328,9 +1328,9 @@ def run_doctor(args):
         if should_fix:
             soul_path.parent.mkdir(parents=True, exist_ok=True)
             soul_path.write_text(
-                "# Hermes Agent Persona\n\n"
-                "<!-- Edit this file to customize how Hermes communicates. -->\n\n"
-                "You are Hermes, a helpful AI assistant.\n",
+                "# Agentic OS Persona\n\n"
+                "<!-- Edit this file to customize how the agent communicates. -->\n\n"
+                "You are Agentic OS, a helpful AI assistant.\n",
                 encoding="utf-8",
             )
             check_ok(f"Created {_DHH}/SOUL.md with basic template")

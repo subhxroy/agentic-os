@@ -1,12 +1,12 @@
 ---
-title: "Hermes Agent Skill 编写——在仓库中编写 SKILL"
-sidebar_label: "Hermes Agent Skill 编写"
+title: "Agentic OS Skill 编写——在仓库中编写 SKILL"
+sidebar_label: "Agentic OS Skill 编写"
 description: "在仓库中编写 SKILL.md"
 ---
 
 {/* This page is auto-generated from the skill's SKILL.md by website/scripts/generate-skill-docs.py. Edit the source SKILL.md, not this page. */}
 
-# Hermes Agent Skill 编写
+# Agentic OS Skill 编写
 
 编写仓库内 SKILL.md：frontmatter（前置元数据）、验证器、结构。
 
@@ -17,7 +17,7 @@ description: "在仓库中编写 SKILL.md"
 | 来源 | 内置（默认安装） |
 | 路径 | `skills/software-development/hermes-agent-skill-authoring` |
 | 版本 | `1.0.0` |
-| 作者 | Hermes Agent |
+| 作者 | Agentic OS |
 | 许可证 | MIT |
 | 平台 | linux, macos, windows |
 | 标签 | `skills`, `authoring`, `hermes-agent`, `conventions`, `skill-md` |
@@ -62,7 +62,7 @@ SKILL.md 可以存放在两个位置：
 name: my-skill-name               # 小写，连字符，≤64 个字符（MAX_NAME_LENGTH）
 description: Use when <trigger>. <one-line behavior>.
 version: 1.0.0
-author: Hermes Agent
+author: Agentic OS
 license: MIT
 metadata:
   hermes:

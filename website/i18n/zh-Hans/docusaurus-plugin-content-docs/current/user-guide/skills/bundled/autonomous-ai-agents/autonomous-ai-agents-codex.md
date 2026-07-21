@@ -17,7 +17,7 @@ description: "将编码任务委托给 OpenAI Codex CLI（功能开发、PR）"
 | 来源 | 内置（默认安装） |
 | 路径 | `skills/autonomous-ai-agents/codex` |
 | 版本 | `1.0.0` |
-| 作者 | Hermes Agent |
+| 作者 | Agentic OS |
 | 许可证 | MIT |
 | 平台 | linux, macos, windows |
 | 标签 | `Coding-Agent`, `Codex`, `OpenAI`, `Code-Review`, `Refactoring` |

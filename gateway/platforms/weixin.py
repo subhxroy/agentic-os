@@ -1,7 +1,7 @@
 """
 Weixin platform adapter.
 
-Connects Hermes Agent to WeChat personal accounts via Tencent's iLink Bot API.
+Connects Agentic OS to WeChat personal accounts via Tencent's iLink Bot API.
 
 Design notes:
 - Long-poll ``getupdates`` drives inbound delivery.

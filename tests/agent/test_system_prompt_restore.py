@@ -77,7 +77,7 @@ class TestStoredPromptReuse:
         model reads old `Model:` metadata ("what model are you?" lies).
         """
         stored = (
-            "You are Hermes Agent.\n\n"
+            "You are Agentic OS.\n\n"
             "Conversation started: Tuesday, June 16, 2026\n"
             "Session ID: test-session-id\n"
             "Model: anthropic/claude-opus-4.8-fast\n"
@@ -88,7 +88,7 @@ class TestStoredPromptReuse:
         agent = _make_agent(
             session_db=db,
             prebuilt_prompt=(
-                "You are Hermes Agent.\n\n"
+                "You are Agentic OS.\n\n"
                 "Conversation started: Tuesday, June 16, 2026\n"
                 "Session ID: test-session-id\n"
                 "Model: openai/gpt-5.5\n"
@@ -243,7 +243,7 @@ class TestPromptStabilityInvariant:
         invalidates KV cache on every prefix-cache backend.
         """
         stored = (
-            "You are Hermes Agent.\n"
+            "You are Agentic OS.\n"
             "\n"
             "Conversation started: Sunday, May 17, 2026\n"
             "Session ID: 20260517_153500_abc123\n"

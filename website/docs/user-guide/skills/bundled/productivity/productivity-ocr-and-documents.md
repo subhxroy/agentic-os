@@ -17,7 +17,7 @@ Extract text from PDFs/scans (pymupdf, marker-pdf).
 | Source | Bundled (installed by default) |
 | Path | `skills/productivity/ocr-and-documents` |
 | Version | `2.3.0` |
-| Author | Hermes Agent |
+| Author | Agentic OS |
 | License | MIT |
 | Platforms | linux, macos, windows |
 | Tags | `PDF`, `Documents`, `Research`, `Arxiv`, `Text-Extraction`, `OCR` |

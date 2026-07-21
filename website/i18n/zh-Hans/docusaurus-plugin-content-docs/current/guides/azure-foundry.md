@@ -1,12 +1,12 @@
 ---
 sidebar_position: 15
 title: "Microsoft Foundry"
-description: "将 Hermes Agent 与 Microsoft Foundry 配合使用——OpenAI 风格与 Anthropic 风格端点、传输协议与已部署模型的自动检测"
+description: "将 Agentic OS 与 Microsoft Foundry 配合使用——OpenAI 风格与 Anthropic 风格端点、传输协议与已部署模型的自动检测"
 ---
 
 # Microsoft Foundry
 
-Hermes Agent 的 `azure-foundry` provider 支持 Microsoft Foundry（原 Azure AI Foundry）和 Azure OpenAI。单个 Foundry 资源可以托管两种不同传输格式的模型：
+Agentic OS 的 `azure-foundry` provider 支持 Microsoft Foundry（原 Azure AI Foundry）和 Azure OpenAI。单个 Foundry 资源可以托管两种不同传输格式的模型：
 
 - **OpenAI 风格** — 在 `https://<resource>.openai.azure.com/openai/v1` 等端点上执行 `POST /v1/chat/completions`。用于 GPT-4.x、GPT-5.x、Llama、Mistral 及大多数开放权重模型。
 - **Anthropic 风格** — 在 `https://<resource>.services.ai.azure.com/anthropic` 等端点上执行 `POST /v1/messages`。当 Microsoft Foundry 通过 Anthropic Messages API 格式提供 Claude 模型时使用。

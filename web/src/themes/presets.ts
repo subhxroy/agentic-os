@@ -40,17 +40,17 @@ const DEFAULT_LAYOUT: ThemeLayout = {
 
 export const defaultTheme: DashboardTheme = {
   name: "default",
-  label: "Hermes Teal",
-  description: "Classic dark teal — the canonical Hermes look",
+  label: "Agentic OS",
+  description: "Monochrome black — the canonical Agentic OS look",
   palette: {
-    background: { hex: "#041c1c", alpha: 1 },
-    midground: { hex: "#ffe6cb", alpha: 1 },
+    background: { hex: "#0a0a0a", alpha: 1 },
+    midground: { hex: "#cccccc", alpha: 1 },
     foreground: { hex: "#ffffff", alpha: 0 },
-    warmGlow: "rgba(255, 189, 56, 0.35)",
-    noiseOpacity: 1,
+    warmGlow: "rgba(180, 180, 180, 0.25)",
+    noiseOpacity: 0.8,
   },
   typography: DEFAULT_TYPOGRAPHY,
-  layout: DEFAULT_LAYOUT,
+  layout: { ...DEFAULT_LAYOUT, radius: "0.25rem" },
   terminalBackground: "#000000",
 };
 
@@ -214,8 +214,8 @@ export const nousBlueTheme: DashboardTheme = {
  */
 export const defaultLargeTheme: DashboardTheme = {
   name: "default-large",
-  label: "Hermes Teal (Large)",
-  description: "Hermes Teal with bigger fonts and roomier spacing",
+  label: "Agentic OS Teal (Large)",
+  description: "Agentic OS Teal with bigger fonts and roomier spacing",
   palette: defaultTheme.palette,
   typography: {
     ...DEFAULT_TYPOGRAPHY,

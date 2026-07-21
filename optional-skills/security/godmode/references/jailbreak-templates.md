@@ -89,7 +89,7 @@ Z={QUERY}
 
 ---
 
-## Using with Hermes Agent
+## Using with Agentic OS
 
 ### As ephemeral system prompt (config.yaml)
 

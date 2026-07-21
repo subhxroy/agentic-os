@@ -4,13 +4,13 @@ sidebar_position: 3
 
 # Profile 分发：共享完整 Agent
 
-**Profile 分发**将一个完整的 Hermes agent——个性、技能、cron 任务、MCP 连接、配置——打包为一个 git 仓库。任何有权访问该仓库的人都可以用一条命令安装整个 agent，就地更新，并保持自己的记忆、会话和 API 密钥不受影响。
+**Profile 分发**将一个完整的 Agentic OS——个性、技能、cron 任务、MCP 连接、配置——打包为一个 git 仓库。任何有权访问该仓库的人都可以用一条命令安装整个 agent，就地更新，并保持自己的记忆、会话和 API 密钥不受影响。
 
 如果说 [profile](./profiles.md) 是本地 agent，那么分发就是让该 agent 可共享的形式。
 
 ## 这意味着什么
 
-在分发功能出现之前，共享一个 Hermes agent 意味着要发送：
+在分发功能出现之前，共享一个 Agentic OS 意味着要发送：
 
 1. 你的 SOUL.md
 2. 需要安装的技能列表

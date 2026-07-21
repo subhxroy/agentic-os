@@ -17,7 +17,7 @@ Install and select animated petdex mascots for Hermes.
 | Source | Bundled (installed by default) |
 | Path | `skills/productivity/petdex` |
 | Version | `1.0.0` |
-| Author | Hermes Agent |
+| Author | Agentic OS |
 | License | MIT |
 | Platforms | linux, macos, windows |
 | Tags | `petdex`, `mascot`, `display`, `cli`, `tui`, `desktop` |

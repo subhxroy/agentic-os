@@ -1,7 +1,7 @@
 ---
 sidebar_position: 2
 title: "Environment Variables"
-description: "Complete reference of all environment variables used by Hermes Agent"
+description: "Complete reference of all environment variables used by Agentic OS"
 ---
 
 # Environment Variables Reference

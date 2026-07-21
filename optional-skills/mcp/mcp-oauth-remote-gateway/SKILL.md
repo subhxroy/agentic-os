@@ -2,7 +2,7 @@
 name: mcp-oauth-remote-gateway
 description: Manual OAuth for remote MCP servers on headless gateways.
 version: 1.0.0
-author: Ben Barclay (benbarclay), Hermes Agent
+author: Ben Barclay (benbarclay), Agentic OS
 license: MIT
 platforms: [linux, macos]
 metadata:
@@ -181,7 +181,7 @@ POST to the `registration_endpoint` with:
 
 ```json
 {
-  "client_name": "Hermes Agent (manual OAuth)",
+  "client_name": "Agentic OS (manual OAuth)",
   "redirect_uris": ["http://127.0.0.1:8765/callback"],
   "grant_types": ["authorization_code", "refresh_token"],
   "response_types": ["code"],

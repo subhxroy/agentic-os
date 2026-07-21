@@ -17,7 +17,7 @@ Set up and use 1Password CLI (op). Use when installing the CLI, enabling desktop
 | Source | Optional — install with `hermes skills install official/security/1password` |
 | Path | `optional-skills/security/1password` |
 | Version | `1.0.0` |
-| Author | arceus77-7, enhanced by Hermes Agent |
+| Author | arceus77-7, enhanced by Agentic OS |
 | License | MIT |
 | Platforms | linux, macos, windows |
 | Tags | `security`, `secrets`, `1password`, `op`, `cli` |

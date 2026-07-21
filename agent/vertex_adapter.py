@@ -1,4 +1,4 @@
-"""Vertex AI (Google Cloud) adapter for Hermes Agent.
+"""Vertex AI (Google Cloud) adapter for Agentic OS.
 
 Provides authentication and configuration for Vertex AI's OpenAI-compatible
 endpoint. This allows Hermes to use Gemini models via Google Cloud with

@@ -83,7 +83,7 @@ def test_billing_killswitch_off_blocks(cli, monkeypatch, capsys):
     out = capsys.readouterr().out
     assert "Remote spending is off for this org." in out
     assert (
-        "A billing admin can turn it on from the portal's Hermes Agent page "
+        "A billing admin can turn it on from the portal's Agentic OS page "
         "to add funds here."
     ) in out
 

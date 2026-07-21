@@ -17,7 +17,7 @@ description: "使用水印去重轮询 RSS、JSON API 和 GitHub"
 | 来源 | 可选 — 通过 `hermes skills install official/devops/watchers` 安装 |
 | 路径 | `optional-skills/devops/watchers` |
 | 版本 | `1.0.0` |
-| 作者 | Hermes Agent |
+| 作者 | Agentic OS |
 | 许可证 | MIT |
 | 平台 | linux, macos |
 | 标签 | `cron`, `polling`, `rss`, `github`, `http`, `automation`, `monitoring` |

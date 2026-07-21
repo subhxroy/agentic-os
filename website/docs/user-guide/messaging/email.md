@@ -1,7 +1,7 @@
 ---
 sidebar_position: 7
 title: "Email"
-description: "Set up Hermes Agent as an email assistant via IMAP/SMTP"
+description: "Set up Agentic OS as an email assistant via IMAP/SMTP"
 ---
 
 # Email Setup
@@ -16,14 +16,14 @@ This is separate from the bundled [Himalaya email skill](/docs/user-guide/skills
 
 | Use case | What to configure | External dependency |
 |---|---|---|
-| Let people email the Hermes agent and receive replies | Email gateway adapter on this page | None beyond an IMAP/SMTP email account |
+| Let people email the Agentic OS and receive replies | Email gateway adapter on this page | None beyond an IMAP/SMTP email account |
 | Let the agent inspect, compose, move, and manage mailbox messages from terminal tools | Himalaya email skill | `himalaya` CLI and `~/.config/himalaya/config.toml` |
 
 ---
 
 ## Prerequisites
 
-- **A dedicated email account** for your Hermes agent (don't use your personal email)
+- **A dedicated email account** for your Agentic OS (don't use your personal email)
 - **IMAP enabled** on the email account
 - **An app password** if using Gmail or another provider with 2FA
 

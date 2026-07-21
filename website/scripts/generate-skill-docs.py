@@ -472,7 +472,7 @@ def build_catalog_md_bundled(entries: list[tuple[dict[str, Any], dict[str, Any]]
         "---",
         "sidebar_position: 5",
         'title: "Bundled Skills Catalog"',
-        'description: "Catalog of bundled skills that ship with Hermes Agent"',
+        'description: "Catalog of bundled skills that ship with Agentic OS"',
         "---",
         "",
         "# Bundled Skills Catalog",

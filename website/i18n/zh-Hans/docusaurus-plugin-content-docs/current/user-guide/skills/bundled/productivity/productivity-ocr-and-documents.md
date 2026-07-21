@@ -17,7 +17,7 @@ description: "从 PDF/扫描件中提取文本（pymupdf、marker-pdf）"
 | 来源 | 内置（默认安装） |
 | 路径 | `skills/productivity/ocr-and-documents` |
 | 版本 | `2.3.0` |
-| 作者 | Hermes Agent |
+| 作者 | Agentic OS |
 | 许可证 | MIT |
 | 平台 | linux, macos, windows |
 | 标签 | `PDF`, `Documents`, `Research`, `Arxiv`, `Text-Extraction`, `OCR` |

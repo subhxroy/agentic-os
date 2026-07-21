@@ -17,7 +17,7 @@ description: "查询 Polymarket：市场、价格、订单簿、历史记录"
 | 来源 | 内置（默认安装） |
 | 路径 | `skills/research/polymarket` |
 | 版本 | `1.0.0` |
-| 作者 | Hermes Agent + Teknium |
+| 作者 | Agentic OS + Teknium |
 | 平台 | linux, macos, windows |
 
 ## 参考：完整 SKILL.md

@@ -2,7 +2,7 @@
 name: systematic-debugging
 description: "4-phase root cause debugging: understand bugs before fixing."
 version: 1.1.0
-author: Hermes Agent (adapted from obra/superpowers)
+author: Agentic OS (adapted from obra/superpowers)
 license: MIT
 platforms: [linux, macos, windows]
 metadata:
@@ -359,7 +359,7 @@ If you catch yourself thinking:
 | **3. Hypothesis** | Form theory, test minimally, one variable at a time | Confirmed or new hypothesis |
 | **4. Implementation** | Create regression test, fix root cause, verify | Bug resolved, all tests pass |
 
-## Hermes Agent Integration
+## Agentic OS Integration
 
 ### Investigation Tools
 

@@ -1,12 +1,12 @@
 ---
 sidebar_position: 3
 title: "Discord"
-description: "Set up Hermes Agent as a Discord bot"
+description: "Set up Agentic OS as a Discord bot"
 ---
 
 # Discord Setup
 
-Hermes Agent integrates with Discord as a bot, letting you chat with your AI assistant through direct messages or server channels. The bot receives your messages, processes them through the Hermes Agent pipeline (including tool use, memory, and reasoning), and responds in real time. It supports text, voice messages, file attachments, and slash commands.
+Agentic OS integrates with Discord as a bot, letting you chat with your AI assistant through direct messages or server channels. The bot receives your messages, processes them through the Agentic OS pipeline (including tool use, memory, and reasoning), and responds in real time. It supports text, voice messages, file attachments, and slash commands.
 
 Before setup, here's the part most people want to know: how Hermes behaves once it's in your server.
 
@@ -33,7 +33,7 @@ Hermes on Discord is not a webhook that replies statelessly. It runs through the
 2. mention / free-response checks
 3. session lookup
 4. session transcript loading
-5. normal Hermes agent execution, including tools, memory, and slash commands
+5. normal Agentic OS execution, including tools, memory, and slash commands
 6. response delivery back to Discord
 
 That matters because behavior in a busy server depends on both Discord routing and Hermes session policy.
@@ -104,7 +104,7 @@ The old `liveness_interval_seconds` and `liveness_failure_threshold` names remai
 
 1. Go to the [Discord Developer Portal](https://discord.com/developers/applications) and sign in with your Discord account.
 2. Click **New Application** in the top-right corner.
-3. Enter a name for your application (e.g., "Hermes Agent") and accept the Developer Terms of Service.
+3. Enter a name for your application (e.g., "Agentic OS") and accept the Developer Terms of Service.
 4. Click **Create**.
 
 You'll land on the **General Information** page. Note the **Application ID** — you'll need it later to build the invite URL.
@@ -154,7 +154,7 @@ Click **Save Changes** at the bottom of the page.
 
 ## Step 4: Get the Bot Token
 
-The bot token is the credential Hermes Agent uses to log in as your bot. Still on the **Bot** page:
+The bot token is the credential Agentic OS uses to log in as your bot. Still on the **Bot** page:
 
 1. Under the **Token** section, click **Reset Token**.
 2. If you have two-factor authentication enabled on your Discord account, enter your 2FA code.
@@ -230,7 +230,7 @@ After authorizing, the bot will appear in your server's member list (it will sho
 
 ## Step 7: Find Your Discord User ID
 
-Hermes Agent uses your Discord User ID to control who can interact with the bot. To find it:
+Agentic OS uses your Discord User ID to control who can interact with the bot. To find it:
 
 1. Open Discord (desktop or web app).
 2. Go to **Settings** → **Advanced** → toggle **Developer Mode** to **ON**.
@@ -243,7 +243,7 @@ Your User ID is a long number like `284102345871466496`.
 Developer Mode also lets you copy **Channel IDs** and **Server IDs** the same way — right-click the channel or server name and select Copy ID. You'll need a Channel ID if you want to set a home channel manually.
 :::
 
-## Step 8: Configure Hermes Agent
+## Step 8: Configure Agentic OS
 
 ### Option A: Interactive Setup (Recommended)
 
@@ -724,7 +724,7 @@ Replace the ID with the actual channel ID (right-click → Copy Channel ID with 
 
 ## Voice Messages
 
-Hermes Agent supports Discord voice messages:
+Agentic OS supports Discord voice messages:
 
 - **Incoming voice messages** are automatically transcribed using the configured STT provider: local `faster-whisper` (no key), Groq Whisper (`GROQ_API_KEY`), or OpenAI Whisper (`VOICE_TOOLS_OPENAI_KEY`).
 - **Text-to-speech**: Use `/voice tts` to have the bot send spoken audio responses alongside text replies.
@@ -903,6 +903,6 @@ DISCORD_ALLOW_MENTION_REPLIED_USER=true
 Leave `everyone` and `roles` at `false` unless you know exactly why you need them. It is very easy for an LLM to produce the string `@everyone` inside a normal-looking response; without this protection, that would notify every member of your server.
 :::
 
-For more information on securing your Hermes Agent deployment, see the [Security Guide](../security.md).
+For more information on securing your Agentic OS deployment, see the [Security Guide](../security.md).
 
 

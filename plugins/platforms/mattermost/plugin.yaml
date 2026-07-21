@@ -3,7 +3,7 @@ label: Mattermost
 kind: platform
 version: 1.0.0
 description: >
-  Mattermost gateway adapter for Hermes Agent.
+  Mattermost gateway adapter for Agentic OS.
   Connects to a self-hosted or cloud Mattermost instance via the v4 REST
   API + WebSocket event stream and relays messages between Mattermost
   channels/DMs and the Hermes agent. Supports thread-mode replies, native

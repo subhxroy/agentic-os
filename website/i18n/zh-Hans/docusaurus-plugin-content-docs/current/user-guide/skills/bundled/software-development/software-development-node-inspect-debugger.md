@@ -17,7 +17,7 @@ description: "调试 Node"
 | 来源 | 内置（默认安装） |
 | 路径 | `skills/software-development/node-inspect-debugger` |
 | 版本 | `1.0.0` |
-| 作者 | Hermes Agent |
+| 作者 | Agentic OS |
 | 许可证 | MIT |
 | 平台 | linux, macos, windows |
 | 标签 | `debugging`, `nodejs`, `node-inspect`, `cdp`, `breakpoints`, `ui-tui` |

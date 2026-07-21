@@ -2,7 +2,7 @@
 name: spike
 description: "Throwaway experiments to validate an idea before build."
 version: 1.0.0
-author: Hermes Agent (adapted from gsd-build/get-shit-done)
+author: Agentic OS (adapted from gsd-build/get-shit-done)
 license: MIT
 platforms: [linux, macos, windows]
 metadata:

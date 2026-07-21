@@ -7,7 +7,7 @@ sidebar_position: 6
 
 # Web Search & Extract
 
-Hermes Agent includes two model-callable web tools backed by multiple providers:
+Agentic OS includes two model-callable web tools backed by multiple providers:
 
 - **`web_search`** — search the web and return ranked results
 - **`web_extract`** — fetch and extract readable content from one or more URLs

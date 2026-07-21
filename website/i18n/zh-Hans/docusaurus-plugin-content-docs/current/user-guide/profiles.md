@@ -4,7 +4,7 @@ sidebar_position: 2
 
 # Profiles：运行多个 Agent
 
-在同一台机器上运行多个独立的 Hermes agent——每个 agent 拥有各自的配置、API 密钥、记忆、会话、技能和 gateway 状态。
+在同一台机器上运行多个独立的 Agentic OS——每个 agent 拥有各自的配置、API 密钥、记忆、会话、技能和 gateway 状态。
 
 ## 什么是 profile？
 

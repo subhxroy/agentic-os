@@ -1,5 +1,5 @@
 """
-Single source of truth for provider identity in Hermes Agent.
+Single source of truth for provider identity in Agentic OS.
 
 Two data sources, merged at runtime:
 

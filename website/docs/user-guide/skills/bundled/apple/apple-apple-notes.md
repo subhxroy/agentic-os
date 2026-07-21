@@ -17,7 +17,7 @@ Manage Apple Notes via memo CLI: create, search, edit.
 | Source | Bundled (installed by default) |
 | Path | `skills/apple/apple-notes` |
 | Version | `1.0.0` |
-| Author | Hermes Agent |
+| Author | Agentic OS |
 | License | MIT |
 | Platforms | macos |
 | Tags | `Notes`, `Apple`, `macOS`, `note-taking` |

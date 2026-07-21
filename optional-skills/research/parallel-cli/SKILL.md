@@ -2,7 +2,7 @@
 name: parallel-cli
 description: Optional vendor skill for Parallel CLI — agent-native web search, extraction, deep research, enrichment, FindAll, and monitoring. Prefer JSON output and non-interactive flows.
 version: 1.1.0
-author: Hermes Agent
+author: Agentic OS
 license: MIT
 platforms: [linux, macos, windows]
 metadata:

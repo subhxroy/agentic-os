@@ -1,5 +1,5 @@
 #
-# docker-compose.yml for Hermes Agent
+# docker-compose.yml for Agentic OS
 #
 # Usage:
 #   HERMES_UID=$(id -u) HERMES_GID=$(id -g) docker compose up -d

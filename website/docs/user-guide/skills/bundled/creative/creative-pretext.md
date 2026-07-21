@@ -17,7 +17,7 @@ Use when building creative browser demos with @chenglou/pretext — DOM-free tex
 | Source | Bundled (installed by default) |
 | Path | `skills/creative/pretext` |
 | Version | `1.0.0` |
-| Author | Hermes Agent |
+| Author | Agentic OS |
 | License | MIT |
 | Platforms | linux, macos, windows |
 | Tags | `creative-coding`, `typography`, `pretext`, `ascii-art`, `canvas`, `generative`, `text-layout`, `kinetic-typography` |

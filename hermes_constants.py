@@ -1,4 +1,4 @@
-"""Shared constants for Hermes Agent.
+"""Shared constants for Agentic OS.
 
 Import-safe module with no dependencies — can be imported from anywhere
 without risk of circular imports.

@@ -13,7 +13,7 @@ metadata:
 
 # Knowledge Comic Creator
 
-Adapted from [baoyu-comic](https://github.com/JimLiu/baoyu-skills) for Hermes Agent's tool ecosystem.
+Adapted from [baoyu-comic](https://github.com/JimLiu/baoyu-skills) for Agentic OS's tool ecosystem.
 
 Create original knowledge comics with flexible art style × tone combinations.
 

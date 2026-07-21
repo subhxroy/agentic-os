@@ -17,7 +17,7 @@ description: "通过 gh 或 REST 创建、分类、标记、分配 GitHub Issues
 | 来源 | 内置（默认安装） |
 | 路径 | `skills/github/github-issues` |
 | 版本 | `1.1.0` |
-| 作者 | Hermes Agent |
+| 作者 | Agentic OS |
 | 许可证 | MIT |
 | 平台 | linux, macos, windows |
 | 标签 | `GitHub`, `Issues`, `Project-Management`, `Bug-Tracking`, `Triage` |

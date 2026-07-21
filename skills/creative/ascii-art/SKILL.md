@@ -2,7 +2,7 @@
 name: ascii-art
 description: "ASCII art: pyfiglet, cowsay, boxes, image-to-ascii."
 version: 4.0.0
-author: 0xbyt4, Hermes Agent
+author: 0xbyt4, Agentic OS
 license: MIT
 dependencies: []
 platforms: [linux, macos, windows]

@@ -2,12 +2,12 @@
 sidebar_position: 3
 sidebar_label: "Git Worktrees"
 title: "Git Worktrees"
-description: "使用 git worktrees 和隔离检出在同一仓库中安全运行多个 Hermes agent"
+description: "使用 git worktrees 和隔离检出在同一仓库中安全运行多个 Agentic OS"
 ---
 
 # Git Worktrees
 
-Hermes Agent 常用于大型、长期维护的仓库。当你需要：
+Agentic OS 常用于大型、长期维护的仓库。当你需要：
 
 - 在同一项目中**并行运行多个 agent**，或
 - 将实验性重构与主分支隔离，

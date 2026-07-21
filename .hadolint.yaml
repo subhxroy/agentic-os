@@ -1,4 +1,4 @@
-# hadolint configuration for the Hermes Agent Dockerfile.
+# hadolint configuration for the Agentic OS Dockerfile.
 # See https://github.com/hadolint/hadolint#configure for rules.
 #
 # We want hadolint to surface NEW Dockerfile lint regressions, but we

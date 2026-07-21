@@ -3,7 +3,7 @@ label: SimpleX Chat
 kind: platform
 version: 1.1.0
 description: >
-  SimpleX Chat gateway adapter for Hermes Agent.
+  SimpleX Chat gateway adapter for Agentic OS.
   Connects to a local simplex-chat daemon via WebSocket and relays
   messages between SimpleX contacts/groups and the Hermes agent.
   SimpleX is decentralised and assigns no persistent user IDs —

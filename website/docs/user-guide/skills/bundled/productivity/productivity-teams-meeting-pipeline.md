@@ -17,7 +17,7 @@ Operate the Teams meeting summary pipeline via Hermes CLI — summarize meetings
 | Source | Bundled (installed by default) |
 | Path | `skills/productivity/teams-meeting-pipeline` |
 | Version | `1.1.0` |
-| Author | Hermes Agent + Teknium |
+| Author | Agentic OS + Teknium |
 | License | MIT |
 | Tags | `Teams`, `Microsoft Graph`, `Meetings`, `Productivity`, `Operations` |
 

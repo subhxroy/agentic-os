@@ -17,7 +17,7 @@ description: "使用 pygount 检查代码库：代码行数、语言、占比"
 | 来源 | 内置（默认安装） |
 | 路径 | `skills/github/codebase-inspection` |
 | 版本 | `1.0.0` |
-| 作者 | Hermes Agent |
+| 作者 | Agentic OS |
 | 许可证 | MIT |
 | 平台 | linux, macos, windows |
 | 标签 | `LOC`, `Code Analysis`, `pygount`, `Codebase`, `Metrics`, `Repository` |

@@ -1,4 +1,4 @@
-# Termux / Android dependency constraints for Hermes Agent.
+# Termux / Android dependency constraints for Agentic OS.
 #
 # Usage:
 #   python -m pip install -e '.[termux]' -c constraints-termux.txt

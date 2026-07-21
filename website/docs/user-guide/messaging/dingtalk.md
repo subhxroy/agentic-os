@@ -1,12 +1,12 @@
 ---
 sidebar_position: 10
 title: "DingTalk"
-description: "Set up Hermes Agent as a DingTalk chatbot"
+description: "Set up Agentic OS as a DingTalk chatbot"
 ---
 
 # DingTalk Setup
 
-Hermes Agent integrates with DingTalk (钉钉) as a chatbot, letting you chat with your AI assistant through direct messages or group chats. The bot connects via DingTalk's Stream Mode — a long-lived WebSocket connection that requires no public URL or webhook server — and replies using markdown-formatted messages through DingTalk's session webhook API.
+Agentic OS integrates with DingTalk (钉钉) as a chatbot, letting you chat with your AI assistant through direct messages or group chats. The bot connects via DingTalk's Stream Mode — a long-lived WebSocket connection that requires no public URL or webhook server — and replies using markdown-formatted messages through DingTalk's session webhook API.
 
 Before setup, here's the part most people want to know: how Hermes behaves once it's in your DingTalk workspace.
 
@@ -63,7 +63,7 @@ pip install dingtalk-stream httpx alibabacloud-dingtalk
 2. Log in with your DingTalk admin account.
 3. Click **Application Development** → **Custom Apps** → **Create App via H5 Micro-App** (or **Robot** depending on your console version).
 4. Fill in:
-   - **App Name**: e.g., `Hermes Agent`
+   - **App Name**: e.g., `Agentic OS`
    - **Description**: optional
 5. After creating, navigate to **Credentials & Basic Info** to find your **Client ID** (AppKey) and **Client Secret** (AppSecret). Copy both.
 
@@ -83,14 +83,14 @@ Stream Mode is the recommended setup. It uses a long-lived WebSocket connection 
 
 ## Step 3: Find Your DingTalk User ID
 
-Hermes Agent uses your DingTalk User ID to control who can interact with the bot. DingTalk User IDs are alphanumeric strings set by your organization's admin.
+Agentic OS uses your DingTalk User ID to control who can interact with the bot. DingTalk User IDs are alphanumeric strings set by your organization's admin.
 
 To find yours:
 
 1. Ask your DingTalk organization admin — User IDs are configured in the DingTalk admin console under **Contacts** → **Members**.
 2. Alternatively, the bot logs the `sender_id` for each incoming message. Start the gateway, send the bot a message, then check the logs for your ID.
 
-## Step 4: Configure Hermes Agent
+## Step 4: Configure Agentic OS
 
 ### Option A: Interactive Setup (Recommended)
 
@@ -269,7 +269,7 @@ pip install dingtalk-stream httpx
 Always set `DINGTALK_ALLOWED_USERS` to restrict who can interact with the bot. Without it, the gateway denies all users by default as a safety measure. Only add User IDs of people you trust — authorized users have full access to the agent's capabilities, including tool use and system access.
 :::
 
-For more information on securing your Hermes Agent deployment, see the [Security Guide](../security.md).
+For more information on securing your Agentic OS deployment, see the [Security Guide](../security.md).
 
 ## Notes
 

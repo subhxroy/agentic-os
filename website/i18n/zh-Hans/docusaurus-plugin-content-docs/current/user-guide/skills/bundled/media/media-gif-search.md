@@ -17,7 +17,7 @@ description: "通过 curl + jq 搜索/下载 Tenor GIF"
 | 来源 | 内置（默认安装） |
 | 路径 | `skills/media/gif-search` |
 | 版本 | `1.1.0` |
-| 作者 | Hermes Agent |
+| 作者 | Agentic OS |
 | 许可证 | MIT |
 | 平台 | linux, macos, windows |
 | 标签 | `GIF`, `Media`, `Search`, `Tenor`, `API` |

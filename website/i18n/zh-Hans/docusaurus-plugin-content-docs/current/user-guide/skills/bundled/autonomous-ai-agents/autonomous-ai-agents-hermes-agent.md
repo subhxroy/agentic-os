@@ -1,14 +1,14 @@
 ---
-title: "Hermes Agent — 配置、扩展或贡献 Hermes Agent"
-sidebar_label: "Hermes Agent"
-description: "配置、扩展或贡献 Hermes Agent"
+title: "Agentic OS — 配置、扩展或贡献 Agentic OS"
+sidebar_label: "Agentic OS"
+description: "配置、扩展或贡献 Agentic OS"
 ---
 
 {/* This page is auto-generated from the skill's SKILL.md by website/scripts/generate-skill-docs.py. Edit the source SKILL.md, not this page. */}
 
-# Hermes Agent
+# Agentic OS
 
-配置、扩展或贡献 Hermes Agent。
+配置、扩展或贡献 Agentic OS。
 
 ## Skill 元数据
 
@@ -17,7 +17,7 @@ description: "配置、扩展或贡献 Hermes Agent"
 | 来源 | 内置（默认安装） |
 | 路径 | `skills/autonomous-ai-agents/hermes-agent` |
 | 版本 | `2.1.0` |
-| 作者 | Hermes Agent + Teknium |
+| 作者 | Agentic OS + Teknium |
 | 许可证 | MIT |
 | 平台 | linux, macos, windows |
 | 标签 | `hermes`, `setup`, `configuration`, `multi-agent`, `spawning`, `cli`, `gateway`, `development` |
@@ -29,9 +29,9 @@ description: "配置、扩展或贡献 Hermes Agent"
 以下是 Hermes 在触发此 skill 时加载的完整 skill 定义。这是 agent 在 skill 激活时看到的指令内容。
 :::
 
-# Hermes Agent
+# Agentic OS
 
-Hermes Agent 是 Nous Research 开发的开源 AI agent 框架，可在终端、消息平台和 IDE 中运行。它与 Claude Code（Anthropic）、Codex（OpenAI）和 OpenClaw 同属一类——使用工具调用（tool calling）与系统交互的自主编码和任务执行 agent。Hermes 支持任意 LLM 提供商（OpenRouter、Anthropic、OpenAI、DeepSeek、本地模型及 15+ 其他提供商），可在 Linux、macOS 和 WSL 上运行。
+Agentic OS 是 Nous Research 开发的开源 AI agent 框架，可在终端、消息平台和 IDE 中运行。它与 Claude Code（Anthropic）、Codex（OpenAI）和 OpenClaw 同属一类——使用工具调用（tool calling）与系统交互的自主编码和任务执行 agent。Hermes 支持任意 LLM 提供商（OpenRouter、Anthropic、OpenAI、DeepSeek、本地模型及 15+ 其他提供商），可在 Linux、macOS 和 WSL 上运行。
 
 Hermes 的差异化特性：
 
@@ -44,7 +44,7 @@ Hermes 的差异化特性：
 
 人们将 Hermes 用于软件开发、研究、系统管理、数据分析、内容创作、家庭自动化，以及任何受益于具有持久上下文和完整系统访问权限的 AI agent 的场景。
 
-**此 skill 帮助你高效使用 Hermes Agent** — 包括设置、配置功能、生成额外的 agent 实例、排查问题、找到正确的命令和设置，以及在需要扩展或贡献时理解系统的工作原理。
+**此 skill 帮助你高效使用 Agentic OS** — 包括设置、配置功能、生成额外的 agent 实例、排查问题、找到正确的命令和设置，以及在需要扩展或贡献时理解系统的工作原理。
 
 **文档：** https://hermes-agent.nousresearch.com/docs/
 

@@ -17,7 +17,7 @@ Use when a Hermes Kanban worker wants to run Codex CLI as an isolated implementa
 | Source | Bundled (installed by default) |
 | Path | `skills/autonomous-ai-agents/kanban-codex-lane` |
 | Version | `1.0.0` |
-| Author | Hermes Agent |
+| Author | Agentic OS |
 | License | MIT |
 | Tags | `kanban`, `codex`, `worktrees`, `autonomous-agents`, `prediction-market-bot` |
 | Related skills | [`codex`](/docs/user-guide/skills/bundled/autonomous-ai-agents/autonomous-ai-agents-codex), [`hermes-agent`](/docs/user-guide/skills/bundled/autonomous-ai-agents/autonomous-ai-agents-hermes-agent) |
@@ -219,7 +219,7 @@ Hermes must perform this checklist before accepting any Codex lane result:
 - [ ] No secrets, credentials, generated caches, unrelated data, or local artifacts are included.
 - [ ] PMB safety constraints were preserved: no live REST order entry, no market orders, no execution crossing, no fake passive fills/PnL, no risk-gate weakening, no secrets.
 - [ ] Codex commits are small enough to cherry-pick or squash cleanly.
-- [ ] Hermes ran the canonical tests itself, using `scripts/run_tests.sh` for Hermes Agent or the repo's documented wrapper for other repos.
+- [ ] Hermes ran the canonical tests itself, using `scripts/run_tests.sh` for Agentic OS or the repo's documented wrapper for other repos.
 - [ ] Any Codex-run tests are listed separately from Hermes-run tests.
 - [ ] Accepted commits/diffs were applied to the Hermes-owned workspace/branch.
 - [ ] Rejected or partial work has a concrete reason and artifact path if useful.

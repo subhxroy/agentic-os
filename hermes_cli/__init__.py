@@ -1,5 +1,5 @@
 """
-Hermes CLI - Unified command-line interface for Hermes Agent.
+Agentic OS CLI - Unified command-line interface for Agentic OS.
 
 Provides subcommands for:
 - hermes chat          - Interactive chat (same as ./hermes)
