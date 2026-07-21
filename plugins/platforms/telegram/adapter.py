@@ -542,7 +542,7 @@ _UPDATER_STOP_TIMEOUT = 15.0
 # after _drain_polling_connections(), particularly when both primary and fallback
 # Telegram endpoints are unreachable. Bounding start_polling() prevents the
 # reconnect ladder from stalling indefinitely and allows the heartbeat loop to
-# trigger its own recovery path. Refs: NousResearch/hermes-agent#59614
+# trigger its own recovery path. Refs: subhxroy/agentic-os#59614
 _UPDATER_START_TIMEOUT = 30.0
 # shutdown()/initialize() on the getUpdates httpx request close and rebuild the
 # connection pool. When a connection is wedged on a stale CLOSE-WAIT socket that
@@ -550,7 +550,7 @@ _UPDATER_START_TIMEOUT = 30.0
 # whole reconnect ladder (the tracked _polling_error_task never completes, so
 # every escalation path stays gated behind its in-flight guard). Bound the drain
 # so the ladder always advances toward the fatal-restart escalation. Matches
-# _UPDATER_STOP_TIMEOUT. Refs: NousResearch/hermes-agent#66377
+# _UPDATER_STOP_TIMEOUT. Refs: subhxroy/agentic-os#66377
 _DRAIN_TIMEOUT = 15.0
 # Cause-agnostic wedged-recovery watchdog (#66377). Every recovery path (the
 # reconnect ladder's re-entry, the pending-update probe, PTB's error callback)
@@ -2393,7 +2393,7 @@ class TelegramAdapter(BasePlatformAdapter):
                     # "in-flight" and skips triggering a new reconnect, and
                     # the gateway silently drops messages for hours.
                     # Bounding stop() lets the reconnect ladder always advance.
-                    # Refs: NousResearch/hermes-agent#58270
+                    # Refs: subhxroy/agentic-os#58270
                     await asyncio.wait_for(app.updater.stop(), timeout=_UPDATER_STOP_TIMEOUT)
                 except asyncio.TimeoutError:
                     logger.warning(
@@ -3155,8 +3155,8 @@ class TelegramAdapter(BasePlatformAdapter):
     ) -> None:
         """Save a newly created thread_id back into config.yaml so it persists across restarts."""
         try:
-            from agentic_os_constants import get_hermes_home
-            config_path = get_hermes_home() / "config.yaml"
+            from agentic_os_constants import get_agentic_os_home
+            config_path = get_agentic_os_home() / "config.yaml"
             if not config_path.exists():
                 logger.warning("[%s] Config file not found at %s, cannot persist thread_id", self.name, config_path)
                 return
@@ -3694,7 +3694,7 @@ class TelegramAdapter(BasePlatformAdapter):
                         "TELEGRAM_WEBHOOK_URL is set. Without it, the "
                         "webhook endpoint accepts forged updates from "
                         "anyone who can reach it — see "
-                        "https://github.com/NousResearch/hermes-agent/"
+                        "https://github.com/subhxroy/agentic-os/"
                         "security/advisories/GHSA-3vpc-7q5r-276h.\n\n"
                         "Generate a secret and set it in your .env:\n"
                         "  export TELEGRAM_WEBHOOK_SECRET=\"$(openssl rand -hex 32)\"\n\n"
@@ -6263,8 +6263,8 @@ class TelegramAdapter(BasePlatformAdapter):
             pass  # non-fatal if edit fails
         # Write the response file
         try:
-            from agentic_os_constants import get_hermes_home
-            home = get_hermes_home()
+            from agentic_os_constants import get_agentic_os_home
+            home = get_agentic_os_home()
             response_path = home / ".update_response"
             tmp = response_path.with_suffix(".tmp")
             tmp.write_text(answer)
@@ -8798,8 +8798,8 @@ class TelegramAdapter(BasePlatformAdapter):
         recognized without a gateway restart.
         """
         try:
-            from agentic_os_constants import get_hermes_home
-            config_path = get_hermes_home() / "config.yaml"
+            from agentic_os_constants import get_agentic_os_home
+            config_path = get_agentic_os_home() / "config.yaml"
             if not config_path.exists():
                 return
 

@@ -189,7 +189,7 @@ class TestCmdUpdatePipUsesUvTool:
              patch("agentic_os_cli.config.is_uv_tool_install", return_value=True):
             _cmd_update_pip(SimpleNamespace())
 
-        assert mock_run.call_args[0][0] == ["/usr/local/bin/uv", "tool", "upgrade", "hermes-agent"]
+        assert mock_run.call_args[0][0] == ["/usr/local/bin/uv", "tool", "upgrade", "agentic-os"]
 
     @patch("subprocess.run")
     def test_runs_uv_pip_install_when_not_uv_tool(self, mock_run):
@@ -206,7 +206,7 @@ class TestCmdUpdatePipUsesUvTool:
             "pip",
             "install",
             "--upgrade",
-            "hermes-agent",
+            "agentic-os",
         ]
 
     @patch("subprocess.run")
@@ -219,7 +219,7 @@ class TestCmdUpdatePipUsesUvTool:
             _cmd_update_pip(SimpleNamespace())
 
         cmd = mock_run.call_args[0][0]
-        assert cmd[1:] == ["-m", "pip", "install", "--upgrade", "hermes-agent"]
+        assert cmd[1:] == ["-m", "pip", "install", "--upgrade", "agentic-os"]
 
     @patch("subprocess.run")
     def test_exits_nonzero_on_subprocess_failure(self, mock_run):
@@ -277,7 +277,7 @@ class TestCmdUpdatePipInstallLayouts:
              patch("agentic_os_cli.config.is_uv_tool_install", return_value=False):
             hm._cmd_update_pip(SimpleNamespace())
 
-        assert mock_run.call_args[0][0] == ["/usr/bin/pipx", "upgrade", "hermes-agent"]
+        assert mock_run.call_args[0][0] == ["/usr/bin/pipx", "upgrade", "agentic-os"]
         # pipx upgrade ignores VIRTUAL_ENV; we must not set it.
         assert "env" not in mock_run.call_args.kwargs
 
@@ -301,9 +301,9 @@ class TestCmdUpdatePipInstallLayouts:
 
         # prefix != base_prefix, so this is treated as a venv -> overlay, no --system.
         assert mock_run.call_args[0][0] == [
-            "/usr/bin/uv", "pip", "install", "--upgrade", "hermes-agent",
+            "/usr/bin/uv", "pip", "install", "--upgrade", "agentic-os",
         ]
-        assert mock_run.call_args.kwargs["env"]["VIRTUAL_ENV"].endswith("hermes-agent")
+        assert mock_run.call_args.kwargs["env"]["VIRTUAL_ENV"].endswith("agentic-os")
 
     @patch("subprocess.run")
     def test_bare_pip_outside_venv_adds_system(self, mock_run, monkeypatch):
@@ -319,7 +319,7 @@ class TestCmdUpdatePipInstallLayouts:
             hm._cmd_update_pip(SimpleNamespace())
 
         assert mock_run.call_args[0][0] == [
-            "/usr/bin/uv", "pip", "install", "--system", "--upgrade", "hermes-agent",
+            "/usr/bin/uv", "pip", "install", "--system", "--upgrade", "agentic-os",
         ]
         assert "env" not in mock_run.call_args.kwargs
 
@@ -338,5 +338,5 @@ class TestCmdUpdatePipInstallLayouts:
 
         cmd = mock_run.call_args[0][0]
         assert "--system" not in cmd
-        assert cmd == ["/usr/bin/uv", "pip", "install", "--upgrade", "hermes-agent"]
+        assert cmd == ["/usr/bin/uv", "pip", "install", "--upgrade", "agentic-os"]
         assert mock_run.call_args.kwargs["env"]["VIRTUAL_ENV"] == "/home/u/.hermes/hermes-agent/venv"

@@ -74,8 +74,8 @@ def test_fire_cron_job_scopes_store_and_runtime_home_together(
     from agentic_os_cli import web_server
 
     from agentic_os_constants import (
-        reset_hermes_home_override,
-        set_hermes_home_override,
+        reset_AGENTIC_OS_HOME_OVERRIDE,
+        set_AGENTIC_OS_HOME_OVERRIDE,
     )
 
     default_home = isolated_profiles["default"]
@@ -86,7 +86,7 @@ def test_fire_cron_job_scopes_store_and_runtime_home_together(
     class RecordingProvider:
         def fire_due(self, job_id, *, adapters=None, loop=None):
             captured["job_id"] = job_id
-            captured["runtime_home"] = scheduler._get_hermes_home()
+            captured["runtime_home"] = scheduler._get_agentic_os_home()
             captured["jobs_file"] = cron_jobs._current_cron_store().jobs_file
             return True
 
@@ -95,7 +95,7 @@ def test_fire_cron_job_scopes_store_and_runtime_home_together(
         lambda: RecordingProvider(),
     )
 
-    outer_token = set_hermes_home_override(default_home)
+    outer_token = set_AGENTIC_OS_HOME_OVERRIDE(default_home)
     try:
         assert web_server._fire_cron_job_for_profile("worker_alpha", "worker-job") is True
         assert captured == {
@@ -103,9 +103,9 @@ def test_fire_cron_job_scopes_store_and_runtime_home_together(
             "runtime_home": worker_home,
             "jobs_file": worker_home / "cron" / "jobs.json",
         }
-        assert scheduler._get_hermes_home() == default_home
+        assert scheduler._get_agentic_os_home() == default_home
     finally:
-        reset_hermes_home_override(outer_token)
+        reset_AGENTIC_OS_HOME_OVERRIDE(outer_token)
 
 
 def test_profile_call_cannot_retarget_ticker_store_mid_write(

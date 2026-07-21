@@ -36,9 +36,9 @@ def _run_memory_reset(target="all", yes=False, monkeypatch=None, confirm_input="
 
     Simulates what happens when `hermes memory reset` is run.
     """
-    from agentic_os_constants import get_hermes_home
+    from agentic_os_constants import get_agentic_os_home
 
-    mem_dir = get_hermes_home() / "memories"
+    mem_dir = get_agentic_os_home() / "memories"
     files_to_reset = []
     if target in {"all", "memory"}:
         files_to_reset.append(("MEMORY.md", "agent notes"))
@@ -149,6 +149,6 @@ class TestMemoryReset:
         # No memories dir
         monkeypatch.setenv("HERMES_HOME", str(hermes_home))
 
-        # The memories dir won't exist; get_hermes_home() / "memories" won't have files
+        # The memories dir won't exist; get_agentic_os_home() / "memories" won't have files
         result = _run_memory_reset(target="all", yes=True)
         assert result == "nothing"

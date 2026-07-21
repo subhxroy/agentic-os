@@ -34,10 +34,10 @@ def _write_skill(skills_dir, name):
 @pytest.fixture
 def isolated_profiles(tmp_path, monkeypatch, _isolate_hermes_home):
     """Isolated default home + one named profile, each with its own skills."""
-    from agentic_os_constants import get_hermes_home
+    from agentic_os_constants import get_agentic_os_home
     from agentic_os_cli import profiles
 
-    default_home = get_hermes_home()
+    default_home = get_agentic_os_home()
     profiles_root = default_home / "profiles"
     worker_home = profiles_root / "worker_alpha"
     for home in (default_home, worker_home):
@@ -60,10 +60,10 @@ def client(monkeypatch, isolated_profiles):
         pytest.skip("fastapi/starlette not installed")
 
     import agentic_os_state
-    from agentic_os_constants import get_hermes_home
+    from agentic_os_constants import get_agentic_os_home
     from agentic_os_cli.web_server import app, _SESSION_HEADER_NAME, _SESSION_TOKEN
 
-    monkeypatch.setattr(agentic_os_state, "DEFAULT_DB_PATH", get_hermes_home() / "state.db")
+    monkeypatch.setattr(agentic_os_state, "DEFAULT_DB_PATH", get_agentic_os_home() / "state.db")
     c = TestClient(app)
     c.headers[_SESSION_HEADER_NAME] = _SESSION_TOKEN
     return c

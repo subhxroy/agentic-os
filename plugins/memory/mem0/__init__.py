@@ -81,7 +81,7 @@ def _load_config() -> dict:
     individual keys.  This avoids a silent failure when the JSON file exists
     but is missing fields like ``api_key`` that the user set in ``.env``.
     """
-    from agentic_os_constants import get_hermes_home
+    from agentic_os_constants import get_agentic_os_home
 
     config = {
         "mode": os.environ.get("MEM0_MODE", "platform"),
@@ -97,7 +97,7 @@ def _load_config() -> dict:
     if env_user_id:
         config["user_id"] = env_user_id
 
-    config_path = get_hermes_home() / "mem0.json"
+    config_path = get_agentic_os_home() / "mem0.json"
     if config_path.exists():
         try:
             file_cfg = json.loads(config_path.read_text(encoding="utf-8"))

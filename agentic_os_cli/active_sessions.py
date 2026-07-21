@@ -16,7 +16,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Optional
 
-from agentic_os_constants import get_hermes_home
+from agentic_os_constants import get_agentic_os_home
 
 logger = logging.getLogger(__name__)
 
@@ -78,7 +78,7 @@ def active_session_limit_message(active_count: int, max_sessions: int) -> str:
 
 
 def _state_dir() -> Path:
-    return Path(get_hermes_home()) / "runtime"
+    return Path(get_agentic_os_home()) / "runtime"
 
 
 def _state_path() -> Path:

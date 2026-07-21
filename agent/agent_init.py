@@ -49,7 +49,7 @@ from agent.tool_guardrails import (
 )
 from agentic_os_cli.config import cfg_get
 from agentic_os_cli.timeouts import get_provider_request_timeout
-from agentic_os_constants import get_hermes_home
+from agentic_os_constants import get_agentic_os_home
 from utils import base_url_host_matches, is_truthy_value
 
 # Use the same logger name as run_agent so tests patching ``run_agent.logger``
@@ -142,7 +142,7 @@ def _codex_gpt55_autoraise_notice_marker():
     internal markers like ``.container-mode`` — so it is not a user-facing config
     key, and every profile tracks its own notice state independently.
     """
-    return get_hermes_home() / ".codex_gpt55_autoraise_notice"
+    return get_agentic_os_home() / ".codex_gpt55_autoraise_notice"
 
 
 def _codex_gpt55_autoraise_notice_state(autoraise: Dict[str, Any]) -> str:
@@ -1302,7 +1302,7 @@ def init_agent(
         os.environ["HERMES_SESSION_ID"] = agent.session_id
 
     # Session logs go into ~/.hermes/sessions/ alongside gateway sessions
-    hermes_home = get_hermes_home()
+    hermes_home = get_agentic_os_home()
     agent.logs_dir = hermes_home / "sessions"
     agent.logs_dir.mkdir(parents=True, exist_ok=True)
     # Per-session JSON snapshot writer (~/.hermes/sessions/session_{sid}.json)
@@ -1473,7 +1473,7 @@ def init_agent(
                     _init_kwargs = {
                         "session_id": agent.session_id,
                         "platform": platform or "cli",
-                        "hermes_home": str(get_hermes_home()),
+                        "hermes_home": str(get_agentic_os_home()),
                         "agent_context": "primary",
                     }
                     if _init_kwargs["platform"] == "cli":
@@ -2040,7 +2040,7 @@ def init_agent(
         try:
             agent.context_compressor.on_session_start(
                 agent.session_id,
-                hermes_home=str(get_hermes_home()),
+                hermes_home=str(get_agentic_os_home()),
                 platform=agent.platform or "cli",
                 model=agent.model,
                 context_length=getattr(agent.context_compressor, "context_length", 0),

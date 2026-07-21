@@ -25,7 +25,7 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from pathlib import Path, PurePosixPath
-from agentic_os_constants import get_hermes_home
+from agentic_os_constants import get_agentic_os_home
 from agentic_os_cli._subprocess_compat import windows_hide_flags
 from agent.skill_utils import is_excluded_skill_path
 from typing import Any, Dict, List, Optional, Tuple, Union
@@ -61,7 +61,7 @@ def _override(name: str):
 
 
 def _hermes_home() -> Path:
-    return get_hermes_home()
+    return get_agentic_os_home()
 
 
 def _skills_dir() -> Path:
@@ -3166,7 +3166,7 @@ class OptionalSkillSource(SkillSource):
     (search / install / inspect) and labelled "official" with "builtin" trust.
     """
 
-    OFFICIAL_REPO = "NousResearch/hermes-agent"
+    OFFICIAL_REPO = "subhxroy/agentic-os"
 
     def __init__(self):
         from agentic_os_constants import get_optional_skills_dir
@@ -3772,7 +3772,7 @@ def check_for_skill_updates(
 # Hermes centralized index source
 # ---------------------------------------------------------------------------
 
-HERMES_INDEX_URL = "https://hermes-agent.nousresearch.com/docs/api/skills-index.json"
+HERMES_INDEX_URL = "https://agentic-os.nousresearch.com/docs/api/skills-index.json"
 HERMES_INDEX_TTL = 6 * 3600  # 6 hours
 
 

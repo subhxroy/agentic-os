@@ -724,7 +724,7 @@ class TestAutoSetHomeMiddleware:
         """Pairing-approved senders may auto-designate the home channel."""
         monkeypatch.delenv("YUANBAO_HOME_CHANNEL", raising=False)
         monkeypatch.setattr(
-            "agentic_os_constants.get_hermes_home",
+            "agentic_os_constants.get_agentic_os_home",
             lambda: tmp_path,
         )
 
@@ -757,7 +757,7 @@ class TestAutoSetHomeMiddleware:
         """Allowlisted senders may auto-designate the home channel."""
         monkeypatch.delenv("YUANBAO_HOME_CHANNEL", raising=False)
         monkeypatch.setattr(
-            "agentic_os_constants.get_hermes_home",
+            "agentic_os_constants.get_agentic_os_home",
             lambda: tmp_path,
         )
 
@@ -977,7 +977,7 @@ class TestAutoSetHomeAfterGroupAtGuard:
         monkeypatch.delenv("YUANBAO_HOME_CHANNEL", raising=False)
         monkeypatch.setenv("GATEWAY_ALLOW_ALL_USERS", "true")
         monkeypatch.setattr(
-            "agentic_os_constants.get_hermes_home",
+            "agentic_os_constants.get_agentic_os_home",
             lambda: tmp_path,
         )
 

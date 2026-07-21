@@ -403,7 +403,7 @@ def test_classic_mode_does_not_double_read_same_file(tmp_path, monkeypatch):
     from agentic_os_cli.auth import read_credential_pool, _global_auth_file_path
 
     # Classic mode: HERMES_HOME is set to a custom path that is NOT under
-    # ~/.hermes/profiles/ — get_default_hermes_root() returns HERMES_HOME
+    # ~/.hermes/profiles/ — get_default_agentic_os_root() returns HERMES_HOME
     # itself, so the profile root and global root are the same directory,
     # and the helper correctly returns None (no fallback).
     assert _global_auth_file_path() is None
@@ -495,7 +495,7 @@ def test_provider_state_transaction_locks_global_fallback_before_use(
 def test_auth_lock_reentrancy_is_scoped_after_profile_context_switch(profile_env):
     """Changing profile context cannot inherit another store's lock depth."""
     import agentic_os_cli.auth as auth
-    from agentic_os_constants import reset_hermes_home_override, set_hermes_home_override
+    from agentic_os_constants import reset_AGENTIC_OS_HOME_OVERRIDE, set_AGENTIC_OS_HOME_OVERRIDE
 
     profile_b = profile_env["global"] / "profiles" / "reviewer"
     profile_b.mkdir(parents=True)
@@ -505,7 +505,7 @@ def test_auth_lock_reentrancy_is_scoped_after_profile_context_switch(profile_env
         holder_a = auth._auth_lock_holder_for(profile_env["profile"] / "auth.json")
         assert getattr(holder_a, "depth", 0) == 1
 
-        token = set_hermes_home_override(profile_b)
+        token = set_AGENTIC_OS_HOME_OVERRIDE(profile_b)
         try:
             holder_b = auth._auth_lock_holder_for(profile_b / "auth.json")
             assert holder_b is not holder_a
@@ -516,6 +516,6 @@ def test_auth_lock_reentrancy_is_scoped_after_profile_context_switch(profile_env
                 assert profile_b_lock.exists()
                 assert getattr(holder_b, "depth", 0) == 1
         finally:
-            reset_hermes_home_override(token)
+            reset_AGENTIC_OS_HOME_OVERRIDE(token)
 
     assert getattr(holder_a, "depth", 0) == 0

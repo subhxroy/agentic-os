@@ -84,8 +84,8 @@ class TestUnifiedDashboardRouting:
         # HERMES_HOME.  For a standard install (HERMES_HOME unset) that root is
         # the platform-native default (~/.hermes), NOT dropped — see the Docker
         # test below for why we resolve explicitly instead of popping.
-        from agentic_os_constants import get_default_hermes_root
-        assert env.get("HERMES_HOME") == str(get_default_hermes_root())
+        from agentic_os_constants import get_default_agentic_os_root
+        assert env.get("HERMES_HOME") == str(get_default_agentic_os_root())
 
     def test_reexec_pins_docker_machine_root(self, main_mod, monkeypatch):
         """In the Docker layout (HERMES_HOME=/opt/data, profiles under
@@ -116,7 +116,7 @@ class TestUnifiedDashboardRouting:
 
         assert len(execs) == 1
         _exe, _argv, env = execs[0]
-        # get_default_hermes_root() strips the trailing profiles/<name>, so the
+        # get_default_agentic_os_root() strips the trailing profiles/<name>, so the
         # child binds /opt/data — where the real default/oracle/saga profiles
         # and the .install_method stamp actually live.
         assert env.get("HERMES_HOME") == "/opt/data"

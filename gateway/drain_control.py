@@ -56,7 +56,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Optional
 
-from agentic_os_constants import get_hermes_home
+from agentic_os_constants import get_agentic_os_home
 from utils import atomic_json_write
 
 _log = logging.getLogger(__name__)
@@ -128,7 +128,7 @@ def current_instantiation_epoch() -> str:
 
 def drain_request_path(home: Optional[Path] = None) -> Path:
     """Absolute path to the drain-request marker, respecting HERMES_HOME."""
-    base = home if home is not None else get_hermes_home()
+    base = home if home is not None else get_agentic_os_home()
     return Path(base) / _DRAIN_REQUEST_FILENAME
 
 

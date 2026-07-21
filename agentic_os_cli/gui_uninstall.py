@@ -40,7 +40,7 @@ import shutil
 import sys
 from pathlib import Path
 
-from agentic_os_constants import get_hermes_home
+from agentic_os_constants import get_agentic_os_home
 
 from agentic_os_cli.colors import Colors, color
 
@@ -64,7 +64,7 @@ def log_warn(msg: str):
 
 def _agent_root(hermes_home: Path) -> Path:
     """The agent checkout root — same layout install.sh / install.ps1 use."""
-    return hermes_home / "hermes-agent"
+    return hermes_home / "agentic-os"
 
 
 def desktop_userdata_dir() -> Path:
@@ -188,7 +188,7 @@ def gui_install_summary(hermes_home: "Path | None" = None) -> dict:
     forward it to the renderer via IPC (paths as strings, booleans for the
     high-level questions the UI gates options on).
     """
-    home: Path = hermes_home if hermes_home is not None else get_hermes_home()
+    home: Path = hermes_home if hermes_home is not None else get_agentic_os_home()
 
     source_artifacts = [p for p in source_built_gui_artifacts(home) if p.exists()]
     packaged = [p for p in packaged_gui_app_paths() if p.exists()]
@@ -239,7 +239,7 @@ def uninstall_gui(hermes_home: "Path | None" = None, *, remove_userdata: bool = 
 
     Returns the list of paths actually removed.
     """
-    home: Path = hermes_home if hermes_home is not None else get_hermes_home()
+    home: Path = hermes_home if hermes_home is not None else get_agentic_os_home()
 
     removed: list[Path] = []
 

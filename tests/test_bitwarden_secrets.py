@@ -44,7 +44,7 @@ def hermes_home(tmp_path, monkeypatch):
     home = tmp_path / ".hermes"
     home.mkdir()
     monkeypatch.setenv("HERMES_HOME", str(home))
-    # Some modules cache get_hermes_home; clear if needed.
+    # Some modules cache get_agentic_os_home; clear if needed.
     import agentic_os_constants
     if hasattr(agentic_os_constants, "_HERMES_HOME_CACHE"):
         agentic_os_constants._HERMES_HOME_CACHE = None  # type: ignore[attr-defined]

@@ -101,8 +101,8 @@ def _setup_isolated_home(tmp_path, monkeypatch, model_yaml_value, *, base_url=""
         "agentic_os_cli.model_switch.resolve_display_context_length",
         lambda *a, **k: 8192,
     )
-    monkeypatch.setattr("agentic_os_constants.get_hermes_home", lambda: hermes_home)
-    monkeypatch.setattr("agentic_os_cli.config.get_hermes_home", lambda: hermes_home)
+    monkeypatch.setattr("agentic_os_constants.get_agentic_os_home", lambda: hermes_home)
+    monkeypatch.setattr("agentic_os_cli.config.get_agentic_os_home", lambda: hermes_home)
     return cfg_path
 
 

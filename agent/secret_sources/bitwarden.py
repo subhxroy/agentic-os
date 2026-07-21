@@ -121,9 +121,9 @@ def _disk_cache_path(home_path: Optional[Path] = None) -> Path:
 
 def _hermes_bin_dir() -> Path:
     """Where Hermes stores its managed binaries.  Profile-aware."""
-    from agentic_os_constants import get_hermes_home
+    from agentic_os_constants import get_agentic_os_home
 
-    return get_hermes_home() / "bin"
+    return get_agentic_os_home() / "bin"
 
 
 def find_bws(*, install_if_missing: bool = False) -> Optional[Path]:
@@ -262,7 +262,7 @@ def install_bws(*, force: bool = False) -> Path:
 
 
 def _http_download(url: str, dest: Path) -> None:
-    req = urllib.request.Request(url, headers={"User-Agent": "hermes-agent"})
+    req = urllib.request.Request(url, headers={"User-Agent": "agentic-os"})
     try:
         with urllib.request.urlopen(req, timeout=_BWS_DOWNLOAD_TIMEOUT) as resp:  # noqa: S310
             with open(dest, "wb") as f:

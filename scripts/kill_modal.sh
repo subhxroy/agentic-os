@@ -18,7 +18,7 @@ if [[ "${1:-}" == "--all" ]]; then
     done
 else
     echo "Stopping hermes-agent sandboxes..."
-    APPS=$(echo "$APP_LIST" | grep 'hermes-agent' | grep -oE 'ap-[A-Za-z0-9]+' || true)
+    APPS=$(echo "$APP_LIST" | grep 'agentic-os' | grep -oE 'ap-[A-Za-z0-9]+' || true)
     if [[ -z "$APPS" ]]; then
         echo "  No hermes-agent apps found."
     else

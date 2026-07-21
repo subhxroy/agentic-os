@@ -191,7 +191,7 @@ export async function initialize(): Promise<void> {
   try {
     const [logPath, hermesHome, mode] = await Promise.all([
       invoke<string>('get_log_path'),
-      invoke<string>('get_hermes_home'),
+      invoke<string>('get_agentic_os_home'),
       invoke<AppMode>('get_mode')
     ])
 

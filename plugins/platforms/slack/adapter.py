@@ -1006,9 +1006,9 @@ class SlackAdapter(BasePlatformAdapter):
         bot_tokens = [t.strip() for t in raw_token.split(",") if t.strip()]
 
         # Also load tokens from OAuth token file
-        from agentic_os_constants import get_hermes_home
+        from agentic_os_constants import get_agentic_os_home
 
-        tokens_file = get_hermes_home() / "slack_tokens.json"
+        tokens_file = get_agentic_os_home() / "slack_tokens.json"
         if tokens_file.exists():
             try:
                 saved = json.loads(tokens_file.read_text(encoding="utf-8"))
@@ -5006,14 +5006,14 @@ def interactive_setup() -> None:
         paste-into-Slack instructions. Failures are non-fatal."""
         try:
             from agentic_os_cli.slack_cli import _build_full_manifest
-            from agentic_os_constants import get_hermes_home
+            from agentic_os_constants import get_agentic_os_home
             import json as _json
 
             manifest = _build_full_manifest(
                 bot_name="Hermes",
                 bot_description="Your Hermes agent on Slack",
             )
-            target = Path(get_hermes_home()) / "slack-manifest.json"
+            target = Path(get_agentic_os_home()) / "slack-manifest.json"
             target.parent.mkdir(parents=True, exist_ok=True)
             target.write_text(
                 _json.dumps(manifest, indent=2, ensure_ascii=False) + "\n",
@@ -5055,7 +5055,7 @@ def interactive_setup() -> None:
     print_info("   3. Install to Workspace: Settings → Install App")
     print_info("   4. After installing, invite the bot to channels: /invite @YourBot")
     print()
-    print_info("   Full guide: https://hermes-agent.nousresearch.com/docs/user-guide/messaging/slack/")
+    print_info("   Full guide: https://agentic-os.nousresearch.com/docs/user-guide/messaging/slack/")
     print()
 
     # Generate and write manifest up-front so the user can paste it into

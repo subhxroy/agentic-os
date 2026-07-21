@@ -1021,8 +1021,8 @@ def _rewrite_resolved_hermes_home(command: str) -> str:
     path can't be resolved or doesn't appear.
     """
     try:
-        from agentic_os_constants import get_hermes_home
-        home = get_hermes_home().expanduser()
+        from agentic_os_constants import get_agentic_os_home
+        home = get_agentic_os_home().expanduser()
         candidates = [
             str(home),
             str(home.resolve(strict=False)),

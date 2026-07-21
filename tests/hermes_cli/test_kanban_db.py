@@ -2961,7 +2961,7 @@ class TestSharedBoardPaths:
         self, tmp_path, monkeypatch
     ):
         # Docker / custom deployment: HERMES_HOME points outside ~/.hermes.
-        # `get_default_hermes_root()` returns env_home directly when it
+        # `get_default_agentic_os_root()` returns env_home directly when it
         # is not a `<root>/profiles/<name>` shape and not under
         # `Path.home() / ".hermes"`.
         custom_root = tmp_path / "opt" / "hermes"
@@ -2975,7 +2975,7 @@ class TestSharedBoardPaths:
         self, tmp_path, monkeypatch
     ):
         # Docker profile shape: HERMES_HOME=/opt/hermes/profiles/coder;
-        # `get_default_hermes_root()` walks up to /opt/hermes because
+        # `get_default_agentic_os_root()` walks up to /opt/hermes because
         # the immediate parent dir is named "profiles".
         custom_root = tmp_path / "opt" / "hermes"
         profile = custom_root / "profiles" / "coder"
@@ -3042,7 +3042,7 @@ class TestSharedBoardPaths:
         self, tmp_path, monkeypatch
     ):
         # HERMES_KANBAN_DB pins the file path directly and beats both
-        # HERMES_KANBAN_HOME and the `get_default_hermes_root()` path.
+        # HERMES_KANBAN_HOME and the `get_default_agentic_os_root()` path.
         # This is the env the dispatcher injects into workers.
         default_home = tmp_path / ".hermes"
         default_home.mkdir()

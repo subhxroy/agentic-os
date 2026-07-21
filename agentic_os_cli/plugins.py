@@ -10,7 +10,7 @@ Discovers, loads, and manages plugins from four sources:
 2. **User plugins**   – ``~/.hermes/plugins/<name>/``
 3. **Project plugins** – ``./.hermes/plugins/<name>/`` (opt-in via
    ``HERMES_ENABLE_PROJECT_PLUGINS``)
-4. **Pip plugins**     – packages that expose the ``hermes_agent.plugins``
+4. **Pip plugins**     – packages that expose the ``agentic_os.plugins``
    entry-point group.
 
 Later sources override earlier ones on name collision, so a user or project
@@ -46,7 +46,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Callable, Dict, List, Optional, Set, Union
 
-from agentic_os_constants import get_hermes_home
+from agentic_os_constants import get_agentic_os_home
 from utils import env_var_enabled, fast_safe_load
 from agentic_os_cli.config import cfg_get
 from agentic_os_cli.middleware import OBSERVER_SCHEMA_VERSION, VALID_MIDDLEWARE
@@ -214,7 +214,7 @@ VALID_HOOKS: Set[str] = {
     "kanban_task_blocked",
 }
 
-ENTRY_POINTS_GROUP = "hermes_agent.plugins"
+ENTRY_POINTS_GROUP = "agentic_os.plugins"
 
 _NS_PARENT = "hermes_plugins"
 
@@ -1347,7 +1347,7 @@ class PluginManager:
         manifests.extend(bundled_platforms)
 
         # 2. User plugins (~/.hermes/plugins/)
-        user_dir = get_hermes_home() / "plugins"
+        user_dir = get_agentic_os_home() / "plugins"
         logger.debug("Scanning user plugins: %s", user_dir)
         user_manifests = self._scan_directory(user_dir, source="user")
         logger.debug("  user: %d manifest(s)", len(user_manifests))

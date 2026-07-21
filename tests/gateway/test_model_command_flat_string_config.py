@@ -72,9 +72,9 @@ def _setup_isolated_home(tmp_path, monkeypatch, model_yaml_value):
         "agentic_os_cli.model_switch.switch_model",
         lambda **kw: _fake_switch_result(),
     )
-    # save_config writes to ``get_hermes_home() / config.yaml`` — point it here.
-    monkeypatch.setattr("agentic_os_constants.get_hermes_home", lambda: hermes_home)
-    monkeypatch.setattr("agentic_os_cli.config.get_hermes_home", lambda: hermes_home)
+    # save_config writes to ``get_agentic_os_home() / config.yaml`` — point it here.
+    monkeypatch.setattr("agentic_os_constants.get_agentic_os_home", lambda: hermes_home)
+    monkeypatch.setattr("agentic_os_cli.config.get_agentic_os_home", lambda: hermes_home)
     return cfg_path
 
 
@@ -123,8 +123,8 @@ async def test_model_global_persists_when_config_has_missing_model(tmp_path, mon
         "agentic_os_cli.model_switch.switch_model",
         lambda **kw: _fake_switch_result(),
     )
-    monkeypatch.setattr("agentic_os_constants.get_hermes_home", lambda: hermes_home)
-    monkeypatch.setattr("agentic_os_cli.config.get_hermes_home", lambda: hermes_home)
+    monkeypatch.setattr("agentic_os_constants.get_agentic_os_home", lambda: hermes_home)
+    monkeypatch.setattr("agentic_os_cli.config.get_agentic_os_home", lambda: hermes_home)
 
     result = await _make_runner()._handle_model_command(
         _make_event("/model gpt-5.5 --global")

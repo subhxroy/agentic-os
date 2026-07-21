@@ -12,7 +12,7 @@ from unittest.mock import patch as mock_patch
 import pytest
 
 import tools.approval as approval_module
-from agentic_os_constants import get_hermes_home
+from agentic_os_constants import get_agentic_os_home
 from tools.approval import (
     _get_approval_mode,
     _normalize_approval_mode,
@@ -624,7 +624,7 @@ class TestHermesConfigWriteProtection:
         assert dangerous is True
 
     def test_sed_in_place_absolute_hermes_home_config(self):
-        config_path = get_hermes_home() / "config.yaml"
+        config_path = get_agentic_os_home() / "config.yaml"
         dangerous, key, desc = detect_dangerous_command(
             f"sed -i 's/manual/off/' {config_path}"
         )
@@ -632,7 +632,7 @@ class TestHermesConfigWriteProtection:
         assert "hermes config" in desc.lower() or "in-place" in desc.lower()
 
     def test_sed_in_place_absolute_hermes_home_env(self):
-        env_path = get_hermes_home() / ".env"
+        env_path = get_agentic_os_home() / ".env"
         dangerous, key, desc = detect_dangerous_command(
             f"sed -i 's/API_KEY=.*/API_KEY=x/' {env_path}"
         )
@@ -653,7 +653,7 @@ class TestHermesConfigWriteProtection:
         assert "in-place" in desc.lower() or "perl" in desc.lower()
 
     def test_perl_in_place_absolute_hermes_home_config(self):
-        config_path = get_hermes_home() / "config.yaml"
+        config_path = get_agentic_os_home() / "config.yaml"
         dangerous, key, desc = detect_dangerous_command(
             f"perl -i -pe 's/approvals.mode: on/approvals.mode: off/' {config_path}"
         )
@@ -667,7 +667,7 @@ class TestHermesConfigWriteProtection:
         assert dangerous is True
 
     def test_ruby_in_place_absolute_hermes_home_env(self):
-        env_path = get_hermes_home() / ".env"
+        env_path = get_agentic_os_home() / ".env"
         dangerous, key, desc = detect_dangerous_command(
             f"ruby -i -pe 'gsub(/API_KEY=.*/, \"API_KEY=x\")' {env_path}"
         )
@@ -992,7 +992,7 @@ class TestWindowsAbsolutePathFolding:
     (``C:\\Users\\alice\\.ssh\\authorized_keys``). Detection stripped backslash
     escapes *before* folding, dissolving those separators, so writes to startup,
     SSH, and Hermes config/env files returned "safe" without an approval prompt.
-    The OS-specific ``Path.home()`` / ``get_hermes_home()`` tests above only
+    The OS-specific ``Path.home()`` / ``get_agentic_os_home()`` tests above only
     exercise this branch on a Windows host; these monkeypatch a Windows-style
     HOME/HERMES_HOME so the fold is verified on the POSIX CI runner too."""
 

@@ -161,7 +161,7 @@ class StaleTopicAdapter:
 
 @pytest.mark.asyncio
 async def test_explicit_telegram_private_thread_requires_reply_anchor(tmp_path, monkeypatch):
-    monkeypatch.setattr("gateway.delivery.get_hermes_home", lambda: tmp_path)
+    monkeypatch.setattr("gateway.delivery.get_agentic_os_home", lambda: tmp_path)
     adapter = RecordingAdapter()
     router = DeliveryRouter(GatewayConfig(), adapters={Platform.TELEGRAM: adapter})
     target = DeliveryTarget.parse("telegram:722341991:32344")
@@ -174,7 +174,7 @@ async def test_explicit_telegram_private_thread_requires_reply_anchor(tmp_path, 
 
 @pytest.mark.asyncio
 async def test_named_telegram_private_topic_is_created_before_delivery(tmp_path, monkeypatch):
-    monkeypatch.setattr("gateway.delivery.get_hermes_home", lambda: tmp_path)
+    monkeypatch.setattr("gateway.delivery.get_agentic_os_home", lambda: tmp_path)
     adapter = RecordingAdapter()
     router = DeliveryRouter(GatewayConfig(), adapters={Platform.TELEGRAM: adapter})
     target = DeliveryTarget.parse("telegram:722341991:Hermes API Test")
@@ -198,7 +198,7 @@ async def test_named_telegram_private_topic_is_created_before_delivery(tmp_path,
 
 @pytest.mark.asyncio
 async def test_named_telegram_private_topic_refreshes_stale_thread_id(tmp_path, monkeypatch):
-    monkeypatch.setattr("gateway.delivery.get_hermes_home", lambda: tmp_path)
+    monkeypatch.setattr("gateway.delivery.get_agentic_os_home", lambda: tmp_path)
     adapter = StaleTopicAdapter()
     router = DeliveryRouter(GatewayConfig(), adapters={Platform.TELEGRAM: adapter})
     target = DeliveryTarget.parse("telegram:722341991:Personal")
@@ -216,7 +216,7 @@ async def test_named_telegram_private_topic_refreshes_stale_thread_id(tmp_path, 
 
 @pytest.mark.asyncio
 async def test_explicit_telegram_private_thread_uses_reply_fallback_with_anchor(tmp_path, monkeypatch):
-    monkeypatch.setattr("gateway.delivery.get_hermes_home", lambda: tmp_path)
+    monkeypatch.setattr("gateway.delivery.get_agentic_os_home", lambda: tmp_path)
     adapter = RecordingAdapter()
     router = DeliveryRouter(GatewayConfig(), adapters={Platform.TELEGRAM: adapter})
     target = DeliveryTarget.parse("telegram:722341991:32344")
@@ -242,7 +242,7 @@ async def test_explicit_telegram_private_thread_uses_reply_fallback_with_anchor(
 
 @pytest.mark.asyncio
 async def test_explicit_telegram_direct_messages_topic_metadata_is_respected(tmp_path, monkeypatch):
-    monkeypatch.setattr("gateway.delivery.get_hermes_home", lambda: tmp_path)
+    monkeypatch.setattr("gateway.delivery.get_agentic_os_home", lambda: tmp_path)
     adapter = RecordingAdapter()
     router = DeliveryRouter(GatewayConfig(), adapters={Platform.TELEGRAM: adapter})
     target = DeliveryTarget.parse("telegram:722341991:32344")
@@ -258,7 +258,7 @@ async def test_explicit_telegram_direct_messages_topic_metadata_is_respected(tmp
 
 @pytest.mark.asyncio
 async def test_explicit_telegram_group_thread_does_not_mark_dm_fallback(tmp_path, monkeypatch):
-    monkeypatch.setattr("gateway.delivery.get_hermes_home", lambda: tmp_path)
+    monkeypatch.setattr("gateway.delivery.get_agentic_os_home", lambda: tmp_path)
     adapter = RecordingAdapter()
     router = DeliveryRouter(GatewayConfig(), adapters={Platform.TELEGRAM: adapter})
     target = DeliveryTarget.parse("telegram:-100123:42")
@@ -275,7 +275,7 @@ class FailingAdapter:
 
 @pytest.mark.asyncio
 async def test_platform_send_failure_raises_for_delivery_result(tmp_path, monkeypatch):
-    monkeypatch.setattr("gateway.delivery.get_hermes_home", lambda: tmp_path)
+    monkeypatch.setattr("gateway.delivery.get_agentic_os_home", lambda: tmp_path)
     router = DeliveryRouter(GatewayConfig(), adapters={Platform.TELEGRAM: FailingAdapter()})
     target = DeliveryTarget.parse("telegram:722341991:32344")
 
@@ -313,7 +313,7 @@ class NonChunkingAdapter:
 @pytest.mark.asyncio
 async def test_long_output_truncated_for_non_chunking_adapter(tmp_path, monkeypatch):
     """Non-chunking adapters receive truncated content with a footer + file save."""
-    monkeypatch.setattr("gateway.delivery.get_hermes_home", lambda: tmp_path)
+    monkeypatch.setattr("gateway.delivery.get_agentic_os_home", lambda: tmp_path)
     adapter = NonChunkingAdapter()
     router = DeliveryRouter(GatewayConfig(), adapters={Platform.DISCORD: adapter})
     target = DeliveryTarget.parse("discord:123")
@@ -334,7 +334,7 @@ async def test_long_output_truncated_for_non_chunking_adapter(tmp_path, monkeypa
 @pytest.mark.asyncio
 async def test_long_output_preserved_for_chunking_adapter(tmp_path, monkeypatch):
     """Chunking adapters (splits_long_messages=True) receive the FULL content."""
-    monkeypatch.setattr("gateway.delivery.get_hermes_home", lambda: tmp_path)
+    monkeypatch.setattr("gateway.delivery.get_agentic_os_home", lambda: tmp_path)
     adapter = ChunkingAdapter()
     router = DeliveryRouter(GatewayConfig(), adapters={Platform.DISCORD: adapter})
     target = DeliveryTarget.parse("discord:123")
@@ -354,7 +354,7 @@ async def test_long_output_preserved_for_chunking_adapter(tmp_path, monkeypatch)
 @pytest.mark.asyncio
 async def test_short_output_never_truncated(tmp_path, monkeypatch):
     """Output under the limit passes through untouched for any adapter."""
-    monkeypatch.setattr("gateway.delivery.get_hermes_home", lambda: tmp_path)
+    monkeypatch.setattr("gateway.delivery.get_agentic_os_home", lambda: tmp_path)
     adapter = NonChunkingAdapter()
     router = DeliveryRouter(GatewayConfig(), adapters={Platform.DISCORD: adapter})
     target = DeliveryTarget.parse("discord:123")
@@ -371,7 +371,7 @@ async def test_short_output_never_truncated(tmp_path, monkeypatch):
 async def test_audit_save_failure_does_not_break_chunking_delivery(tmp_path, monkeypatch):
     """If the audit save fails (disk full, permissions), chunking adapters
     still receive the full content — the save is best-effort."""
-    monkeypatch.setattr("gateway.delivery.get_hermes_home", lambda: tmp_path)
+    monkeypatch.setattr("gateway.delivery.get_agentic_os_home", lambda: tmp_path)
 
     adapter = ChunkingAdapter()
     router = DeliveryRouter(GatewayConfig(), adapters={Platform.DISCORD: adapter})
@@ -401,7 +401,7 @@ async def test_save_failure_during_truncation_raises_for_non_chunking_adapter(tm
     """For a non-chunking adapter, the truncation footer needs a valid saved
     path. If the save fails there, that is a real delivery problem and the
     error propagates (not swallowed like the chunking best-effort save)."""
-    monkeypatch.setattr("gateway.delivery.get_hermes_home", lambda: tmp_path)
+    monkeypatch.setattr("gateway.delivery.get_agentic_os_home", lambda: tmp_path)
 
     adapter = NonChunkingAdapter()
     router = DeliveryRouter(GatewayConfig(), adapters={Platform.DISCORD: adapter})

@@ -494,8 +494,8 @@ class HonchoMemoryProvider(MemoryProvider):
         # of performing a one-time migration.
         try:
             if not session.messages and cfg.session_strategy != "per-session":
-                from agentic_os_constants import get_hermes_home
-                mem_dir = str(get_hermes_home() / "memories")
+                from agentic_os_constants import get_agentic_os_home
+                mem_dir = str(get_agentic_os_home() / "memories")
                 self._manager.migrate_memory_files(self._session_key, mem_dir)
                 logger.debug("Honcho memory file migration attempted for new session: %s", self._session_key)
             elif cfg.session_strategy == "per-session":

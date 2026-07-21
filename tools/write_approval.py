@@ -50,7 +50,7 @@ import uuid
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
-from agentic_os_constants import get_hermes_home
+from agentic_os_constants import get_agentic_os_home
 
 logger = logging.getLogger(__name__)
 
@@ -108,7 +108,7 @@ def _normalize_enabled(value: Any) -> bool:
 # ---------------------------------------------------------------------------
 
 def _pending_dir(subsystem: str) -> Path:
-    return get_hermes_home() / "pending" / subsystem
+    return get_agentic_os_home() / "pending" / subsystem
 
 
 def stage_write(subsystem: str, payload: Dict[str, Any],

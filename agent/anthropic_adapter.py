@@ -21,7 +21,7 @@ import subprocess
 from pathlib import Path
 from urllib.parse import urlparse
 
-from agentic_os_constants import get_hermes_home
+from agentic_os_constants import get_agentic_os_home
 from typing import Any, Dict, List, Optional, Tuple
 from utils import base_url_host_matches, normalize_proxy_env_vars
 
@@ -1415,7 +1415,7 @@ _OAUTH_TOKEN_USER_AGENT = "axios/1.7.9"
 _OAUTH_REDIRECT_URI = "https://console.anthropic.com/oauth/code/callback"
 _OAUTH_SCOPES = "org:create_api_key user:profile user:inference"
 def _get_hermes_oauth_file() -> Path:
-    return get_hermes_home() / ".anthropic_oauth.json"
+    return get_agentic_os_home() / ".anthropic_oauth.json"
 
 
 def _generate_pkce() -> tuple:
@@ -2568,7 +2568,7 @@ def build_anthropic_kwargs(
                 text = block.get("text", "")
                 text = text.replace("Agentic OS", "Claude Code")
                 text = text.replace("Agentic OS agent", "Claude Code")
-                text = text.replace("hermes-agent", "claude-code")
+                text = text.replace("agentic-os", "claude-code")
                 text = text.replace("Nous Research", "Anthropic")
                 block["text"] = text
 

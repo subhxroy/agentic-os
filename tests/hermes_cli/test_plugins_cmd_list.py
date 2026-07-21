@@ -102,7 +102,7 @@ def test_discover_all_plugins_includes_entrypoint_plugins(monkeypatch, tmp_path)
     entry_point = SimpleNamespace(
         name="wiki",
         value="adapters.hermes.cli_plugin",
-        group="hermes_agent.plugins",
+        group="agentic_os.plugins",
         dist=dist,
     )
 

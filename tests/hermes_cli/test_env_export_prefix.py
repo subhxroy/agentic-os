@@ -75,13 +75,13 @@ def test_skills_tool_load_env_strips_export_prefix(tmp_path, monkeypatch):
         "export SOME_SKILL_KEY=skillval\nPLAIN=plainval\n", encoding="utf-8"
     )
 
-    # skills_tool.load_env reads get_hermes_home()/.env directly.
+    # skills_tool.load_env reads get_agentic_os_home()/.env directly.
     import importlib
 
     import tools.skills_tool as skills_tool
 
     importlib.reload(skills_tool)
-    with patch.object(skills_tool, "get_hermes_home", return_value=tmp_path):
+    with patch.object(skills_tool, "get_agentic_os_home", return_value=tmp_path):
         env = skills_tool.load_env()
 
     assert env["SOME_SKILL_KEY"] == "skillval"

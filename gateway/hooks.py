@@ -43,10 +43,10 @@ from typing import Any, Callable, Dict, List, Optional
 
 import yaml
 
-from agentic_os_cli.config import get_hermes_home
+from agentic_os_cli.config import get_agentic_os_home
 
 
-HOOKS_DIR = get_hermes_home() / "hooks"
+HOOKS_DIR = get_agentic_os_home() / "hooks"
 
 
 class HookRegistry:

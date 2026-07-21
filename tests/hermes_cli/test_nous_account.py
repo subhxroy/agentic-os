@@ -87,7 +87,7 @@ def test_valid_jwt_with_paid_access_true(monkeypatch):
             "org_id": "org_123",
             "client_id": "hermes-cli",
             "product_id": "nous-hermes-agent",
-            "nous_client": "hermes-agent",
+            "nous_client": "agentic-os",
             "exp": int(time.time()) + 900,
             "paid_access": True,
             "subscription_tier": 2,

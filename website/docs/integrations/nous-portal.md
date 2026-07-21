@@ -257,7 +257,7 @@ The Portal proxies through OpenRouter, so any model that OpenRouter supports is 
 /model anthropic/claude-opus-4.6
 ```
 
-If a model is genuinely missing, [open an issue](https://github.com/NousResearch/hermes-agent/issues) — we surface the Portal's catalog to Hermes and gaps usually mean a routing config we can update.
+If a model is genuinely missing, [open an issue](https://github.com/subhxroy/agentic-os/issues) — we surface the Portal's catalog to Hermes and gaps usually mean a routing config we can update.
 
 ### Bills not appearing on my Portal account
 

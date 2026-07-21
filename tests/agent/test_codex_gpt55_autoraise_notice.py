@@ -22,7 +22,7 @@ from pathlib import Path
 
 import pytest
 
-from agentic_os_constants import get_hermes_home
+from agentic_os_constants import get_agentic_os_home
 from agentic_os_state import SessionDB
 from run_agent import AIAgent
 
@@ -126,7 +126,7 @@ def test_codex_gpt55_autoraise_notice_deduped_across_agent_inits(monkeypatch, tm
 
 def test_marker_lives_under_hermes_home() -> None:
     marker = _codex_gpt55_autoraise_notice_marker()
-    assert marker.parent == get_hermes_home()
+    assert marker.parent == get_agentic_os_home()
     assert marker.name == ".codex_gpt55_autoraise_notice"
 
 

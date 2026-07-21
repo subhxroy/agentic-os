@@ -5,7 +5,7 @@
 Every major chat frontend (Open WebUI 126k★, LobeChat 73k★, LibreChat 34k★,
 AnythingLLM 56k★, NextChat 87k★, ChatBox 39k★, Jan 26k★, HF Chat-UI 8k★,
 big-AGI 7k★) connects to backends via the OpenAI-compatible REST API with
-SSE streaming. By exposing this endpoint, hermes-agent becomes instantly
+SSE streaming. By exposing this endpoint, agentic-os becomes instantly
 usable as a backend for all of them — no custom adapters needed.
 
 ## What It Enables
@@ -25,7 +25,7 @@ A user would:
 1. Set `API_SERVER_ENABLED=true` in `~/.hermes/.env`
 2. Run `hermes gateway` (API server starts alongside Telegram/Discord/etc.)
 3. Point Open WebUI (or any frontend) at `http://localhost:8642/v1`
-4. Chat with hermes-agent through any OpenAI-compatible UI
+4. Chat with agentic-os through any OpenAI-compatible UI
 
 ## Endpoints
 
@@ -69,7 +69,7 @@ Authorization: Bearer hermes-api-key-here
 Content-Type: application/json
 
 {
-  "model": "hermes-agent",
+  "model": "agentic-os",
   "messages": [
     {"role": "system", "content": "You are a helpful assistant."},
     {"role": "user", "content": "What files are in the current directory?"}
@@ -85,7 +85,7 @@ Response:
   "id": "chatcmpl-abc123",
   "object": "chat.completion",
   "created": 1710000000,
-  "model": "hermes-agent",
+  "model": "agentic-os",
   "choices": [{
     "index": 0,
     "message": {
@@ -130,10 +130,10 @@ Response:
 {
   "object": "list",
   "data": [{
-    "id": "hermes-agent",
+    "id": "agentic-os",
     "object": "model",
     "created": 1710000000,
-    "owned_by": "hermes-agent"
+    "owned_by": "agentic-os"
   }]
 }
 ```
@@ -143,7 +143,7 @@ Response:
 ### 1. Session Management
 
 The OpenAI API is stateless — each request includes the full conversation.
-But hermes-agent sessions have persistent state (memory, skills, tool context).
+But agentic-os sessions have persistent state (memory, skills, tool context).
 
 **Approach: Hybrid**
 - Default: Stateless. Each request is independent. The `messages` array IS
@@ -187,7 +187,7 @@ Two modes:
 
 ### 5. Model Mapping
 
-Frontends send `"model": "hermes-agent"` (or whatever). The actual LLM model
+Frontends send `"model": "agentic-os"` (or whatever). The actual LLM model
 used is configured server-side in config.yaml. The API server maps any
 requested model name to the configured hermes-agent model.
 
@@ -273,7 +273,7 @@ API_SERVER_KEY=your-secret-key
 
 ## Compatibility Matrix
 
-Once implemented, hermes-agent works as a drop-in backend for:
+Once implemented, agentic-os works as a drop-in backend for:
 
 | Frontend | Stars | How to Connect |
 |----------|-------|---------------|

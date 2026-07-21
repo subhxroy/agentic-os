@@ -15,35 +15,35 @@ from pathlib import Path
 
 _profile_fallback_warned: bool = False
 _UNSET = object()
-_HERMES_HOME_OVERRIDE: ContextVar[str | object] = ContextVar(
-    "_HERMES_HOME_OVERRIDE", default=_UNSET
+_AGENTIC_OS_HOME_OVERRIDE: ContextVar[str | object] = ContextVar(
+    "_AGENTIC_OS_HOME_OVERRIDE", default=_UNSET
 )
 
 
-def set_hermes_home_override(path: str | Path | None) -> Token:
+def set_AGENTIC_OS_HOME_OVERRIDE(path: str | Path | None) -> Token:
     """Set a context-local Hermes home override and return its reset token.
 
     This is for in-process, per-task scoping.  It deliberately does not mutate
     ``os.environ`` because that is shared by every thread in the process.
     """
     value: str | object = _UNSET if path is None else str(path)
-    return _HERMES_HOME_OVERRIDE.set(value)
+    return _AGENTIC_OS_HOME_OVERRIDE.set(value)
 
 
-def reset_hermes_home_override(token: Token) -> None:
+def reset_AGENTIC_OS_HOME_OVERRIDE(token: Token) -> None:
     """Restore the previous context-local Hermes home override."""
-    _HERMES_HOME_OVERRIDE.reset(token)
+    _AGENTIC_OS_HOME_OVERRIDE.reset(token)
 
 
-def get_hermes_home_override() -> str | None:
+def get_agentic_os_home_override() -> str | None:
     """Return the active context-local Hermes home override, if any."""
-    override = _HERMES_HOME_OVERRIDE.get()
+    override = _AGENTIC_OS_HOME_OVERRIDE.get()
     if override is _UNSET or not override:
         return None
     return str(override)
 
 
-def _get_platform_default_hermes_home() -> Path:
+def _get_platform_default_agentic_os_home() -> Path:
     """Return the platform-native default Hermes home path."""
     if sys.platform == "win32":
         local_appdata = os.environ.get("LOCALAPPDATA", "").strip()
@@ -52,19 +52,19 @@ def _get_platform_default_hermes_home() -> Path:
     return Path.home() / ".hermes"
 
 
-def _hermes_home_from_env() -> Path:
+def _agentic_os_home_from_env() -> Path:
     """Resolve HERMES_HOME from the process environment only.
 
     Reads the ``HERMES_HOME`` env var, falling back to the platform-native
     default.  Deliberately ignores the context-local override installed by
-    :func:`set_hermes_home_override`, so this reflects the process/launch
-    scope rather than a per-task profile.  Shared by :func:`get_hermes_home`
-    and :func:`get_process_hermes_home` so the two never drift.
+    :func:`set_AGENTIC_OS_HOME_OVERRIDE`, so this reflects the process/launch
+    scope rather than a per-task profile.  Shared by :func:`get_agentic_os_home`
+    and :func:`get_process_agentic_os_home` so the two never drift.
     """
     val = os.environ.get("HERMES_HOME", "").strip()
     if val:
         return Path(val)
-    return _get_platform_default_hermes_home()
+    return _get_platform_default_agentic_os_home()
 
 
 def _warn_profile_fallback_once() -> None:
@@ -77,7 +77,7 @@ def _warn_profile_fallback_once() -> None:
     if _profile_fallback_warned:
         return
     try:
-        fallback_home = _get_platform_default_hermes_home()
+        fallback_home = _get_platform_default_agentic_os_home()
         active_path = fallback_home / "active_profile"
         active = active_path.read_text().strip() if active_path.exists() else ""
     except (UnicodeDecodeError, OSError):
@@ -104,11 +104,11 @@ def _warn_profile_fallback_once() -> None:
             pass
 
 
-def get_hermes_home() -> Path:
+def get_agentic_os_home() -> Path:
     """Return the Hermes home directory (default: platform-native path).
 
     Resolution order: context-local override (see
-    :func:`set_hermes_home_override`) → ``HERMES_HOME`` env var → the
+    :func:`set_AGENTIC_OS_HOME_OVERRIDE`) → ``HERMES_HOME`` env var → the
     platform-native default.  This is the single source of truth — all other
     copies should import this.
 
@@ -120,23 +120,23 @@ def get_hermes_home() -> Path:
     callers that import this at load time.  Subprocess spawners are
     expected to propagate ``HERMES_HOME`` explicitly (see the systemd
     template in ``agentic_os_cli/gateway.py`` and the kanban dispatcher in
-    ``agentic_os_cli/kanban_db.py``).  See https://github.com/NousResearch/hermes-agent/issues/18594.
+    ``agentic_os_cli/kanban_db.py``).  See https://github.com/subhxroy/agentic-os/issues/18594.
     """
-    override = get_hermes_home_override()
+    override = get_agentic_os_home_override()
     if override:
         return Path(override)
 
     if not os.environ.get("HERMES_HOME", "").strip():
         _warn_profile_fallback_once()
 
-    return _hermes_home_from_env()
+    return _agentic_os_home_from_env()
 
 
-def get_process_hermes_home() -> Path:
+def get_process_agentic_os_home() -> Path:
     """Return the Hermes home for the running process, ignoring task overrides.
 
-    Unlike :func:`get_hermes_home`, this never follows the context-local
-    override set by :func:`set_hermes_home_override`.  It resolves only the
+    Unlike :func:`get_agentic_os_home`, this never follows the context-local
+    override set by :func:`set_AGENTIC_OS_HOME_OVERRIDE`.  It resolves only the
     process ``HERMES_HOME`` env var (falling back to the platform default),
     so it reflects the scope the process was launched under **as long as
     nothing mutates ``os.environ`` in-process**.
@@ -148,10 +148,10 @@ def get_process_hermes_home() -> Path:
     for genuinely profile-scoped data (memories, backups, checkpoints,
     provider config) — those should keep following the override.
     """
-    return _hermes_home_from_env()
+    return _agentic_os_home_from_env()
 
 
-def get_default_hermes_root() -> Path:
+def get_default_agentic_os_root() -> Path:
     """Return the root Hermes directory for profile-level operations.
 
     In standard deployments this is the platform-native Hermes home
@@ -168,7 +168,7 @@ def get_default_hermes_root() -> Path:
 
     Import-safe — no dependencies beyond stdlib.
     """
-    native_home = _get_platform_default_hermes_home()
+    native_home = _get_platform_default_agentic_os_home()
     env_home = os.environ.get("HERMES_HOME", "")
     if not env_home:
         return native_home
@@ -222,7 +222,7 @@ def get_optional_skills_dir(default: Path | None = None) -> Path:
         return packaged
     if default is not None:
         return default
-    return get_hermes_home() / "optional-skills"
+    return get_agentic_os_home() / "optional-skills"
 
 
 def get_optional_mcps_dir(default: Path | None = None) -> Path:
@@ -241,7 +241,7 @@ def get_optional_mcps_dir(default: Path | None = None) -> Path:
         return packaged
     if default is not None:
         return default
-    return get_hermes_home() / "optional-mcps"
+    return get_agentic_os_home() / "optional-mcps"
 
 
 def get_bundled_skills_dir(default: Path | None = None) -> Path:
@@ -261,10 +261,10 @@ def get_bundled_skills_dir(default: Path | None = None) -> Path:
         return packaged
     if default is not None:
         return default
-    return get_hermes_home() / "skills"
+    return get_agentic_os_home() / "skills"
 
 
-def get_hermes_dir(new_subpath: str, old_name: str) -> Path:
+def get_agentic_os_dir(new_subpath: str, old_name: str) -> Path:
     """Resolve a Hermes subdirectory with backward compatibility.
 
     New installs get the consolidated layout (e.g. ``cache/images``).
@@ -287,7 +287,7 @@ def get_hermes_dir(new_subpath: str, old_name: str) -> Path:
         Absolute ``Path`` — legacy location if it exists with content,
         otherwise the new location.
     """
-    home = get_hermes_home()
+    home = get_agentic_os_home()
     old_path = home / old_name
     if _legacy_path_has_content(old_path):
         return old_path
@@ -302,7 +302,7 @@ def iter_hermes_node_dirs(home: Path | None = None) -> list[Path]:
     ``$HERMES_HOME/node/bin``. Include both shapes on every platform so mixed
     or migrated installs still work.
     """
-    root = home or get_hermes_home()
+    root = home or get_agentic_os_home()
     dirs = [root / "node"]
     bin_dir = root / "node" / "bin"
     # NOTE: keep this ordering in sync with hermesManagedNodePathEntries() in
@@ -404,7 +404,7 @@ def _heal_managed_node_windows() -> bool:
     else:
         return False
 
-    home = get_hermes_home()
+    home = get_agentic_os_home()
     index_url = f"https://nodejs.org/dist/latest-v{_HERMES_NODE_TARGET_MAJOR}.x/"
     try:
         with urllib.request.urlopen(index_url, timeout=60) as response:
@@ -478,7 +478,7 @@ def heal_hermes_managed_node() -> bool:
                 "-c",
                 f'source "{_NODE_BOOTSTRAP_SCRIPT}" && heal_managed_node',
             ],
-            env={**os.environ, "HERMES_HOME": str(get_hermes_home())},
+            env={**os.environ, "HERMES_HOME": str(get_agentic_os_home())},
             capture_output=True,
             timeout=300,
             check=False,
@@ -669,7 +669,7 @@ def _legacy_path_has_content(path: Path) -> bool:
     return True
 
 
-def display_hermes_home() -> str:
+def display_agentic_os_home() -> str:
     """Return a user-friendly display string for the current HERMES_HOME.
 
     Uses ``~/`` shorthand for readability::
@@ -680,9 +680,9 @@ def display_hermes_home() -> str:
 
     Use this in **user-facing** print/log messages instead of hardcoding
     ``~/.hermes``.  For code that needs a real ``Path``, use
-    :func:`get_hermes_home` instead.
+    :func:`get_agentic_os_home` instead.
     """
-    home = get_hermes_home()
+    home = get_agentic_os_home()
     try:
         return "~/" + str(home.relative_to(Path.home()))
     except ValueError:
@@ -697,7 +697,7 @@ def secure_parent_dir(path: Path) -> None:
     prevent catastrophic host bricking when ``HERMES_HOME`` or other path
     env vars resolve to an unexpected location.
 
-    See https://github.com/NousResearch/hermes-agent/issues/25821.
+    See https://github.com/subhxroy/agentic-os/issues/25821.
     """
     parent = path.parent.resolve()
     # Refuse root and its direct children (/usr, /home, /var, /tmp, …).
@@ -722,7 +722,7 @@ def _norm_home_path(path: str | None) -> str:
 
 def _profile_home_path(env: dict[str, str] | None = None) -> str | None:
     """Return ``{HERMES_HOME}/home`` when the profile-home directory exists."""
-    hermes_home = get_hermes_home_override() or (env or {}).get("HERMES_HOME") or os.getenv("HERMES_HOME")
+    hermes_home = get_agentic_os_home_override() or (env or {}).get("HERMES_HOME") or os.getenv("HERMES_HOME")
     if not hermes_home:
         return None
     profile_home = os.path.join(hermes_home, "home")
@@ -1141,7 +1141,7 @@ def is_container() -> bool:
 
     Result is cached for the process lifetime.  Import-safe — no heavy deps.
 
-    See: NousResearch/hermes-agent#47111
+    See: subhxroy/agentic-os#47111
     """
     global _container_detected
     if _container_detected is not None:
@@ -1186,21 +1186,21 @@ def is_container() -> bool:
 def get_config_path() -> Path:
     """Return the path to ``config.yaml`` under HERMES_HOME.
 
-    Replaces the ``get_hermes_home() / "config.yaml"`` pattern repeated
+    Replaces the ``get_agentic_os_home() / "config.yaml"`` pattern repeated
     in 7+ files (skill_utils.py, agentic_os_logging.py, agentic_os_time.py, etc.).
     """
-    return get_hermes_home() / "config.yaml"
+    return get_agentic_os_home() / "config.yaml"
 
 
 def get_skills_dir() -> Path:
     """Return the path to the skills directory under HERMES_HOME."""
-    return get_hermes_home() / "skills"
+    return get_agentic_os_home() / "skills"
 
 
 
 def get_env_path() -> Path:
     """Return the path to the ``.env`` file under HERMES_HOME."""
-    return get_hermes_home() / ".env"
+    return get_agentic_os_home() / ".env"
 
 
 # ─── Network Preferences ─────────────────────────────────────────────────────

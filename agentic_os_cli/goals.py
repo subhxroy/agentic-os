@@ -513,10 +513,10 @@ def _get_session_db() -> Optional[Any]:
     non-standard launchers can still use the GoalManager.
     """
     try:
-        from agentic_os_constants import get_hermes_home
+        from agentic_os_constants import get_agentic_os_home
         from agentic_os_state import SessionDB
 
-        home = str(get_hermes_home())
+        home = str(get_agentic_os_home())
     except Exception as exc:  # pragma: no cover
         logger.debug("GoalManager: SessionDB bootstrap failed (%s)", exc)
         return None

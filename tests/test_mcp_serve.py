@@ -30,7 +30,7 @@ def _isolate_hermes_home(tmp_path, monkeypatch):
     monkeypatch.setenv("HERMES_HOME", str(tmp_path))
     try:
         import agentic_os_constants
-        monkeypatch.setattr(agentic_os_constants, "get_hermes_home", lambda: tmp_path)
+        monkeypatch.setattr(agentic_os_constants, "get_agentic_os_home", lambda: tmp_path)
     except (ImportError, AttributeError):
         pass
     return tmp_path

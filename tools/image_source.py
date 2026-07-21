@@ -214,9 +214,9 @@ def _media_cache_roots() -> list:
     downloaded inbound media and the tools' own URL-download temp dirs. Covers
     the consolidated ``cache/`` layout and the legacy flat directories.
     """
-    from agentic_os_constants import get_hermes_home
+    from agentic_os_constants import get_agentic_os_home
 
-    home = get_hermes_home()
+    home = get_agentic_os_home()
     return [
         home / "cache",  # cache/images, cache/vision, cache/video(s), cache/audio
         home / "image_cache",

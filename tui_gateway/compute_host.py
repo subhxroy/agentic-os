@@ -436,10 +436,10 @@ class ComputeHost:
         home_token = None
         try:
             if profile_home:
-                from agentic_os_constants import set_hermes_home_override
+                from agentic_os_constants import set_AGENTIC_OS_HOME_OVERRIDE
                 from agentic_os_state import SessionDB
 
-                home_token = set_hermes_home_override(profile_home)
+                home_token = set_AGENTIC_OS_HOME_OVERRIDE(profile_home)
                 session_db = SessionDB(db_path=Path(profile_home) / "state.db")
             agent = server._make_agent(
                 sid,
@@ -454,9 +454,9 @@ class ComputeHost:
         finally:
             if home_token is not None:
                 try:
-                    from agentic_os_constants import reset_hermes_home_override
+                    from agentic_os_constants import reset_AGENTIC_OS_HOME_OVERRIDE
 
-                    reset_hermes_home_override(home_token)
+                    reset_AGENTIC_OS_HOME_OVERRIDE(home_token)
                 except Exception:
                     pass
         try:

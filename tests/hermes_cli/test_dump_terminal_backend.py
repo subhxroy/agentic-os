@@ -26,13 +26,13 @@ def _seed(home: Path, *, config_yaml: str, env_text: str) -> None:
 
 def test_dump_surfaces_terminal_env_override(monkeypatch, capsys, tmp_path):
     from agentic_os_cli import dump
-    from agentic_os_cli.config import get_hermes_home
+    from agentic_os_cli.config import get_agentic_os_home
 
     monkeypatch.delenv("TERMINAL_ENV", raising=False)
     # Keep run_dump's project-.env fallback from touching the real repo.
     monkeypatch.setattr(dump, "get_project_root", lambda: tmp_path / "noproject")
 
-    home = get_hermes_home()
+    home = get_agentic_os_home()
     _seed(home, config_yaml="terminal:\n  backend: local\n", env_text="TERMINAL_ENV=docker\n")
 
     dump.run_dump(SimpleNamespace(show_keys=False))
@@ -47,12 +47,12 @@ def test_dump_surfaces_terminal_env_override(monkeypatch, capsys, tmp_path):
 
 def test_dump_reports_config_backend_when_no_override(monkeypatch, capsys, tmp_path):
     from agentic_os_cli import dump
-    from agentic_os_cli.config import get_hermes_home
+    from agentic_os_cli.config import get_agentic_os_home
 
     monkeypatch.delenv("TERMINAL_ENV", raising=False)
     monkeypatch.setattr(dump, "get_project_root", lambda: tmp_path / "noproject")
 
-    home = get_hermes_home()
+    home = get_agentic_os_home()
     _seed(home, config_yaml="terminal:\n  backend: docker\n", env_text="")
 
     dump.run_dump(SimpleNamespace(show_keys=False))
@@ -64,12 +64,12 @@ def test_dump_reports_config_backend_when_no_override(monkeypatch, capsys, tmp_p
 
 def test_dump_no_override_when_env_matches_config(monkeypatch, capsys, tmp_path):
     from agentic_os_cli import dump
-    from agentic_os_cli.config import get_hermes_home
+    from agentic_os_cli.config import get_agentic_os_home
 
     monkeypatch.delenv("TERMINAL_ENV", raising=False)
     monkeypatch.setattr(dump, "get_project_root", lambda: tmp_path / "noproject")
 
-    home = get_hermes_home()
+    home = get_agentic_os_home()
     # TERMINAL_ENV agrees with config — no spurious "override" note.
     _seed(home, config_yaml="terminal:\n  backend: docker\n", env_text="TERMINAL_ENV=docker\n")
 

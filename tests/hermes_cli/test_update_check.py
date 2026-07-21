@@ -22,7 +22,7 @@ def test_check_for_updates_uses_cache(tmp_path, monkeypatch):
     from agentic_os_cli import __version__
 
     # Create a fake git repo and fresh cache
-    repo_dir = tmp_path / "hermes-agent"
+    repo_dir = tmp_path / "agentic-os"
     repo_dir.mkdir()
     (repo_dir / ".git").mkdir()
 
@@ -78,7 +78,7 @@ def test_check_for_updates_expired_cache(tmp_path, monkeypatch):
     """When cache is expired, check_for_updates should call git fetch."""
     from agentic_os_cli.banner import check_for_updates
 
-    repo_dir = tmp_path / "hermes-agent"
+    repo_dir = tmp_path / "agentic-os"
     repo_dir.mkdir()
     (repo_dir / ".git").mkdir()
 
@@ -101,7 +101,7 @@ def test_check_for_updates_official_ssh_origin_uses_https_probe(tmp_path):
     """Passive update checks must not trigger SSH auth for official installs."""
     import agentic_os_cli.banner as banner
 
-    repo_dir = tmp_path / "hermes-agent"
+    repo_dir = tmp_path / "agentic-os"
     repo_dir.mkdir()
     (repo_dir / ".git").mkdir()
 
@@ -110,13 +110,13 @@ def test_check_for_updates_official_ssh_origin_uses_https_probe(tmp_path):
     def fake_run(cmd, **kwargs):
         calls.append(cmd)
         if cmd == ["git", "remote", "get-url", "origin"]:
-            return MagicMock(returncode=0, stdout="git@github.com:NousResearch/hermes-agent.git\n")
+            return MagicMock(returncode=0, stdout="git@github.com:subhxroy/agentic-os.git\n")
         if cmd == ["git", "rev-parse", "HEAD"]:
             return MagicMock(returncode=0, stdout="local-sha\n")
         if cmd == [
             "git",
             "ls-remote",
-            "https://github.com/NousResearch/hermes-agent.git",
+            "https://github.com/subhxroy/agentic-os.git",
             "refs/heads/main",
         ]:
             return MagicMock(returncode=0, stdout="upstream-sha\trefs/heads/main\n")
@@ -140,7 +140,7 @@ def test_check_via_local_git_shallow_clone_behind_reports_no_count(tmp_path):
     """
     import agentic_os_cli.banner as banner
 
-    repo_dir = tmp_path / "hermes-agent"
+    repo_dir = tmp_path / "agentic-os"
     repo_dir.mkdir()
     (repo_dir / ".git").mkdir()
 
@@ -149,7 +149,7 @@ def test_check_via_local_git_shallow_clone_behind_reports_no_count(tmp_path):
     def fake_run(cmd, **kwargs):
         calls.append(cmd)
         if cmd == ["git", "remote", "get-url", "origin"]:
-            return MagicMock(returncode=0, stdout="https://github.com/NousResearch/hermes-agent.git\n")
+            return MagicMock(returncode=0, stdout="https://github.com/subhxroy/agentic-os.git\n")
         if cmd == ["git", "rev-parse", "--is-shallow-repository"]:
             return MagicMock(returncode=0, stdout="true\n")
         if cmd[:2] == ["git", "fetch"]:
@@ -174,13 +174,13 @@ def test_check_via_local_git_shallow_clone_up_to_date(tmp_path):
     """Shallow clone whose tip matches upstream reports up-to-date (0)."""
     import agentic_os_cli.banner as banner
 
-    repo_dir = tmp_path / "hermes-agent"
+    repo_dir = tmp_path / "agentic-os"
     repo_dir.mkdir()
     (repo_dir / ".git").mkdir()
 
     def fake_run(cmd, **kwargs):
         if cmd == ["git", "remote", "get-url", "origin"]:
-            return MagicMock(returncode=0, stdout="https://github.com/NousResearch/hermes-agent.git\n")
+            return MagicMock(returncode=0, stdout="https://github.com/subhxroy/agentic-os.git\n")
         if cmd == ["git", "rev-parse", "--is-shallow-repository"]:
             return MagicMock(returncode=0, stdout="true\n")
         if cmd[:2] == ["git", "fetch"]:
@@ -201,13 +201,13 @@ def test_check_via_local_git_full_clone_keeps_exact_count(tmp_path):
     """Full (non-shallow) clones keep the exact rev-list count path."""
     import agentic_os_cli.banner as banner
 
-    repo_dir = tmp_path / "hermes-agent"
+    repo_dir = tmp_path / "agentic-os"
     repo_dir.mkdir()
     (repo_dir / ".git").mkdir()
 
     def fake_run(cmd, **kwargs):
         if cmd == ["git", "remote", "get-url", "origin"]:
-            return MagicMock(returncode=0, stdout="https://github.com/NousResearch/hermes-agent.git\n")
+            return MagicMock(returncode=0, stdout="https://github.com/subhxroy/agentic-os.git\n")
         if cmd == ["git", "rev-parse", "--is-shallow-repository"]:
             return MagicMock(returncode=0, stdout="false\n")
         if cmd[:2] == ["git", "fetch"]:

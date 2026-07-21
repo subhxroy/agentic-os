@@ -27,7 +27,7 @@ from pathlib import Path
 
 from agent.memory_manager import sanitize_context
 from agent.message_sanitization import _sanitize_surrogates
-from agentic_os_constants import get_hermes_home
+from agentic_os_constants import get_agentic_os_home
 from typing import Any, Callable, Dict, List, Optional, Tuple, TypeVar
 
 logger = logging.getLogger(__name__)
@@ -150,7 +150,7 @@ def _delete_delegate_children(conn, parent_ids: List[str]) -> List[str]:
 
 T = TypeVar("T")
 
-DEFAULT_DB_PATH = get_hermes_home() / "state.db"
+DEFAULT_DB_PATH = get_agentic_os_home() / "state.db"
 
 SCHEMA_VERSION = 22
 
@@ -2252,7 +2252,7 @@ class SessionDB:
         can switch to state.db without losing pre-migration sessions.
         Only fills NULL columns — never overwrites data written by newer code.
         """
-        sessions_file = get_hermes_home() / "sessions" / "sessions.json"
+        sessions_file = get_agentic_os_home() / "sessions" / "sessions.json"
         if not sessions_file.exists():
             return
         with open(sessions_file, "r", encoding="utf-8") as f:

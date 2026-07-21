@@ -52,7 +52,7 @@ def _isolate_hermes_home(tmp_path, monkeypatch):
     hh.mkdir()
     monkeypatch.setenv("HERMES_HOME", str(hh))
     monkeypatch.setattr(
-        "agentic_os_cli.config.get_hermes_home", lambda: hh
+        "agentic_os_cli.config.get_agentic_os_home", lambda: hh
     )
     monkeypatch.setattr(
         "agentic_os_cli.config.get_config_path", lambda: hh / "config.yaml"
@@ -60,9 +60,9 @@ def _isolate_hermes_home(tmp_path, monkeypatch):
     monkeypatch.setattr(
         "agentic_os_cli.config.get_env_path", lambda: hh / ".env"
     )
-    # mcp_catalog grabs get_hermes_home() lazily through agentic_os_constants
+    # mcp_catalog grabs get_agentic_os_home() lazily through agentic_os_constants
     monkeypatch.setattr(
-        "agentic_os_constants.get_hermes_home", lambda: hh
+        "agentic_os_constants.get_agentic_os_home", lambda: hh
     )
     return hh
 

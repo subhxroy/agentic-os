@@ -63,8 +63,8 @@ except ImportError:
 def _get_sessions_dir() -> Path:
     """Return the sessions directory using HERMES_HOME."""
     try:
-        from agentic_os_constants import get_hermes_home
-        return get_hermes_home() / "sessions"
+        from agentic_os_constants import get_agentic_os_home
+        return get_agentic_os_home() / "sessions"
     except ImportError:
         return Path(os.environ.get("HERMES_HOME", Path.home() / ".hermes")) / "sessions"
 
@@ -195,8 +195,8 @@ def _load_sessions_index_from_json() -> dict:
 def _load_channel_directory() -> dict:
     """Load the cached channel directory for available targets."""
     try:
-        from agentic_os_constants import get_hermes_home
-        directory_file = get_hermes_home() / "channel_directory.json"
+        from agentic_os_constants import get_agentic_os_home
+        directory_file = get_agentic_os_home() / "channel_directory.json"
     except ImportError:
         directory_file = Path(
             os.environ.get("HERMES_HOME", Path.home() / ".hermes")
@@ -451,8 +451,8 @@ class EventBridge:
         could drop brand-new conversations (#8925).
         """
         try:
-            from agentic_os_constants import get_hermes_home
-            db_file = get_hermes_home() / "state.db"
+            from agentic_os_constants import get_agentic_os_home
+            db_file = get_agentic_os_home() / "state.db"
         except ImportError:
             db_file = Path(os.environ.get("HERMES_HOME", Path.home() / ".hermes")) / "state.db"
 

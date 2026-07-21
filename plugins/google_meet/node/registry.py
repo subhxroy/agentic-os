@@ -24,11 +24,11 @@ import time
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
-from agentic_os_constants import get_hermes_home
+from agentic_os_constants import get_agentic_os_home
 
 
 def _default_path() -> Path:
-    return Path(get_hermes_home()) / "workspace" / "meetings" / "nodes.json"
+    return Path(get_agentic_os_home()) / "workspace" / "meetings" / "nodes.json"
 
 
 class NodeRegistry:

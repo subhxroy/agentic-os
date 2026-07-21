@@ -14,10 +14,10 @@ import tempfile
 import time
 from typing import Optional
 
-from agentic_os_cli.config import get_hermes_home
+from agentic_os_cli.config import get_agentic_os_home
 
 
-CACHE_PATH = get_hermes_home() / "sticker_cache.json"
+CACHE_PATH = get_agentic_os_home() / "sticker_cache.json"
 
 # Vision prompt for describing stickers -- kept concise to save tokens
 STICKER_VISION_PROMPT = (

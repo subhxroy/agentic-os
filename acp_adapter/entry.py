@@ -32,7 +32,7 @@ import asyncio
 import logging
 import sys
 from pathlib import Path
-from agentic_os_constants import get_hermes_home
+from agentic_os_constants import get_agentic_os_home
 
 
 # Methods clients send as periodic liveness probes. They are not part of the
@@ -100,7 +100,7 @@ def _load_env() -> None:
     """Load .env from HERMES_HOME (default ``~/.hermes``)."""
     from agentic_os_cli.env_loader import load_hermes_dotenv
 
-    hermes_home = get_hermes_home()
+    hermes_home = get_agentic_os_home()
     loaded = load_hermes_dotenv(hermes_home=hermes_home)
     if loaded:
         for env_file in loaded:
@@ -234,7 +234,7 @@ def main(argv: list[str] | None = None) -> None:
     _load_env()
 
     logger = logging.getLogger(__name__)
-    logger.info("Starting hermes-agent ACP adapter")
+    logger.info("Starting agentic-os ACP adapter")
 
     # Ensure the project root is on sys.path so ``from run_agent import AIAgent`` works
     project_root = str(Path(__file__).resolve().parent.parent)

@@ -605,9 +605,9 @@ def _apply_profile_override() -> None:
     # the "Docker & Profiles & Dashboard" report.
     if profile_name is None and not os.environ.get("HERMES_S6_SUPERVISED_CHILD"):
         try:
-            from agentic_os_constants import get_default_hermes_root
+            from agentic_os_constants import get_default_agentic_os_root
 
-            active_path = get_default_hermes_root() / "active_profile"
+            active_path = get_default_agentic_os_root() / "active_profile"
             if active_path.exists():
                 name = active_path.read_text().strip()
                 if name and name != "default":
@@ -648,7 +648,7 @@ _apply_profile_override()
 
 # Load .env from ~/.hermes/.env first, then project root as dev fallback.
 # User-managed env files should override stale shell exports on restart.
-from agentic_os_cli.config import get_hermes_home
+from agentic_os_cli.config import get_agentic_os_home
 from agentic_os_cli.env_loader import load_hermes_dotenv
 
 load_hermes_dotenv(project_env=PROJECT_ROOT / ".env")
@@ -666,7 +666,7 @@ _FORCE_IPV4_EARLY = False
 try:
     import yaml as _yaml_early
 
-    _cfg_path = get_hermes_home() / "config.yaml"
+    _cfg_path = get_agentic_os_home() / "config.yaml"
     if _cfg_path.exists():
         with open(_cfg_path, encoding="utf-8") as _f:
             _early_cfg_raw = _yaml_early.load(
@@ -849,7 +849,7 @@ def _termux_bundled_skills_fingerprint() -> str:
 
 
 def _termux_bundled_skills_stamp_path() -> Path:
-    return get_hermes_home() / "skills" / ".termux_bundled_sync_stamp"
+    return get_agentic_os_home() / "skills" / ".termux_bundled_sync_stamp"
 
 
 def _termux_bundled_skills_sync_needed() -> bool:
@@ -918,7 +918,7 @@ def _relative_time(ts) -> str:
 
 def _has_any_provider_configured() -> bool:
     """Check if at least one inference provider is usable."""
-    from agentic_os_cli.config import get_env_path, get_hermes_home, load_config
+    from agentic_os_cli.config import get_env_path, get_agentic_os_home, load_config
     from agentic_os_cli.auth import get_auth_status
 
     # Determine whether Hermes itself has been explicitly configured (model
@@ -986,7 +986,7 @@ def _has_any_provider_configured() -> bool:
         pass
 
     # Check for Nous Portal OAuth credentials
-    auth_file = get_hermes_home() / "auth.json"
+    auth_file = get_agentic_os_home() / "auth.json"
     if auth_file.exists():
         try:
             import json
@@ -2790,7 +2790,7 @@ def cmd_whatsapp(args):
         print("✓ Bridge dependencies already installed")
 
     # ── Step 5: Check for existing session ───────────────────────────────
-    session_dir = get_hermes_home() / "whatsapp" / "session"
+    session_dir = get_agentic_os_home() / "whatsapp" / "session"
     session_dir.mkdir(parents=True, exist_ok=True)
 
     if (session_dir / "creds.json").exists():
@@ -4348,7 +4348,7 @@ def _run_anthropic_oauth_flow(save_env_value):
         ):
             use_anthropic_claude_code_credentials(save_fn=save_env_value)
             print("  ✓ Claude Code credentials linked.")
-            from agentic_os_constants import display_hermes_home as _dhh_fn
+            from agentic_os_constants import display_agentic_os_home as _dhh_fn
 
             print(
                 f"    Hermes will use Claude's credential store directly instead of copying a setup-token into {_dhh_fn()}/.env."
@@ -4771,9 +4771,9 @@ def _gateway_prompt(prompt_text: str, default: str = "", timeout: float = 300.0)
     """
     import json as _json
     import uuid as _uuid
-    from agentic_os_constants import get_hermes_home
+    from agentic_os_constants import get_agentic_os_home
 
-    home = get_hermes_home()
+    home = get_agentic_os_home()
     prompt_path = home / ".update_prompt.json"
     response_path = home / ".update_response"
 
@@ -5289,8 +5289,8 @@ def _compute_desktop_content_hash(project_root: Path) -> str:
 
 def _desktop_stamp_path() -> Path:
     """Return the path to the desktop build stamp file under $HERMES_HOME."""
-    from agentic_os_constants import get_hermes_home
-    return get_hermes_home() / "desktop-build-stamp.json"
+    from agentic_os_constants import get_agentic_os_home
+    return get_agentic_os_home() / "desktop-build-stamp.json"
 
 
 def _desktop_build_needed(desktop_dir: Path, project_root: Path, *, source_mode: bool) -> bool:
@@ -6216,7 +6216,7 @@ def _print_curator_first_run_notice() -> None:
     print("  Preview now:  hermes curator run --dry-run")
     print("  Pause it:     hermes curator pause")
     print(
-        "  Docs:         https://hermes-agent.nousresearch.com/docs/user-guide/features/curator"
+        "  Docs:         https://agentic-os.nousresearch.com/docs/user-guide/features/curator"
     )
 
 
@@ -6497,7 +6497,7 @@ def _update_via_zip(args):
         )
         sys.exit(1)
     zip_url = (
-        f"https://github.com/NousResearch/hermes-agent/archive/refs/heads/{branch}.zip"
+        f"https://github.com/subhxroy/agentic-os/archive/refs/heads/{branch}.zip"
     )
 
     print("→ Downloading latest version...")
@@ -6920,12 +6920,12 @@ def _discard_stashed_changes(
 # =========================================================================
 
 OFFICIAL_REPO_URLS = {
-    "https://github.com/NousResearch/hermes-agent.git",
-    "git@github.com:NousResearch/hermes-agent.git",
-    "https://github.com/NousResearch/hermes-agent",
-    "git@github.com:NousResearch/hermes-agent",
+    "https://github.com/subhxroy/agentic-os.git",
+    "git@github.com:subhxroy/agentic-os.git",
+    "https://github.com/subhxroy/agentic-os",
+    "git@github.com:subhxroy/agentic-os",
 }
-OFFICIAL_REPO_URL = "https://github.com/NousResearch/hermes-agent.git"
+OFFICIAL_REPO_URL = "https://github.com/subhxroy/agentic-os.git"
 SKIP_UPSTREAM_PROMPT_FILE = ".skip_upstream_prompt"
 
 
@@ -7008,17 +7008,17 @@ def _count_commits_between(git_cmd: list[str], cwd: Path, base: str, head: str) 
 
 def _should_skip_upstream_prompt() -> bool:
     """Check if user previously declined to add upstream."""
-    from agentic_os_constants import get_hermes_home
+    from agentic_os_constants import get_agentic_os_home
 
-    return (get_hermes_home() / SKIP_UPSTREAM_PROMPT_FILE).exists()
+    return (get_agentic_os_home() / SKIP_UPSTREAM_PROMPT_FILE).exists()
 
 
 def _mark_skip_upstream_prompt():
     """Create marker file to skip future upstream prompts."""
     try:
-        from agentic_os_constants import get_hermes_home
+        from agentic_os_constants import get_agentic_os_home
 
-        (get_hermes_home() / SKIP_UPSTREAM_PROMPT_FILE).touch()
+        (get_agentic_os_home() / SKIP_UPSTREAM_PROMPT_FILE).touch()
     except Exception:
         pass
 
@@ -7059,7 +7059,7 @@ def _sync_with_upstream_if_needed(git_cmd: list[str], cwd: Path) -> None:
         # Ask user if they want to add upstream
         print()
         print("ℹ Your fork is not tracking the official Hermes repository.")
-        print("  This means you may miss updates from NousResearch/hermes-agent.")
+        print("  This means you may miss updates from subhxroy/agentic-os.")
         print()
         try:
             response = (
@@ -7073,7 +7073,7 @@ def _sync_with_upstream_if_needed(git_cmd: list[str], cwd: Path) -> None:
             print("→ Adding upstream remote...")
             if _add_upstream_remote(git_cmd, cwd):
                 print(
-                    "  ✓ Added upstream: https://github.com/NousResearch/hermes-agent.git"
+                    "  ✓ Added upstream: https://github.com/subhxroy/agentic-os.git"
                 )
                 has_upstream = True
             else:
@@ -7081,7 +7081,7 @@ def _sync_with_upstream_if_needed(git_cmd: list[str], cwd: Path) -> None:
                 return
         else:
             print(
-                "  Skipped. Run 'git remote add upstream https://github.com/NousResearch/hermes-agent.git' to add later."
+                "  Skipped. Run 'git remote add upstream https://github.com/subhxroy/agentic-os.git' to add later."
             )
             _mark_skip_upstream_prompt()
             return
@@ -7165,9 +7165,9 @@ def _invalidate_update_cache():
     """
     homes = []
     # Default profile home (Docker-aware — uses /opt/data in Docker)
-    from agentic_os_constants import get_default_hermes_root
+    from agentic_os_constants import get_default_agentic_os_root
 
-    default_home = get_default_hermes_root()
+    default_home = get_default_agentic_os_root()
     homes.append(default_home)
     # Named profiles under <root>/profiles/
     profiles_root = default_home / "profiles"
@@ -7485,7 +7485,7 @@ def _hermes_exe_shims(scripts_dir: Path) -> list[Path]:
     if not _is_windows():
         return []
 
-    names = set(_load_console_script_names()) or {"hermes", "hermes-agent", "hermes-acp"}
+    names = set(_load_console_script_names()) or {"hermes", "agentic-os", "hermes-acp"}
     # The gateway shim is not a [project.scripts] entry point, but older
     # update/install paths still rewrite and quarantine it.
     names.add("hermes-gateway")
@@ -8529,12 +8529,12 @@ def _update_node_dependencies() -> list[str]:
             return failed
         return []
 
-    from agentic_os_constants import get_default_hermes_root
+    from agentic_os_constants import get_default_agentic_os_root
 
     # This cache describes PROJECT_ROOT/node_modules, which is shared by every
     # Hermes profile using this checkout. Keep one per-checkout cache under the
     # shared Hermes root rather than rerunning npm once per named profile.
-    shared_hermes_root = get_default_hermes_root()
+    shared_hermes_root = get_default_agentic_os_root()
     if not _npm_lockfile_changed(shared_hermes_root):
         logger.info("npm lockfile unchanged, skipping npm install")
         return []
@@ -8731,10 +8731,10 @@ def _install_hangup_protection(gateway_mode: bool = False):
     # tolerance.  Any failure here is non-fatal; we just skip the wrap.
     try:
         # Late-bound import so tests can monkeypatch
-        # agentic_os_cli.config.get_hermes_home to simulate setup failure.
-        from agentic_os_cli.config import get_hermes_home as _get_hermes_home
+        # agentic_os_cli.config.get_agentic_os_home to simulate setup failure.
+        from agentic_os_cli.config import get_agentic_os_home as _get_agentic_os_home
 
-        logs_dir = _get_hermes_home() / "logs"
+        logs_dir = _get_agentic_os_home() / "logs"
         logs_dir.mkdir(parents=True, exist_ok=True)
         log_path = logs_dir / "update.log"
         log_file = open(log_path, "a", buffering=1, encoding="utf-8")
@@ -9251,13 +9251,13 @@ def _run_pre_update_backup(args) -> Optional[str]:
         size_bytes /= 1024
         size_str = f"{size_bytes:.1f} {unit}"
 
-    # Render path using display_hermes_home so the user sees ~/.hermes/...
+    # Render path using display_agentic_os_home so the user sees ~/.hermes/...
     try:
-        from agentic_os_constants import get_hermes_home, display_hermes_home
+        from agentic_os_constants import get_agentic_os_home, display_agentic_os_home
 
-        home = get_hermes_home()
+        home = get_agentic_os_home()
         try:
-            display_path = f"{display_hermes_home()}/{out_path.relative_to(home)}"
+            display_path = f"{display_agentic_os_home()}/{out_path.relative_to(home)}"
         except ValueError:
             display_path = str(out_path)
     except Exception:
@@ -9890,13 +9890,13 @@ def _cmd_update_pip(args):
             print("✗ Detected a uv-tool install but managed uv install failed.")
             print("  Install uv manually: https://docs.astral.sh/uv/getting-started/installation/")
             sys.exit(1)
-        cmd = [uv, "tool", "upgrade", "hermes-agent"]
+        cmd = [uv, "tool", "upgrade", "agentic-os"]
     elif pipx_managed and pipx:
         # pipx owns its own venv; ``pipx upgrade`` is the only correct path.
         # Matches scripts/auto-update.sh, which already uses pipx upgrade.
-        cmd = [pipx, "upgrade", "hermes-agent"]
+        cmd = [pipx, "upgrade", "agentic-os"]
     elif uv:
-        cmd = [uv, "pip", "install", "--upgrade", "hermes-agent"]
+        cmd = [uv, "pip", "install", "--upgrade", "agentic-os"]
         if in_venv:
             # Launcher shim runs the venv interpreter but doesn't export
             # VIRTUAL_ENV; without it uv errors "No virtual environment found".
@@ -9906,7 +9906,7 @@ def _cmd_update_pip(args):
             # interpreter, matching pip's default behaviour.
             cmd.insert(3, "--system")
     else:
-        cmd = [sys.executable, "-m", "pip", "install", "--upgrade", "hermes-agent"]
+        cmd = [sys.executable, "-m", "pip", "install", "--upgrade", "agentic-os"]
 
     print(f"→ Running: {' '.join(cmd)}")
     run_kwargs = {}
@@ -10018,7 +10018,7 @@ def _cmd_update_impl(args, gateway_mode: bool):
                 return
             print("✗ Not a git repository. Please reinstall:")
             print(
-                "  curl -fsSL https://hermes-agent.nousresearch.com/install.sh | bash"
+                "  curl -fsSL https://agentic-os.nousresearch.com/install.sh | bash"
             )
             sys.exit(1)
 
@@ -10369,7 +10369,7 @@ def _cmd_update_impl(args, gateway_mode: bool):
 
         # Clear stale .pyc bytecode cache — prevents ImportError on gateway
         # restart when updated source references names that didn't exist in
-        # the old bytecode (e.g. get_hermes_home added to agentic_os_constants).
+        # the old bytecode (e.g. get_agentic_os_home added to agentic_os_constants).
         removed = _clear_bytecode_cache(PROJECT_ROOT)
         if removed:
             print(
@@ -10489,7 +10489,7 @@ def _cmd_update_impl(args, gateway_mode: bool):
                 tail = "\n".join((build_result.stdout or "").strip().splitlines()[-15:])
                 if tail:
                     print(tail)
-                from agentic_os_constants import display_hermes_home as _dhh
+                from agentic_os_constants import display_agentic_os_home as _dhh
                 print(f"  Full build log: {_dhh()}/logs/update.log")
             else:
                 print("  ✓ Desktop app up to date")
@@ -10516,7 +10516,7 @@ def _cmd_update_impl(args, gateway_mode: bool):
         # After git pull, source files on disk are newer than cached Python
         # modules in this process.  Reload agentic_os_constants so that any lazy
         # import executed below (skills sync, gateway restart) sees new
-        # attributes like display_hermes_home() added since the last release.
+        # attributes like display_agentic_os_home() added since the last release.
         try:
             import importlib
             import agentic_os_constants as _hc
@@ -10845,7 +10845,7 @@ def _cmd_update_impl(args, gateway_mode: bool):
         # before we attempt the restart — ensures the new gateway sees it
         # regardless of how we die.
         if gateway_mode:
-            _exit_code_path = get_hermes_home() / ".update_exit_code"
+            _exit_code_path = get_agentic_os_home() / ".update_exit_code"
             try:
                 _exit_code_path.write_text("0")
             except OSError:
@@ -11664,14 +11664,14 @@ def cmd_profile(args):
         _is_wrapper_dir_in_path,
         _get_wrapper_dir,
     )
-    from agentic_os_constants import display_hermes_home
+    from agentic_os_constants import display_agentic_os_home
 
     action = getattr(args, "profile_action", None)
 
     if action is None:
         # Bare `hermes profile` — show current profile status
         profile_name = get_active_profile_name()
-        dhh = display_hermes_home()
+        dhh = display_agentic_os_home()
         print(f"\nActive profile: {profile_name}")
         print(f"Path:           {dhh}")
 
@@ -11900,7 +11900,7 @@ def cmd_profile(args):
         if name and not text_value and not auto_flag:
             try:
                 if _profiles_mod.normalize_profile_name(name) == "default":
-                    from agentic_os_constants import get_hermes_home as _hh
+                    from agentic_os_constants import get_agentic_os_home as _hh
                     profile_dir = Path(_hh())
                 else:
                     profile_dir = _profiles_mod.get_profile_dir(name)
@@ -11923,7 +11923,7 @@ def cmd_profile(args):
         if text_value:
             try:
                 if _profiles_mod.normalize_profile_name(name) == "default":
-                    from agentic_os_constants import get_hermes_home as _hh
+                    from agentic_os_constants import get_agentic_os_home as _hh
                     profile_dir = Path(_hh())
                 else:
                     profile_dir = _profiles_mod.get_profile_dir(name)
@@ -12416,7 +12416,7 @@ def _maybe_setup_dashboard_auth_interactively(args) -> None:
             "    hermes dashboard register\n"
             "  It provisions a Nous Portal OAuth client and writes "
             "HERMES_DASHBOARD_OAUTH_CLIENT_ID into ~/.hermes/.env for you.\n"
-            "  Docs: https://hermes-agent.nousresearch.com/docs/"
+            "  Docs: https://agentic-os.nousresearch.com/docs/"
             "user-guide/features/web-dashboard#authentication-gated-mode"
         )
         sys.exit(0)
@@ -12591,13 +12591,13 @@ def cmd_dashboard(args):
         # HERMES_HOME falls back to $HOME/.hermes = /opt/data/.hermes — an
         # empty, auto-seeded home where the dashboard sees only the default
         # profile and the install-method stamp is missing (so the Docker
-        # update-button guard also misfires).  get_default_hermes_root()
+        # update-button guard also misfires).  get_default_agentic_os_root()
         # returns the root for both layouts: ~/.hermes for a standard install
         # and /opt/data for Docker (it strips a trailing profiles/<name>).
         # See the support report for the double-mount workaround this avoids.
         try:
-            from agentic_os_constants import get_default_hermes_root
-            env["HERMES_HOME"] = str(get_default_hermes_root())
+            from agentic_os_constants import get_default_agentic_os_root
+            env["HERMES_HOME"] = str(get_default_agentic_os_root())
         except Exception:
             # Best-effort: if root resolution fails, fall back to the prior
             # behaviour (drop HERMES_HOME) rather than block the reroute.
@@ -13200,9 +13200,9 @@ def cmd_memory(args):
         print("\n  ✓ Memory provider: built-in only")
         print("  Saved to config.yaml\n")
     elif sub == "reset":
-        from agentic_os_constants import get_hermes_home, display_hermes_home
+        from agentic_os_constants import get_agentic_os_home, display_agentic_os_home
 
-        mem_dir = get_hermes_home() / "memories"
+        mem_dir = get_agentic_os_home() / "memories"
         target = getattr(args, "target", "all")
         files_to_reset = []
         if target in {"all", "memory"}:
@@ -13216,7 +13216,7 @@ def cmd_memory(args):
         ]
         if not existing:
             print(
-                f"\n  Nothing to reset — no memory files found in {display_hermes_home()}/memories/\n"
+                f"\n  Nothing to reset — no memory files found in {display_agentic_os_home()}/memories/\n"
             )
             return
 
@@ -13243,7 +13243,7 @@ def cmd_memory(args):
         print(
             "\n  Memory reset complete. New sessions will start with a blank slate."
         )
-        print(f"  Files were in: {display_hermes_home()}/memories/\n")
+        print(f"  Files were in: {display_agentic_os_home()}/memories/\n")
     else:
         from agentic_os_cli.memory_setup import memory_command
 
@@ -13420,7 +13420,7 @@ def main():
             "Manage the fallback provider chain.  Fallback providers are tried "
             "in order when the primary model fails with rate-limit, overload, or "
             "connection errors.  See: "
-            "https://hermes-agent.nousresearch.com/docs/user-guide/features/fallback-providers"
+            "https://agentic-os.nousresearch.com/docs/user-guide/features/fallback-providers"
         ),
     )
     fallback_subparsers = fallback_parser.add_subparsers(dest="fallback_command")
@@ -13454,7 +13454,7 @@ def main():
             "Pull API keys from an external secret manager at process startup "
             "instead of storing them in ~/.hermes/.env.  Supports Bitwarden "
             "Secrets Manager and 1Password.  See: "
-            "https://hermes-agent.nousresearch.com/docs/user-guide/secrets/"
+            "https://agentic-os.nousresearch.com/docs/user-guide/secrets/"
         ),
     )
     secrets_subparsers = secrets_parser.add_subparsers(dest="secrets_command")
@@ -14703,7 +14703,7 @@ def main():
                         out_dir = (
                             Path(args.output).expanduser()
                             if args.output and args.output != "-"
-                            else get_hermes_home() / "session-exports"
+                            else get_agentic_os_home() / "session-exports"
                         )
                         out_dir.mkdir(parents=True, exist_ok=True)
                         exported = 0
@@ -14793,7 +14793,7 @@ def main():
                 print("Markdown/QMD export writes files; stdout (-) is only supported with --format jsonl.")
                 db.close()
                 return
-            output_dir = Path(args.output).expanduser() if args.output else get_hermes_home() / "session-exports"
+            output_dir = Path(args.output).expanduser() if args.output else get_agentic_os_home() / "session-exports"
 
             def _export_one(session_id: str):
                 data = (
@@ -14847,7 +14847,7 @@ def main():
                         print(f"Export verification failed; not deleting: {reason}")
                         db.close()
                         return
-                    sessions_dir = get_hermes_home() / "sessions"
+                    sessions_dir = get_agentic_os_home() / "sessions"
                     if db.delete_session(resolved_session_id, sessions_dir=sessions_dir):
                         print(f"Deleted exported session '{resolved_session_id}'.")
                     else:
@@ -14896,7 +14896,7 @@ def main():
                 ):
                     print("Cancelled.")
                     return
-            sessions_dir = get_hermes_home() / "sessions"
+            sessions_dir = get_agentic_os_home() / "sessions"
             if db.delete_session(resolved_session_id, sessions_dir=sessions_dir):
                 print(f"Deleted session '{resolved_session_id}'.")
             else:
@@ -15001,7 +15001,7 @@ def main():
                     return
 
             if action == "prune":
-                sessions_dir = get_hermes_home() / "sessions"
+                sessions_dir = get_agentic_os_home() / "sessions"
                 count = db.prune_sessions(sessions_dir=sessions_dir, **filters)
                 print(f"Pruned {count} session(s).")
             else:

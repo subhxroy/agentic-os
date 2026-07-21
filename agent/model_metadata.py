@@ -126,8 +126,8 @@ _endpoint_probe_path_cache: Dict[str, tuple] = {}
 
 def _get_model_metadata_cache_path() -> Path:
     """Return path to the OpenRouter model metadata disk cache."""
-    from agentic_os_constants import get_hermes_home
-    return get_hermes_home() / "cache" / "openrouter_model_metadata.json"
+    from agentic_os_constants import get_agentic_os_home
+    return get_agentic_os_home() / "cache" / "openrouter_model_metadata.json"
 
 
 def _model_metadata_disk_cache_age_seconds() -> Optional[float]:
@@ -1137,8 +1137,8 @@ def _resolve_endpoint_context_length(
 
 def _get_context_cache_path() -> Path:
     """Return path to the persistent context length cache file."""
-    from agentic_os_constants import get_hermes_home
-    return get_hermes_home() / "context_length_cache.yaml"
+    from agentic_os_constants import get_agentic_os_home
+    return get_agentic_os_home() / "context_length_cache.yaml"
 
 
 def _load_context_cache() -> Dict[str, int]:

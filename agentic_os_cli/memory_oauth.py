@@ -38,7 +38,7 @@ def _scope_to_profile(profile: Optional[str]):
         return
 
     from agentic_os_cli import profiles as profiles_mod
-    from agentic_os_constants import reset_hermes_home_override, set_hermes_home_override
+    from agentic_os_constants import reset_AGENTIC_OS_HOME_OVERRIDE, set_AGENTIC_OS_HOME_OVERRIDE
 
     try:
         profiles_mod.validate_profile_name(requested)
@@ -47,11 +47,11 @@ def _scope_to_profile(profile: Optional[str]):
     if not profiles_mod.profile_exists(requested):
         raise HTTPException(status_code=404, detail=f"Profile '{requested}' does not exist.")
 
-    token = set_hermes_home_override(str(profiles_mod.get_profile_dir(requested)))
+    token = set_AGENTIC_OS_HOME_OVERRIDE(str(profiles_mod.get_profile_dir(requested)))
     try:
         yield
     finally:
-        reset_hermes_home_override(token)
+        reset_AGENTIC_OS_HOME_OVERRIDE(token)
 
 
 @router.post("/{provider}/oauth/start")

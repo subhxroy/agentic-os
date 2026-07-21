@@ -10,14 +10,14 @@ import subprocess
 import shutil
 from pathlib import Path
 
-from agentic_os_cli.config import get_project_root, get_hermes_home, get_env_path
+from agentic_os_cli.config import get_project_root, get_agentic_os_home, get_env_path
 from agentic_os_cli.env_loader import load_hermes_dotenv
-from agentic_os_constants import display_hermes_home
+from agentic_os_constants import display_agentic_os_home
 from agentic_os_constants import agent_browser_runnable
 
 PROJECT_ROOT = get_project_root()
-HERMES_HOME = get_hermes_home()
-_DHH = display_hermes_home()  # user-facing display path (e.g. ~/.hermes or ~/.hermes/profiles/coder)
+HERMES_HOME = get_agentic_os_home()
+_DHH = display_agentic_os_home()  # user-facing display path (e.g. ~/.hermes or ~/.hermes/profiles/coder)
 
 # Load environment variables from ~/.hermes/.env so API key checks work
 _env_path = get_env_path()

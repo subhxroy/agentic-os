@@ -34,7 +34,7 @@ import logging
 import time
 from typing import List, Optional
 
-from agentic_os_constants import get_hermes_home
+from agentic_os_constants import get_agentic_os_home
 
 logger = logging.getLogger("gateway.run")
 
@@ -45,7 +45,7 @@ DEFAULT_WINDOW_SECONDS = 60
 
 
 def _state_path():
-    return get_hermes_home() / "gateway" / "restart_loop.json"
+    return get_agentic_os_home() / "gateway" / "restart_loop.json"
 
 
 def _load_boots() -> List[float]:

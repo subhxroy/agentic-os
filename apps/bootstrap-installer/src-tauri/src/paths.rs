@@ -1,11 +1,11 @@
 //! Filesystem paths + logging setup.
 //!
-//! Mirrors `hermes_constants.get_hermes_home()` from the Python CLI:
+//! Mirrors `hermes_constants.get_agentic_os_home()` from the Python CLI:
 //!   Windows: %LOCALAPPDATA%\hermes
 //!   macOS:   ~/.hermes
 //!   Linux:   ~/.hermes  (override via $HERMES_HOME)
 //!
-//! NOTE (macOS): Python's get_hermes_home(), scripts/install.sh, and the
+//! NOTE (macOS): Python's get_agentic_os_home(), scripts/install.sh, and the
 //! Electron desktop's resolveHermesHome() ALL use ~/.hermes on macOS — there
 //! is no ~/Library/Application Support branch anywhere else. An earlier
 //! version of this file used Application Support, which drifted from every
@@ -37,7 +37,7 @@ pub fn hermes_home() -> PathBuf {
         }
     }
 
-    // macOS + Linux + fallback: ~/.hermes (matches Python get_hermes_home(),
+    // macOS + Linux + fallback: ~/.hermes (matches Python get_agentic_os_home(),
     // install.sh, and the Electron desktop's resolveHermesHome()).
     if let Some(home) = dirs::home_dir() {
         return home.join(".hermes");
@@ -196,7 +196,7 @@ pub fn get_log_path() -> String {
 }
 
 #[tauri::command]
-pub fn get_hermes_home() -> String {
+pub fn get_agentic_os_home() -> String {
     hermes_home().to_string_lossy().into_owned()
 }
 

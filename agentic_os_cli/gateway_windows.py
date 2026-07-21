@@ -95,9 +95,9 @@ def _preserve_hermes_home_path(path: str | Path) -> str:
     """
     candidate = Path(path)
     try:
-        from agentic_os_cli.config import get_hermes_home
+        from agentic_os_cli.config import get_agentic_os_home
 
-        home = Path(get_hermes_home())
+        home = Path(get_agentic_os_home())
         resolved_home = home.resolve()
         resolved_candidate = candidate.resolve()
         home_key = os.path.normcase(str(resolved_home))
@@ -311,9 +311,9 @@ def get_task_script_path() -> Path:
     Hermes installs stay self-contained).
     """
     _assert_windows()
-    from agentic_os_cli.config import get_hermes_home
+    from agentic_os_cli.config import get_agentic_os_home
 
-    script_dir = Path(get_hermes_home()) / "gateway-service"
+    script_dir = Path(get_agentic_os_home()) / "gateway-service"
     script_dir.mkdir(parents=True, exist_ok=True)
     return script_dir / f"{_sanitize_filename(get_task_name())}.cmd"
 
@@ -361,10 +361,10 @@ def _stable_gateway_working_dir(project_root: Path) -> str:
     configured spelling instead of resolving symlinks so AppData installs backed
     by a junction/symlink still identify themselves as AppData.
     """
-    from agentic_os_cli.config import get_hermes_home
+    from agentic_os_cli.config import get_agentic_os_home
 
     try:
-        home = get_hermes_home()
+        home = get_agentic_os_home()
         if home:
             home_path = Path(home)
             if home_path.is_dir():
@@ -528,7 +528,7 @@ def _write_task_script() -> Path:
     """Generate and write the gateway.cmd wrapper. Return its absolute path."""
     _assert_windows()
     # Local imports to avoid circular-init at module load time.
-    from agentic_os_cli.config import get_hermes_home
+    from agentic_os_cli.config import get_agentic_os_home
     from agentic_os_cli.gateway import (
         PROJECT_ROOT,
         _profile_arg,
@@ -537,7 +537,7 @@ def _write_task_script() -> Path:
 
     python_path = _preserve_hermes_home_path(get_python_path())
     working_dir = _stable_gateway_working_dir(PROJECT_ROOT)
-    hermes_home = str(Path(get_hermes_home()))
+    hermes_home = str(Path(get_agentic_os_home()))
     profile_arg = _profile_arg(hermes_home)
 
     content = _build_gateway_cmd_script(python_path, working_dir, hermes_home, profile_arg)
@@ -774,7 +774,7 @@ def _build_gateway_argv() -> tuple[list[str], str, dict[str, str]]:
     layer in between.
     """
     _assert_windows()
-    from agentic_os_cli.config import get_hermes_home
+    from agentic_os_cli.config import get_agentic_os_home
     from agentic_os_cli.gateway import (
         PROJECT_ROOT,
         _profile_arg,
@@ -786,7 +786,7 @@ def _build_gateway_argv() -> tuple[list[str], str, dict[str, str]]:
     )
     project_root = _preserve_hermes_home_path(PROJECT_ROOT)
     working_dir = _stable_gateway_working_dir(PROJECT_ROOT)
-    hermes_home = str(Path(get_hermes_home()))
+    hermes_home = str(Path(get_agentic_os_home()))
     profile_arg = _profile_arg(hermes_home)
 
     argv = [python_exe, "-m", "agentic_os_cli.main"]
@@ -840,7 +840,7 @@ def windowless_gateway_restart_spec(
     if sys.platform != "win32":
         return run_argv, "", {}
 
-    from agentic_os_cli.config import get_hermes_home
+    from agentic_os_cli.config import get_agentic_os_home
     from agentic_os_cli.gateway import PROJECT_ROOT
 
     python_exe = run_argv[0]
@@ -862,7 +862,7 @@ def windowless_gateway_restart_spec(
     working_dir = _stable_gateway_working_dir(PROJECT_ROOT)
     project_root = str(PROJECT_ROOT)
     try:
-        hermes_home = str(Path(get_hermes_home()).resolve())
+        hermes_home = str(Path(get_agentic_os_home()).resolve())
     except Exception:
         hermes_home = ""
 
@@ -918,9 +918,9 @@ def _spawn_detached(script_path: Path | None = None) -> int:
     # logging module writes to gateway.log through a FileHandler, so the
     # real gateway logs still land there — this just captures anything
     # that goes to print() or native stderr.
-    from agentic_os_cli.config import get_hermes_home
+    from agentic_os_cli.config import get_agentic_os_home
 
-    log_dir = Path(get_hermes_home()) / "logs"
+    log_dir = Path(get_agentic_os_home()) / "logs"
     log_dir.mkdir(parents=True, exist_ok=True)
     stray_log = log_dir / "gateway-stdio.log"
 
@@ -1171,15 +1171,15 @@ def _report_gateway_start(via: str) -> None:
     else:
         print(f"⚠ Launched gateway via {via}, but no process detected after 6s.")
         print("  Check the log for startup errors:")
-        from agentic_os_cli.config import get_hermes_home
-        print(f"    type {Path(get_hermes_home())}\\logs\\gateway.log")
-        print(f"    type {Path(get_hermes_home())}\\logs\\gateway-stdio.log")
+        from agentic_os_cli.config import get_agentic_os_home
+        print(f"    type {Path(get_agentic_os_home())}\\logs\\gateway.log")
+        print(f"    type {Path(get_agentic_os_home())}\\logs\\gateway-stdio.log")
 
 
 def _print_next_steps() -> None:
-    from agentic_os_cli.config import get_hermes_home
+    from agentic_os_cli.config import get_agentic_os_home
 
-    hermes_home = Path(get_hermes_home())
+    hermes_home = Path(get_agentic_os_home())
     print()
     print("Next steps:")
     print("  hermes gateway status                      # Check status")
@@ -1300,9 +1300,9 @@ def _print_deep_probes() -> None:
     import json
     from datetime import datetime, timezone
 
-    from agentic_os_cli.config import get_hermes_home
+    from agentic_os_cli.config import get_agentic_os_home
 
-    home = Path(get_hermes_home())
+    home = Path(get_agentic_os_home())
     pid_path = home / "gateway.pid"
     lock_path = home / "gateway.lock"
     state_path = home / "gateway_state.json"

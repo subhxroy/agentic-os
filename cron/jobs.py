@@ -33,7 +33,7 @@ except ImportError:  # pragma: no cover - non-Windows
     msvcrt = None
 from datetime import datetime, timedelta
 from pathlib import Path
-from agentic_os_constants import get_hermes_home
+from agentic_os_constants import get_agentic_os_home
 from typing import Optional, Dict, List, Any, Set, Tuple, Union
 
 logger = logging.getLogger(__name__)
@@ -56,14 +56,14 @@ except ImportError:
 # profile's jobs under that same HERMES_HOME — so a job authored in profile
 # `coder` lives in `~/.hermes/profiles/coder/cron/jobs.json` and executes with
 # `coder`'s `.env`, `config.yaml`, and skills. We deliberately anchor on
-# `get_hermes_home()` (the active profile home), NOT `get_default_hermes_root()`
+# `get_agentic_os_home()` (the active profile home), NOT `get_default_agentic_os_root()`
 # (the shared root). Anchoring at the root would funnel every profile's jobs
 # into one shared `jobs.json` and run them under whatever HERMES_HOME the
 # ticker process happens to have — leaking config/credentials/skills across
 # profiles (the security boundary #4707 was filed for). Do NOT change this to
 # the default root: that re-breaks per-profile isolation. See also the dynamic
-# `_get_hermes_home()` / `_get_lock_paths()` resolution in cron/scheduler.py.
-HERMES_DIR = get_hermes_home().resolve()
+# `_get_agentic_os_home()` / `_get_lock_paths()` resolution in cron/scheduler.py.
+HERMES_DIR = get_agentic_os_home().resolve()
 # These constants remain the default-profile fallback and a compatibility
 # surface for existing callers/tests. Cross-profile callers must scope paths
 # with use_cron_store() instead of mutating them process-wide.
@@ -131,7 +131,7 @@ def _current_cron_store() -> _CronStorePaths:
     2. deliberately re-pointed module constants — if CRON_DIR/JOBS_FILE/
        OUTPUT_DIR no longer match their import-time values, someone chose
        the documented process-wide compatibility surface; honor it;
-    3. the ACTIVE profile home, resolved fresh via get_hermes_home()
+    3. the ACTIVE profile home, resolved fresh via get_agentic_os_home()
        (context-local override, then the HERMES_HOME env var) — so a test
        or embedder that re-points HERMES_HOME after this module was
        imported reads/writes ITS OWN store, not whatever jobs.json the
@@ -146,7 +146,7 @@ def _current_cron_store() -> _CronStorePaths:
     live_constants = _CronStorePaths(CRON_DIR, JOBS_FILE, OUTPUT_DIR)
     if live_constants != _IMPORT_STORE:
         return live_constants
-    home = get_hermes_home().resolve()
+    home = get_agentic_os_home().resolve()
     if home == HERMES_DIR:
         return live_constants
     cron_dir = home / "cron"
@@ -982,7 +982,7 @@ def _resolve_default_model_snapshot() -> Optional[str]:
         import yaml
         from agentic_os_cli.config import _expand_env_vars
 
-        cfg_path = get_hermes_home() / "config.yaml"
+        cfg_path = get_agentic_os_home() / "config.yaml"
         if not cfg_path.exists():
             return None
         with cfg_path.open(encoding="utf-8") as f:

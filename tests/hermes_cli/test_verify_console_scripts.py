@@ -41,7 +41,7 @@ def fake_scripts_dir(tmp_path):
 
 class TestVerifyConsoleScriptsInstalled:
     def test_no_action_when_all_shims_present(self, temp_pyproject, fake_scripts_dir):
-        for name in ("hermes", "hermes-agent", "hermes-acp"):
+        for name in ("hermes", "agentic-os", "hermes-acp"):
             (fake_scripts_dir / f"{name}.exe").write_bytes(b"fake")
 
         with patch("agentic_os_cli.main._is_windows", return_value=True), \
@@ -85,7 +85,7 @@ class TestVerifyConsoleScriptsInstalled:
         from agentic_os_cli.main import _load_console_script_names
 
         names = _load_console_script_names()
-        assert names == ["hermes", "hermes-agent", "hermes-acp"]
+        assert names == ["hermes", "agentic-os", "hermes-acp"]
 
     def test_primary_install_success_still_verifies_scripts(self):
         import agentic_os_cli.main as main_mod

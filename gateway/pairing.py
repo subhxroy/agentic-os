@@ -33,7 +33,7 @@ from gateway.whatsapp_identity import (
     expand_whatsapp_aliases,
     normalize_whatsapp_identifier,
 )
-from agentic_os_constants import get_hermes_dir, get_hermes_home
+from agentic_os_constants import get_agentic_os_dir, get_agentic_os_home
 from utils import atomic_replace
 
 logger = logging.getLogger(__name__)
@@ -52,7 +52,7 @@ LOCKOUT_SECONDS = 3600              # Lockout duration after too many failures
 MAX_PENDING_PER_PLATFORM = 3        # Max pending codes per platform
 MAX_FAILED_ATTEMPTS = 5             # Failed approvals before lockout
 
-PAIRING_DIR = get_hermes_dir("platforms/pairing", "pairing")
+PAIRING_DIR = get_agentic_os_dir("platforms/pairing", "pairing")
 
 
 # Platform value -> its per-platform allowlist env var. When an operator has
@@ -198,7 +198,7 @@ def _merge_pairing_dir(active_dir: Path, alternate_dir: Path) -> None:
 
 
 def _migrate_split_pairing_dirs() -> None:
-    home = get_hermes_home()
+    home = get_agentic_os_home()
     old_dir = home / "pairing"
     new_dir = home / "platforms" / "pairing"
     active = PAIRING_DIR
@@ -252,8 +252,8 @@ class PairingStore:
         # Resolve storage directory lazily — tests use a temp HERMES_HOME
         # and PairingStore may be constructed before the env is set.
         if profile:
-            from agentic_os_constants import get_hermes_home
-            self._dir = get_hermes_home() / "profiles" / profile / "pairing"
+            from agentic_os_constants import get_agentic_os_home
+            self._dir = get_agentic_os_home() / "profiles" / profile / "pairing"
         else:
             self._dir = PAIRING_DIR
         self._dir.mkdir(parents=True, exist_ok=True)

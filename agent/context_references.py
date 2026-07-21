@@ -362,9 +362,9 @@ def _resolve_path(cwd: Path, target: str, *, allowed_root: Path | None = None) -
 
 
 def _ensure_reference_path_allowed(path: Path) -> None:
-    from agentic_os_constants import get_hermes_home
+    from agentic_os_constants import get_agentic_os_home
     home = Path(os.path.expanduser("~")).resolve()
-    hermes_home = get_hermes_home().resolve()
+    hermes_home = get_agentic_os_home().resolve()
 
     blocked_exact = {home / rel for rel in _SENSITIVE_HOME_FILES}
     blocked_exact.add(hermes_home / ".env")

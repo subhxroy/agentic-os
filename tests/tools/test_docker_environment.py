@@ -676,7 +676,7 @@ def test_labels_attribute_populated_after_init(monkeypatch):
     env = _make_dummy_env(task_id="abc")
 
     assert env._labels == {
-        "hermes-agent": "1",
+        "agentic-os": "1",
         "hermes-task-id": "abc",
         "hermes-profile": "default",
     }

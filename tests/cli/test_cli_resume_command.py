@@ -337,7 +337,7 @@ class TestRestoreSessionCwdMarkup:
     ``rich.errors.MarkupError: closing tag [/] at position N has nothing to
     close`` because ``_DIM`` is an ANSI escape (``\\x1b[2;3m``), not a valid
     Rich tag.  The fix replaces ``[{_DIM}]`` with Rich's native ``[dim]`` tag.
-    See: https://github.com/NousResearch/hermes-agent/issues/39469
+    See: https://github.com/subhxroy/agentic-os/issues/39469
     """
 
     def test_missing_dir_does_not_raise_markup_error(self):

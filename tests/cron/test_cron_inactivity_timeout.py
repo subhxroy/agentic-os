@@ -309,5 +309,5 @@ class TestSysPathOrdering:
 
     def test_agentic_os_constants_importable(self):
         """agentic_os_constants should be importable from cron context."""
-        from agentic_os_constants import get_hermes_home
-        assert callable(get_hermes_home)
+        from agentic_os_constants import get_agentic_os_home
+        assert callable(get_agentic_os_home)

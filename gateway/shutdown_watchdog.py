@@ -31,7 +31,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Callable, Dict, Optional
 
-from agentic_os_constants import get_hermes_home
+from agentic_os_constants import get_agentic_os_home
 from utils import atomic_json_write
 
 logger = logging.getLogger(__name__)
@@ -49,7 +49,7 @@ def _process_hermes_home() -> Path:
     val = os.environ.get("HERMES_HOME", "").strip()
     if val:
         return Path(val)
-    return get_hermes_home()
+    return get_agentic_os_home()
 
 
 def get_loop_heartbeat_path(home: Optional[Path] = None) -> Path:

@@ -504,9 +504,9 @@ class MCPOAuthManager:
         server_name: str,
         hermes_home: str | Path | None = None,
     ) -> tuple[str, str]:
-        from agentic_os_constants import get_hermes_home
+        from agentic_os_constants import get_agentic_os_home
 
-        home = Path(hermes_home) if hermes_home is not None else get_hermes_home()
+        home = Path(hermes_home) if hermes_home is not None else get_agentic_os_home()
         return (str(home.expanduser().resolve(strict=False)), server_name)
 
     def _build_provider(

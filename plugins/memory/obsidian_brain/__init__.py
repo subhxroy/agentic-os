@@ -33,7 +33,7 @@ _PREFETCH_WAIT_SECS = 2
 
 
 def _load_config() -> dict:
-    from agentic_os_constants import get_hermes_home
+    from agentic_os_constants import get_agentic_os_home
 
     config = {
         "vault_path": os.environ.get("OBSIDIAN_BRAIN_VAULT_PATH", ""),
@@ -42,7 +42,7 @@ def _load_config() -> dict:
         "conversation_log": True,
     }
 
-    config_path = get_hermes_home() / "obsidian-brain.json"
+    config_path = get_agentic_os_home() / "obsidian-brain.json"
     if config_path.exists():
         try:
             file_cfg = json.loads(config_path.read_text(encoding="utf-8"))

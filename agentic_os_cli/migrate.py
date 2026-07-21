@@ -110,6 +110,6 @@ def cmd_migrate_xai(args: Any) -> int:
 
 def _resolve_config_path() -> Path:
     """Best-effort: locate the active config.yaml on disk."""
-    from agentic_os_cli.config import get_hermes_home
+    from agentic_os_cli.config import get_agentic_os_home
 
-    return get_hermes_home() / "config.yaml"
+    return get_agentic_os_home() / "config.yaml"

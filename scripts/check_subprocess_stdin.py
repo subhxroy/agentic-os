@@ -38,7 +38,7 @@ TUI_CONTEXT_DIRS = [
 ]
 
 # User plugin roots — scanned at runtime if they exist.  Plugins load from
-# ``get_hermes_home() / "plugins"`` (user) and ``./.hermes/plugins/`` (project,
+# ``get_agentic_os_home() / "plugins"`` (user) and ``./.hermes/plugins/`` (project,
 # gated behind ``HERMES_ENABLE_PROJECT_PLUGINS``) — see
 # ``agentic_os_cli/plugins.py:10-12``.  The guard only checked the bundled
 # ``plugins/`` dir, missing user-installed code that spawns subprocesses
@@ -160,7 +160,7 @@ def main() -> int:
     # Add repo root to sys.path so we can import agentic_os_constants (this script
     # runs as a standalone subprocess, not as a module).
     sys.path.insert(0, str(repo_root))
-    from agentic_os_constants import get_hermes_home
+    from agentic_os_constants import get_agentic_os_home
 
     all_violations = []
 
@@ -186,10 +186,10 @@ def main() -> int:
             all_violations.extend(violations)
 
     # Scan user plugin directories (Gap 1: guard missed user-installed
-    # plugins in get_hermes_home()/plugins/ and project plugins in
+    # plugins in get_agentic_os_home()/plugins/ and project plugins in
     # ./.hermes/plugins/, where code like ori/hooks.py can spawn
     # subprocesses with inherited stdin — #67639).
-    plugin_roots: list[Path] = [get_hermes_home() / "plugins"]
+    plugin_roots: list[Path] = [get_agentic_os_home() / "plugins"]
     if os.environ.get("HERMES_ENABLE_PROJECT_PLUGINS"):
         plugin_roots.append(Path.cwd() / ".hermes" / "plugins")
     seen_roots: set[Path] = set()

@@ -29,7 +29,7 @@ import time
 from pathlib import Path
 from typing import Any, Optional
 
-from agentic_os_constants import get_hermes_home
+from agentic_os_constants import get_agentic_os_home
 
 logger = logging.getLogger(__name__)
 
@@ -53,7 +53,7 @@ def _traces_enabled_and_dir() -> Optional[Path]:
     if override:
         base = Path(os.path.expandvars(os.path.expanduser(str(override))))
     else:
-        base = get_hermes_home() / "moa-traces"
+        base = get_agentic_os_home() / "moa-traces"
     return base
 
 

@@ -9,7 +9,7 @@ change-detector.
 from __future__ import annotations
 
 from agent import learning_graph
-from agentic_os_constants import reset_hermes_home_override, set_hermes_home_override
+from agentic_os_constants import reset_AGENTIC_OS_HOME_OVERRIDE, set_AGENTIC_OS_HOME_OVERRIDE
 
 
 def _node(name: str, category: str, related=None):
@@ -73,11 +73,11 @@ def test_memory_is_cards_split_on_separator(tmp_path):
         "Project uses pytest with xdist\n§\nUser prefers concise responses",
         encoding="utf-8",
     )
-    token = set_hermes_home_override(home)
+    token = set_AGENTIC_OS_HOME_OVERRIDE(home)
     try:
         graph = learning_graph.build_learning_graph()
     finally:
-        reset_hermes_home_override(token)
+        reset_AGENTIC_OS_HOME_OVERRIDE(token)
 
     titles = [c["title"] for c in graph["memory"]]
     assert "Project uses pytest with xdist" in titles
@@ -115,11 +115,11 @@ def test_hermes_meta_tolerates_non_dict():
 def test_full_payload_shape_and_edge_integrity(tmp_path):
     home = tmp_path / ".hermes"
     home.mkdir()
-    token = set_hermes_home_override(home)
+    token = set_AGENTIC_OS_HOME_OVERRIDE(home)
     try:
         graph = learning_graph.build_learning_graph()
     finally:
-        reset_hermes_home_override(token)
+        reset_AGENTIC_OS_HOME_OVERRIDE(token)
 
     ids = {n["id"] for n in graph["nodes"]}
     assert all(e["source"] in ids and e["target"] in ids for e in graph["edges"])

@@ -433,7 +433,7 @@ class TestFeishuAdapterMessaging(unittest.TestCase):
 
         Without this UA tag the Feishu server does not push group @mention
         events over the WebSocket transport.  See
-        https://github.com/NousResearch/hermes-agent/issues/50656
+        https://github.com/subhxroy/agentic-os/issues/50656
         """
         from gateway.config import PlatformConfig
         from plugins.platforms.feishu.adapter import FeishuAdapter
@@ -3465,15 +3465,15 @@ class TestWebhookSecurity(unittest.TestCase):
 
     def test_webhook_request_rejects_oversized_chunked_body_while_reading(self):
         from gateway.config import PlatformConfig
-        from agentic_os_constants import reset_hermes_home_override, set_hermes_home_override
+        from agentic_os_constants import reset_AGENTIC_OS_HOME_OVERRIDE, set_AGENTIC_OS_HOME_OVERRIDE
         from plugins.platforms.feishu.adapter import FeishuAdapter, _FEISHU_WEBHOOK_MAX_BODY_BYTES
 
         with tempfile.TemporaryDirectory() as tmpdir:
-            token = set_hermes_home_override(tmpdir)
+            token = set_AGENTIC_OS_HOME_OVERRIDE(tmpdir)
             try:
                 adapter = FeishuAdapter(PlatformConfig())
             finally:
-                reset_hermes_home_override(token)
+                reset_AGENTIC_OS_HOME_OVERRIDE(token)
             content = _FakeRequestContent(b"A" * (_FEISHU_WEBHOOK_MAX_BODY_BYTES + 2))
             request = SimpleNamespace(
                 remote="127.0.0.1",

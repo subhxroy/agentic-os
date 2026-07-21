@@ -30,7 +30,7 @@ from typing import Dict, Optional, Any
 from agentic_os_cli._subprocess_compat import windows_detach_popen_kwargs
 from agentic_os_constants import (
     find_node_executable,
-    get_hermes_dir,
+    get_agentic_os_dir,
     with_hermes_node_path,
 )
 
@@ -287,7 +287,7 @@ def _is_allowed_bridge_path(url: str) -> bool:
     attached verbatim and sent to the model. Resolve the path (following any
     symlinks) and require it to live under one of the real cache roots — this
     covers both the canonical ``cache/<kind>`` layout and the legacy
-    ``<kind>_cache`` layout that ``get_hermes_dir`` may return.
+    ``<kind>_cache`` layout that ``get_agentic_os_dir`` may return.
     """
     try:
         resolved = Path(url).resolve()
@@ -403,7 +403,7 @@ class WhatsAppAdapter(WhatsAppBehaviorMixin, BasePlatformAdapter):
         )
         self._session_path: Path = Path(config.extra.get(
             "session_path",
-            get_hermes_dir("platforms/whatsapp/session", "whatsapp/session")
+            get_agentic_os_dir("platforms/whatsapp/session", "whatsapp/session")
         ))
         self._reply_prefix: Optional[str] = config.extra.get("reply_prefix")
         self._dm_policy = str(config.extra.get("dm_policy") or os.getenv("WHATSAPP_DM_POLICY", "pairing")).strip().lower()

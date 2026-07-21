@@ -106,7 +106,7 @@ class TestConfigFilePermissions(unittest.TestCase):
 
     def test_ensure_hermes_home_sets_0700(self):
         home = Path(self.tmpdir) / ".hermes"
-        with patch("agentic_os_cli.config.get_hermes_home", return_value=home):
+        with patch("agentic_os_cli.config.get_agentic_os_home", return_value=home):
             from agentic_os_cli.config import ensure_hermes_home
             ensure_hermes_home()
 

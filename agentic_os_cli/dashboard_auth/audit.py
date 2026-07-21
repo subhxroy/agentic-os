@@ -54,7 +54,7 @@ class AuditEvent(enum.Enum):
 def _resolve_log_path() -> Path:
     """``$HERMES_HOME/logs/dashboard-auth.log`` with the standard fallback.
 
-    Mirrors ``agentic_os_constants.get_hermes_home`` semantics: env var wins,
+    Mirrors ``agentic_os_constants.get_agentic_os_home`` semantics: env var wins,
     else ``~/.hermes``. A local copy avoids an import cycle with the
     middleware which lives below ``agentic_os_cli``.
     """

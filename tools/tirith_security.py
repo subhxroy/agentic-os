@@ -34,7 +34,7 @@ import threading
 import time
 import urllib.request
 
-from agentic_os_constants import get_hermes_home
+from agentic_os_constants import get_agentic_os_home
 
 logger = logging.getLogger(__name__)
 
@@ -162,14 +162,14 @@ def _reset_spawn_warning_state() -> None:
 _MARKER_TTL = 86400  # 24 hours
 
 
-def _get_hermes_home() -> str:
+def _get_agentic_os_home() -> str:
     """Return the Hermes home directory, respecting HERMES_HOME env var."""
-    return str(get_hermes_home())
+    return str(get_agentic_os_home())
 
 
 def _failure_marker_path() -> str:
     """Return the path to the install-failure marker file."""
-    return os.path.join(_get_hermes_home(), ".tirith-install-failed")
+    return os.path.join(_get_agentic_os_home(), ".tirith-install-failed")
 
 
 def _read_failure_reason() -> str | None:
@@ -237,7 +237,7 @@ def _clear_install_failed():
 
 def _hermes_bin_dir() -> str:
     """Return $HERMES_HOME/bin, creating it if needed."""
-    d = os.path.join(_get_hermes_home(), "bin")
+    d = os.path.join(_get_agentic_os_home(), "bin")
     os.makedirs(d, exist_ok=True)
     return d
 

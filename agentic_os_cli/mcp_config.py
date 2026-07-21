@@ -21,10 +21,10 @@ from agentic_os_cli.config import (
     save_config,
     get_env_value,
     save_env_value,
-    get_hermes_home,  # noqa: F401 — used by test mocks
+    get_agentic_os_home,  # noqa: F401 — used by test mocks
 )
 from agentic_os_cli.colors import Colors, color
-from agentic_os_constants import display_hermes_home
+from agentic_os_constants import display_agentic_os_home
 from agentic_os_cli.mcp_security import validate_mcp_server_entry
 from tools.mcp_tool import _ENV_VAR_PATTERN, _env_ref_name
 
@@ -526,7 +526,7 @@ def cmd_mcp_add(args):
                         server_config["headers"] = _save_bearer_auth_token(
                             name, api_key
                         )
-                        _success(f"Saved to {display_hermes_home()}/.env as {env_key}")
+                        _success(f"Saved to {display_agentic_os_home()}/.env as {env_key}")
 
                 # Set header with env var interpolation
                 if existing_key:
@@ -611,7 +611,7 @@ def cmd_mcp_add(args):
     server_config["enabled"] = True
     if _save_mcp_server(name, server_config):
         print()
-        _success(f"Saved '{name}' to {display_hermes_home()}/config.yaml ({tool_count}/{total} tools enabled)")
+        _success(f"Saved '{name}' to {display_agentic_os_home()}/config.yaml ({tool_count}/{total} tools enabled)")
         _info("Start a new session to use these tools.")
 
 

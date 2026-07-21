@@ -215,7 +215,7 @@ class TestCreateJobSnapshot:
         jobs = self._isolate_storage(monkeypatch)
         (tmp_path / "config.yaml").write_text("model:\n  default: llama-3.3-70b:free\n")
         monkeypatch.setattr(
-            "cron.jobs.get_hermes_home", lambda: tmp_path, raising=True
+            "cron.jobs.get_agentic_os_home", lambda: tmp_path, raising=True
         )
         with patch(
             "agentic_os_cli.runtime_provider.resolve_runtime_provider",
@@ -230,7 +230,7 @@ class TestCreateJobSnapshot:
         jobs = self._isolate_storage(monkeypatch)
         (tmp_path / "config.yaml").write_text("model:\n  default: llama-3.3-70b:free\n")
         monkeypatch.setattr(
-            "cron.jobs.get_hermes_home", lambda: tmp_path, raising=True
+            "cron.jobs.get_agentic_os_home", lambda: tmp_path, raising=True
         )
         with patch(
             "agentic_os_cli.runtime_provider.resolve_runtime_provider",
@@ -251,7 +251,7 @@ def _run_with_current_provider_and_model(job, current_provider, current_model, t
     )
     fake_db = MagicMock()
     with patch("cron.scheduler._hermes_home", tmp_path), \
-         patch("cron.scheduler._get_hermes_home", return_value=tmp_path), \
+         patch("cron.scheduler._get_agentic_os_home", return_value=tmp_path), \
          patch("cron.scheduler._resolve_origin", return_value=None), \
          patch("agentic_os_cli.env_loader.load_hermes_dotenv"), \
          patch("agentic_os_cli.env_loader.reset_secret_source_cache"), \

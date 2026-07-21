@@ -19,7 +19,7 @@ _PROXY_CONFIG = {
             "api_key": "proxy-key",
             "extra_headers": {
                 "CF-Access-Client-Id": "xxxx.access",
-                "X-Client-Name": "hermes-agent",
+                "X-Client-Name": "agentic-os",
             },
         }
     ]
@@ -42,7 +42,7 @@ def test_custom_provider_extra_headers_applied_at_construction(mock_openai):
 
     headers = agent._client_kwargs["default_headers"]
     assert headers["CF-Access-Client-Id"] == "xxxx.access"
-    assert headers["X-Client-Name"] == "hermes-agent"
+    assert headers["X-Client-Name"] == "agentic-os"
 
 
 @patch("run_agent.OpenAI")

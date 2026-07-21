@@ -41,7 +41,7 @@ from gateway.restart import (
 )
 from agentic_os_cli.config import (
     get_env_value,
-    get_hermes_home,
+    get_agentic_os_home,
     is_managed,
     managed_error,
     read_raw_config,
@@ -49,7 +49,7 @@ from agentic_os_cli.config import (
     write_platform_config_field,
 )
 
-# display_hermes_home is imported lazily at call sites to avoid ImportError
+# display_agentic_os_home is imported lazily at call sites to avoid ImportError
 # when agentic_os_constants is cached from a pre-update version during `hermes update`.
 from agentic_os_cli.setup import (
     print_header,
@@ -358,7 +358,7 @@ def _scan_gateway_pids(
         looks_like_gateway_command_line,
         looks_like_gateway_runtime_command_line,
     )
-    current_home = str(get_hermes_home().resolve())
+    current_home = str(get_agentic_os_home().resolve())
     current_home_lc = current_home.lower()
     current_profile_arg = _profile_arg(current_home)
     current_profile_name = (
@@ -988,7 +988,7 @@ def _sync_hermes_home_from_systemd_unit(system: bool) -> None:
     """When acting on a system-scope unit, adopt its ``HERMES_HOME``.
 
     Under ``sudo``, ``HERMES_HOME`` is stripped and ``HOME=/root``, so
-    :func:`get_hermes_home` falls back to ``/root/.hermes`` — the wrong
+    :func:`get_agentic_os_home` falls back to ``/root/.hermes`` — the wrong
     profile. The unit file pins ``HERMES_HOME`` for the actual gateway
     process, so we mirror that into our own environment to make
     ``read_runtime_status`` / ``get_running_pid`` read the correct files.
@@ -1733,10 +1733,10 @@ def _profile_suffix() -> str:
     """
     import hashlib
     import re
-    from agentic_os_constants import get_default_hermes_root
+    from agentic_os_constants import get_default_agentic_os_root
 
-    home = get_hermes_home().resolve()
-    default = get_default_hermes_root().resolve()
+    home = get_agentic_os_home().resolve()
+    default = get_default_agentic_os_root().resolve()
     if home == default:
         return ""
     # Detect <root>/profiles/<name> pattern → use the profile name
@@ -1760,18 +1760,18 @@ def _profile_arg(hermes_home: str | None = None, default_root: str | Path | None
 
     Args:
         hermes_home: Optional explicit HERMES_HOME path. Defaults to the current
-            ``get_hermes_home()`` value. Should be passed when generating a
+            ``get_agentic_os_home()`` value. Should be passed when generating a
             service definition for a different user (e.g. system service).
         default_root: Optional Hermes root to compare against. Used when
             generating a system service for another user from a sudo/root
-            process, where ``Path.home()`` and ``get_default_hermes_root()``
+            process, where ``Path.home()`` and ``get_default_agentic_os_root()``
             refer to root but the target profile lives under the service user.
     """
     import re
-    from agentic_os_constants import get_default_hermes_root
+    from agentic_os_constants import get_default_agentic_os_root
 
-    home = Path(hermes_home or str(get_hermes_home())).resolve()
-    default = Path(default_root).resolve() if default_root else get_default_hermes_root().resolve()
+    home = Path(hermes_home or str(get_agentic_os_home())).resolve()
+    default = Path(default_root).resolve() if default_root else get_default_agentic_os_root().resolve()
     if home == default:
         return ""
     profiles_root = (default / "profiles").resolve()
@@ -2619,7 +2619,7 @@ def _remap_path_for_user(path: str, target_home_dir: str) -> str:
 def _hermes_home_for_target_user(target_home_dir: str) -> str:
     """Remap the current HERMES_HOME to the equivalent under a target user's home.
 
-    When installing a system service via sudo, get_hermes_home() resolves to
+    When installing a system service via sudo, get_agentic_os_home() resolves to
     root's home.  This translates it to the target user's equivalent path:
       /root/.hermes                    → /home/alice/.hermes
       /root/.hermes/profiles/coder     → /home/alice/.hermes/profiles/coder
@@ -2629,7 +2629,7 @@ def _hermes_home_for_target_user(target_home_dir: str) -> str:
     current_hermes = (
         Path(current_hermes_raw).expanduser()
         if current_hermes_raw
-        else get_hermes_home()
+        else get_agentic_os_home()
     )
     # Keep explicit custom paths lexical. Resolving a non-existent custom path
     # can rewrite it through host-specific path mappings, which would bake a
@@ -2673,7 +2673,7 @@ def _build_service_path_dirs(project_root: Path | None = None) -> list[str]:
     if _is_dir(node_bin):
         candidates.append(str(node_bin))
 
-    hermes_home = get_hermes_home()
+    hermes_home = get_agentic_os_home()
     hermes_node = hermes_home / "node" / "bin"
     if _is_dir(hermes_node):
         candidates.append(str(hermes_node))
@@ -2704,7 +2704,7 @@ def _stable_service_working_dir() -> str:
     cannot be resolved (it always can in practice).
     """
     try:
-        home = get_hermes_home()
+        home = get_agentic_os_home()
         if home and Path(home).is_dir():
             return str(Path(home).resolve())
     except Exception:
@@ -2718,12 +2718,12 @@ def _systemd_watchdog_seconds(hermes_home: str | Path | None = None) -> int:
     reset_home_override = None
     if hermes_home is not None:
         from agentic_os_constants import (
-            reset_hermes_home_override,
-            set_hermes_home_override,
+            reset_AGENTIC_OS_HOME_OVERRIDE,
+            set_AGENTIC_OS_HOME_OVERRIDE,
         )
 
-        override_token = set_hermes_home_override(hermes_home)
-        reset_home_override = reset_hermes_home_override
+        override_token = set_AGENTIC_OS_HOME_OVERRIDE(hermes_home)
+        reset_home_override = reset_AGENTIC_OS_HOME_OVERRIDE
     try:
         config = load_gateway_config()
         return coerce_systemd_watchdog_seconds(
@@ -2841,7 +2841,7 @@ StandardError=journal
 WantedBy=multi-user.target
 """
 
-    hermes_home = str(get_hermes_home().resolve())
+    hermes_home = str(get_agentic_os_home().resolve())
     systemd_type, systemd_watchdog_directives = _systemd_watchdog_service_fields(
         hermes_home
     )
@@ -3747,7 +3747,7 @@ def _launchctl_bootstrap(
 
 def _launchd_reload_log_path() -> Path:
     """Path the launchd reload watchdog tails for persistent-orphan detection."""
-    return get_hermes_home() / "logs" / "launchd-reload.log"
+    return get_agentic_os_home() / "logs" / "launchd-reload.log"
 
 
 def _append_launchd_reload_log(message: str) -> None:
@@ -3834,7 +3834,7 @@ def _retry_launchctl_bootstrap_until_registered(
 
 
 def _launchd_unsupported_marker_path() -> Path:
-    return get_hermes_home() / ".gateway-launchd-unsupported"
+    return get_agentic_os_home() / ".gateway-launchd-unsupported"
 
 
 def _write_launchd_unsupported_marker() -> None:
@@ -3891,7 +3891,7 @@ def _spawn_detached_gateway() -> bool:
     """
     from agentic_os_cli._subprocess_compat import windows_detach_popen_kwargs
 
-    log_dir = get_hermes_home() / "logs"
+    log_dir = get_agentic_os_home() / "logs"
     log_dir.mkdir(parents=True, exist_ok=True)
     out_path = log_dir / "gateway.log"
     err_path = log_dir / "gateway.error.log"
@@ -3921,7 +3921,7 @@ def _launchd_fallback_to_detached(reason: str, *, exit_on_failure: bool = True) 
     launched, prints the manual workaround and (by default) exits non-zero so
     the failure surfaces instead of silently doing nothing.
     """
-    from agentic_os_constants import display_hermes_home as _dhh
+    from agentic_os_constants import display_agentic_os_home as _dhh
 
     _write_launchd_unsupported_marker()
     print(f"⚠ launchd cannot manage the gateway on this macOS version ({reason}).")
@@ -3947,8 +3947,8 @@ def generate_launchd_plist() -> str:
     # _stable_service_working_dir() for the rationale (same rot risk applies
     # to launchd's WorkingDirectory as to systemd's).
     working_dir = _stable_service_working_dir()
-    hermes_home = str(get_hermes_home().resolve())
-    log_dir = get_hermes_home() / "logs"
+    hermes_home = str(get_agentic_os_home().resolve())
+    log_dir = get_agentic_os_home() / "logs"
     log_dir.mkdir(parents=True, exist_ok=True)
     label = get_launchd_label()
     profile_arg = _profile_arg(hermes_home)
@@ -4119,7 +4119,7 @@ def refresh_launchd_plist_if_needed() -> bool:
         # to ~/.hermes/logs/launchd-reload.log, which the health watchdog
         # can tail to detect a persistent orphan. See hermes-restart
         # rootcause handoff (2026-06-26 incident).
-        reload_log_path = get_hermes_home() / "logs" / "launchd-reload.log"
+        reload_log_path = get_agentic_os_home() / "logs" / "launchd-reload.log"
         try:
             reload_log_path.parent.mkdir(parents=True, exist_ok=True)
         except OSError:
@@ -4236,7 +4236,7 @@ def launchd_install(force: bool = False):
     print()
     print("Next steps:")
     print("  hermes gateway status             # Check status")
-    from agentic_os_constants import display_hermes_home as _dhh
+    from agentic_os_constants import display_agentic_os_home as _dhh
 
     print(f"  tail -f {_dhh()}/logs/gateway.log  # View logs")
 
@@ -4547,7 +4547,7 @@ def launchd_status(deep: bool = False):
             print(f"  Note: a detached gateway process is running (PID {fallback_pid})")
 
     if deep:
-        log_file = get_hermes_home() / "logs" / "gateway.log"
+        log_file = get_agentic_os_home() / "logs" / "gateway.log"
         if log_file.exists():
             print()
             print("Recent logs:")
@@ -4612,8 +4612,8 @@ def _guard_named_profile_under_multiplexer(force: bool = False) -> None:
         return  # default profile (or unrecognized) — this guard doesn't apply
 
     try:
-        from agentic_os_constants import get_default_hermes_root
-        default_root = get_default_hermes_root()
+        from agentic_os_constants import get_default_agentic_os_root
+        default_root = get_default_agentic_os_root()
         # (b) Is the default-profile gateway running?
         from gateway.status import get_running_pid as _default_running_pid  # noqa
     except Exception:
@@ -4884,7 +4884,7 @@ def run_gateway(verbose: int = 0, quiet: bool = False, replace: bool = False, fo
         if os.environ.get("HERMES_GATEWAY_EXIT_DIAG", "1") != "1":
             return
         try:
-            from agentic_os_constants import get_hermes_home as _ghh
+            from agentic_os_constants import get_agentic_os_home as _ghh
 
             log_dir = _ghh() / "logs"
             log_dir.mkdir(parents=True, exist_ok=True)
@@ -5311,7 +5311,7 @@ def _platform_status(platform: dict) -> str:
     val = get_env_value(token_var)
     if token_var == "WHATSAPP_ENABLED":
         if val and val.lower() == "true":
-            session_file = get_hermes_home() / "whatsapp" / "session" / "creds.json"
+            session_file = get_agentic_os_home() / "whatsapp" / "session" / "creds.json"
             if session_file.exists():
                 return "configured + paired"
             return "enabled, not paired"
@@ -5698,7 +5698,7 @@ def _setup_weixin():
     import asyncio
 
     try:
-        credentials = asyncio.run(qr_login(str(get_hermes_home())))
+        credentials = asyncio.run(qr_login(str(get_agentic_os_home())))
     except KeyboardInterrupt:
         print()
         print_warning("  Weixin setup cancelled.")
@@ -6408,7 +6408,7 @@ def gateway_setup():
                     "  To enable systemd: add systemd=true to /etc/wsl.conf, then 'wsl --shutdown'"
                 )
             elif is_termux():
-                from agentic_os_constants import display_hermes_home as _dhh
+                from agentic_os_constants import display_agentic_os_home as _dhh
 
                 print_info("  Termux does not use systemd/launchd services.")
                 print_info("  Run in foreground: hermes gateway run")

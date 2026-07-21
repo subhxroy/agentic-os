@@ -127,7 +127,7 @@ A nightly backlog triage on Sonnet costs roughly $0.02-0.05. A monitoring check 
 Agentic OS is open source and free. The automation infrastructure — cron scheduler, webhook platform, skill system, multi-platform delivery — is built in.
 
 ```bash
-curl -fsSL https://hermes-agent.nousresearch.com/install.sh | bash
+curl -fsSL https://agentic-os.nousresearch.com/install.sh | bash
 hermes setup
 ```
 
@@ -149,11 +149,11 @@ hermes webhook subscribe pr-review \
   --deliver github_comment
 ```
 
-Full automation blueprints gallery: [hermes-agent.nousresearch.com/docs/reference/automation-blueprints-catalog](https://hermes-agent.nousresearch.com/docs/reference/automation-blueprints-catalog)
+Full automation blueprints gallery: [agentic-os.nousresearch.com/docs/reference/automation-blueprints-catalog](https://agentic-os.nousresearch.com/docs/reference/automation-blueprints-catalog)
 
-Documentation: [hermes-agent.nousresearch.com](https://hermes-agent.nousresearch.com)
+Documentation: [agentic-os.nousresearch.com](https://agentic-os.nousresearch.com)
 
-GitHub: [github.com/NousResearch/hermes-agent](https://github.com/NousResearch/hermes-agent)
+GitHub: [github.com/subhxroy/agentic-os](https://github.com/subhxroy/agentic-os)
 
 ---
 

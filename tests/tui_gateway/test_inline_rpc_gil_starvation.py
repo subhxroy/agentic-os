@@ -35,7 +35,7 @@ def _restore_stdout():
 @pytest.fixture()
 def server():
     with patch.dict("sys.modules", {
-        "agentic_os_constants": MagicMock(get_hermes_home=MagicMock(return_value="/tmp/hermes_test")),
+        "agentic_os_constants": MagicMock(get_agentic_os_home=MagicMock(return_value="/tmp/hermes_test")),
         "agentic_os_cli.env_loader": MagicMock(),
         "agentic_os_cli.banner": MagicMock(),
         "agentic_os_state": MagicMock(),

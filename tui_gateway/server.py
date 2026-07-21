@@ -18,10 +18,10 @@ from pathlib import Path
 from typing import Any, NamedTuple, Optional
 
 from agentic_os_constants import (
-    get_hermes_home,
-    get_hermes_home_override,
-    reset_hermes_home_override,
-    set_hermes_home_override,
+    get_agentic_os_home,
+    get_agentic_os_home_override,
+    reset_AGENTIC_OS_HOME_OVERRIDE,
+    set_AGENTIC_OS_HOME_OVERRIDE,
 )
 from agentic_os_cli.env_loader import load_hermes_dotenv
 from utils import is_truthy_value
@@ -38,7 +38,7 @@ from tui_gateway.transport import (
 
 logger = logging.getLogger(__name__)
 
-_hermes_home = get_hermes_home()
+_hermes_home = get_agentic_os_home()
 load_hermes_dotenv(
     hermes_home=_hermes_home, project_env=Path(__file__).parent.parent / ".env"
 )
@@ -1088,7 +1088,7 @@ def _profile_scoped(handler):
     """Bind ``params['profile']``'s HERMES_HOME around a pet RPC handler.
 
     Pets are per-profile: ``display.pet.*`` lives in the profile's config.yaml and
-    sprites install under its ``pets/`` dir (both resolve via ``get_hermes_home``).
+    sprites install under its ``pets/`` dir (both resolve via ``get_agentic_os_home``).
     The desktop sends ``profile`` on pet calls so config + pets dir resolve to the
     focused profile even in app-global remote mode, where one backend serves every
     profile. No-op for the launch profile (own-profile backends already resolve it).
@@ -1098,11 +1098,11 @@ def _profile_scoped(handler):
         home = _profile_home(params.get("profile") if isinstance(params, dict) else None)
         if home is None:
             return handler(rid, params)
-        token = set_hermes_home_override(home)
+        token = set_AGENTIC_OS_HOME_OVERRIDE(home)
         try:
             return handler(rid, params)
         finally:
-            reset_hermes_home_override(token)
+            reset_AGENTIC_OS_HOME_OVERRIDE(token)
 
     return wrapper
 
@@ -1594,7 +1594,7 @@ def _start_agent_build(sid: str, session: dict) -> None:
             # agent that profile's db so turns persist to the right state.db.
             session_db = None
             if profile_home:
-                home_token = set_hermes_home_override(profile_home)
+                home_token = set_AGENTIC_OS_HOME_OVERRIDE(profile_home)
                 try:
                     from agentic_os_state import SessionDB
 
@@ -1706,7 +1706,7 @@ def _start_agent_build(sid: str, session: dict) -> None:
             _emit("error", sid, {"message": f"agent init failed: {e}"})
         finally:
             if home_token is not None:
-                reset_hermes_home_override(home_token)
+                reset_AGENTIC_OS_HOME_OVERRIDE(home_token)
             # _attach_worker already closed the worker if this session was
             # reaped mid-build; only the late notify registration can still
             # leak (session.close unregistered before _build registered it).
@@ -2218,7 +2218,7 @@ def _load_cfg() -> dict:
         # remote profile loads ITS config (model, skills, prompt); otherwise the
         # launch profile's _hermes_home. Cache is keyed on the resolved path, so
         # profiles don't clobber each other.
-        override = get_hermes_home_override()
+        override = get_agentic_os_home_override()
         home = override if isinstance(override, str) and override else _hermes_home
         p = Path(home) / "config.yaml"
         mtime = p.stat().st_mtime if p.exists() else None
@@ -6406,7 +6406,7 @@ def _(rid, params: dict) -> dict:
         return _err(rid, 4090, limit_message)
     _enable_gateway_prompts()
     home_token = (
-        set_hermes_home_override(str(profile_home)) if profile_home is not None else None
+        set_AGENTIC_OS_HOME_OVERRIDE(str(profile_home)) if profile_home is not None else None
     )
     try:
         db.reopen_session(target)
@@ -6448,7 +6448,7 @@ def _(rid, params: dict) -> dict:
         return _err(rid, 5000, f"resume failed: {e}")
     finally:
         if home_token is not None:
-            reset_hermes_home_override(home_token)
+            reset_AGENTIC_OS_HOME_OVERRIDE(home_token)
 
     # Double-checked locking: another concurrent resume may have created the
     # live session while we were building. Re-check under the lock; if it won,
@@ -6475,7 +6475,7 @@ def _(rid, params: dict) -> dict:
             return _ok(rid, payload)
         try:
             init_home_token = (
-                set_hermes_home_override(str(profile_home))
+                set_AGENTIC_OS_HOME_OVERRIDE(str(profile_home))
                 if profile_home is not None
                 else None
             )
@@ -6492,7 +6492,7 @@ def _(rid, params: dict) -> dict:
                 )
             finally:
                 if init_home_token is not None:
-                    reset_hermes_home_override(init_home_token)
+                    reset_AGENTIC_OS_HOME_OVERRIDE(init_home_token)
             if sid in _sessions:
                 if stored_runtime_overrides.get("model_override") is not None:
                     _sessions[sid]["model_override"] = stored_runtime_overrides[
@@ -6788,7 +6788,7 @@ def _(rid, params: dict) -> dict:
     active = {s.get("session_key") for s in snapshot if s.get("session_key")}
     if target in active:
         return _err(rid, 4023, "cannot delete an active session")
-    sessions_dir = get_hermes_home() / "sessions"
+    sessions_dir = get_agentic_os_home() / "sessions"
     try:
         deleted = db.delete_session(target, sessions_dir=sessions_dir)
     except Exception as e:
@@ -7766,9 +7766,9 @@ def _(rid, params: dict) -> dict:
 
 def _pet_gen_root():
     """Profile-scoped staging dir for in-progress generation drafts."""
-    from agentic_os_constants import get_hermes_home
+    from agentic_os_constants import get_agentic_os_home
 
-    root = get_hermes_home() / "cache" / "pet-gen"
+    root = get_agentic_os_home() / "cache" / "pet-gen"
     root.mkdir(parents=True, exist_ok=True)
     return root
 
@@ -8683,7 +8683,7 @@ def _(rid, params: dict) -> dict:
     if err:
         return err
 
-    from agentic_os_constants import display_hermes_home
+    from agentic_os_constants import display_agentic_os_home
 
     key = session.get("session_key") or params.get("session_id") or ""
     agent = session.get("agent")
@@ -8719,7 +8719,7 @@ def _(rid, params: dict) -> dict:
         "Hermes TUI Status",
         "",
         f"Session ID: {key}",
-        f"Path: {display_hermes_home()}",
+        f"Path: {display_agentic_os_home()}",
     ]
     if project:
         lines.append(f"Project: {project['name']}")
@@ -8919,7 +8919,7 @@ def _(rid, params: dict) -> dict:
     # Mirror the classic CLI /save: snapshot under the Hermes profile home
     # (~/.hermes/sessions/saved/) rather than the project/workspace CWD, and
     # include the system prompt so the export matches the dashboard save.
-    saved_dir = get_hermes_home() / "sessions" / "saved"
+    saved_dir = get_agentic_os_home() / "sessions" / "saved"
     try:
         saved_dir.mkdir(parents=True, exist_ok=True)
     except Exception as e:
@@ -9180,9 +9180,9 @@ def _(rid, params: dict) -> dict:
 
 
 def _spawn_trees_root():
-    from agentic_os_constants import get_hermes_home
+    from agentic_os_constants import get_agentic_os_home
 
-    root = get_hermes_home() / "spawn-trees"
+    root = get_agentic_os_home() / "spawn-trees"
     root.mkdir(parents=True, exist_ok=True)
     return root
 
@@ -9946,7 +9946,7 @@ def _run_prompt_submit(rid, sid: str, session: dict, text: Any) -> None:
             )
             _profile_home_str = session.get("profile_home")
             if _profile_home_str:
-                home_token = set_hermes_home_override(_profile_home_str)
+                home_token = set_AGENTIC_OS_HOME_OVERRIDE(_profile_home_str)
             # The sudo password callback is thread-local (tools.terminal_tool
             # _callback_tls), so wiring it on the build thread doesn't reach this
             # turn thread — terminal sudo prompts would fall through to /dev/tty
@@ -10382,7 +10382,7 @@ def _run_prompt_submit(rid, sid: str, session: dict, text: Any) -> None:
             except Exception:
                 pass
             if home_token is not None:
-                reset_hermes_home_override(home_token)
+                reset_AGENTIC_OS_HOME_OVERRIDE(home_token)
             _clear_session_context(session_tokens)
             # Clear the per-turn interim callback so a stale closure from
             # this turn can't fire during a later turn on the same agent.
@@ -12057,11 +12057,11 @@ def _is_repo_junk(root: str) -> bool:
     if not root:
         return True
 
-    from agentic_os_constants import get_hermes_home
+    from agentic_os_constants import get_agentic_os_home
 
     real = os.path.realpath(root)
     home = os.path.realpath(os.path.expanduser("~"))
-    hermes_home = os.path.realpath(str(get_hermes_home()))
+    hermes_home = os.path.realpath(str(get_agentic_os_home()))
 
     return real == home or real == hermes_home or real.startswith(hermes_home + os.sep)
 
@@ -12077,11 +12077,11 @@ def _is_session_cwd_junk(cwd: str) -> bool:
     if not cwd:
         return True
 
-    from agentic_os_constants import get_hermes_home
+    from agentic_os_constants import get_agentic_os_home
 
     real = os.path.normcase(os.path.realpath(cwd))
     home = os.path.normcase(os.path.realpath(os.path.expanduser("~")))
-    hermes_home = os.path.normcase(os.path.realpath(str(get_hermes_home())))
+    hermes_home = os.path.normcase(os.path.realpath(str(get_agentic_os_home())))
     return real == home or real == hermes_home
 
 
@@ -12506,9 +12506,9 @@ def _(rid, params: dict) -> dict:
         except Exception as e:
             return _err(rid, 5013, str(e))
     if key == "profile":
-        from agentic_os_constants import display_hermes_home
+        from agentic_os_constants import display_agentic_os_home
 
-        return _ok(rid, {"home": str(_hermes_home), "display": display_hermes_home()})
+        return _ok(rid, {"home": str(_hermes_home), "display": display_agentic_os_home()})
     if key == "project":
         cfg_terminal = _load_cfg().get("terminal") or {}
         raw = str(params.get("cwd", "") or cfg_terminal.get("cwd", "") or "").strip()

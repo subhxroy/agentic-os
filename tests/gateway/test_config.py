@@ -8,7 +8,7 @@ from unittest.mock import patch
 import pytest
 
 from agent.secret_scope import reset_secret_scope, set_secret_scope
-from agentic_os_constants import reset_hermes_home_override, set_hermes_home_override
+from agentic_os_constants import reset_AGENTIC_OS_HOME_OVERRIDE, set_AGENTIC_OS_HOME_OVERRIDE
 from gateway.config import (
     ChannelOverride,
     GatewayConfig,
@@ -1831,13 +1831,13 @@ class TestLoadGatewayConfig:
         monkeypatch.setenv("API_SERVER_ENABLED", "true")
         monkeypatch.setenv("DISCORD_BOT_TOKEN", "default-token")
 
-        home_token = set_hermes_home_override(str(secondary_home))
+        home_token = set_AGENTIC_OS_HOME_OVERRIDE(str(secondary_home))
         secret_token = set_secret_scope({"DISCORD_BOT_TOKEN": "worker-token"})
         try:
             config = load_gateway_config()
         finally:
             reset_secret_scope(secret_token)
-            reset_hermes_home_override(home_token)
+            reset_AGENTIC_OS_HOME_OVERRIDE(home_token)
 
         assert config.multiplex_profiles is True
         assert config.platforms[Platform.DISCORD].token == "worker-token"

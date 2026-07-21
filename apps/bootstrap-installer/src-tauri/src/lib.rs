@@ -178,7 +178,7 @@ pub fn run() {
             bootstrap::launch_hermes_desktop,
             // Diagnostics
             paths::get_log_path,
-            paths::get_hermes_home,
+            paths::get_agentic_os_home,
             paths::open_log_dir,
         ])
         .run(tauri::generate_context!())

@@ -12,7 +12,7 @@ import subprocess
 import sys
 from pathlib import Path
 
-from agentic_os_constants import get_hermes_home
+from agentic_os_constants import get_agentic_os_home
 
 from agentic_os_cli.colors import Colors, color
 
@@ -109,7 +109,7 @@ def remove_wrapper_script():
             try:
                 # Check if it's our wrapper (contains agentic_os_cli reference)
                 content = wrapper.read_text()
-                if 'agentic_os_cli' in content or 'hermes-agent' in content:
+                if 'agentic_os_cli' in content or 'agentic-os' in content:
                     wrapper.unlink()
                     removed.append(wrapper)
             except Exception as e:
@@ -421,8 +421,8 @@ def _is_windows() -> bool:
 def _is_default_hermes_home(hermes_home: Path) -> bool:
     """Return True when ``hermes_home`` points at the default (non-profile) root."""
     try:
-        from agentic_os_constants import get_default_hermes_root
-        return hermes_home.resolve() == get_default_hermes_root().resolve()
+        from agentic_os_constants import get_default_agentic_os_root
+        return hermes_home.resolve() == get_default_agentic_os_root().resolve()
     except Exception:
         return False
 
@@ -506,7 +506,7 @@ def run_gui_uninstall(args):
         uninstall_gui,
     )
 
-    hermes_home = get_hermes_home()
+    hermes_home = get_agentic_os_home()
     summary = gui_install_summary(hermes_home)
     skip_confirm = bool(getattr(args, "yes", False))
 
@@ -533,7 +533,7 @@ def run_gui_uninstall(args):
     print()
     if agent_is_installed(hermes_home):
         print(color("Kept intact:", Colors.GREEN, Colors.BOLD))
-        print(f"  • The Hermes agent at {hermes_home / 'hermes-agent'}")
+        print(f"  • The Hermes agent at {hermes_home / 'agentic-os'}")
         print(f"  • Your config, sessions, and secrets under {hermes_home}")
         print()
 
@@ -573,7 +573,7 @@ def run_uninstall(args):
     - Keep data: removes code but keeps ~/.hermes/ for future reinstall
     """
     project_root = get_project_root()
-    hermes_home = get_hermes_home()
+    hermes_home = get_agentic_os_home()
 
     if bool(getattr(args, "dry_run", False)):
         _print_uninstall_dry_run(
@@ -899,9 +899,9 @@ def _perform_uninstall(
         print()
         print("To reinstall later with your existing settings:")
         if _is_windows():
-            print(color("  iex (irm https://hermes-agent.nousresearch.com/install.ps1)", Colors.DIM))
+            print(color("  iex (irm https://agentic-os.nousresearch.com/install.ps1)", Colors.DIM))
         else:
-            print(color("  curl -fsSL https://hermes-agent.nousresearch.com/install.sh | bash", Colors.DIM))
+            print(color("  curl -fsSL https://agentic-os.nousresearch.com/install.sh | bash", Colors.DIM))
         print()
 
     if _is_windows():

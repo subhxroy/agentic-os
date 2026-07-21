@@ -20,7 +20,7 @@ def server():
         "sys.modules",
         {
             "agentic_os_constants": MagicMock(
-                get_hermes_home=MagicMock(return_value="/tmp/hermes_test_moa_emit")
+                get_agentic_os_home=MagicMock(return_value="/tmp/hermes_test_moa_emit")
             ),
             "agentic_os_cli.env_loader": MagicMock(),
             "agentic_os_cli.banner": MagicMock(),

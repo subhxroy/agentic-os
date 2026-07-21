@@ -174,13 +174,13 @@ def test_hosted_auth_rejects_overlapping_flow_for_same_server():
         "/api/mcp/servers",
         json={"name": "reports", "url": "https://mcp.example/mcp", "auth": "oauth"},
     )
-    from agentic_os_constants import get_hermes_home
+    from agentic_os_constants import get_agentic_os_home
 
     existing = DashboardOAuthFlow(
         flow_id="existing-reports",
         server_name="reports",
         profile="other-profile",
-        hermes_home=str(get_hermes_home().expanduser().resolve(strict=False)),
+        hermes_home=str(get_agentic_os_home().expanduser().resolve(strict=False)),
         redirect_uri="https://agent.example/callback/existing",
     )
     web_server._mcp_oauth_flows[existing.flow_id] = existing

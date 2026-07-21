@@ -310,10 +310,10 @@ class TestResolveSessionName:
     def test_per_repo_uses_git_root(self):
         config = HonchoClientConfig(session_strategy="per-repo")
         with patch.object(
-            HonchoClientConfig, "_git_repo_name", return_value="hermes-agent"
+            HonchoClientConfig, "_git_repo_name", return_value="agentic-os"
         ):
             result = config.resolve_session_name("/home/user/hermes-agent/subdir")
-        assert result == "hermes-agent"
+        assert result == "agentic-os"
 
     def test_per_repo_with_peer_prefix(self):
         config = HonchoClientConfig(
@@ -744,9 +744,9 @@ class TestGetHonchoClient:
     )
     def test_timeout_change_triggers_client_rebuild(self):
         """Changing timeout config must rebuild the cached client."""
-        from agentic_os_constants import get_hermes_home
+        from agentic_os_constants import get_agentic_os_home
 
-        cfg_yaml = get_hermes_home() / "config.yaml"
+        cfg_yaml = get_agentic_os_home() / "config.yaml"
         cfg_yaml.write_text("honcho:\n  timeout: 30\n")
 
         fake_honcho_1 = MagicMock(name="Honcho_v1")

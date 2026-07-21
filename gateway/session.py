@@ -618,7 +618,7 @@ def build_session_context_prompt(
     lines.append("")
     lines.append("**Delivery options for scheduled tasks:**")
 
-    from agentic_os_constants import display_hermes_home
+    from agentic_os_constants import display_agentic_os_home
 
     # Origin delivery
     if context.source.platform == Platform.LOCAL:
@@ -632,7 +632,7 @@ def build_session_context_prompt(
 
     # Local always available
     lines.append(
-        f"- `\"local\"` → Save to local files only ({display_hermes_home()}/cron/output/)"
+        f"- `\"local\"` → Save to local files only ({display_agentic_os_home()}/cron/output/)"
     )
 
     # Platform home channels

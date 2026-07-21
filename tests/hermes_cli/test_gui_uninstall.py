@@ -16,7 +16,7 @@ import agentic_os_cli.gui_uninstall as gu
 
 def _make_agent(hermes_home: Path) -> Path:
     """Create a fake agent install: source package + venv."""
-    agent_root = hermes_home / "hermes-agent"
+    agent_root = hermes_home / "agentic-os"
     (agent_root / "agentic_os_cli").mkdir(parents=True)
     (agent_root / "agentic_os_cli" / "__init__.py").write_text("")
     (agent_root / "venv" / "bin").mkdir(parents=True)
@@ -25,12 +25,12 @@ def _make_agent(hermes_home: Path) -> Path:
 
 def _make_gui_build(hermes_home: Path) -> None:
     """Create the source-built GUI artifacts a `hermes desktop` run produces."""
-    desktop = hermes_home / "hermes-agent" / "apps" / "desktop"
+    desktop = hermes_home / "agentic-os" / "apps" / "desktop"
     (desktop / "dist").mkdir(parents=True)
     (desktop / "dist" / "index.html").write_text("<html>")
     (desktop / "release" / "linux-unpacked").mkdir(parents=True)
     (desktop / "node_modules").mkdir(parents=True)
-    (hermes_home / "hermes-agent" / "node_modules").mkdir(parents=True)
+    (hermes_home / "agentic-os" / "node_modules").mkdir(parents=True)
     (hermes_home / "desktop-build-stamp.json").write_text("{}")
 
 
@@ -51,7 +51,7 @@ def test_agent_is_installed_detects_source_and_venv(tmp_path):
 def test_agent_is_installed_venv_only(tmp_path):
     """A checkout with only a venv (no package dir yet) still counts."""
     hermes_home = tmp_path / ".hermes"
-    (hermes_home / "hermes-agent" / "venv").mkdir(parents=True)
+    (hermes_home / "agentic-os" / "venv").mkdir(parents=True)
     assert gu.agent_is_installed(hermes_home) is True
 
 
@@ -228,7 +228,7 @@ def test_run_uninstall_yes_keep_data_is_non_interactive(tmp_path, monkeypatch):
     import agentic_os_cli.uninstall as uninstall
 
     hermes_home = tmp_path / ".hermes"
-    agent_root = hermes_home / "hermes-agent"
+    agent_root = hermes_home / "agentic-os"
     (agent_root / "agentic_os_cli").mkdir(parents=True)
     (hermes_home / "config.yaml").write_text("x: 1\n")
     desktop = agent_root / "apps" / "desktop"
@@ -239,7 +239,7 @@ def test_run_uninstall_yes_keep_data_is_non_interactive(tmp_path, monkeypatch):
 
     # Stub every destructive external so the test only exercises the control
     # flow + the real GUI sweep (which is safe inside tmp_path).
-    monkeypatch.setattr(uninstall, "get_hermes_home", lambda: hermes_home)
+    monkeypatch.setattr(uninstall, "get_agentic_os_home", lambda: hermes_home)
     monkeypatch.setattr(uninstall, "get_project_root", lambda: fake_code)
     monkeypatch.setattr(uninstall, "uninstall_gateway_service", lambda: False)
     monkeypatch.setattr(uninstall, "remove_path_from_shell_configs", lambda: [])
@@ -268,12 +268,12 @@ def test_run_uninstall_yes_full_wipes_home(tmp_path, monkeypatch):
     import agentic_os_cli.uninstall as uninstall
 
     hermes_home = tmp_path / ".hermes"
-    (hermes_home / "hermes-agent" / "agentic_os_cli").mkdir(parents=True)
+    (hermes_home / "agentic-os" / "agentic_os_cli").mkdir(parents=True)
     (hermes_home / "config.yaml").write_text("x: 1\n")
     fake_code = tmp_path / "checkout"
     fake_code.mkdir()
 
-    monkeypatch.setattr(uninstall, "get_hermes_home", lambda: hermes_home)
+    monkeypatch.setattr(uninstall, "get_agentic_os_home", lambda: hermes_home)
     monkeypatch.setattr(uninstall, "get_project_root", lambda: fake_code)
     monkeypatch.setattr(uninstall, "uninstall_gateway_service", lambda: False)
     monkeypatch.setattr(uninstall, "remove_path_from_shell_configs", lambda: [])
@@ -301,18 +301,18 @@ def test_uninstall_module_main_gui_mode(tmp_path, monkeypatch):
     import agentic_os_cli.uninstall as uninstall
 
     hermes_home = tmp_path / ".hermes"
-    agent_root = hermes_home / "hermes-agent"
+    agent_root = hermes_home / "agentic-os"
     (agent_root / "agentic_os_cli").mkdir(parents=True)
     desktop = agent_root / "apps" / "desktop"
     (desktop / "release").mkdir(parents=True)
     (hermes_home / "desktop-build-stamp.json").write_text("{}")
     (hermes_home / "config.yaml").write_text("x: 1\n")
 
-    monkeypatch.setattr(uninstall, "get_hermes_home", lambda: hermes_home)
+    monkeypatch.setattr(uninstall, "get_agentic_os_home", lambda: hermes_home)
     from agentic_os_cli import gui_uninstall as gu_mod
     monkeypatch.setattr(gu_mod, "packaged_gui_app_paths", lambda: [])
     monkeypatch.setattr(gu_mod, "desktop_userdata_dir", lambda: tmp_path / "none")
-    monkeypatch.setattr(gu_mod, "get_hermes_home", lambda: hermes_home)
+    monkeypatch.setattr(gu_mod, "get_agentic_os_home", lambda: hermes_home)
     monkeypatch.setattr("builtins.input", lambda *a, **k: pytest.fail("prompted in module main"))
 
     rc = uninstall.main(["--mode", "gui"])

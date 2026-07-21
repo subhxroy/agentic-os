@@ -387,14 +387,14 @@ class TestTrackForgetQuick:
     ):
         dg = _load_lib()
         protected_empty = (
-            _isolate_env / "hermes-agent" / "node_modules" / "pkg" / "empty"
+            _isolate_env / "agentic-os" / "node_modules" / "pkg" / "empty"
         )
         protected_empty.mkdir(parents=True)
 
         original_iterdir = Path.iterdir
 
         def guarded_iterdir(path):
-            if path == _isolate_env / "hermes-agent":
+            if path == _isolate_env / "agentic-os":
                 raise AssertionError("quick() descended into protected hermes-agent/")
             return original_iterdir(path)
 

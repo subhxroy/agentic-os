@@ -155,8 +155,8 @@ def _get_mcp_stderr_log() -> Any:
         if _mcp_stderr_log_fh is not None:
             return _mcp_stderr_log_fh
         try:
-            from agentic_os_constants import get_hermes_home
-            log_dir = get_hermes_home() / "logs"
+            from agentic_os_constants import get_agentic_os_home
+            log_dir = get_agentic_os_home() / "logs"
             log_dir.mkdir(parents=True, exist_ok=True)
             log_path = log_dir / "mcp-stderr.log"
             # Line-buffered so server output lands on disk promptly; errors=
@@ -2215,7 +2215,7 @@ class MCPServerTask:
             raise ImportError(
                 f"MCP server '{self.name}' requires the 'mcp' Python SDK, but "
                 "it is not installed. Install with:\n"
-                "  pip install 'hermes-agent[mcp]'\n"
+                "  pip install 'agentic-os[mcp]'\n"
                 "or (full install):\n"
                 "  pip install 'hermes-agent[all]'"
             )
@@ -3801,23 +3801,23 @@ def _wrap_with_home_override(coro: "Coroutine") -> "Coroutine":
     """
     try:
         from agentic_os_constants import (
-            get_hermes_home_override,
-            reset_hermes_home_override,
-            set_hermes_home_override,
+            get_agentic_os_home_override,
+            reset_AGENTIC_OS_HOME_OVERRIDE,
+            set_AGENTIC_OS_HOME_OVERRIDE,
         )
 
-        home_override = get_hermes_home_override()
+        home_override = get_agentic_os_home_override()
     except Exception:
         return coro
     if not home_override:
         return coro
 
     async def _scoped():
-        token = set_hermes_home_override(home_override)
+        token = set_AGENTIC_OS_HOME_OVERRIDE(home_override)
         try:
             return await coro
         finally:
-            reset_hermes_home_override(token)
+            reset_AGENTIC_OS_HOME_OVERRIDE(token)
 
     return _scoped()
 
@@ -3871,7 +3871,7 @@ def _run_on_mcp_loop(coro_or_factory, timeout: float = 30):
     # loop thread, so they copy the loop thread's context — not the
     # scheduling thread's. A per-request profile scope (the dashboard's
     # ?profile= endpoints, e.g. the MCP "Test server" probe) would silently
-    # vanish here: OAuth token stores and any other get_hermes_home()
+    # vanish here: OAuth token stores and any other get_agentic_os_home()
     # resolution inside the coroutine would read the process home instead
     # of the selected profile's. Re-establish the override inside the
     # task's own context (task-local — concurrent calls carrying different

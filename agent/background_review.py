@@ -12,7 +12,7 @@ credentials, cached system prompt) so it hits the same prefix cache and
 uses the same auth.  It runs with a tool whitelist limited to memory and
 skill management tools; everything else is denied at runtime.
 
-See the ``hermes-agent-dev`` skill (``references/self-improvement-loop.md``)
+See the ``agentic-os-dev`` skill (``references/self-improvement-loop.md``)
 for invariants and PR review criteria.
 """
 
@@ -249,7 +249,7 @@ _SKILL_REVIEW_PROMPT = (
     "If you notice two existing skills that overlap, note it in your "
     "reply — the background curator handles consolidation at scale.\n\n"
     "Protected skills (DO NOT edit these):\n"
-    "  • Bundled skills (shipped with Agentic OS, e.g. 'hermes-agent').\n"
+    "  • Bundled skills (shipped with Agentic OS, e.g. 'agentic-os').\n"
     "  • Hub-installed skills (installed via 'hermes skills install').\n"
     "Pinned skills (marked via 'hermes curator pin') CAN be improved — "
     "pin only blocks deletion/archive/consolidation by the curator, not "
@@ -335,7 +335,7 @@ _COMBINED_REVIEW_PROMPT = (
     "If you notice overlapping existing skills, mention it — the "
     "background curator handles consolidation.\n\n"
     "Protected skills (DO NOT edit these):\n"
-    "  • Bundled skills (shipped with Agentic OS, e.g. 'hermes-agent').\n"
+    "  • Bundled skills (shipped with Agentic OS, e.g. 'agentic-os').\n"
     "  • Hub-installed skills (installed via 'hermes skills install').\n"
     "Pinned skills (marked via 'hermes curator pin') CAN be improved — "
     "pin only blocks deletion/archive/consolidation by the curator, not "

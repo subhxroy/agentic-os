@@ -1148,8 +1148,8 @@ def _local_openviking_bind(endpoint: str) -> tuple[str, int]:
 
 def _openviking_server_log_path() -> Path:
     try:
-        from agentic_os_constants import get_hermes_home
-        home = get_hermes_home()
+        from agentic_os_constants import get_agentic_os_home
+        home = get_agentic_os_home()
     except Exception:
         home = Path(os.environ.get("HERMES_HOME", "")).expanduser() if os.environ.get("HERMES_HOME") else Path.home() / ".hermes"
     return home / _OPENVIKING_SERVER_LOG_RELATIVE_PATH

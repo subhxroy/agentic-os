@@ -30,7 +30,7 @@ import tempfile
 import time
 from contextlib import contextmanager
 from pathlib import Path
-from agentic_os_constants import get_hermes_home
+from agentic_os_constants import get_agentic_os_home
 from typing import Dict, Any, List, Optional
 
 from utils import atomic_replace
@@ -54,7 +54,7 @@ logger = logging.getLogger(__name__)
 # happened after the first import.
 def get_memory_dir() -> Path:
     """Return the profile-scoped memories directory."""
-    return get_hermes_home() / "memories"
+    return get_agentic_os_home() / "memories"
 
 # Stable header prefixes for the system-prompt memory blocks rendered by
 # MemoryStore._render_block. Exported so compression's prompt-retention check

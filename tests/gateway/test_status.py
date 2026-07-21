@@ -368,7 +368,7 @@ class TestGatewayPidState:
         for a named profile), gateway identity files should still be written to
         the process-level HERMES_HOME, not the profile's directory.  See #56986.
         """
-        from agentic_os_constants import set_hermes_home_override, reset_hermes_home_override
+        from agentic_os_constants import set_AGENTIC_OS_HOME_OVERRIDE, reset_AGENTIC_OS_HOME_OVERRIDE
 
         process_home = tmp_path / "default"
         process_home.mkdir()
@@ -377,11 +377,11 @@ class TestGatewayPidState:
         monkeypatch.setenv("HERMES_HOME", str(process_home))
 
         # Simulate a profile context override being active during write.
-        token = set_hermes_home_override(str(profile_home))
+        token = set_AGENTIC_OS_HOME_OVERRIDE(str(profile_home))
         try:
             status.write_pid_file()
         finally:
-            reset_hermes_home_override(token)
+            reset_AGENTIC_OS_HOME_OVERRIDE(token)
 
         # PID file must land in the process-level home, not the profile home.
         assert (process_home / "gateway.pid").exists()

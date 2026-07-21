@@ -168,7 +168,7 @@ def test_client_id_defaults_to_hermes_agent(monkeypatch):
     # One client for every surface; the env var overrides for unusual deployments.
     monkeypatch.delenv("HONCHO_OAUTH_CLIENT_ID", raising=False)
     common = {"environment": "production", "base_url": "https://api.honcho.dev"}
-    assert oauth_flow.resolve_endpoints(**common).client_id == "hermes-agent"
+    assert oauth_flow.resolve_endpoints(**common).client_id == "agentic-os"
     monkeypatch.setenv("HONCHO_OAUTH_CLIENT_ID", "custom-id")
     assert oauth_flow.resolve_endpoints(**common).client_id == "custom-id"
 
@@ -189,7 +189,7 @@ def test_grant_persists_default_client_id(tmp_path, fake_as, monkeypatch):
         timeout=10,
     )
     saved = json.loads(config_path.read_text())
-    assert saved["hosts"]["hermes"]["oauth"]["clientId"] == "hermes-agent"
+    assert saved["hosts"]["hermes"]["oauth"]["clientId"] == "agentic-os"
 
 
 def test_config_path_rides_the_authorize_link(fake_as):

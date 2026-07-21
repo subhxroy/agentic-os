@@ -388,10 +388,10 @@ def _resolve_max_message_length(config) -> int:
 MAX_MESSAGE_LENGTH = DEFAULT_MAX_MESSAGE_LENGTH
 
 # Store directory for E2EE keys and sync state.
-# Uses get_hermes_home() so each profile gets its own Matrix store.
-from agentic_os_constants import get_hermes_dir as _get_hermes_dir
+# Uses get_agentic_os_home() so each profile gets its own Matrix store.
+from agentic_os_constants import get_agentic_os_dir as _get_agentic_os_dir
 
-_STORE_DIR = _get_hermes_dir("platforms/matrix/store", "matrix/store")
+_STORE_DIR = _get_agentic_os_dir("platforms/matrix/store", "matrix/store")
 _CRYPTO_DB_PATH = _STORE_DIR / "crypto.db"
 
 # Grace period: ignore messages older than this many seconds before startup.

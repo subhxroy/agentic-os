@@ -36,7 +36,7 @@ from typing import Any, Dict, List, Optional
 
 import yaml
 
-from agentic_os_constants import get_hermes_home, get_optional_mcps_dir
+from agentic_os_constants import get_agentic_os_home, get_optional_mcps_dir
 from agentic_os_cli.colors import Colors, color
 from agentic_os_cli.config import (
     load_config,
@@ -367,7 +367,7 @@ def is_enabled(name: str) -> bool:
 
 def _install_root() -> Path:
     """Where git-bootstrapped MCPs are cloned. Per-user, profile-aware."""
-    root = get_hermes_home() / "mcp-installs"
+    root = get_agentic_os_home() / "mcp-installs"
     root.mkdir(parents=True, exist_ok=True)
     return root
 

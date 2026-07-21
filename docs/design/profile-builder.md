@@ -42,7 +42,7 @@ These are load-bearing — they change the implementation, not just the polish.
 ### Seam #1 — hub-skill install cannot use the HERMES_HOME override
 
 `tools/skills_hub.py` binds `SKILLS_DIR = HERMES_HOME / "skills"` at **module
-import time**. The context-local `set_hermes_home_override()` swap (which makes
+import time**. The context-local `set_AGENTIC_OS_HOME_OVERRIDE()` swap (which makes
 `_write_profile_model` and the MCP write land in the target profile) does NOT
 retroactively rebind that already-imported module global. So a data-layer wrap
 of hub install would write into the dashboard's *own* active profile, not the

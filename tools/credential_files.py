@@ -55,8 +55,8 @@ _config_files: List[Dict[str, str]] | None = None
 
 
 def _resolve_hermes_home() -> Path:
-    from agentic_os_constants import get_hermes_home
-    return get_hermes_home()
+    from agentic_os_constants import get_agentic_os_home
+    return get_agentic_os_home()
 
 
 def register_credential_file(
@@ -386,7 +386,7 @@ def iter_skills_files(
 # ---------------------------------------------------------------------------
 
 # The cache subdirectories that should be mirrored into remote backends.
-# Each tuple is (new_subpath, old_name) matching agentic_os_constants.get_hermes_dir().
+# Each tuple is (new_subpath, old_name) matching agentic_os_constants.get_agentic_os_dir().
 _CACHE_DIRS: list[tuple[str, str]] = [
     ("cache/documents", "document_cache"),
     ("cache/images", "image_cache"),
@@ -405,13 +405,13 @@ def get_cache_directory_mounts(
 
     Used by Docker to create bind mounts.  Each entry has ``host_path`` and
     ``container_path`` keys.  The host path is resolved via
-    ``get_hermes_dir()`` for backward compatibility with old directory layouts.
+    ``get_agentic_os_dir()`` for backward compatibility with old directory layouts.
     """
-    from agentic_os_constants import get_hermes_dir
+    from agentic_os_constants import get_agentic_os_dir
 
     mounts: List[Dict[str, str]] = []
     for new_subpath, old_name in _CACHE_DIRS:
-        host_dir = get_hermes_dir(new_subpath, old_name)
+        host_dir = get_agentic_os_dir(new_subpath, old_name)
         if host_dir.is_dir():
             # Always map to the *new* container layout regardless of host layout.
             container_path = f"{container_base.rstrip('/')}/{new_subpath}"
@@ -499,11 +499,11 @@ def iter_cache_files(
     Used by Modal to upload files individually and resync before each command.
     Skips symlinks.  The container paths use the new ``cache/<subdir>`` layout.
     """
-    from agentic_os_constants import get_hermes_dir
+    from agentic_os_constants import get_agentic_os_dir
 
     result: List[Dict[str, str]] = []
     for new_subpath, old_name in _CACHE_DIRS:
-        host_dir = get_hermes_dir(new_subpath, old_name)
+        host_dir = get_agentic_os_dir(new_subpath, old_name)
         if not host_dir.is_dir():
             continue
         container_root = f"{container_base.rstrip('/')}/{new_subpath}"

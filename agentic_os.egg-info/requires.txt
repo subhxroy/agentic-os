@@ -37,16 +37,16 @@ concurrent-log-handler==0.9.29
 agent-client-protocol==0.9.0
 
 [all]
-hermes-agent[cron]
-hermes-agent[cli]
-hermes-agent[pty]
-hermes-agent[mcp]
-hermes-agent[homeassistant]
-hermes-agent[sms]
-hermes-agent[acp]
-hermes-agent[google]
-hermes-agent[web]
-hermes-agent[youtube]
+agentic-os[cron]
+agentic-os[cli]
+agentic-os[pty]
+agentic-os[mcp]
+agentic-os[homeassistant]
+agentic-os[sms]
+agentic-os[acp]
+agentic-os[google]
+agentic-os[web]
+agentic-os[youtube]
 
 [anthropic]
 anthropic==0.87.0
@@ -168,19 +168,19 @@ aiohttp==3.14.1
 
 [termux]
 python-telegram-bot[webhooks]==22.6
-hermes-agent[cron]
-hermes-agent[cli]
-hermes-agent[pty]
-hermes-agent[mcp]
-hermes-agent[honcho]
-hermes-agent[acp]
+agentic-os[cron]
+agentic-os[cli]
+agentic-os[pty]
+agentic-os[mcp]
+agentic-os[honcho]
+agentic-os[acp]
 
 [termux-all]
-hermes-agent[termux]
-hermes-agent[google]
-hermes-agent[homeassistant]
-hermes-agent[sms]
-hermes-agent[web]
+agentic-os[termux]
+agentic-os[google]
+agentic-os[homeassistant]
+agentic-os[sms]
+agentic-os[web]
 
 [tts-premium]
 elevenlabs==1.59.0

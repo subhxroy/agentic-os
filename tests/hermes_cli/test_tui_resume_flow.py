@@ -467,7 +467,7 @@ def test_termux_fast_cli_launch_can_be_disabled(monkeypatch, main_mod):
 
 def test_termux_bundled_skills_stamp_controls_sync(monkeypatch, tmp_path, main_mod):
     monkeypatch.setenv("TERMUX_VERSION", "1")
-    monkeypatch.setattr(main_mod, "get_hermes_home", lambda: tmp_path)
+    monkeypatch.setattr(main_mod, "get_agentic_os_home", lambda: tmp_path)
     monkeypatch.setattr(main_mod, "_termux_bundled_skills_fingerprint", lambda: "fp1")
 
     assert main_mod._termux_bundled_skills_sync_needed() is True
@@ -482,7 +482,7 @@ def test_termux_skips_bundled_skill_sync_when_stamp_fresh(monkeypatch, tmp_path,
     calls = []
 
     monkeypatch.setenv("TERMUX_VERSION", "1")
-    monkeypatch.setattr(main_mod, "get_hermes_home", lambda: tmp_path)
+    monkeypatch.setattr(main_mod, "get_agentic_os_home", lambda: tmp_path)
     monkeypatch.setattr(main_mod, "_termux_bundled_skills_fingerprint", lambda: "fp1")
     main_mod._mark_termux_bundled_skills_synced()
     monkeypatch.setitem(
@@ -500,7 +500,7 @@ def test_termux_forced_bundled_skill_sync_runs(monkeypatch, tmp_path, main_mod):
 
     monkeypatch.setenv("TERMUX_VERSION", "1")
     monkeypatch.setenv("HERMES_TERMUX_FORCE_SKILLS_SYNC", "1")
-    monkeypatch.setattr(main_mod, "get_hermes_home", lambda: tmp_path)
+    monkeypatch.setattr(main_mod, "get_agentic_os_home", lambda: tmp_path)
     monkeypatch.setattr(main_mod, "_termux_bundled_skills_fingerprint", lambda: "fp1")
     monkeypatch.setitem(
         sys.modules,

@@ -837,8 +837,8 @@ class TestLocalEnvironmentWindowsTempDir:
         root = Path(__file__).resolve().parents[2]
         source = (root / "tools" / "environments" / "local.py").read_text(encoding="utf-8")
         assert "if _IS_WINDOWS:" in source
-        assert "get_hermes_home" in source
-        assert 'cache_dir = get_hermes_home() / "cache" / "terminal"' in source
+        assert "get_agentic_os_home" in source
+        assert 'cache_dir = get_agentic_os_home() / "cache" / "terminal"' in source
 
 
 class TestLocalEnvironmentPathInjectionGated:
@@ -1103,7 +1103,7 @@ class TestWindowlessGatewayRestartSpec:
         def fake_resolve(python_exe):
             return ("C:/base/pythonw.exe", Path("C:/venv"), ["C:/venv/Lib/site-packages"])
 
-        # Mock get_hermes_home too: the real one calls Path.resolve(), which
+        # Mock get_agentic_os_home too: the real one calls Path.resolve(), which
         # consults sysconfig and raises ModuleNotFoundError under the win32
         # platform patch on a Linux host.
         with mock.patch.object(gw.sys, "platform", "win32"), mock.patch.object(
@@ -1111,7 +1111,7 @@ class TestWindowlessGatewayRestartSpec:
         ), mock.patch.object(
             gw, "_stable_gateway_working_dir", return_value="C:/hermes"
         ), mock.patch(
-            "agentic_os_cli.config.get_hermes_home", return_value="C:/hermes"
+            "agentic_os_cli.config.get_agentic_os_home", return_value="C:/hermes"
         ):
             new_argv, cwd, env = gw.windowless_gateway_restart_spec(list(argv))
 

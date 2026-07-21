@@ -16,14 +16,14 @@ def _client():
     except ImportError:
         pytest.skip("fastapi/starlette not installed")
     import agentic_os_state
-    from agentic_os_constants import get_hermes_home
+    from agentic_os_constants import get_agentic_os_home
     from agentic_os_cli.web_server import app, _SESSION_HEADER_NAME, _SESSION_TOKEN
 
     client = TestClient(app)
     client.headers[_SESSION_HEADER_NAME] = _SESSION_TOKEN
     # Keep the state DB under the isolated HERMES_HOME for any handler that
     # touches it.
-    agentic_os_state.DEFAULT_DB_PATH = get_hermes_home() / "state.db"
+    agentic_os_state.DEFAULT_DB_PATH = get_agentic_os_home() / "state.db"
     return client, _SESSION_HEADER_NAME
 
 
@@ -68,7 +68,7 @@ class TestMcpEndpoints:
     def test_http_bearer_auth_separates_secret_from_config(
         self, _isolate_hermes_home
     ):
-        from agentic_os_constants import get_hermes_home
+        from agentic_os_constants import get_agentic_os_home
 
         secret = "dashboard-secret-value"
         response = self.client.post(
@@ -85,7 +85,7 @@ class TestMcpEndpoints:
         assert response.json()["auth"] == "header"
         assert "bearer_token" not in response.json()
 
-        hermes_home = get_hermes_home()
+        hermes_home = get_agentic_os_home()
         config_text = (hermes_home / "config.yaml").read_text()
         env_text = (hermes_home / ".env").read_text()
         assert secret not in config_text
@@ -356,9 +356,9 @@ class TestMemoryEndpoints:
     @pytest.fixture(autouse=True)
     def _setup(self, _isolate_hermes_home):
         self.client, _ = _client()
-        from agentic_os_constants import get_hermes_home
+        from agentic_os_constants import get_agentic_os_home
 
-        (get_hermes_home() / "memories").mkdir(parents=True, exist_ok=True)
+        (get_agentic_os_home() / "memories").mkdir(parents=True, exist_ok=True)
 
     def test_status_and_select(self):
         data = self.client.get("/api/memory").json()
@@ -373,9 +373,9 @@ class TestMemoryEndpoints:
         assert r.status_code == 400
 
     def test_reset_targets(self):
-        from agentic_os_constants import get_hermes_home
+        from agentic_os_constants import get_agentic_os_home
 
-        mem = get_hermes_home() / "memories"
+        mem = get_agentic_os_home() / "memories"
         (mem / "MEMORY.md").write_text("notes")
         (mem / "USER.md").write_text("user")
 
@@ -558,7 +558,7 @@ class TestOpsEndpoints:
         from pathlib import Path
 
         import agentic_os_cli.web_server as ws
-        from agentic_os_cli.config import get_hermes_home
+        from agentic_os_cli.config import get_agentic_os_home
 
         captured = {}
 
@@ -580,7 +580,7 @@ class TestOpsEndpoints:
             "subcommand": ["backup", "-o", str(archive)],
             "name": "backup",
         }
-        assert archive.parent == get_hermes_home() / "backups"
+        assert archive.parent == get_agentic_os_home() / "backups"
 
     def test_hooks_list_reads_config(self):
         from agentic_os_cli.config import load_config, save_config
@@ -1168,9 +1168,9 @@ class TestDebugShareEndpoint:
     @pytest.fixture(autouse=True)
     def _setup(self, _isolate_hermes_home):
         self.client, self.header = _client()
-        from agentic_os_constants import get_hermes_home
+        from agentic_os_constants import get_agentic_os_home
 
-        logs = get_hermes_home() / "logs"
+        logs = get_agentic_os_home() / "logs"
         logs.mkdir(parents=True, exist_ok=True)
         (logs / "agent.log").write_text("agent line\n")
         (logs / "errors.log").write_text("err line\n")

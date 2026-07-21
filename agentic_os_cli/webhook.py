@@ -19,7 +19,7 @@ import time
 from pathlib import Path
 from typing import Dict
 
-from agentic_os_constants import display_hermes_home
+from agentic_os_constants import display_agentic_os_home
 from utils import atomic_replace
 from agentic_os_cli.config import cfg_get
 
@@ -29,8 +29,8 @@ _SUBSCRIPTIONS_FILE_MODE = 0o600
 
 
 def _hermes_home() -> Path:
-    from agentic_os_constants import get_hermes_home
-    return get_hermes_home()
+    from agentic_os_constants import get_agentic_os_home
+    return get_agentic_os_home()
 
 
 def _subscriptions_path() -> Path:
@@ -105,7 +105,7 @@ def _get_webhook_base_url() -> str:
 
 
 def _setup_hint() -> str:
-    _dhh = display_hermes_home()
+    _dhh = display_agentic_os_home()
     return f"""
   Webhook platform is not enabled. To set it up:
 

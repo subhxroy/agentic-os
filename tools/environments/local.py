@@ -392,9 +392,9 @@ def _is_hermes_internal_secret(key: str) -> bool:
 def _inject_context_hermes_home(env: dict) -> None:
     """Bridge the context-local Hermes home override into subprocess env."""
     try:
-        from agentic_os_constants import get_hermes_home_override
+        from agentic_os_constants import get_agentic_os_home_override
 
-        value = get_hermes_home_override()
+        value = get_agentic_os_home_override()
         if value:
             env["HERMES_HOME"] = value
     except Exception:
@@ -1299,8 +1299,8 @@ class LocalEnvironment(BaseEnvironment):
             # accepts forward slashes in filesystem paths, and we control
             # the path so we can guarantee no spaces.
             try:
-                from agentic_os_constants import get_hermes_home
-                cache_dir = get_hermes_home() / "cache" / "terminal"
+                from agentic_os_constants import get_agentic_os_home
+                cache_dir = get_agentic_os_home() / "cache" / "terminal"
             except Exception:
                 cache_dir = Path(tempfile.gettempdir()) / "hermes_terminal"
             cache_dir.mkdir(parents=True, exist_ok=True)

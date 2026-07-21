@@ -48,7 +48,7 @@ class TestProfileScopeDefaultFallback:
             encoding="utf-8",
         )
         monkeypatch.setattr(
-            "agentic_os_constants.get_hermes_home",
+            "agentic_os_constants.get_agentic_os_home",
             lambda: tmp_path,
         )
         monkeypatch.setenv("OPENROUTER_BASE_URL", "https://leak.example/v1")

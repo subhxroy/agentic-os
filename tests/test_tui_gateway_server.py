@@ -11,7 +11,7 @@ from unittest.mock import patch
 
 import pytest
 
-from agentic_os_constants import reset_hermes_home_override, set_hermes_home_override
+from agentic_os_constants import reset_AGENTIC_OS_HOME_OVERRIDE, set_AGENTIC_OS_HOME_OVERRIDE
 from agentic_os_cli.active_sessions import active_session_registry_snapshot
 from agentic_os_cli.browser_connect import ChromeDebugLaunch
 from tui_gateway import server
@@ -41,7 +41,7 @@ def test_session_create_rejects_at_active_session_limit(monkeypatch, tmp_path):
     home = tmp_path / ".hermes"
     home.mkdir()
     (home / "config.yaml").write_text("max_concurrent_sessions: 1\n", encoding="utf-8")
-    token = set_hermes_home_override(home)
+    token = set_AGENTIC_OS_HOME_OVERRIDE(home)
 
     def _clear_server_sessions():
         for session in list(server._sessions.values()):
@@ -78,7 +78,7 @@ def test_session_create_rejects_at_active_session_limit(monkeypatch, tmp_path):
         server._cfg_cache = None
         server._cfg_mtime = None
         server._cfg_path = None
-        reset_hermes_home_override(token)
+        reset_AGENTIC_OS_HOME_OVERRIDE(token)
 
 
 def test_session_context_uses_session_cwd(monkeypatch, tmp_path):
@@ -612,7 +612,7 @@ def test_completion_cwd_prefers_launch_config_over_stale_env(monkeypatch, tmp_pa
     """
     configured = tmp_path / "omni"
     configured.mkdir()
-    stale = tmp_path / "hermes-agent"
+    stale = tmp_path / "agentic-os"
     stale.mkdir()
 
     monkeypatch.setenv("TERMINAL_CWD", str(stale))
@@ -8440,7 +8440,7 @@ def test_session_most_recent_handles_db_unavailable(monkeypatch):
 def test_verification_status_returns_recorded_evidence(tmp_path):
     home = tmp_path / ".hermes"
     home.mkdir()
-    token = set_hermes_home_override(home)
+    token = set_AGENTIC_OS_HOME_OVERRIDE(home)
     project = tmp_path / "project"
     project.mkdir()
     (project / "package.json").write_text(
@@ -8467,7 +8467,7 @@ def test_verification_status_returns_recorded_evidence(tmp_path):
             }
         )
     finally:
-        reset_hermes_home_override(token)
+        reset_AGENTIC_OS_HOME_OVERRIDE(token)
 
     verification = resp["result"]["verification"]
     assert verification["status"] == "passed"
@@ -8488,7 +8488,7 @@ def test_verification_status_outside_workspace_is_not_applicable(monkeypatch, tm
 
     home = tmp_path / ".hermes"
     home.mkdir()
-    token = set_hermes_home_override(home)
+    token = set_AGENTIC_OS_HOME_OVERRIDE(home)
     try:
         resp = server.handle_request(
             {
@@ -8498,7 +8498,7 @@ def test_verification_status_outside_workspace_is_not_applicable(monkeypatch, tm
             }
         )
     finally:
-        reset_hermes_home_override(token)
+        reset_AGENTIC_OS_HOME_OVERRIDE(token)
 
     assert resp["result"]["verification"]["status"] == "not_applicable"
 
@@ -10811,7 +10811,7 @@ def test_persist_model_switch_preserves_sibling_model_keys(tmp_path, monkeypatch
         "  system_prompt: keepme\n"
     )
     # save_config_value() resolves the config path from cli._hermes_home, which
-    # is captured at import time — patch it directly (set_hermes_home_override
+    # is captured at import time — patch it directly (set_AGENTIC_OS_HOME_OVERRIDE
     # does NOT affect this snapshot).
     monkeypatch.setattr(cli, "_hermes_home", tmp_path)
 

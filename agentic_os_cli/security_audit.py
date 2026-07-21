@@ -30,7 +30,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Iterable, Optional
 
-from agentic_os_constants import get_hermes_home
+from agentic_os_constants import get_agentic_os_home
 
 OSV_BATCH_URL = "https://api.osv.dev/v1/querybatch"
 OSV_VULN_URL = "https://api.osv.dev/v1/vulns/{vid}"
@@ -419,7 +419,7 @@ def run_audit(
     hermes_home: Optional[Path] = None,
 ) -> list[Finding]:
     """Discover components, query OSV, return findings sorted by severity desc."""
-    home = hermes_home or Path(get_hermes_home())
+    home = hermes_home or Path(get_agentic_os_home())
     components: list[Component] = []
     if not skip_venv:
         components.extend(_discover_venv())
@@ -527,7 +527,7 @@ def _count_components(
 
 def cmd_security_audit(args: argparse.Namespace) -> int:
     """Implementation of `hermes security audit`."""
-    home = Path(get_hermes_home())
+    home = Path(get_agentic_os_home())
     skip_venv = bool(getattr(args, "skip_venv", False))
     skip_plugins = bool(getattr(args, "skip_plugins", False))
     skip_mcp = bool(getattr(args, "skip_mcp", False))

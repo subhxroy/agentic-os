@@ -47,7 +47,7 @@ def test_get_container_exec_info_returns_metadata(container_env):
 
     assert info is not None
     assert info["backend"] == "podman"
-    assert info["container_name"] == "hermes-agent"
+    assert info["container_name"] == "agentic-os"
     assert info["exec_user"] == "hermes"
     assert info["hermes_bin"] == "/data/current-package/bin/hermes"
 
@@ -105,14 +105,14 @@ def test_get_container_exec_info_defaults():
         )
 
         with patch("agentic_os_constants.is_container", return_value=False), \
-             patch.dict(get_container_exec_info.__globals__, {"get_hermes_home": lambda: hermes_home}), \
+             patch.dict(get_container_exec_info.__globals__, {"get_agentic_os_home": lambda: hermes_home}), \
              patch.dict(os.environ, {}, clear=False):
             os.environ.pop("HERMES_DEV", None)
             info = get_container_exec_info()
 
         assert info is not None
         assert info["backend"] == "docker"
-        assert info["container_name"] == "hermes-agent"
+        assert info["container_name"] == "agentic-os"
         assert info["exec_user"] == "hermes"
         assert info["hermes_bin"] == "/data/current-package/bin/hermes"
 
@@ -152,7 +152,7 @@ def test_get_container_exec_info_crashes_on_permission_error(container_env):
 def docker_container_info():
     return {
         "backend": "docker",
-        "container_name": "hermes-agent",
+        "container_name": "agentic-os",
         "exec_user": "hermes",
         "hermes_bin": "/data/current-package/bin/hermes",
     }
@@ -162,7 +162,7 @@ def docker_container_info():
 def podman_container_info():
     return {
         "backend": "podman",
-        "container_name": "hermes-agent",
+        "container_name": "agentic-os",
         "exec_user": "hermes",
         "hermes_bin": "/data/current-package/bin/hermes",
     }
@@ -195,7 +195,7 @@ def test_exec_in_container_calls_execvp(docker_container_info):
     e_values = [cmd[i + 1] for i in e_indices]
     assert "TERM=xterm-256color" in e_values
     assert "LANG=en_US.UTF-8" in e_values
-    assert "hermes-agent" in cmd
+    assert "agentic-os" in cmd
     assert "/data/current-package/bin/hermes" in cmd
     assert "chat" in cmd
 

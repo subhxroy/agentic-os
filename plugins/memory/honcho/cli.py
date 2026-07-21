@@ -10,7 +10,7 @@ import os
 import sys
 from pathlib import Path
 
-from agentic_os_constants import get_hermes_home
+from agentic_os_constants import get_agentic_os_home
 from plugins.memory.honcho.client import _host_block, profile_host_key, resolve_active_host, resolve_config_path, HOST
 from agentic_os_cli.config import cfg_get
 
@@ -257,7 +257,7 @@ def _local_config_path() -> Path:
     its own config file.  The global ~/.honcho/config.json is only used as
     a read fallback (via resolve_config_path) for cross-app interop.
     """
-    return get_hermes_home() / "honcho.json"
+    return get_agentic_os_home() / "honcho.json"
 
 
 def _read_config() -> dict:

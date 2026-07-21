@@ -26,7 +26,7 @@ def _set_profile_env(monkeypatch, root: Path, profile_home: Path) -> None:
     import agentic_os_constants
 
     monkeypatch.setattr(
-        agentic_os_constants, "_get_platform_default_hermes_home", lambda: root
+        agentic_os_constants, "_get_platform_default_agentic_os_home", lambda: root
     )
     monkeypatch.setenv("HERMES_HOME", str(profile_home))
 
@@ -43,10 +43,10 @@ def test_cron_storage_anchors_at_profile_home(tmp_path, monkeypatch):
     import agentic_os_constants
 
     # Sanity: the override is wired the way the gateway sees it.
-    assert agentic_os_constants.get_hermes_home().resolve() == profile_home.resolve()
-    assert agentic_os_constants.get_default_hermes_root().resolve() == root.resolve()
+    assert agentic_os_constants.get_agentic_os_home().resolve() == profile_home.resolve()
+    assert agentic_os_constants.get_default_agentic_os_root().resolve() == root.resolve()
 
-    # cron/jobs.py computes HERMES_DIR from get_hermes_home() at import, so a
+    # cron/jobs.py computes HERMES_DIR from get_agentic_os_home() at import, so a
     # fresh import under this env anchors the store at <profile>/cron.
     import cron.jobs as jobs
 
@@ -98,8 +98,8 @@ def test_cron_execution_home_follows_active_profile(tmp_path, monkeypatch):
 
     # The module-level test override must be clear so the dynamic path runs.
     monkeypatch.setattr(scheduler, "_hermes_home", None, raising=False)
-    assert scheduler._get_hermes_home().resolve() == profile_home.resolve()
-    assert scheduler._get_hermes_home().resolve() != root.resolve()
+    assert scheduler._get_agentic_os_home().resolve() == profile_home.resolve()
+    assert scheduler._get_agentic_os_home().resolve() != root.resolve()
 
 
 def test_cron_storage_unaffected_when_no_profile(tmp_path, monkeypatch):
@@ -111,7 +111,7 @@ def test_cron_storage_unaffected_when_no_profile(tmp_path, monkeypatch):
     import agentic_os_constants
 
     monkeypatch.setattr(
-        agentic_os_constants, "_get_platform_default_hermes_home", lambda: root
+        agentic_os_constants, "_get_platform_default_agentic_os_home", lambda: root
     )
     monkeypatch.setenv("HERMES_HOME", str(root))
 

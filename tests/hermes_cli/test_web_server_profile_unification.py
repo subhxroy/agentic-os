@@ -13,10 +13,10 @@ import yaml
 @pytest.fixture
 def isolated_profiles(tmp_path, monkeypatch, _isolate_hermes_home):
     """Isolated default home + one named profile, each with config + .env."""
-    from agentic_os_constants import get_hermes_home
+    from agentic_os_constants import get_agentic_os_home
     from agentic_os_cli import profiles
 
-    default_home = get_hermes_home()
+    default_home = get_agentic_os_home()
     profiles_root = default_home / "profiles"
     worker_home = profiles_root / "worker_beta"
     for home in (default_home, worker_home):
@@ -37,10 +37,10 @@ def client(monkeypatch, isolated_profiles):
         pytest.skip("fastapi/starlette not installed")
 
     import agentic_os_state
-    from agentic_os_constants import get_hermes_home
+    from agentic_os_constants import get_agentic_os_home
     from agentic_os_cli.web_server import app, _SESSION_HEADER_NAME, _SESSION_TOKEN
 
-    monkeypatch.setattr(agentic_os_state, "DEFAULT_DB_PATH", get_hermes_home() / "state.db")
+    monkeypatch.setattr(agentic_os_state, "DEFAULT_DB_PATH", get_agentic_os_home() / "state.db")
     c = TestClient(app)
     c.headers[_SESSION_HEADER_NAME] = _SESSION_TOKEN
     return c
@@ -204,7 +204,7 @@ class TestProfileScopedMcp:
         scope active so env-placeholder expansion reads the profile's .env,
         matching the config the server was saved into."""
         import agentic_os_cli.mcp_config as mcp_config
-        from agentic_os_constants import get_hermes_home
+        from agentic_os_constants import get_agentic_os_home
 
         (isolated_profiles["worker_beta"] / "config.yaml").write_text(
             "mcp_servers:\n  probe-srv:\n    url: http://x/sse\n",
@@ -213,7 +213,7 @@ class TestProfileScopedMcp:
         seen = {}
 
         def fake_probe(name, config, connect_timeout=30, details=None):
-            seen["home"] = str(get_hermes_home())
+            seen["home"] = str(get_agentic_os_home())
             return [("tool-a", "desc")]
 
         monkeypatch.setattr(mcp_config, "_probe_single_server", fake_probe)
@@ -473,12 +473,12 @@ class TestProfileScopedGateway:
         self, client, isolated_profiles, monkeypatch
     ):
         import agentic_os_cli.web_server as web_server
-        from agentic_os_constants import get_hermes_home
+        from agentic_os_constants import get_agentic_os_home
 
         seen_homes = []
 
         def fake_get_running_pid():
-            seen_homes.append(str(get_hermes_home()))
+            seen_homes.append(str(get_agentic_os_home()))
             return None
 
         monkeypatch.setattr(web_server, "check_config_version", lambda: (1, 1))

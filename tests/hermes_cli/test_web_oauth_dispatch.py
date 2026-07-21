@@ -136,13 +136,13 @@ def test_nous_dashboard_device_flow_ignores_legacy_scope_override(monkeypatch):
 
 def test_oauth_provider_status_uses_profile_query(tmp_path, monkeypatch):
     from agentic_os_cli import web_server as ws
-    from agentic_os_constants import get_hermes_home
+    from agentic_os_constants import get_agentic_os_home
 
     profile_home = _make_profile_home(tmp_path, monkeypatch)
     observed_homes = []
 
     def fake_status():
-        observed_homes.append(get_hermes_home())
+        observed_homes.append(get_agentic_os_home())
         return {"logged_in": False, "source": None}
 
     fake_catalog = ({
@@ -278,7 +278,7 @@ def test_codex_dashboard_worker_persists_runtime_provider(tmp_path, monkeypatch)
 def test_codex_dashboard_worker_persists_inside_session_profile(tmp_path, monkeypatch):
     from agentic_os_cli import auth as auth_mod
     from agentic_os_cli import web_server as ws
-    from agentic_os_constants import get_hermes_home
+    from agentic_os_constants import get_agentic_os_home
 
     profile_home = _make_profile_home(tmp_path, monkeypatch)
 
@@ -323,7 +323,7 @@ def test_codex_dashboard_worker_persists_inside_session_profile(tmp_path, monkey
     monkeypatch.setattr(
         auth_mod,
         "_save_codex_tokens",
-        lambda tokens: saved_homes.append(get_hermes_home()),
+        lambda tokens: saved_homes.append(get_agentic_os_home()),
     )
 
     sid, _ = ws._new_oauth_session(

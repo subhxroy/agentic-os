@@ -719,8 +719,8 @@ class GoogleChatAdapter(BasePlatformAdapter):
         # made the in-memory version of this heuristic flaky for
         # multi-restart sessions).
         try:
-            from agentic_os_constants import get_hermes_home as _get_hermes_home
-            _hermes_home = _get_hermes_home()
+            from agentic_os_constants import get_agentic_os_home as _get_agentic_os_home
+            _hermes_home = _get_agentic_os_home()
         except (ModuleNotFoundError, ImportError):
             _hermes_home = _Path.home() / ".hermes"
         self._thread_count_store = _ThreadCountStore(

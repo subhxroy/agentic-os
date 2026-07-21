@@ -247,7 +247,7 @@ class _Runtime:
                 self.settings.atif_agent_name,
                 self.settings.atif_agent_version,
                 model_name=str(kwargs.get("model") or self.settings.atif_model_name),
-                extra={"source": "hermes-agent", "plugin": "observability/nemo_relay"},
+                extra={"source": "agentic-os", "plugin": "observability/nemo_relay"},
             )
             state.atif_subscriber_name = f"hermes.nemo_relay.atif.{session_id}"
             state.atif_exporter.register(state.atif_subscriber_name)

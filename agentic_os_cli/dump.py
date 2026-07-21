@@ -13,9 +13,9 @@ import subprocess
 import sys
 from pathlib import Path
 
-from agentic_os_cli.config import get_hermes_home, get_env_path, get_project_root, load_config
+from agentic_os_cli.config import get_agentic_os_home, get_env_path, get_project_root, load_config
 from agentic_os_cli.env_loader import load_hermes_dotenv
-from agentic_os_constants import display_hermes_home
+from agentic_os_constants import display_agentic_os_home
 from agent.skill_utils import is_excluded_skill_path
 
 
@@ -286,7 +286,7 @@ def run_dump(args):
     )
 
     project_root = get_project_root()
-    hermes_home = get_hermes_home()
+    hermes_home = get_agentic_os_home()
 
     try:
         from agentic_os_cli import __version__
@@ -354,7 +354,7 @@ def run_dump(args):
     lines.append(f"python:           {sys.version.split()[0]}")
     lines.append(f"openai_sdk:       {openai_ver}")
     lines.append(f"profile:          {profile}")
-    lines.append(f"hermes_home:      {display_hermes_home()}")
+    lines.append(f"hermes_home:      {display_agentic_os_home()}")
     lines.append(f"model:            {model}")
     lines.append(f"provider:         {provider}")
     lines.append(f"terminal:         {backend}")

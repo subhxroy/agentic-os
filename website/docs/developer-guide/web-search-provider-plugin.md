@@ -18,7 +18,7 @@ Hermes scans for web-search backends in three places:
 
 1. **Bundled** — `<repo>/plugins/web/<name>/` (auto-loaded with `kind: backend`, always available)
 2. **User** — `~/.hermes/plugins/web/<name>/` (opt-in via `plugins.enabled` or `hermes plugins enable <name>`)
-3. **Pip** — packages declaring a `hermes_agent.plugins` entry point
+3. **Pip** — packages declaring a `agentic_os.plugins` entry point
 
 Each plugin's `register(ctx)` function calls `ctx.register_web_search_provider(...)` — that puts the instance into the registry in `agent/web_search_registry.py`. The active provider for each capability is picked by config:
 
@@ -247,7 +247,7 @@ If your provider wraps a third-party SDK (like DDGS does with the `ddgs` package
 
 ```toml
 # pyproject.toml
-[project.entry-points."hermes_agent.plugins"]
+[project.entry-points."agentic_os.plugins"]
 my-backend-web = "my_backend_web_package"
 ```
 

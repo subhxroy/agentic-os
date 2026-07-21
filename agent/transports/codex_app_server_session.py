@@ -1081,6 +1081,6 @@ def _get_hermes_version() -> str:
     try:
         from importlib.metadata import version
 
-        return version("hermes-agent")
+        return version("agentic-os")
     except Exception:  # pragma: no cover
         return "0.0.0"

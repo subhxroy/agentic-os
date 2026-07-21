@@ -65,7 +65,7 @@ def _run_guard(install_dir: Path) -> None:
 
 
 def test_install_sh_guard_moves_commitless_checkout_aside(tmp_path: Path) -> None:
-    install_dir = tmp_path / "hermes-agent"
+    install_dir = tmp_path / "agentic-os"
     install_dir.mkdir()
     _git(install_dir, "init")
     (install_dir / "leftover.txt").write_text("partial download")  # untracked
@@ -87,7 +87,7 @@ def test_install_sh_guard_moves_commitless_checkout_aside(tmp_path: Path) -> Non
 
 
 def test_install_sh_guard_keeps_repo_with_commits(tmp_path: Path) -> None:
-    install_dir = tmp_path / "hermes-agent"
+    install_dir = tmp_path / "agentic-os"
     install_dir.mkdir()
     _git(install_dir, "init")
     (install_dir / "f.txt").write_text("real content")
@@ -103,7 +103,7 @@ def test_install_sh_guard_keeps_repo_with_commits(tmp_path: Path) -> None:
 
 
 def test_install_sh_guard_ignores_non_repo_dir(tmp_path: Path) -> None:
-    install_dir = tmp_path / "hermes-agent"
+    install_dir = tmp_path / "agentic-os"
     install_dir.mkdir()
     (install_dir / "f.txt").write_text("not a repo")
 

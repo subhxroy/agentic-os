@@ -106,7 +106,7 @@ def _hermes_version() -> str:
     try:
         from importlib.metadata import version
 
-        return version("hermes-agent")
+        return version("agentic-os")
     except Exception:
         pass
     try:
@@ -417,8 +417,8 @@ class ResponseStore:
         self._max_size = max_size
         if db_path is None:
             try:
-                from agentic_os_cli.config import get_hermes_home
-                db_path = str(get_hermes_home() / "response_store.db")
+                from agentic_os_cli.config import get_agentic_os_home
+                db_path = str(get_agentic_os_home() / "response_store.db")
             except Exception:
                 db_path = ":memory:"
         self._db_path: Optional[str] = db_path if db_path != ":memory:" else None
@@ -1133,7 +1133,7 @@ class APIServerAdapter(BasePlatformAdapter):
         Priority:
         1. Explicit override (config extra or API_SERVER_MODEL_NAME env var)
         2. Active profile name (so each profile advertises a distinct model)
-        3. Fallback: "hermes-agent"
+        3. Fallback: "agentic-os"
         """
         if explicit and explicit.strip():
             return explicit.strip()
@@ -1144,7 +1144,7 @@ class APIServerAdapter(BasePlatformAdapter):
                 return profile
         except Exception:
             pass
-        return "hermes-agent"
+        return "agentic-os"
 
     def _cors_headers_for_origin(self, origin: str) -> Optional[Dict[str, str]]:
         """Return CORS headers for an allowed browser origin."""
@@ -1441,9 +1441,9 @@ class APIServerAdapter(BasePlatformAdapter):
 
                 if is_multiplex_active():
                     from gateway.run import _profile_runtime_scope
-                    from agentic_os_constants import get_hermes_home
+                    from agentic_os_constants import get_agentic_os_home
 
-                    return _profile_runtime_scope(get_hermes_home())
+                    return _profile_runtime_scope(get_agentic_os_home())
             except Exception:
                 pass
             return nullcontext()
@@ -1621,7 +1621,7 @@ class APIServerAdapter(BasePlatformAdapter):
         shows API-server conversations alongside CLI and gateway ones.
 
         Under multiplex ``/p/<profile>/`` requests the profile runtime scope
-        redirects ``get_hermes_home()``, so each profile gets its own DB —
+        redirects ``get_agentic_os_home()``, so each profile gets its own DB —
         never the default profile's file. Synchronous: used by ``_create_agent``
         (itself sync, and run in both loop and worker contexts). Request
         handlers use ``_ensure_session_db_async`` to keep the SQLite open off
@@ -1631,9 +1631,9 @@ class APIServerAdapter(BasePlatformAdapter):
         if self._session_db is not None:
             return self._session_db
         try:
-            from agentic_os_constants import get_hermes_home
+            from agentic_os_constants import get_agentic_os_home
 
-            return self._open_and_cache_session_db(get_hermes_home())
+            return self._open_and_cache_session_db(get_agentic_os_home())
         except Exception as e:
             logger.debug("SessionDB unavailable for API server: %s", e)
             return None
@@ -1650,9 +1650,9 @@ class APIServerAdapter(BasePlatformAdapter):
         if self._session_db is not None:
             return self._session_db
         try:
-            from agentic_os_constants import get_hermes_home
+            from agentic_os_constants import get_agentic_os_home
 
-            home = get_hermes_home()
+            home = get_agentic_os_home()
             key = str(home)
             cache = getattr(self, "_session_dbs", None)
             if cache is not None and cache.get(key) is not None:
@@ -1885,7 +1885,7 @@ class APIServerAdapter(BasePlatformAdapter):
     async def _handle_health(self, request: "web.Request") -> "web.Response":
         """GET /health — simple health check."""
         return web.json_response(
-            {"status": "ok", "platform": "hermes-agent", "version": _hermes_version()}
+            {"status": "ok", "platform": "agentic-os", "version": _hermes_version()}
         )
 
     async def _handle_health_detailed(self, request: "web.Request") -> "web.Response":
@@ -1925,7 +1925,7 @@ class APIServerAdapter(BasePlatformAdapter):
         return web.json_response({
             "status": readiness["status"],
             "readiness": readiness,
-            "platform": "hermes-agent",
+            "platform": "agentic-os",
             "version": _hermes_version(),
             "gateway_state": gw_state,
             "platforms": runtime.get("platforms", {}),
@@ -2005,7 +2005,7 @@ class APIServerAdapter(BasePlatformAdapter):
 
         return web.json_response({
             "object": "hermes.api_server.capabilities",
-            "platform": "hermes-agent",
+            "platform": "agentic-os",
             "model": self._model_name,
             "auth": {
                 "type": "bearer",

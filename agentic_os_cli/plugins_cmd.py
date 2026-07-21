@@ -20,7 +20,7 @@ import sys
 from pathlib import Path
 from typing import Any, Optional
 
-from agentic_os_constants import get_hermes_home
+from agentic_os_constants import get_agentic_os_home
 from agentic_os_cli.config import cfg_get
 from agentic_os_cli.secret_prompt import masked_secret_prompt
 
@@ -74,7 +74,7 @@ _SUPPORTED_MANIFEST_VERSION = 1
 
 def _plugins_dir() -> Path:
     """Return the user plugins directory, creating it if needed."""
-    plugins = get_hermes_home() / "plugins"
+    plugins = get_agentic_os_home() / "plugins"
     plugins.mkdir(parents=True, exist_ok=True)
     return plugins
 
@@ -339,7 +339,7 @@ def _prompt_plugin_env_vars(manifest: dict, console) -> None:
         return
 
     from agentic_os_cli.config import get_env_value, save_env_value  # noqa: F811
-    from agentic_os_constants import display_hermes_home
+    from agentic_os_constants import display_agentic_os_home
 
     # Normalise to list-of-dicts
     env_specs: list[dict] = []
@@ -376,15 +376,15 @@ def _prompt_plugin_env_vars(manifest: dict, console) -> None:
             else:
                 value = input(f"  {name}: ").strip()
         except (EOFError, KeyboardInterrupt):
-            console.print(f"\n[dim]  Skipped (you can set these later in {display_hermes_home()}/.env)[/dim]")
+            console.print(f"\n[dim]  Skipped (you can set these later in {display_agentic_os_home()}/.env)[/dim]")
             return
 
         if value:
             save_env_value(name, value)
             os.environ[name] = value
-            console.print(f"  [green]✓[/green] Saved to {display_hermes_home()}/.env")
+            console.print(f"  [green]✓[/green] Saved to {display_agentic_os_home()}/.env")
         else:
-            console.print(f"  [dim]  Skipped (set {name} in {display_hermes_home()}/.env later)[/dim]")
+            console.print(f"  [dim]  Skipped (set {name} in {display_agentic_os_home()}/.env later)[/dim]")
 
     console.print()
 
@@ -1067,7 +1067,7 @@ def _discover_all_plugins() -> list:
 
 
 def _discover_entrypoint_plugins() -> list[tuple[str, str, str, str]]:
-    """Return plugin entries advertised through ``hermes_agent.plugins``.
+    """Return plugin entries advertised through ``agentic_os.plugins``.
 
     Entry-point plugins are installed as Python packages, so they do not have a
     plugin directory under ``~/.hermes/plugins``. Include package metadata here

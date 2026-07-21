@@ -184,11 +184,11 @@ class SpillIfOversizedTests(unittest.TestCase):
         test_home = tempfile.mkdtemp(prefix="hermes-home-")
         try:
             with patch.dict(os.environ, {"HERMES_HOME": test_home}):
-                # Also patch get_hermes_home to the env var to mirror production.
+                # Also patch get_agentic_os_home to the env var to mirror production.
                 cfg = self._cfg(directory=None, max_chars=5)
                 hos.spill_if_oversized("x" * 200, session_id="sess", config=cfg)
             # Spill directory exists somewhere under test_home OR default
-            # ~/.hermes/hook_outputs depending on get_hermes_home behaviour.
+            # ~/.hermes/hook_outputs depending on get_agentic_os_home behaviour.
             candidates = [
                 Path(test_home) / "hook_outputs" / "sess",
                 Path(os.path.expanduser("~/.hermes/hook_outputs/sess")),

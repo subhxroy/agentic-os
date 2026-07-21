@@ -474,11 +474,11 @@ def resolve_whatsapp_bridge_dir() -> Path:
     from pathlib import Path as _Path
 
     # Default location in install tree (may be read-only)
-    from agentic_os_constants import get_hermes_home
+    from agentic_os_constants import get_agentic_os_home
     install_bridge = _Path(__file__).resolve().parents[2] / "scripts" / "whatsapp-bridge"
 
     # Try HERMES_HOME location first
-    hermes_home = get_hermes_home()
+    hermes_home = get_agentic_os_home()
     hermes_home_bridge = hermes_home / "scripts" / "whatsapp-bridge"
 
     # Check if install dir is writable

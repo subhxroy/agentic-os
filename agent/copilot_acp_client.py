@@ -624,7 +624,7 @@ class CopilotACPClient:
                         }
                     },
                     "clientInfo": {
-                        "name": "hermes-agent",
+                        "name": "agentic-os",
                         "title": "Agentic OS",
                         "version": "0.0.0",
                     },

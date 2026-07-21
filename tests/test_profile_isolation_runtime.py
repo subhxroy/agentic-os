@@ -2,7 +2,7 @@
 
 In runtimes that serve every profile from one OS process (the desktop
 ``tui_gateway``), the profile boundary is the context-local
-``_HERMES_HOME_OVERRIDE`` ContextVar, not the process environment.  State that
+``_AGENTIC_OS_HOME_OVERRIDE`` ContextVar, not the process environment.  State that
 escapes the request call stack — import-time-frozen path constants, direct
 ``os.environ`` reads, or worker threads that don't inherit the request context —
 silently reverts to the launch/default profile and leaks one profile's data
@@ -20,9 +20,9 @@ from pathlib import Path
 import pytest
 
 from agentic_os_constants import (
-    get_hermes_home,
-    reset_hermes_home_override,
-    set_hermes_home_override,
+    get_agentic_os_home,
+    reset_AGENTIC_OS_HOME_OVERRIDE,
+    set_AGENTIC_OS_HOME_OVERRIDE,
 )
 
 
@@ -40,11 +40,11 @@ def two_profiles(tmp_path):
 
 def _under_override(home: Path, fn):
     """Run ``fn`` with the profile override set to ``home`` and reset after."""
-    token = set_hermes_home_override(str(home))
+    token = set_AGENTIC_OS_HOME_OVERRIDE(str(home))
     try:
         return fn()
     finally:
-        reset_hermes_home_override(token)
+        reset_AGENTIC_OS_HOME_OVERRIDE(token)
 
 
 # ---------------------------------------------------------------------------
@@ -156,7 +156,7 @@ class TestThreadContextPropagation:
         seen = {}
 
         def worker():
-            seen["home"] = str(get_hermes_home())
+            seen["home"] = str(get_agentic_os_home())
 
         def run():
             t = threading.Thread(target=worker)
@@ -175,7 +175,7 @@ class TestThreadContextPropagation:
         seen = {}
 
         def worker():
-            seen["home"] = str(get_hermes_home())
+            seen["home"] = str(get_agentic_os_home())
 
         def run():
             t = threading.Thread(target=propagate_context_to_thread(worker))
@@ -189,7 +189,7 @@ class TestThreadContextPropagation:
         """model_tools._run_async's worker-thread branch must keep the override.
 
         This is the generic sync->async bridge for every async tool; if it
-        leaks, every async tool that resolves get_hermes_home() leaks.
+        leaks, every async tool that resolves get_agentic_os_home() leaks.
         """
         import asyncio
 
@@ -197,7 +197,7 @@ class TestThreadContextPropagation:
         import model_tools
 
         async def reads_home():
-            return str(get_hermes_home())
+            return str(get_agentic_os_home())
 
         async def driver():
             # Inside a running loop, _run_async spawns a worker thread + loop.

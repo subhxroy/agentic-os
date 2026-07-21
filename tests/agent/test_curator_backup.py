@@ -22,7 +22,7 @@ def backup_env(monkeypatch, tmp_path):
     monkeypatch.setenv("HERMES_HOME", str(home))
     monkeypatch.setattr(Path, "home", lambda: tmp_path)
 
-    # Reload so get_hermes_home picks up the env var fresh.
+    # Reload so get_agentic_os_home picks up the env var fresh.
     import agentic_os_constants
     importlib.reload(agentic_os_constants)
     from agent import curator_backup

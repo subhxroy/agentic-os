@@ -328,7 +328,7 @@ class GatewaySlashCommandsMixin:
         ``_run_agent`` and ``_reset_notice_session_info`` — and the command
         reports the active profile and default home, byte-identical to before.
         """
-        from agentic_os_constants import display_hermes_home
+        from agentic_os_constants import display_agentic_os_home
         from agentic_os_cli.profiles import get_active_profile_name
 
         multiplexed = getattr(
@@ -347,11 +347,11 @@ class GatewaySlashCommandsMixin:
 
                 profile_home = self._resolve_profile_home_for_source(source)
                 with _profile_runtime_scope(profile_home):
-                    display = display_hermes_home()
+                    display = display_agentic_os_home()
             except Exception:
-                display = display_hermes_home()
+                display = display_agentic_os_home()
         else:
-            display = display_hermes_home()
+            display = display_agentic_os_home()
 
         lines = [
             t("gateway.profile.header", profile=profile_name),
@@ -2204,7 +2204,7 @@ class GatewaySlashCommandsMixin:
     async def _handle_personality_command(self, event: MessageEvent) -> str:
         """Handle /personality command - list or set a personality."""
         from gateway.run import _hermes_home, _load_gateway_config
-        from agentic_os_constants import display_hermes_home
+        from agentic_os_constants import display_agentic_os_home
 
         args = event.get_command_args().strip().lower()
         config_path = _hermes_home / 'config.yaml'
@@ -2217,7 +2217,7 @@ class GatewaySlashCommandsMixin:
             personalities = {}
 
         if not personalities:
-            return t("gateway.personality.none_configured", path=display_hermes_home())
+            return t("gateway.personality.none_configured", path=display_agentic_os_home())
 
         if not args:
             lines = [t("gateway.personality.header")]

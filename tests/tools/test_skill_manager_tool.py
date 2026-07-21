@@ -1242,7 +1242,7 @@ def _curator_pass(tmp_path, *, monkeypatch):
     """Run the body as the curator/background-review fork.
 
     Points HERMES_HOME at ``tmp_path/.hermes`` so skill_usage's archive path
-    (``get_hermes_home()``) resolves into the same tree the skill manager
+    (``get_agentic_os_home()``) resolves into the same tree the skill manager
     searches, and flips ``is_background_review()`` → True so the consolidation
     guard fires.
     """

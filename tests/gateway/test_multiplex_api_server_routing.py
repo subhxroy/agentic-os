@@ -74,7 +74,7 @@ class TestApiServerModelsUnderProfile:
     def test_resolve_model_name_follows_active_profile(self, monkeypatch):
         """When the request is scoped to a named profile, advertise that name."""
         adapter = _make_adapter(multiplex=True)
-        adapter._model_name = "hermes-agent"
+        adapter._model_name = "agentic-os"
         monkeypatch.setattr(
             "agentic_os_cli.profiles.get_active_profile_name",
             lambda: "coder",

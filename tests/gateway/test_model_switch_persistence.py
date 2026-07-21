@@ -343,8 +343,8 @@ class TestOneTurnNeverPersisted:
                 provider_label="OpenRouter",
             ),
         )
-        monkeypatch.setattr("agentic_os_constants.get_hermes_home", lambda: hermes_home)
-        monkeypatch.setattr("agentic_os_cli.config.get_hermes_home", lambda: hermes_home)
+        monkeypatch.setattr("agentic_os_constants.get_agentic_os_home", lambda: hermes_home)
+        monkeypatch.setattr("agentic_os_cli.config.get_agentic_os_home", lambda: hermes_home)
 
         runner = object.__new__(GatewayRunner)
         runner.adapters = {}

@@ -13,7 +13,7 @@ from datetime import datetime
 from unittest.mock import patch
 import yaml
 
-from agentic_os_constants import reset_hermes_home_override, set_hermes_home_override
+from agentic_os_constants import reset_AGENTIC_OS_HOME_OVERRIDE, set_AGENTIC_OS_HOME_OVERRIDE
 from gateway.config import GatewayConfig, Platform
 from gateway.session import SessionSource, SessionStore, build_session_key
 
@@ -158,11 +158,11 @@ class TestMultiplexConfigFlag:
 
         assert gateway_run._load_gateway_config()["display"]["tool_progress"] == "all"
 
-        token = set_hermes_home_override(profile_home)
+        token = set_AGENTIC_OS_HOME_OVERRIDE(profile_home)
         try:
             scoped_config = gateway_run._load_gateway_config()
         finally:
-            reset_hermes_home_override(token)
+            reset_AGENTIC_OS_HOME_OVERRIDE(token)
 
         assert scoped_config["display"]["tool_progress"] is False
         assert scoped_config["display"]["interim_assistant_messages"] is False

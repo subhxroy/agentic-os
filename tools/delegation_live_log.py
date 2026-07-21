@@ -60,9 +60,9 @@ _STREAM_BUFFER_FLUSH_CHARS = 4000
 
 def live_transcript_root() -> Path:
     """Root directory for live transcripts (profile-safe, never ~/.hermes)."""
-    from agentic_os_constants import get_hermes_dir
+    from agentic_os_constants import get_agentic_os_dir
 
-    return get_hermes_dir("cache/delegation", "delegation_cache") / "live"
+    return get_agentic_os_dir("cache/delegation", "delegation_cache") / "live"
 
 
 def new_live_delegation_id() -> str:

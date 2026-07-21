@@ -103,7 +103,7 @@ def test_cmd_setup_clears_interactive_picker_before_provider_post_setup(monkeypa
     monkeypatch.setattr(memory_setup, "_curses_select", lambda *args, **kwargs: events.append("select") or 0)
     monkeypatch.setattr(memory_setup, "_clear_interactive_transition", lambda: events.append("clear"), raising=False)
     monkeypatch.setattr(memory_setup, "_install_dependencies", lambda name: events.append("install"))
-    monkeypatch.setattr(memory_setup, "get_hermes_home", lambda: "/tmp/hermes-test")
+    monkeypatch.setattr(memory_setup, "get_agentic_os_home", lambda: "/tmp/hermes-test")
     monkeypatch.setattr("agentic_os_cli.config.load_config", lambda: {"memory": {}})
 
     memory_setup.cmd_setup(SimpleNamespace())
@@ -121,7 +121,7 @@ def test_cmd_setup_provider_clears_before_provider_post_setup(monkeypatch):
     monkeypatch.setattr(memory_setup, "_get_available_providers", lambda: [("openviking", "local", PostSetupProvider())])
     monkeypatch.setattr(memory_setup, "_clear_interactive_transition", lambda: events.append("clear"), raising=False)
     monkeypatch.setattr(memory_setup, "_install_dependencies", lambda name: events.append("install"))
-    monkeypatch.setattr(memory_setup, "get_hermes_home", lambda: "/tmp/hermes-test")
+    monkeypatch.setattr(memory_setup, "get_agentic_os_home", lambda: "/tmp/hermes-test")
     monkeypatch.setattr("agentic_os_cli.config.load_config", lambda: {"memory": {}})
 
     memory_setup.cmd_setup_provider("openviking")
@@ -186,7 +186,7 @@ def test_cmd_setup_generic_choice_cancel_writes_nothing(tmp_path, monkeypatch):
     monkeypatch.setattr(memory_setup, "_get_available_providers", lambda: [("fake", "local", provider)])
     monkeypatch.setattr(memory_setup, "_curses_select", lambda *args, **kwargs: next(selections))
     monkeypatch.setattr(memory_setup, "_install_dependencies", install_dependencies)
-    monkeypatch.setattr(memory_setup, "get_hermes_home", lambda: tmp_path)
+    monkeypatch.setattr(memory_setup, "get_agentic_os_home", lambda: tmp_path)
     monkeypatch.setattr("agentic_os_cli.config.load_config", lambda: {"memory": {}})
     monkeypatch.setattr("agentic_os_cli.config.save_config", save_config)
 

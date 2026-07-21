@@ -53,7 +53,7 @@ def fresh_home(tmp_path, monkeypatch):
         "HERMES_KANBAN_BOARD",
     ):
         monkeypatch.delenv(var, raising=False)
-    # Also reset agentic_os_constants cache so get_default_hermes_root() re-reads.
+    # Also reset agentic_os_constants cache so get_default_agentic_os_root() re-reads.
     try:
         import agentic_os_constants
         agentic_os_constants._cached_default_hermes_root = None  # type: ignore[attr-defined]
@@ -70,7 +70,7 @@ def fresh_home(tmp_path, monkeypatch):
 
 class TestSlugValidation:
     @pytest.mark.parametrize("good", [
-        "default", "atm10-server", "hermes-agent", "proj_1", "a",
+        "default", "atm10-server", "agentic-os", "proj_1", "a",
         "very-long-but-still-ok-slug-with-hyphens-and-numbers-1234",
     ])
     def test_accepts_valid(self, good):

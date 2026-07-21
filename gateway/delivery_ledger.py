@@ -48,7 +48,7 @@ import threading
 import time
 from typing import Any, Dict, List, Optional
 
-from agentic_os_constants import get_hermes_home
+from agentic_os_constants import get_agentic_os_home
 
 logger = logging.getLogger(__name__)
 
@@ -71,7 +71,7 @@ RECOVERED_MARKER = (
 
 
 def _db_path():
-    return get_hermes_home() / "state.db"
+    return get_agentic_os_home() / "state.db"
 
 
 def _connect() -> sqlite3.Connection:

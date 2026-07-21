@@ -242,7 +242,7 @@ class TestSetupWizardOpenclawIntegration:
         with (
             patch.object(setup_mod, "ensure_hermes_home"),
             patch.object(setup_mod, "load_config", return_value={}),
-            patch.object(setup_mod, "get_hermes_home", return_value=tmp_path),
+            patch.object(setup_mod, "get_agentic_os_home", return_value=tmp_path),
             patch.object(setup_mod, "get_env_value", return_value=""),
             patch.object(setup_mod, "is_interactive_stdin", return_value=True),
             patch("agentic_os_cli.auth.get_active_provider", return_value=None),
@@ -279,7 +279,7 @@ class TestSetupWizardOpenclawIntegration:
         with (
             patch.object(setup_mod, "ensure_hermes_home"),
             patch.object(setup_mod, "load_config", side_effect=tracking_load_config),
-            patch.object(setup_mod, "get_hermes_home", return_value=tmp_path),
+            patch.object(setup_mod, "get_agentic_os_home", return_value=tmp_path),
             patch.object(setup_mod, "get_env_value", return_value=""),
             patch.object(setup_mod, "is_interactive_stdin", return_value=True),
             patch("agentic_os_cli.auth.get_active_provider", return_value=None),
@@ -311,7 +311,7 @@ class TestSetupWizardOpenclawIntegration:
                 "load_config",
                 side_effect=[initial_config, reloaded_config],
             ),
-            patch.object(setup_mod, "get_hermes_home", return_value=tmp_path),
+            patch.object(setup_mod, "get_agentic_os_home", return_value=tmp_path),
             patch.object(setup_mod, "get_env_value", return_value=""),
             patch.object(setup_mod, "is_interactive_stdin", return_value=True),
             patch("agentic_os_cli.auth.get_active_provider", return_value=None),
@@ -337,7 +337,7 @@ class TestSetupWizardOpenclawIntegration:
         with (
             patch.object(setup_mod, "ensure_hermes_home"),
             patch.object(setup_mod, "load_config", return_value={}),
-            patch.object(setup_mod, "get_hermes_home", return_value=tmp_path),
+            patch.object(setup_mod, "get_agentic_os_home", return_value=tmp_path),
             patch.object(
                 setup_mod,
                 "get_env_value",
@@ -645,7 +645,7 @@ class TestSetupWizardSkipsConfiguredSections:
                 setup_mod, "load_config",
                 side_effect=[{}, reloaded_config],
             ),
-            patch.object(setup_mod, "get_hermes_home", return_value=tmp_path),
+            patch.object(setup_mod, "get_agentic_os_home", return_value=tmp_path),
             patch.object(setup_mod, "get_env_value", side_effect=env_side),
             patch.object(gateway_mod, "get_env_value", side_effect=env_side),
             patch.object(setup_mod, "is_interactive_stdin", return_value=True),

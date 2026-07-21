@@ -182,11 +182,11 @@ class TestStatusEndpointTopology:
             pytest.skip("fastapi/starlette not installed")
 
         import agentic_os_state
-        from agentic_os_constants import get_hermes_home
+        from agentic_os_constants import get_agentic_os_home
         from agentic_os_cli.web_server import app, _SESSION_HEADER_NAME, _SESSION_TOKEN
 
         monkeypatch.setattr(
-            agentic_os_state, "DEFAULT_DB_PATH", get_hermes_home() / "state.db"
+            agentic_os_state, "DEFAULT_DB_PATH", get_agentic_os_home() / "state.db"
         )
         self.client = TestClient(app)
         self.client.headers[_SESSION_HEADER_NAME] = _SESSION_TOKEN

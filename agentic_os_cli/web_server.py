@@ -60,8 +60,8 @@ from agentic_os_cli.config import (
     clear_model_endpoint_credentials,
     get_config_path,
     get_env_path,
-    get_hermes_home,
-    get_process_hermes_home,
+    get_agentic_os_home,
+    get_process_agentic_os_home,
     load_config,
     load_env,
     read_raw_config,
@@ -1765,7 +1765,7 @@ def _media_serve_roots() -> list[Path]:
     key or a screenshot outside the cache) merely because the suffix passes the
     allowlist.
     """
-    home = get_hermes_home()
+    home = get_agentic_os_home()
     roots = [home / "images", home / "screenshots", home / "cache"]
     out: list[Path] = []
     for root in roots:
@@ -1857,9 +1857,9 @@ def _default_hermes_root_is_opt_data() -> bool:
     if not raw:
         return False
     try:
-        from agentic_os_constants import get_default_hermes_root
+        from agentic_os_constants import get_default_agentic_os_root
 
-        root = get_default_hermes_root().expanduser().resolve(strict=False)
+        root = get_default_agentic_os_root().expanduser().resolve(strict=False)
     except (OSError, RuntimeError):
         root = Path(raw).expanduser().resolve(strict=False)
     return root == _HOSTED_MANAGED_FILES_ROOT
@@ -2066,7 +2066,7 @@ async def upload_chat_image(payload: ChatImageUpload, profile: Optional[str] = N
     """
     data, mime_type, ext = _decode_chat_image_upload(payload)
     with _profile_scope(profile) as scoped_home:
-        home = scoped_home or get_hermes_home()
+        home = scoped_home or get_agentic_os_home()
         img_dir = Path(home) / "images"
         try:
             img_dir.mkdir(parents=True, exist_ok=True)
@@ -2785,7 +2785,7 @@ async def get_status(profile: Optional[str] = None):
     # Use the config-only (contextvar) scope, NOT _profile_scope: this handler
     # awaits the remote-health probe, and _profile_scope swaps process-global
     # skills-module attributes that a concurrent request would cross-restore
-    # across that await. Status only resolves get_hermes_home() at call time
+    # across that await. Status only resolves get_agentic_os_home() at call time
     # (config/env/gateway state), which the task-local contextvar covers.
     if requested_profile and requested_profile.lower() != "current":
         status_scope = _config_profile_scope(requested_profile)
@@ -2983,7 +2983,7 @@ async def get_status(profile: Optional[str] = None):
         # split ``should_require_auth`` draws.
         if not auth_required:
             status.update({
-                "hermes_home": str(get_hermes_home()),
+                "hermes_home": str(get_agentic_os_home()),
                 "config_path": str(get_config_path()),
                 "env_path": str(get_env_path()),
                 "gateway_pid": gateway_pid,
@@ -3077,7 +3077,7 @@ async def get_system_stats():
             "percent": vm.percent,
         }
         try:
-            du = psutil.disk_usage(str(get_hermes_home()))
+            du = psutil.disk_usage(str(get_agentic_os_home()))
             info["disk"] = {
                 "total": du.total,
                 "used": du.used,
@@ -3380,7 +3380,7 @@ async def run_debug_share_endpoint(body: DebugShareRequest | None = None):
 # the dashboard can tail them back to the user.
 # ---------------------------------------------------------------------------
 
-_ACTION_LOG_DIR: Path = get_hermes_home() / "logs"
+_ACTION_LOG_DIR: Path = get_agentic_os_home() / "logs"
 _ACTION_LOG_TAIL_MAX_BYTES = 256 * 1024
 _ACTION_LOG_TAIL_INITIAL_CHUNK_BYTES = 8 * 1024
 _ACTION_LOG_TAIL_MAX_CHUNK_BYTES = 64 * 1024
@@ -3893,7 +3893,7 @@ async def check_hermes_update(force: bool = False):
 
         if force:
             try:
-                (get_hermes_home() / ".update_check").unlink()
+                (get_agentic_os_home() / ".update_check").unlink()
             except OSError:
                 pass
 
@@ -4860,7 +4860,7 @@ def _serialize_field_value(field: ProviderField, value: Any) -> str:
 
 
 def _flat_json_path(provider: ProviderConfigSchema) -> Path:
-    return get_hermes_home() / provider.name / "config.json"
+    return get_agentic_os_home() / provider.name / "config.json"
 
 
 def _read_flat_json(provider: ProviderConfigSchema) -> Dict[str, Any]:
@@ -5538,7 +5538,7 @@ def _read_json_file(path: Path) -> Dict[str, Any]:
 def _read_memory_provider_existing_values(name: str) -> Dict[str, Any]:
     """Best-effort read of existing provider config across legacy/native stores."""
 
-    hermes_home = get_hermes_home()
+    hermes_home = get_agentic_os_home()
     values: Dict[str, Any] = {}
 
     # Common native provider stores.
@@ -5700,10 +5700,10 @@ def _save_memory_provider_native_config(name: str, provider: Any, values: Dict[s
         try:
             from agent.memory_provider import MemoryProvider as _BaseMemoryProvider
         except Exception:
-            provider.save_config(values, str(get_hermes_home()))
+            provider.save_config(values, str(get_agentic_os_home()))
             return
         if type(provider).save_config is not _BaseMemoryProvider.save_config:
-            provider.save_config(values, str(get_hermes_home()))
+            provider.save_config(values, str(get_agentic_os_home()))
             return
 
     cfg = load_config()
@@ -7438,7 +7438,7 @@ _PLATFORM_OVERRIDES: dict[str, dict[str, Any]] = {
     "email": {
         "name": "Email",
         "description": "Talk to Hermes through an IMAP/SMTP mailbox.",
-        "docs_url": "https://hermes-agent.nousresearch.com/docs/user-guide/messaging/",
+        "docs_url": "https://agentic-os.nousresearch.com/docs/user-guide/messaging/",
         "env_vars": (
             "EMAIL_ADDRESS",
             "EMAIL_PASSWORD",
@@ -7481,7 +7481,7 @@ _PLATFORM_OVERRIDES: dict[str, dict[str, Any]] = {
     "google_chat": {
         "name": "Google Chat",
         "description": "Connect Hermes to Google Chat via Cloud Pub/Sub.",
-        "docs_url": "https://hermes-agent.nousresearch.com/docs/user-guide/messaging/google_chat",
+        "docs_url": "https://agentic-os.nousresearch.com/docs/user-guide/messaging/google_chat",
     },
     "wecom": {
         "name": "WeCom (group bot)",
@@ -7510,7 +7510,7 @@ _PLATFORM_OVERRIDES: dict[str, dict[str, Any]] = {
     "weixin": {
         "name": "Weixin / WeChat (Personal)",
         "description": "Connect a personal WeChat account through Tencent's iLink Bot API.",
-        "docs_url": "https://hermes-agent.nousresearch.com/docs/user-guide/messaging/weixin/",
+        "docs_url": "https://agentic-os.nousresearch.com/docs/user-guide/messaging/weixin/",
         "env_vars": ("WEIXIN_ACCOUNT_ID", "WEIXIN_TOKEN", "WEIXIN_BASE_URL"),
         "required_env": ("WEIXIN_ACCOUNT_ID", "WEIXIN_TOKEN"),
     },
@@ -7536,7 +7536,7 @@ _PLATFORM_OVERRIDES: dict[str, dict[str, Any]] = {
     # plugin registry. Only the docs link needs an override here so the
     # Channels page can point at the Microsoft Teams setup guide.
     "teams": {
-        "docs_url": "https://hermes-agent.nousresearch.com/docs/user-guide/messaging/teams",
+        "docs_url": "https://agentic-os.nousresearch.com/docs/user-guide/messaging/teams",
     },
     "yuanbao": {
         "name": "Yuanbao (元宝)",
@@ -7547,7 +7547,7 @@ _PLATFORM_OVERRIDES: dict[str, dict[str, Any]] = {
     "api_server": {
         "name": "API server",
         "description": "Expose Hermes as an OpenAI-compatible HTTP API for tools like Open WebUI.",
-        "docs_url": "https://hermes-agent.nousresearch.com/docs/user-guide/messaging/",
+        "docs_url": "https://agentic-os.nousresearch.com/docs/user-guide/messaging/",
         "env_vars": (
             "API_SERVER_ENABLED",
             "API_SERVER_KEY",
@@ -7560,7 +7560,7 @@ _PLATFORM_OVERRIDES: dict[str, dict[str, Any]] = {
     "webhook": {
         "name": "Webhooks",
         "description": "Receive events from GitHub, GitLab, and other webhook sources.",
-        "docs_url": "https://hermes-agent.nousresearch.com/docs/user-guide/messaging/webhooks/",
+        "docs_url": "https://agentic-os.nousresearch.com/docs/user-guide/messaging/webhooks/",
         "env_vars": ("WEBHOOK_ENABLED", "WEBHOOK_PORT", "WEBHOOK_SECRET"),
         "required_env": (),
     },
@@ -8108,9 +8108,9 @@ def _normalize_whatsapp_allowed_users(value: Any) -> str:
 
 
 def _whatsapp_session_path() -> Path:
-    from agentic_os_constants import get_hermes_dir
+    from agentic_os_constants import get_agentic_os_dir
 
-    return get_hermes_dir("platforms/whatsapp/session", "whatsapp/session")
+    return get_agentic_os_dir("platforms/whatsapp/session", "whatsapp/session")
 
 
 def _whatsapp_phone_from_identifier(value: Any) -> str | None:
@@ -8554,7 +8554,7 @@ async def cancel_whatsapp_onboarding(pairing_id: str):
     return {"ok": True}
 
 
-_TELEGRAM_ONBOARDING_DEFAULT_URL = "https://setup.hermes-agent.nousresearch.com"
+_TELEGRAM_ONBOARDING_DEFAULT_URL = "https://setup.agentic-os.nousresearch.com"
 _TELEGRAM_ONBOARDING_USER_AGENT = f"HermesDashboard/{__version__}"
 @dataclass
 class _TelegramOnboardingPairing:
@@ -9323,7 +9323,7 @@ _OAUTH_PROVIDER_CATALOG: tuple[Dict[str, Any], ...] = (
         # 127.0.0.1 callback.
         "flow": "device_code",
         "cli_command": "hermes auth add xai-oauth",
-        "docs_url": "https://hermes-agent.nousresearch.com/docs/guides/xai-grok-oauth",
+        "docs_url": "https://agentic-os.nousresearch.com/docs/guides/xai-grok-oauth",
         "status_fn": None,  # dispatched via auth.get_xai_oauth_auth_status
     },
     {
@@ -11133,7 +11133,7 @@ def _prune_sessions(body: SessionPrune):
     _effective_older_than = body.older_than_days
     if has_window or (_attr_filters_set and not _older_than_explicit):
         _effective_older_than = None
-    profile_home = _cron_profile_home(body.profile)[1] if body.profile else get_hermes_home()
+    profile_home = _cron_profile_home(body.profile)[1] if body.profile else get_agentic_os_home()
     db = _open_session_db_for_profile(body.profile)
     try:
         filters = dict(
@@ -11215,7 +11215,7 @@ async def get_logs(
     log_name = LOG_FILES.get(file)
     if not log_name:
         raise HTTPException(status_code=400, detail=f"Unknown log file: {file}")
-    log_path = get_hermes_home() / "logs" / log_name
+    log_path = get_agentic_os_home() / "logs" / log_name
     if not log_path.exists():
         return {"file": file, "lines": []}
 
@@ -11460,16 +11460,16 @@ def _call_cron_for_profile(target_profile: Optional[str], func_name: str, *args,
     profile_name, home = _cron_profile_home(target_profile)
     from cron import jobs as cron_jobs
     from agentic_os_constants import (
-        reset_hermes_home_override,
-        set_hermes_home_override,
+        reset_AGENTIC_OS_HOME_OVERRIDE,
+        set_AGENTIC_OS_HOME_OVERRIDE,
     )
 
-    token = set_hermes_home_override(str(home))
+    token = set_AGENTIC_OS_HOME_OVERRIDE(str(home))
     try:
         with cron_jobs.use_cron_store(home):
             result = getattr(cron_jobs, func_name)(*args, **kwargs)
     finally:
-        reset_hermes_home_override(token)
+        reset_AGENTIC_OS_HOME_OVERRIDE(token)
 
     if isinstance(result, list):
         return [_annotate_cron_job(j, profile_name, home) for j in result]
@@ -11772,17 +11772,17 @@ def _fire_cron_job_for_profile(profile: str, job_id: str) -> bool:
     from cron import jobs as cron_jobs
     from cron.scheduler_provider import resolve_cron_scheduler
     from agentic_os_constants import (
-        reset_hermes_home_override,
-        set_hermes_home_override,
+        reset_AGENTIC_OS_HOME_OVERRIDE,
+        set_AGENTIC_OS_HOME_OVERRIDE,
     )
 
-    token = set_hermes_home_override(str(home))
+    token = set_AGENTIC_OS_HOME_OVERRIDE(str(home))
     try:
         with cron_jobs.use_cron_store(home):
             provider = resolve_cron_scheduler()
             return bool(provider.fire_due(job_id, adapters=None, loop=None))
     finally:
-        reset_hermes_home_override(token)
+        reset_AGENTIC_OS_HOME_OVERRIDE(token)
 
 
 @app.post("/api/cron/fire")
@@ -12252,12 +12252,12 @@ def _run_dashboard_mcp_oauth(flow, cfg: dict) -> None:
             reset_secret_scope,
             set_secret_scope,
         )
-        from agentic_os_constants import reset_hermes_home_override, set_hermes_home_override
+        from agentic_os_constants import reset_AGENTIC_OS_HOME_OVERRIDE, set_AGENTIC_OS_HOME_OVERRIDE
         from tools.mcp_dashboard_oauth import dashboard_oauth_flow
         from tools.mcp_oauth import HermesTokenStorage, force_interactive_oauth
         from tools.mcp_oauth_manager import get_manager
 
-        home_token = set_hermes_home_override(flow.hermes_home)
+        home_token = set_AGENTIC_OS_HOME_OVERRIDE(flow.hermes_home)
         secret_token = set_secret_scope(build_profile_secret_scope(Path(flow.hermes_home)))
         try:
             transaction = _mcp_oauth_transaction(flow)
@@ -12298,7 +12298,7 @@ def _run_dashboard_mcp_oauth(flow, cfg: dict) -> None:
                     raise
         finally:
             reset_secret_scope(secret_token)
-            reset_hermes_home_override(home_token)
+            reset_AGENTIC_OS_HOME_OVERRIDE(home_token)
     except Exception as exc:
         msg = str(exc)
         # Providers that gate RFC 7591 registration to pre-approved clients
@@ -12327,12 +12327,12 @@ async def auth_mcp_server(name: str, request: Request, profile: Optional[str] = 
 
     _require_token(request)
     _gc_mcp_oauth_flows()
-    from agentic_os_constants import get_hermes_home
+    from agentic_os_constants import get_agentic_os_home
 
-    process_home = str(get_hermes_home().expanduser().resolve(strict=False))
+    process_home = str(get_agentic_os_home().expanduser().resolve(strict=False))
     with _profile_scope(profile):
         servers = _get_mcp_servers()
-        flow_home = str(get_hermes_home().expanduser().resolve(strict=False))
+        flow_home = str(get_agentic_os_home().expanduser().resolve(strict=False))
     if name not in servers:
         raise HTTPException(status_code=404, detail=f"Server '{name}' not found")
     cfg = dict(servers[name])
@@ -13112,7 +13112,7 @@ async def get_memory_status():
         active = _normalize_memory_provider_name(mem.get("provider"))
 
     # Built-in memory file sizes (so the UI can show what a reset would erase).
-    mem_dir = get_hermes_home() / "memories"
+    mem_dir = get_agentic_os_home() / "memories"
     files = {}
     for fname, key in (("MEMORY.md", "memory"), ("USER.md", "user")):
         path = mem_dir / fname
@@ -13145,7 +13145,7 @@ async def reset_memory(body: MemoryReset):
     if target not in {"all", "memory", "user"}:
         raise HTTPException(status_code=400, detail="target must be all, memory, or user")
 
-    mem_dir = get_hermes_home() / "memories"
+    mem_dir = get_agentic_os_home() / "memories"
     deleted = []
     targets = []
     if target in {"all", "memory"}:
@@ -13202,7 +13202,7 @@ class BackupRequest(BaseModel):
 
 
 def _dashboard_backup_dir() -> Path:
-    return get_hermes_home() / "backups"
+    return get_agentic_os_home() / "backups"
 
 
 def _new_dashboard_backup_path() -> Path:
@@ -13544,7 +13544,7 @@ async def list_checkpoints():
     # total size so the dashboard can show what a prune would reclaim; the
     # actual prune is a spawned action so confirmation/pruning logic stays
     # in one place (the CLI).
-    cp_dir = get_hermes_home() / "checkpoints"
+    cp_dir = get_agentic_os_home() / "checkpoints"
     sessions = []
     total_bytes = 0
     if cp_dir.is_dir():
@@ -14199,16 +14199,16 @@ def _write_profile_model(profile_dir: Path, provider: str, model: str) -> None:
     Clears any stale ``base_url`` / ``context_length`` the same way
     ``POST /api/model/set`` does, since the new model may differ.
     """
-    from agentic_os_constants import set_hermes_home_override, reset_hermes_home_override
+    from agentic_os_constants import set_AGENTIC_OS_HOME_OVERRIDE, reset_AGENTIC_OS_HOME_OVERRIDE
 
-    token = set_hermes_home_override(str(profile_dir))
+    token = set_AGENTIC_OS_HOME_OVERRIDE(str(profile_dir))
     try:
         provider, model = _normalize_main_model_assignment(provider, model)
         cfg = load_config()
         cfg["model"] = _apply_main_model_assignment(cfg.get("model", {}), provider, model)
         save_config(cfg)
     finally:
-        reset_hermes_home_override(token)
+        reset_AGENTIC_OS_HOME_OVERRIDE(token)
 
 
 def _write_profile_mcp_servers(profile_dir: Path, servers: List["MCPServerCreate"]) -> int:
@@ -14223,11 +14223,11 @@ def _write_profile_mcp_servers(profile_dir: Path, servers: List["MCPServerCreate
     but batched so the whole profile-create write is a single config save.
     Returns the number of servers written.
     """
-    from agentic_os_constants import set_hermes_home_override, reset_hermes_home_override
+    from agentic_os_constants import set_AGENTIC_OS_HOME_OVERRIDE, reset_AGENTIC_OS_HOME_OVERRIDE
     from agentic_os_cli.mcp_config import _save_bearer_auth_token
 
     written = 0
-    token = set_hermes_home_override(str(profile_dir))
+    token = set_AGENTIC_OS_HOME_OVERRIDE(str(profile_dir))
     try:
         cfg = load_config()
         mcp = cfg.setdefault("mcp_servers", {})
@@ -14254,7 +14254,7 @@ def _write_profile_mcp_servers(profile_dir: Path, servers: List["MCPServerCreate
             cfg.pop("mcp_servers", None)
             save_config(cfg)
     finally:
-        reset_hermes_home_override(token)
+        reset_AGENTIC_OS_HOME_OVERRIDE(token)
     return written
 
 
@@ -14269,12 +14269,12 @@ def _disable_unselected_skills(profile_dir: Path, keep: List[str]) -> int:
     install.) Scoped to the profile via the HERMES_HOME override. Returns the
     number of skills newly disabled.
     """
-    from agentic_os_constants import set_hermes_home_override, reset_hermes_home_override
+    from agentic_os_constants import set_AGENTIC_OS_HOME_OVERRIDE, reset_AGENTIC_OS_HOME_OVERRIDE
     from agentic_os_cli.skills_config import get_disabled_skills, save_disabled_skills
 
     keep_set = {s.strip() for s in keep if s and s.strip()}
     disabled_count = 0
-    token = set_hermes_home_override(str(profile_dir))
+    token = set_AGENTIC_OS_HOME_OVERRIDE(str(profile_dir))
     try:
         installed: List[str] = []
         skills_root = profile_dir / "skills"
@@ -14290,7 +14290,7 @@ def _disable_unselected_skills(profile_dir: Path, keep: List[str]) -> int:
         if disabled_count:
             save_disabled_skills(cfg, disabled)
     finally:
-        reset_hermes_home_override(token)
+        reset_AGENTIC_OS_HOME_OVERRIDE(token)
     return disabled_count
 
 
@@ -14667,8 +14667,8 @@ def _profile_scope(profile: Optional[str]):
 
     Two seams must be redirected for skills/toolsets endpoints:
 
-    1. ``load_config``/``save_config`` resolve ``get_hermes_home()`` at call
-       time — the context-local override from ``set_hermes_home_override``
+    1. ``load_config``/``save_config`` resolve ``get_agentic_os_home()`` at call
+       time — the context-local override from ``set_AGENTIC_OS_HOME_OVERRIDE``
        reaches them (same pattern as ``_write_profile_model``).
     2. ``tools.skills_tool`` and ``tools.skill_manager_tool`` bind
        ``SKILLS_DIR`` at import time, so the override CANNOT reach them.
@@ -14678,7 +14678,7 @@ def _profile_scope(profile: Optional[str]):
 
     ``profile`` of None/""/"current" means "the dashboard's own profile" —
     config resolution is untouched, but the skill-module globals are still
-    retargeted to the *current* ``get_hermes_home()`` so writes land in the
+    retargeted to the *current* ``get_agentic_os_home()`` so writes land in the
     live home even when the import-time binding is stale (e.g. the process
     imported the modules before a HERMES_HOME override, or under test
     isolation).
@@ -14686,19 +14686,19 @@ def _profile_scope(profile: Optional[str]):
     requested = (profile or "").strip()
 
     from agentic_os_constants import (
-        get_hermes_home,
-        set_hermes_home_override,
-        reset_hermes_home_override,
+        get_agentic_os_home,
+        set_AGENTIC_OS_HOME_OVERRIDE,
+        reset_AGENTIC_OS_HOME_OVERRIDE,
     )
     from tools import skills_tool as _skills_tool
     from tools import skill_manager_tool as _skill_mgr
 
     token = None
     if not requested or requested.lower() == "current":
-        profile_dir = get_hermes_home()
+        profile_dir = get_agentic_os_home()
     else:
         profile_dir = _resolve_profile_dir(requested)
-        token = set_hermes_home_override(str(profile_dir))
+        token = set_AGENTIC_OS_HOME_OVERRIDE(str(profile_dir))
 
     with _SKILLS_PROFILE_LOCK:
         old_home = _skills_tool.HERMES_HOME
@@ -14717,7 +14717,7 @@ def _profile_scope(profile: Optional[str]):
             _skill_mgr.HERMES_HOME = old_mgr_home
             _skill_mgr.SKILLS_DIR = old_mgr_skills_dir
             if token is not None:
-                reset_hermes_home_override(token)
+                reset_AGENTIC_OS_HOME_OVERRIDE(token)
 
 
 @contextmanager
@@ -14725,13 +14725,13 @@ def _config_profile_scope(profile: Optional[str]):
     """Await-safe, config-only profile scope for handlers that ``await``.
 
     Unlike ``_profile_scope`` this touches ONLY the context-local
-    ``set_hermes_home_override`` contextvar — it does NOT swap the
+    ``set_AGENTIC_OS_HOME_OVERRIDE`` contextvar — it does NOT swap the
     process-global ``skills_tool``/``skill_manager`` module attributes.
     Those globals are shared across all event-loop tasks, so holding them
     across an ``await`` lets a concurrent skills request restore THIS
     request's profile dir on its ``finally`` (cross-contamination). The
     contextvar override is task-local and survives an ``await`` cleanly,
-    which is all endpoints that resolve ``get_hermes_home()`` at call time
+    which is all endpoints that resolve ``get_agentic_os_home()`` at call time
     (config, env, gateway status) actually need.
 
     None/""/"current" means the dashboard's own profile — no override.
@@ -14742,16 +14742,16 @@ def _config_profile_scope(profile: Optional[str]):
         return
 
     from agentic_os_constants import (
-        set_hermes_home_override,
-        reset_hermes_home_override,
+        set_AGENTIC_OS_HOME_OVERRIDE,
+        reset_AGENTIC_OS_HOME_OVERRIDE,
     )
 
     profile_dir = _resolve_profile_dir(requested)
-    token = set_hermes_home_override(str(profile_dir))
+    token = set_AGENTIC_OS_HOME_OVERRIDE(str(profile_dir))
     try:
         yield profile_dir
     finally:
-        reset_hermes_home_override(token)
+        reset_AGENTIC_OS_HOME_OVERRIDE(token)
 
 
 class SkillToggle(BaseModel):
@@ -16644,7 +16644,7 @@ def _resolve_chat_argv(
     `profile` (when set) scopes the ENTIRE chat to that profile by pointing
     ``HERMES_HOME`` at the profile dir in the child env. Every spawned
     process (the TUI and the ``tui_gateway.entry`` it launches) resolves
-    ``get_hermes_home()`` from that env var at its own import, so the child
+    ``get_agentic_os_home()`` from that env var at its own import, so the child
     binds the profile's config, skills, memory, and state.db from the start
     — the same propagation ``hermes -p <name>`` performs. The in-process
     ``HERMES_TUI_GATEWAY_URL`` attach is SKIPPED for scoped chats: the
@@ -18242,11 +18242,11 @@ def _discover_user_themes() -> list:
     to the frontend, so the client can apply them without a secondary
     round-trip or a built-in stub.
 
-    Uses the dashboard process launch home, not ``get_hermes_home()``, so a
+    Uses the dashboard process launch home, not ``get_agentic_os_home()``, so a
     transient profile override from embedded chat does not hide themes that
     live under the server's own ``HERMES_HOME``.
     """
-    themes_dir = get_process_hermes_home() / "dashboard-themes"
+    themes_dir = get_process_agentic_os_home() / "dashboard-themes"
     if not themes_dir.is_dir():
         return []
     result = []
@@ -18412,7 +18412,7 @@ def _discover_dashboard_plugins() -> list:
     # vanish when a request is scoped to another profile via a context-local
     # HERMES_HOME override (e.g. embedded /chat under --open-profile).
     search_dirs = [
-        (get_process_hermes_home() / "plugins", "user"),
+        (get_process_agentic_os_home() / "plugins", "user"),
         (bundled_root / "memory", "bundled"),
         (bundled_root, "bundled"),
     ]
@@ -18595,7 +18595,7 @@ def _merged_plugins_hub() -> Dict[str, Any]:
     config = load_config()
     hidden_plugins: list = cfg_get(config, "dashboard", "hidden_plugins", default=[]) or []
 
-    plugins_root_resolved = (get_hermes_home() / "plugins").resolve()
+    plugins_root_resolved = (get_agentic_os_home() / "plugins").resolve()
     rows: List[Dict[str, Any]] = []
 
     for name, version, description, source, dir_str, key in _discover_all_plugins():

@@ -100,7 +100,7 @@ def _discord_request(
         headers={
             "Authorization": f"Bot {token}",
             "Content-Type": "application/json",
-            "User-Agent": "Hermes-Agent (https://github.com/NousResearch/hermes-agent)",
+            "User-Agent": "Hermes-Agent (https://github.com/subhxroy/agentic-os)",
         },
     )
 
@@ -174,9 +174,9 @@ _capability_bg_lock = threading.Lock()
 def _capability_disk_cache_path() -> "Path":
     from pathlib import Path
 
-    from agentic_os_constants import get_hermes_home
+    from agentic_os_constants import get_agentic_os_home
 
-    return get_hermes_home() / "cache" / "discord_capabilities.json"
+    return get_agentic_os_home() / "cache" / "discord_capabilities.json"
 
 
 def _token_cache_key(token: str) -> str:

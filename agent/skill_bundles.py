@@ -50,7 +50,7 @@ from typing import Any, Dict, List, Optional, Tuple
 
 import yaml
 
-from agentic_os_constants import get_hermes_home
+from agentic_os_constants import get_agentic_os_home
 
 logger = logging.getLogger(__name__)
 
@@ -72,7 +72,7 @@ def _bundles_dir() -> Path:
     override = os.environ.get("HERMES_BUNDLES_DIR")
     if override:
         return Path(override).expanduser()
-    return get_hermes_home() / "skill-bundles"
+    return get_agentic_os_home() / "skill-bundles"
 
 
 def _slugify(name: str) -> str:

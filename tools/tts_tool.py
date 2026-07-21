@@ -53,7 +53,7 @@ from typing import Callable, Dict, Any, Optional
 from urllib.parse import urljoin, urlparse
 
 from agentic_os_cli._subprocess_compat import windows_hide_flags
-from agentic_os_constants import display_hermes_home
+from agentic_os_constants import display_agentic_os_home
 
 logger = logging.getLogger(__name__)
 def get_env_value(name, default=None):
@@ -213,8 +213,8 @@ GEMINI_TTS_CHANNELS = 1
 GEMINI_TTS_SAMPLE_WIDTH = 2  # 16-bit PCM (L16)
 
 def _get_default_output_dir() -> str:
-    from agentic_os_constants import get_hermes_dir
-    return str(get_hermes_dir("cache/audio", "audio_cache"))
+    from agentic_os_constants import get_agentic_os_dir
+    return str(get_agentic_os_dir("cache/audio", "audio_cache"))
 
 DEFAULT_OUTPUT_DIR = _get_default_output_dir()
 
@@ -1643,8 +1643,8 @@ def _resolve_gemini_persona_prompt_path(gemini_config: Dict[str, Any]) -> Option
     path = Path(expanded).expanduser()
     if not path.is_absolute():
         try:
-            from agentic_os_constants import get_hermes_home
-            path = get_hermes_home() / path
+            from agentic_os_constants import get_agentic_os_home
+            path = get_agentic_os_home() / path
         except Exception:
             path = Path.cwd() / path
     return path
@@ -2058,8 +2058,8 @@ def _get_piper_voices_dir() -> Path:
     Resolves to ``~/.hermes/cache/piper-voices/`` under the active
     HERMES_HOME so voice downloads follow profile boundaries.
     """
-    from agentic_os_constants import get_hermes_dir
-    root = Path(get_hermes_dir("cache/piper-voices", "piper_voices_cache"))
+    from agentic_os_constants import get_agentic_os_dir
+    root = Path(get_agentic_os_dir("cache/piper-voices", "piper_voices_cache"))
     root.mkdir(parents=True, exist_ok=True)
     return root
 
@@ -3008,7 +3008,7 @@ TTS_SCHEMA = {
             },
             "output_path": {
                 "type": "string",
-                "description": f"Optional custom file path to save the audio. Defaults to {display_hermes_home()}/audio_cache/<timestamp>.mp3"
+                "description": f"Optional custom file path to save the audio. Defaults to {display_agentic_os_home()}/audio_cache/<timestamp>.mp3"
             }
         },
         "required": ["text"]

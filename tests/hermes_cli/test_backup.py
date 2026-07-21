@@ -52,10 +52,10 @@ def _make_hermes_tree(root: Path) -> None:
     (root / "profiles" / "coder" / ".env").write_text("ANTHROPIC_API_KEY=sk-ant-123\n")
 
     # hermes-agent repo (should be EXCLUDED)
-    (root / "hermes-agent").mkdir(exist_ok=True)
-    (root / "hermes-agent" / "run_agent.py").write_text("# big file\n")
-    (root / "hermes-agent" / ".git").mkdir()
-    (root / "hermes-agent" / ".git" / "HEAD").write_text("ref: refs/heads/main\n")
+    (root / "agentic-os").mkdir(exist_ok=True)
+    (root / "agentic-os" / "run_agent.py").write_text("# big file\n")
+    (root / "agentic-os" / ".git").mkdir()
+    (root / "agentic-os" / ".git" / "HEAD").write_text("ref: refs/heads/main\n")
 
     # __pycache__ (should be EXCLUDED)
     (root / "plugins").mkdir(exist_ok=True)
@@ -200,7 +200,7 @@ class TestBackup:
         _make_hermes_tree(hermes_home)
 
         monkeypatch.setenv("HERMES_HOME", str(hermes_home))
-        # get_default_hermes_root needs this
+        # get_default_agentic_os_root needs this
         monkeypatch.setattr(Path, "home", lambda: tmp_path)
 
         out_zip = tmp_path / "backup.zip"
@@ -363,7 +363,7 @@ class TestBackup:
 
         with zipfile.ZipFile(out_zip, "r") as zf:
             names = zf.namelist()
-            agent_files = [n for n in names if "hermes-agent" in n]
+            agent_files = [n for n in names if "agentic-os" in n]
             assert agent_files == [], f"hermes-agent files leaked into backup: {agent_files}"
 
     def test_excludes_dependency_and_cache_trees(self, tmp_path, monkeypatch):
@@ -404,7 +404,7 @@ class TestBackup:
         _make_hermes_tree(hermes_home)
 
         # Add a nested hermes-agent directory inside skills (like the real layout)
-        nested = hermes_home / "skills" / "autonomous-ai-agents" / "hermes-agent"
+        nested = hermes_home / "skills" / "autonomous-ai-agents" / "agentic-os"
         nested.mkdir(parents=True)
         (nested / "SKILL.md").write_text("# Agentic OS Skill\n")
         (nested / "sub").mkdir()
@@ -909,7 +909,7 @@ class TestRoundTrip:
         assert (dst_home / "logs" / "agent.log").exists()
 
         # hermes-agent should NOT be present
-        assert not (dst_home / "hermes-agent").exists()
+        assert not (dst_home / "agentic-os").exists()
         # __pycache__ should NOT be present
         assert not (dst_home / "plugins" / "__pycache__").exists()
         # PID files should NOT be present

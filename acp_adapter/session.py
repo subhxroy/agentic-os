@@ -8,7 +8,7 @@ history.
 """
 from __future__ import annotations
 
-from agentic_os_constants import get_hermes_home
+from agentic_os_constants import get_agentic_os_home
 
 import copy
 import json
@@ -402,7 +402,7 @@ class SessionManager:
             return self._db_instance
         try:
             from agentic_os_state import SessionDB
-            hermes_home = get_hermes_home()
+            hermes_home = get_agentic_os_home()
             self._db_instance = SessionDB(db_path=hermes_home / "state.db")
             return self._db_instance
         except Exception:

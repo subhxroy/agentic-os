@@ -56,10 +56,10 @@ def _install_example_plugin(_isolate_hermes_home):
     all). User plugins are first in the discovery search order, so
     laying down the fixture here is enough.
     """
-    from agentic_os_constants import get_hermes_home
+    from agentic_os_constants import get_agentic_os_home
     from agentic_os_cli import web_server
 
-    user_plugins_dir = get_hermes_home() / "plugins"
+    user_plugins_dir = get_agentic_os_home() / "plugins"
     user_plugins_dir.mkdir(parents=True, exist_ok=True)
     dst = user_plugins_dir / "example-dashboard"
     if dst.exists():
@@ -250,10 +250,10 @@ class TestWebServerEndpoints:
             pytest.skip("fastapi/starlette not installed")
 
         import agentic_os_state
-        from agentic_os_constants import get_hermes_home
+        from agentic_os_constants import get_agentic_os_home
         from agentic_os_cli.web_server import app, _SESSION_HEADER_NAME, _SESSION_TOKEN
 
-        monkeypatch.setattr(agentic_os_state, "DEFAULT_DB_PATH", get_hermes_home() / "state.db")
+        monkeypatch.setattr(agentic_os_state, "DEFAULT_DB_PATH", get_agentic_os_home() / "state.db")
 
         self.client = TestClient(app)
         self.client.headers[_SESSION_HEADER_NAME] = _SESSION_TOKEN
@@ -530,7 +530,7 @@ class TestWebServerEndpoints:
         assert resp.json()["fields"] == []
 
     def test_declared_surface_put_writes_config_and_secret(self):
-        from agentic_os_constants import get_hermes_home
+        from agentic_os_constants import get_agentic_os_home
         from agentic_os_cli.config import load_env
 
         resp = self.client.put(
@@ -548,7 +548,7 @@ class TestWebServerEndpoints:
         assert resp.json() == {"ok": True}
         assert load_env()["HINDSIGHT_API_KEY"] == "hs-declared-key"
 
-        config_path = get_hermes_home() / "hindsight" / "config.json"
+        config_path = get_agentic_os_home() / "hindsight" / "config.json"
         provider_config = json.loads(config_path.read_text(encoding="utf-8"))
         assert provider_config["mode"] == "local_external"
         assert provider_config["api_url"] == "http://localhost:8888"
@@ -704,7 +704,7 @@ class TestWebServerEndpoints:
         assert load_config().get("memory", {}).get("provider") != "retaindb"
 
     def test_put_memory_provider_config_writes_config_and_secret(self):
-        from agentic_os_constants import get_hermes_home
+        from agentic_os_constants import get_agentic_os_home
         from agentic_os_cli.config import load_config, load_env
 
         resp = self.client.put(
@@ -725,7 +725,7 @@ class TestWebServerEndpoints:
         assert load_config()["memory"]["provider"] == "hindsight"
         assert load_env()["HINDSIGHT_API_KEY"] == "hs-test-key"
 
-        config_path = get_hermes_home() / "hindsight" / "config.json"
+        config_path = get_agentic_os_home() / "hindsight" / "config.json"
         provider_config = json.loads(config_path.read_text(encoding="utf-8"))
         assert provider_config["mode"] == "local_external"
         assert provider_config["api_url"] == "http://localhost:8888"
@@ -956,9 +956,9 @@ class TestWebServerEndpoints:
     def _isolate_honcho_config(self):
         # Honcho tests write the suite-wide HERMES_HOME honcho.json; snapshot and
         # restore it so provider status/config state never leaks across tests.
-        from agentic_os_constants import get_hermes_home
+        from agentic_os_constants import get_agentic_os_home
 
-        path = get_hermes_home() / "honcho.json"
+        path = get_agentic_os_home() / "honcho.json"
         before = path.read_bytes() if path.exists() else None
         yield
         if before is None:
@@ -968,9 +968,9 @@ class TestWebServerEndpoints:
 
     @staticmethod
     def _seed_local_honcho(cfg=None):
-        from agentic_os_constants import get_hermes_home
+        from agentic_os_constants import get_agentic_os_home
 
-        path = get_hermes_home() / "honcho.json"
+        path = get_agentic_os_home() / "honcho.json"
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text(json.dumps(cfg if cfg is not None else {}), encoding="utf-8")
         return path
@@ -1007,7 +1007,7 @@ class TestWebServerEndpoints:
         monkeypatch.setenv("HONCHO_API_KEY", "guard")
         monkeypatch.delenv("HONCHO_API_KEY")
         self._seed_local_honcho()
-        from agentic_os_constants import get_hermes_home
+        from agentic_os_constants import get_agentic_os_home
         from agentic_os_cli.config import load_config, load_env
 
         resp = self.client.put(
@@ -1030,7 +1030,7 @@ class TestWebServerEndpoints:
         assert load_config()["memory"]["provider"] == "honcho"
         assert load_env()["HONCHO_API_KEY"] == "hch-test-key"
 
-        cfg = json.loads((get_hermes_home() / "honcho.json").read_text(encoding="utf-8"))
+        cfg = json.loads((get_agentic_os_home() / "honcho.json").read_text(encoding="utf-8"))
         # baseUrl is root-scoped; the rest live in the active host block.
         assert cfg["baseUrl"] == "https://honcho.example.dev"
         assert cfg["hosts"]["hermes"]["workspace"] == "myws"
@@ -1043,7 +1043,7 @@ class TestWebServerEndpoints:
     def test_put_honcho_blank_text_clears_key(self, monkeypatch, tmp_path):
         monkeypatch.setenv("HOME", str(tmp_path))
         self._seed_local_honcho()
-        from agentic_os_constants import get_hermes_home
+        from agentic_os_constants import get_agentic_os_home
 
         self.client.put(
             "/api/memory/providers/honcho/config?surface=declared",
@@ -1054,13 +1054,13 @@ class TestWebServerEndpoints:
             json={"values": {"workspace": ""}},
         )
 
-        cfg = json.loads((get_hermes_home() / "honcho.json").read_text(encoding="utf-8"))
+        cfg = json.loads((get_agentic_os_home() / "honcho.json").read_text(encoding="utf-8"))
         assert "workspace" not in cfg.get("hosts", {}).get("hermes", {})
 
     def test_put_honcho_partial_save_preserves_other_keys(self, monkeypatch, tmp_path):
         monkeypatch.setenv("HOME", str(tmp_path))
         self._seed_local_honcho()
-        from agentic_os_constants import get_hermes_home
+        from agentic_os_constants import get_agentic_os_home
 
         self.client.put(
             "/api/memory/providers/honcho/config?surface=declared",
@@ -1071,7 +1071,7 @@ class TestWebServerEndpoints:
             json={"values": {"peerName": "eri"}},
         )
 
-        host = json.loads((get_hermes_home() / "honcho.json").read_text(encoding="utf-8"))["hosts"]["hermes"]
+        host = json.loads((get_agentic_os_home() / "honcho.json").read_text(encoding="utf-8"))["hosts"]["hermes"]
         assert host["workspace"] == "myws"
         assert host["peerName"] == "eri"
 
@@ -1108,14 +1108,14 @@ class TestWebServerEndpoints:
     def test_put_honcho_bool_stored_natively_and_false_survives(self, monkeypatch, tmp_path):
         monkeypatch.setenv("HOME", str(tmp_path))
         self._seed_local_honcho()
-        from agentic_os_constants import get_hermes_home
+        from agentic_os_constants import get_agentic_os_home
 
         self.client.put(
             "/api/memory/providers/honcho/config?surface=declared",
             json={"values": {"saveMessages": "false", "dialecticDynamic": "true"}},
         )
 
-        host = json.loads((get_hermes_home() / "honcho.json").read_text(encoding="utf-8"))["hosts"]["hermes"]
+        host = json.loads((get_agentic_os_home() / "honcho.json").read_text(encoding="utf-8"))["hosts"]["hermes"]
         # Native JSON bools, not the strings "false"/"true" (which read truthy).
         assert host["saveMessages"] is False
         assert host["dialecticDynamic"] is True
@@ -1127,14 +1127,14 @@ class TestWebServerEndpoints:
     def test_put_honcho_number_stored_as_native_number(self, monkeypatch, tmp_path):
         monkeypatch.setenv("HOME", str(tmp_path))
         self._seed_local_honcho()
-        from agentic_os_constants import get_hermes_home
+        from agentic_os_constants import get_agentic_os_home
 
         self.client.put(
             "/api/memory/providers/honcho/config?surface=declared",
             json={"values": {"dialecticMaxChars": "1200", "timeout": "2.5"}},
         )
 
-        cfg = json.loads((get_hermes_home() / "honcho.json").read_text(encoding="utf-8"))
+        cfg = json.loads((get_agentic_os_home() / "honcho.json").read_text(encoding="utf-8"))
         assert cfg["hosts"]["hermes"]["dialecticMaxChars"] == 1200
         assert isinstance(cfg["hosts"]["hermes"]["dialecticMaxChars"], int)
         # timeout is root-scoped and keeps its fractional part.
@@ -1146,14 +1146,14 @@ class TestWebServerEndpoints:
     def test_put_honcho_json_round_trips_object(self, monkeypatch, tmp_path):
         monkeypatch.setenv("HOME", str(tmp_path))
         self._seed_local_honcho()
-        from agentic_os_constants import get_hermes_home
+        from agentic_os_constants import get_agentic_os_home
 
         self.client.put(
             "/api/memory/providers/honcho/config?surface=declared",
             json={"values": {"userPeerAliases": '{"telegram_1": "eri"}'}},
         )
 
-        host = json.loads((get_hermes_home() / "honcho.json").read_text(encoding="utf-8"))["hosts"]["hermes"]
+        host = json.loads((get_agentic_os_home() / "honcho.json").read_text(encoding="utf-8"))["hosts"]["hermes"]
         assert host["userPeerAliases"] == {"telegram_1": "eri"}
 
         fields = self._provider_field_map(self.client.get("/api/memory/providers/honcho/config?surface=declared").json())
@@ -1162,7 +1162,7 @@ class TestWebServerEndpoints:
     def test_put_honcho_first_save_merges_into_resolved_config(self, monkeypatch, tmp_path):
         # With no profile-local file, a save merges into the resolved global config.
         monkeypatch.setenv("HOME", str(tmp_path))
-        from agentic_os_constants import get_hermes_home
+        from agentic_os_constants import get_agentic_os_home
 
         global_path = tmp_path / ".honcho" / "config.json"
         global_path.parent.mkdir(parents=True)
@@ -1177,7 +1177,7 @@ class TestWebServerEndpoints:
         )
 
         assert resp.status_code == 200
-        assert not (get_hermes_home() / "honcho.json").exists()
+        assert not (get_agentic_os_home() / "honcho.json").exists()
         cfg = json.loads(global_path.read_text(encoding="utf-8"))
         assert cfg["baseUrl"] == "https://kept.example"
         assert cfg["hosts"]["hermes"] == {"workspace": "kept", "peerName": "eri"}
@@ -1238,7 +1238,7 @@ class TestWebServerEndpoints:
         # The suite pins HERMES_HONCHO_HOST=hermes; this test exercises
         # profile-driven host resolution, so drop the override explicitly.
         monkeypatch.delenv("HERMES_HONCHO_HOST", raising=False)
-        from agentic_os_constants import get_hermes_home
+        from agentic_os_constants import get_agentic_os_home
         from agentic_os_cli.profiles import get_profile_dir
 
         self._seed_local_honcho()
@@ -1258,7 +1258,7 @@ class TestWebServerEndpoints:
         host_block = next(iter(worker_hosts.values()))
         assert host_block["peerName"] == "eri"
         # The serving process's own config is untouched.
-        own = json.loads((get_hermes_home() / "honcho.json").read_text(encoding="utf-8"))
+        own = json.loads((get_agentic_os_home() / "honcho.json").read_text(encoding="utf-8"))
         assert "peerName" not in json.dumps(own)
 
         fields = self._provider_field_map(
@@ -1282,9 +1282,9 @@ class TestWebServerEndpoints:
 
     def test_get_media_serves_image_in_root(self):
         """An image under the gateway's images dir is returned as a data URL."""
-        from agentic_os_constants import get_hermes_home
+        from agentic_os_constants import get_agentic_os_home
 
-        img_dir = get_hermes_home() / "images"
+        img_dir = get_agentic_os_home() / "images"
         img_dir.mkdir(parents=True, exist_ok=True)
         img = img_dir / "shot.png"
         img.write_bytes(b"\x89PNG\r\n\x1a\n" + b"\x00" * 16)
@@ -1302,9 +1302,9 @@ class TestWebServerEndpoints:
         assert resp.status_code == 403
 
     def test_get_media_rejects_non_image_extension(self):
-        from agentic_os_constants import get_hermes_home
+        from agentic_os_constants import get_agentic_os_home
 
-        img_dir = get_hermes_home() / "images"
+        img_dir = get_agentic_os_home() / "images"
         img_dir.mkdir(parents=True, exist_ok=True)
         env = img_dir / "leak.env"
         env.write_text("SECRET=1")
@@ -1313,9 +1313,9 @@ class TestWebServerEndpoints:
         assert resp.status_code == 415
 
     def test_get_media_404_for_missing_file(self):
-        from agentic_os_constants import get_hermes_home
+        from agentic_os_constants import get_agentic_os_home
 
-        missing = get_hermes_home() / "images" / "nope.png"
+        missing = get_agentic_os_home() / "images" / "nope.png"
         resp = self.client.get("/api/media", params={"path": str(missing)})
         assert resp.status_code == 404
 
@@ -1332,7 +1332,7 @@ class TestWebServerEndpoints:
     # ── POST /api/chat/image-upload (browser clipboard/drop images) ─────
 
     def test_chat_image_upload_writes_to_default_profile_images(self):
-        from agentic_os_constants import get_hermes_home
+        from agentic_os_constants import get_agentic_os_home
 
         data_url = (
             "data:image/png;base64,"
@@ -1350,7 +1350,7 @@ class TestWebServerEndpoints:
         target = Path(data["path"])
         assert data["ok"] is True
         assert data["mime_type"] == "image/png"
-        assert target.parent == get_hermes_home() / "images"
+        assert target.parent == get_agentic_os_home() / "images"
         assert target.name.startswith("dashboard_")
         assert target.name.endswith("_clip.png")
         assert target.is_file()
@@ -2309,7 +2309,7 @@ class TestWebServerEndpoints:
         assert data["name"] == "hermes-update"
         assert data["pid"] is None
         assert data["error"] == "docker_update_unsupported"
-        assert "docker pull nousresearch/hermes-agent:latest" in data["message"]
+        assert "docker pull subhxroy/agentic-os:latest" in data["message"]
         assert spawned is False
 
         status = self.client.get("/api/actions/hermes-update/status")
@@ -2318,7 +2318,7 @@ class TestWebServerEndpoints:
         assert status_data["running"] is False
         assert status_data["exit_code"] == 1
         assert status_data["pid"] is None
-        assert any("docker pull nousresearch/hermes-agent:latest" in line for line in status_data["lines"])
+        assert any("docker pull subhxroy/agentic-os:latest" in line for line in status_data["lines"])
 
     def test_update_hermes_returns_managed_runtime_guidance_without_spawning(self, monkeypatch):
         import agentic_os_cli.web_server as web_server
@@ -2944,7 +2944,7 @@ class TestWebServerEndpoints:
         from pathlib import Path
 
         import agentic_os_cli.web_server as ws
-        from agentic_os_cli.config import get_hermes_home
+        from agentic_os_cli.config import get_agentic_os_home
 
         captured = {}
 
@@ -2964,7 +2964,7 @@ class TestWebServerEndpoints:
         assert data["name"] == "backup"
         assert captured["name"] == "backup"
         assert captured["args"] == ["backup", "-o", str(archive)]
-        assert archive.parent == get_hermes_home() / "backups"
+        assert archive.parent == get_agentic_os_home() / "backups"
         assert archive.name.startswith("hermes-backup-")
         assert archive.suffix == ".zip"
 
@@ -3212,7 +3212,7 @@ class TestWebServerEndpoints:
         assert "personal WeChat" in weixin["description"]
         assert "Official Account" not in f"{weixin['name']} {weixin['description']}"
         assert weixin["docs_url"] == (
-            "https://hermes-agent.nousresearch.com/docs/user-guide/messaging/weixin/"
+            "https://agentic-os.nousresearch.com/docs/user-guide/messaging/weixin/"
         )
 
         fields = {field["key"]: field for field in weixin["env_vars"]}
@@ -3230,7 +3230,7 @@ class TestWebServerEndpoints:
 
         teams = _build_catalog_entry("teams")
         assert teams["docs_url"] == (
-            "https://hermes-agent.nousresearch.com/docs/user-guide/messaging/teams"
+            "https://agentic-os.nousresearch.com/docs/user-guide/messaging/teams"
         )
 
     def test_google_chat_messaging_metadata_links_setup_guide(self):
@@ -3243,7 +3243,7 @@ class TestWebServerEndpoints:
         google_chat = _build_catalog_entry("google_chat")
         assert google_chat["name"] == "Google Chat"
         assert google_chat["docs_url"] == (
-            "https://hermes-agent.nousresearch.com/docs/user-guide/messaging/google_chat"
+            "https://agentic-os.nousresearch.com/docs/user-guide/messaging/google_chat"
         )
 
     def test_messaging_catalog_covers_gateway_platforms(self):
@@ -4904,10 +4904,10 @@ class TestNewEndpoints:
             pytest.skip("fastapi/starlette not installed")
 
         import agentic_os_state
-        from agentic_os_constants import get_hermes_home
+        from agentic_os_constants import get_agentic_os_home
         from agentic_os_cli.web_server import app, _SESSION_HEADER_NAME, _SESSION_TOKEN
 
-        monkeypatch.setattr(agentic_os_state, "DEFAULT_DB_PATH", get_hermes_home() / "state.db")
+        monkeypatch.setattr(agentic_os_state, "DEFAULT_DB_PATH", get_agentic_os_home() / "state.db")
 
         self.client = TestClient(app)
         self.client.headers[_SESSION_HEADER_NAME] = _SESSION_TOKEN
@@ -4972,8 +4972,8 @@ class TestNewEndpoints:
     # --- Profiles ---
 
     def test_profiles_list_includes_default(self):
-        from agentic_os_constants import get_hermes_home
-        get_hermes_home().mkdir(parents=True, exist_ok=True)
+        from agentic_os_constants import get_agentic_os_home
+        get_agentic_os_home().mkdir(parents=True, exist_ok=True)
 
         resp = self.client.get("/api/profiles")
         assert resp.status_code == 200
@@ -4981,10 +4981,10 @@ class TestNewEndpoints:
         assert "default" in names
 
     def test_profiles_list_falls_back_when_profile_listing_fails(self, monkeypatch):
-        from agentic_os_constants import get_hermes_home
+        from agentic_os_constants import get_agentic_os_home
         import agentic_os_cli.profiles as profiles_mod
 
-        hermes_home = get_hermes_home()
+        hermes_home = get_agentic_os_home()
         hermes_home.mkdir(parents=True, exist_ok=True)
         (hermes_home / "config.yaml").write_text(
             "model:\n  provider: openrouter\n  name: anthropic/claude-sonnet-4.6\n",
@@ -5036,9 +5036,9 @@ class TestNewEndpoints:
         assert "test-prof-2" not in names
 
     def test_profile_setup_command_uses_named_profile_wrapper(self):
-        from agentic_os_constants import get_hermes_home
+        from agentic_os_constants import get_agentic_os_home
 
-        (get_hermes_home() / "profiles" / "coder").mkdir(parents=True)
+        (get_agentic_os_home() / "profiles" / "coder").mkdir(parents=True)
 
         resp = self.client.get("/api/profiles/coder/setup-command")
 
@@ -5046,9 +5046,9 @@ class TestNewEndpoints:
         assert resp.json()["command"] == "coder setup"
 
     def test_profile_setup_command_uses_hermes_for_default_profile(self):
-        from agentic_os_constants import get_hermes_home
+        from agentic_os_constants import get_agentic_os_home
 
-        get_hermes_home().mkdir(parents=True, exist_ok=True)
+        get_agentic_os_home().mkdir(parents=True, exist_ok=True)
 
         resp = self.client.get("/api/profiles/default/setup-command")
 
@@ -5079,15 +5079,15 @@ class TestNewEndpoints:
             assert lines == ["#!/bin/sh", 'exec /opt/hermes/bin/hermes -p writer "$@"']
 
     def test_profiles_create_with_clone_from_copies_source_skills(self, monkeypatch):
-        from agentic_os_constants import get_hermes_home
+        from agentic_os_constants import get_agentic_os_home
         import agentic_os_cli.profiles as profiles_mod
 
         monkeypatch.setattr(profiles_mod, "create_wrapper_script", lambda name: None)
-        (get_hermes_home() / "config.yaml").write_text(
+        (get_agentic_os_home() / "config.yaml").write_text(
             "model:\n  provider: openrouter\n",
             encoding="utf-8",
         )
-        default_skill = get_hermes_home() / "skills" / "custom" / "new-skill"
+        default_skill = get_agentic_os_home() / "skills" / "custom" / "new-skill"
         default_skill.mkdir(parents=True)
         (default_skill / "SKILL.md").write_text("---\nname: new-skill\n---\n", encoding="utf-8")
 
@@ -5097,7 +5097,7 @@ class TestNewEndpoints:
         )
 
         assert resp.status_code == 200
-        cloned_root = get_hermes_home() / "profiles" / "cloned"
+        cloned_root = get_agentic_os_home() / "profiles" / "cloned"
         cloned_skill = cloned_root / "skills" / "custom" / "new-skill" / "SKILL.md"
         assert cloned_skill.exists()
         cloned_config = yaml.safe_load((cloned_root / "config.yaml").read_text(encoding="utf-8"))
@@ -5106,14 +5106,14 @@ class TestNewEndpoints:
         assert profiles["cloned"]["skill_count"] == 1
 
     def test_profiles_create_with_clone_from_duplicates_source(self, monkeypatch):
-        from agentic_os_constants import get_hermes_home
+        from agentic_os_constants import get_agentic_os_home
         import agentic_os_cli.profiles as profiles_mod
 
         monkeypatch.setattr(profiles_mod, "create_wrapper_script", lambda name: None)
 
         # Create a source profile and give it a distinctive skill.
         assert self.client.post("/api/profiles", json={"name": "source-prof"}).status_code == 200
-        source_skill = get_hermes_home() / "profiles" / "source-prof" / "skills" / "custom" / "src-skill"
+        source_skill = get_agentic_os_home() / "profiles" / "source-prof" / "skills" / "custom" / "src-skill"
         source_skill.mkdir(parents=True)
         (source_skill / "SKILL.md").write_text("---\nname: src-skill\n---\n", encoding="utf-8")
 
@@ -5125,18 +5125,18 @@ class TestNewEndpoints:
 
         assert resp.status_code == 200
         cloned_skill = (
-            get_hermes_home() / "profiles" / "source-prof-copy" / "skills" / "custom" / "src-skill" / "SKILL.md"
+            get_agentic_os_home() / "profiles" / "source-prof-copy" / "skills" / "custom" / "src-skill" / "SKILL.md"
         )
         assert cloned_skill.exists()
 
     def test_profiles_create_clone_all_from_named_source(self, monkeypatch):
-        from agentic_os_constants import get_hermes_home
+        from agentic_os_constants import get_agentic_os_home
         import agentic_os_cli.profiles as profiles_mod
 
         monkeypatch.setattr(profiles_mod, "create_wrapper_script", lambda name: None)
 
         assert self.client.post("/api/profiles", json={"name": "full-src"}).status_code == 200
-        source_dir = get_hermes_home() / "profiles" / "full-src"
+        source_dir = get_agentic_os_home() / "profiles" / "full-src"
         (source_dir / "config.yaml").write_text("model:\n  provider: source-only\n", encoding="utf-8")
         (source_dir / "workspace" / "artifact.txt").parent.mkdir(parents=True, exist_ok=True)
         (source_dir / "workspace" / "artifact.txt").write_text("copied", encoding="utf-8")
@@ -5147,12 +5147,12 @@ class TestNewEndpoints:
         )
 
         assert resp.status_code == 200
-        target_dir = get_hermes_home() / "profiles" / "full-copy"
+        target_dir = get_agentic_os_home() / "profiles" / "full-copy"
         assert (target_dir / "config.yaml").read_text(encoding="utf-8") == "model:\n  provider: source-only\n"
         assert (target_dir / "workspace" / "artifact.txt").read_text(encoding="utf-8") == "copied"
 
     def test_profiles_create_without_clone_seeds_bundled_skills(self, monkeypatch):
-        from agentic_os_constants import get_hermes_home
+        from agentic_os_constants import get_agentic_os_home
         import agentic_os_cli.profiles as profiles_mod
 
         monkeypatch.setattr(profiles_mod, "create_wrapper_script", lambda name: None)
@@ -5171,7 +5171,7 @@ class TestNewEndpoints:
         )
 
         assert resp.status_code == 200
-        seeded_skill = get_hermes_home() / "profiles" / "fresh" / "skills" / "software-development" / "plan" / "SKILL.md"
+        seeded_skill = get_agentic_os_home() / "profiles" / "fresh" / "skills" / "software-development" / "plan" / "SKILL.md"
         assert seeded_skill.exists()
         profiles = {p["name"]: p for p in self.client.get("/api/profiles").json()["profiles"]}
         assert profiles["fresh"]["skill_count"] == 1
@@ -5181,9 +5181,9 @@ class TestNewEndpoints:
         all land in the NEW profile's config, and hub installs are spawned
         scoped to that profile via ``-p <name>``."""
         from agentic_os_constants import (
-            get_hermes_home,
-            set_hermes_home_override,
-            reset_hermes_home_override,
+            get_agentic_os_home,
+            set_AGENTIC_OS_HOME_OVERRIDE,
+            reset_AGENTIC_OS_HOME_OVERRIDE,
         )
         from agentic_os_cli.config import load_config
         from agentic_os_cli.skills_config import get_disabled_skills
@@ -5245,8 +5245,8 @@ class TestNewEndpoints:
         ]
 
         # Verify the writes landed in the NEW profile's config, not the root.
-        prof_dir = get_hermes_home() / "profiles" / "builder"
-        token = set_hermes_home_override(str(prof_dir))
+        prof_dir = get_agentic_os_home() / "profiles" / "builder"
+        token = set_AGENTIC_OS_HOME_OVERRIDE(str(prof_dir))
         try:
             cfg = load_config()
             assert cfg["model"]["default"] == "anthropic/claude-sonnet-4.6"
@@ -5256,12 +5256,12 @@ class TestNewEndpoints:
             assert "drop-me" in disabled
             assert "keep-me" not in disabled
         finally:
-            reset_hermes_home_override(token)
+            reset_AGENTIC_OS_HOME_OVERRIDE(token)
 
     def test_profiles_create_builder_mcp_auth_is_profile_scoped(
         self, monkeypatch
     ):
-        from agentic_os_constants import get_hermes_home
+        from agentic_os_constants import get_agentic_os_home
         import agentic_os_cli.profiles as profiles_mod
 
         monkeypatch.setattr(profiles_mod, "create_wrapper_script", lambda name: None)
@@ -5306,7 +5306,7 @@ class TestNewEndpoints:
         assert resp.status_code == 200
         assert resp.json()["mcp_written"] == 3
 
-        root = get_hermes_home()
+        root = get_agentic_os_home()
         profile_dir = root / "profiles" / "builder-auth"
         config_text = (profile_dir / "config.yaml").read_text(encoding="utf-8")
         config = yaml.safe_load(config_text)
@@ -5340,10 +5340,10 @@ class TestNewEndpoints:
         assert not (root / ".env").exists()
 
     def test_profile_open_terminal_uses_macos_terminal(self, monkeypatch):
-        from agentic_os_constants import get_hermes_home
+        from agentic_os_constants import get_agentic_os_home
         import agentic_os_cli.web_server as web_server
 
-        (get_hermes_home() / "profiles" / "coder").mkdir(parents=True)
+        (get_agentic_os_home() / "profiles" / "coder").mkdir(parents=True)
         calls = []
         monkeypatch.setattr(web_server.sys, "platform", "darwin")
         monkeypatch.setattr(web_server.subprocess, "Popen", lambda args, **kwargs: calls.append(args))
@@ -5356,10 +5356,10 @@ class TestNewEndpoints:
         assert "coder setup" in " ".join(calls[0])
 
     def test_profile_open_terminal_uses_windows_cmd(self, monkeypatch):
-        from agentic_os_constants import get_hermes_home
+        from agentic_os_constants import get_agentic_os_home
         import agentic_os_cli.web_server as web_server
 
-        (get_hermes_home() / "profiles" / "coder").mkdir(parents=True)
+        (get_agentic_os_home() / "profiles" / "coder").mkdir(parents=True)
         calls = []
         monkeypatch.setattr(web_server.sys, "platform", "win32")
         monkeypatch.setattr(web_server.subprocess, "Popen", lambda args, **kwargs: calls.append(args))
@@ -5410,8 +5410,8 @@ class TestNewEndpoints:
     # --- New profiles endpoints: active / description / model / describe-auto ---
 
     def test_profiles_active_defaults(self):
-        from agentic_os_constants import get_hermes_home
-        get_hermes_home().mkdir(parents=True, exist_ok=True)
+        from agentic_os_constants import get_agentic_os_home
+        get_agentic_os_home().mkdir(parents=True, exist_ok=True)
 
         resp = self.client.get("/api/profiles/active")
         assert resp.status_code == 200
@@ -5460,7 +5460,7 @@ class TestNewEndpoints:
         assert resp.status_code == 404
 
     def test_profile_model_round_trip(self, monkeypatch):
-        from agentic_os_constants import get_hermes_home
+        from agentic_os_constants import get_agentic_os_home
         import agentic_os_cli.profiles as profiles_mod
         monkeypatch.setattr(profiles_mod, "create_wrapper_script", lambda name: None)
 
@@ -5474,7 +5474,7 @@ class TestNewEndpoints:
         assert resp.json()["provider"] == "openrouter"
 
         import yaml
-        cfg_path = get_hermes_home() / "profiles" / "model-prof" / "config.yaml"
+        cfg_path = get_agentic_os_home() / "profiles" / "model-prof" / "config.yaml"
         cfg = yaml.safe_load(cfg_path.read_text(encoding="utf-8"))
         assert cfg["model"]["provider"] == "openrouter"
         assert cfg["model"]["default"] == "anthropic/claude-sonnet-4.6"
@@ -7365,16 +7365,16 @@ class TestDiscoverUserThemes:
         other.mkdir()
 
         from agentic_os_constants import (
-            reset_hermes_home_override,
-            set_hermes_home_override,
+            reset_AGENTIC_OS_HOME_OVERRIDE,
+            set_AGENTIC_OS_HOME_OVERRIDE,
         )
         from agentic_os_cli import web_server
 
-        token = set_hermes_home_override(str(other))
+        token = set_AGENTIC_OS_HOME_OVERRIDE(str(other))
         try:
             results = web_server._discover_user_themes()
         finally:
-            reset_hermes_home_override(token)
+            reset_AGENTIC_OS_HOME_OVERRIDE(token)
 
         assert [r["name"] for r in results] == ["mine"]
 
@@ -7711,11 +7711,11 @@ class TestDeleteSessionEndpoint:
             pytest.skip("fastapi/starlette not installed")
 
         import agentic_os_state
-        from agentic_os_constants import get_hermes_home
+        from agentic_os_constants import get_agentic_os_home
         from agentic_os_cli.web_server import app, _SESSION_HEADER_NAME, _SESSION_TOKEN
 
         monkeypatch.setattr(
-            agentic_os_state, "DEFAULT_DB_PATH", get_hermes_home() / "state.db"
+            agentic_os_state, "DEFAULT_DB_PATH", get_agentic_os_home() / "state.db"
         )
 
         self.auth_client = TestClient(app)
@@ -7788,11 +7788,11 @@ class TestBulkDeleteSessionsEndpoint:
             pytest.skip("fastapi/starlette not installed")
 
         import agentic_os_state
-        from agentic_os_constants import get_hermes_home
+        from agentic_os_constants import get_agentic_os_home
         from agentic_os_cli.web_server import app, _SESSION_HEADER_NAME, _SESSION_TOKEN
 
         monkeypatch.setattr(
-            agentic_os_state, "DEFAULT_DB_PATH", get_hermes_home() / "state.db"
+            agentic_os_state, "DEFAULT_DB_PATH", get_agentic_os_home() / "state.db"
         )
 
         self.client = TestClient(app)
@@ -7912,13 +7912,13 @@ class TestDeleteEmptySessionsEndpoint:
             pytest.skip("fastapi/starlette not installed")
 
         import agentic_os_state
-        from agentic_os_constants import get_hermes_home
+        from agentic_os_constants import get_agentic_os_home
         from agentic_os_cli.web_server import app, _SESSION_HEADER_NAME, _SESSION_TOKEN
 
         # Pin the SessionDB to the isolated HERMES_HOME so each test
         # starts with a clean state.db.
         monkeypatch.setattr(
-            agentic_os_state, "DEFAULT_DB_PATH", get_hermes_home() / "state.db"
+            agentic_os_state, "DEFAULT_DB_PATH", get_agentic_os_home() / "state.db"
         )
 
         self.client = TestClient(app)
@@ -8048,10 +8048,10 @@ class TestPluginAPIAuth:
             pytest.skip("fastapi/starlette not installed")
 
         import agentic_os_state
-        from agentic_os_constants import get_hermes_home
+        from agentic_os_constants import get_agentic_os_home
         from agentic_os_cli.web_server import app, _SESSION_HEADER_NAME, _SESSION_TOKEN
 
-        monkeypatch.setattr(agentic_os_state, "DEFAULT_DB_PATH", get_hermes_home() / "state.db")
+        monkeypatch.setattr(agentic_os_state, "DEFAULT_DB_PATH", get_agentic_os_home() / "state.db")
 
         self.client = TestClient(app)
         self.auth_client = TestClient(app)
@@ -8182,8 +8182,8 @@ class TestDashboardPluginManifestExtensions:
         (like theme YAML), so they must stay visible after a context-local
         HERMES_HOME override scopes a request to another profile."""
         from agentic_os_constants import (
-            reset_hermes_home_override,
-            set_hermes_home_override,
+            reset_AGENTIC_OS_HOME_OVERRIDE,
+            set_AGENTIC_OS_HOME_OVERRIDE,
         )
         launch_home = tmp_path / "launch"
         launch_home.mkdir()
@@ -8198,11 +8198,11 @@ class TestDashboardPluginManifestExtensions:
 
         monkeypatch.setenv("HERMES_HOME", str(launch_home))
         from agentic_os_cli import web_server
-        token = set_hermes_home_override(str(other))
+        token = set_AGENTIC_OS_HOME_OVERRIDE(str(other))
         try:
             plugins = web_server._discover_dashboard_plugins()
         finally:
-            reset_hermes_home_override(token)
+            reset_AGENTIC_OS_HOME_OVERRIDE(token)
         assert any(p["name"] == "skin-home" for p in plugins)
 
     def test_override_requires_leading_slash(self, tmp_path, monkeypatch):

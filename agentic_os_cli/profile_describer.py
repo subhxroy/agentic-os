@@ -179,8 +179,8 @@ def describe_profile(
 
     try:
         if canon == "default":
-            from agentic_os_constants import get_hermes_home  # type: ignore
-            profile_dir = Path(get_hermes_home())
+            from agentic_os_constants import get_agentic_os_home  # type: ignore
+            profile_dir = Path(get_agentic_os_home())
         else:
             profile_dir = profiles_mod.get_profile_dir(canon)
     except Exception as exc:

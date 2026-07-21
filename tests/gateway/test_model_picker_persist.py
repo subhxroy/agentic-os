@@ -111,9 +111,9 @@ def _setup_isolated_home(tmp_path, monkeypatch, model_yaml_value):
 
     monkeypatch.setattr(gateway_run, "_hermes_home", hermes_home)
     _stub_picker_dependencies(monkeypatch)
-    # save_config writes to ``get_hermes_home() / config.yaml`` — point it here.
-    monkeypatch.setattr("agentic_os_constants.get_hermes_home", lambda: hermes_home)
-    monkeypatch.setattr("agentic_os_cli.config.get_hermes_home", lambda: hermes_home)
+    # save_config writes to ``get_agentic_os_home() / config.yaml`` — point it here.
+    monkeypatch.setattr("agentic_os_constants.get_agentic_os_home", lambda: hermes_home)
+    monkeypatch.setattr("agentic_os_cli.config.get_agentic_os_home", lambda: hermes_home)
     return cfg_path
 
 

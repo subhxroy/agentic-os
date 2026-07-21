@@ -1413,9 +1413,9 @@ _ensure_ssl_certs()
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 # Resolve Hermes home directory (respects HERMES_HOME override)
-from agentic_os_constants import get_hermes_home, get_hermes_home_override
+from agentic_os_constants import get_agentic_os_home, get_agentic_os_home_override
 from utils import atomic_json_write, atomic_yaml_write, base_url_host_matches, is_truthy_value
-_hermes_home = get_hermes_home()
+_hermes_home = get_agentic_os_home()
 
 # Load environment variables from ~/.hermes/.env first.
 # User-managed env files should override stale shell exports on restart.
@@ -1525,7 +1525,7 @@ def _profile_runtime_scope(profile_home: "Path"):
     """Scope config/skills/memory AND credentials to a profile for one turn.
 
     Combines the two seams the multiplexer needs:
-      1. ``set_hermes_home_override`` — redirects ``get_hermes_home()`` (config,
+      1. ``set_AGENTIC_OS_HOME_OVERRIDE`` — redirects ``get_agentic_os_home()`` (config,
          skills, memory, SOUL, sessions) to the profile's home. Contextvar, so
          it propagates into the agent worker thread via ``copy_context()``.
       2. ``set_secret_scope`` — installs the profile's ``.env`` secrets as the
@@ -1539,20 +1539,20 @@ def _profile_runtime_scope(profile_home: "Path"):
     returns an isolated dict — which is what keeps subprocesses (MCP, kanban)
     from inheriting cross-profile secrets.
     """
-    from agentic_os_constants import set_hermes_home_override, reset_hermes_home_override
+    from agentic_os_constants import set_AGENTIC_OS_HOME_OVERRIDE, reset_AGENTIC_OS_HOME_OVERRIDE
     from agent.secret_scope import (
         build_profile_secret_scope,
         set_secret_scope,
         reset_secret_scope,
     )
 
-    home_token = set_hermes_home_override(str(profile_home))
+    home_token = set_AGENTIC_OS_HOME_OVERRIDE(str(profile_home))
     secret_token = set_secret_scope(build_profile_secret_scope(Path(profile_home)))
     try:
         yield
     finally:
         reset_secret_scope(secret_token)
-        reset_hermes_home_override(home_token)
+        reset_AGENTIC_OS_HOME_OVERRIDE(home_token)
 
 
 def load_gateway_config_for_runner() -> "GatewayConfig":
@@ -1576,7 +1576,7 @@ def load_gateway_config_for_runner() -> "GatewayConfig":
     if not getattr(cfg, "multiplex_profiles", False):
         return cfg
     try:
-        home = get_hermes_home()
+        home = get_agentic_os_home()
     except Exception:
         return cfg
     try:
@@ -2524,7 +2524,7 @@ def _teams_pipeline_plugin_enabled() -> bool:
 
 def _gateway_config_home() -> Path:
     """Return the Hermes home that gateway config reads should use."""
-    override = get_hermes_home_override()
+    override = get_agentic_os_home_override()
     if override:
         return Path(override)
     return _hermes_home
@@ -18054,9 +18054,9 @@ class GatewayRunner(GatewayAuthorizationMixin, GatewayKanbanWatchersMixin, Gatew
             )
 
         try:
-            from agentic_os_constants import display_hermes_home
+            from agentic_os_constants import display_agentic_os_home
 
-            home_display = str(display_hermes_home())
+            home_display = str(display_agentic_os_home())
         except Exception:
             home_display = ""
 
@@ -18550,7 +18550,7 @@ class GatewayRunner(GatewayAuthorizationMixin, GatewayKanbanWatchersMixin, Gatew
             headers["X-Hermes-Session-Id"] = session_id
 
         body = {
-            "model": "hermes-agent",
+            "model": "agentic-os",
             "messages": api_messages,
             "stream": True,
         }
@@ -18877,7 +18877,7 @@ class GatewayRunner(GatewayAuthorizationMixin, GatewayKanbanWatchersMixin, Gatew
             get_profile_dir,
             profile_exists,
         )
-        from agentic_os_constants import get_hermes_home
+        from agentic_os_constants import get_agentic_os_home
         
         # Track whether a profile was explicitly requested (vs. falling back to default)
         explicit_profile = None
@@ -18903,7 +18903,7 @@ class GatewayRunner(GatewayAuthorizationMixin, GatewayKanbanWatchersMixin, Gatew
                     source.chat_id,
                     getattr(source, "guild_id", None),
                 )
-                return get_hermes_home()
+                return get_agentic_os_home()
             return profile_dir
         except Exception:
             # Catch normalization errors, path errors, etc.
@@ -18916,7 +18916,7 @@ class GatewayRunner(GatewayAuthorizationMixin, GatewayKanbanWatchersMixin, Gatew
                 explicit_profile or "(no profile)",
                 exc_info=True,
             )
-            return get_hermes_home()
+            return get_agentic_os_home()
 
     async def _run_agent_inner(
         self,
@@ -22547,7 +22547,7 @@ async def start_gateway(config: Optional[GatewayConfig] = None, replace: bool = 
             # remove_pid_file() is a no-op when the PID doesn't match.
             # Force-unlink to cover the old-process-crashed case.
             try:
-                (get_hermes_home() / "gateway.pid").unlink(missing_ok=True)
+                (get_agentic_os_home() / "gateway.pid").unlink(missing_ok=True)
             except Exception:
                 pass
             # Clean up any takeover marker the old process didn't consume
@@ -22571,7 +22571,7 @@ async def start_gateway(config: Optional[GatewayConfig] = None, replace: bool = 
             except Exception:
                 pass
         else:
-            hermes_home = str(get_hermes_home())
+            hermes_home = str(get_agentic_os_home())
             logger.error(
                 "Another gateway instance is already running (PID %d, HERMES_HOME=%s). "
                 "Use 'hermes gateway restart' to replace it, or 'hermes gateway stop' first.",

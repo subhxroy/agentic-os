@@ -83,8 +83,8 @@ def _setup_isolated_home(tmp_path, monkeypatch, *, warn):
         "agentic_os_cli.model_switch.switch_model",
         lambda **kw: _fake_switch_result(),
     )
-    monkeypatch.setattr("agentic_os_constants.get_hermes_home", lambda: hermes_home)
-    monkeypatch.setattr("agentic_os_cli.config.get_hermes_home", lambda: hermes_home)
+    monkeypatch.setattr("agentic_os_constants.get_agentic_os_home", lambda: hermes_home)
+    monkeypatch.setattr("agentic_os_cli.config.get_agentic_os_home", lambda: hermes_home)
     monkeypatch.setattr(
         "agentic_os_cli.model_cost_guard.expensive_model_warning",
         (lambda *a, **kw: _fake_warning()) if warn else (lambda *a, **kw: None),

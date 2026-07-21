@@ -12,7 +12,7 @@ import sys
 import shlex
 from pathlib import Path
 
-from agentic_os_constants import get_hermes_home
+from agentic_os_constants import get_agentic_os_home
 from agentic_os_cli.secret_prompt import masked_secret_prompt
 
 _CANCELLED = -1
@@ -223,7 +223,7 @@ def cmd_setup_provider(provider_name: str) -> None:
         config["memory"] = {}
 
     if hasattr(provider, "post_setup"):
-        hermes_home = str(get_hermes_home())
+        hermes_home = str(get_agentic_os_home())
         provider.post_setup(hermes_home, config)
         return
 
@@ -279,7 +279,7 @@ def cmd_setup(args) -> None:
     # If the provider has a post_setup hook, delegate entirely to it.
     # The hook handles its own config, connection test, and activation.
     if hasattr(provider, "post_setup"):
-        hermes_home = str(get_hermes_home())
+        hermes_home = str(get_agentic_os_home())
         provider.post_setup(hermes_home, config)
         return
 
@@ -289,7 +289,7 @@ def cmd_setup(args) -> None:
     if not isinstance(provider_config, dict):
         provider_config = {}
 
-    env_path = get_hermes_home() / ".env"
+    env_path = get_agentic_os_home() / ".env"
     env_writes = {}
 
     if schema:
@@ -359,7 +359,7 @@ def cmd_setup(args) -> None:
     save_config(config)
 
     # Write non-secret config to provider's native location
-    hermes_home = str(get_hermes_home())
+    hermes_home = str(get_agentic_os_home())
     if provider_config and hasattr(provider, "save_config"):
         try:
             provider.save_config(provider_config, hermes_home)

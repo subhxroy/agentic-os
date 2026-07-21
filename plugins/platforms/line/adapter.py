@@ -1298,8 +1298,8 @@ class LineAdapter(BasePlatformAdapter):
             return web.Response(status=404, text="not found")
 
         try:
-            from agentic_os_constants import get_hermes_home
-            hermes_home = Path(get_hermes_home()).resolve()
+            from agentic_os_constants import get_agentic_os_home
+            hermes_home = Path(get_agentic_os_home()).resolve()
         except Exception:
             hermes_home = Path.home().joinpath(".hermes").resolve()
 

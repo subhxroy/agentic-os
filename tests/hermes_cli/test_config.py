@@ -10,7 +10,7 @@ import yaml
 from agentic_os_cli.config import (
     DEFAULT_CONFIG,
     check_config_version,
-    get_hermes_home,
+    get_agentic_os_home,
     ensure_hermes_home,
     get_compatible_custom_providers,
     _explicit_config_paths,
@@ -35,12 +35,12 @@ class TestGetHermesHome:
     def test_default_path(self):
         with patch.dict(os.environ, {}, clear=False):
             os.environ.pop("HERMES_HOME", None)
-            home = get_hermes_home()
+            home = get_agentic_os_home()
             assert home == Path.home() / ".hermes"
 
     def test_env_override(self):
         with patch.dict(os.environ, {"HERMES_HOME": "/custom/path"}):
-            home = get_hermes_home()
+            home = get_agentic_os_home()
             assert home == Path("/custom/path")
 
 

@@ -84,12 +84,12 @@ def _resolve_script_path(script_path: str) -> Path:
     ``restart.sh`` would read as a nonexistent relative path and silently
     scan prompt-only content, letting the command through.
     """
-    from agentic_os_constants import get_hermes_home
+    from agentic_os_constants import get_agentic_os_home
 
     raw = Path(script_path).expanduser()
     if raw.is_absolute():
         return raw
-    return get_hermes_home() / "scripts" / raw
+    return get_agentic_os_home() / "scripts" / raw
 
 
 def _read_script_for_scanning(script_path: str) -> str:

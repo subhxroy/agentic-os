@@ -66,7 +66,7 @@ from typing import Dict, Any, Optional, List, Tuple, Union
 from pathlib import Path
 from agent.auxiliary_client import call_llm
 from agent.redact import redact_cdp_url
-from agentic_os_constants import agent_browser_runnable, get_hermes_home
+from agentic_os_constants import agent_browser_runnable, get_agentic_os_home
 from utils import env_int, is_truthy_value
 from agentic_os_cli.config import DEFAULT_CONFIG, cfg_get
 from agentic_os_cli._subprocess_compat import windows_hide_flags
@@ -193,7 +193,7 @@ def _discover_homebrew_node_dirs() -> tuple[str, ...]:
 
 def _browser_candidate_path_dirs() -> list[str]:
     """Return ordered browser CLI PATH candidates shared by discovery and execution."""
-    hermes_home = get_hermes_home()
+    hermes_home = get_agentic_os_home()
     hermes_node_bin = str(hermes_home / "node" / "bin")
     hermes_node_root = str(hermes_home / "node")
     hermes_nm_bin = str(hermes_home / "node_modules" / ".bin")
@@ -372,7 +372,7 @@ def _format_browser_timeout_error(
             hints.append(
                 "The browser daemon may still be starting or Chromium may be "
                 "missing. Pull the latest image: "
-                "docker pull ghcr.io/nousresearch/hermes-agent:latest"
+                "docker pull ghcr.io/subhxroy/agentic-os:latest"
             )
         else:
             hints.append(
@@ -1071,7 +1071,7 @@ def _run_chrome_fallback_command(
             hint = (
                 "Chrome fallback requires Chromium, but it is missing. "
                 "You're running in Docker — pull the latest image: "
-                "docker pull ghcr.io/nousresearch/hermes-agent:latest"
+                "docker pull ghcr.io/subhxroy/agentic-os:latest"
             )
         else:
             hint = (
@@ -2255,9 +2255,9 @@ def _find_agent_browser(*, validate: bool = True) -> str:
             candidates = [
                 shutil.which("agent-browser"),
                 shutil.which("agent-browser", path=extended_path) if extended_path else None,
-                shutil.which("agent-browser", path=str(get_hermes_home() / "node_modules" / ".bin")),
-                shutil.which("agent-browser", path=str(get_hermes_home() / "node" / "bin")),
-                shutil.which("agent-browser", path=str(get_hermes_home() / "node")),
+                shutil.which("agent-browser", path=str(get_agentic_os_home() / "node_modules" / ".bin")),
+                shutil.which("agent-browser", path=str(get_agentic_os_home() / "node" / "bin")),
+                shutil.which("agent-browser", path=str(get_agentic_os_home() / "node")),
             ]
             for recheck in candidates:
                 if recheck and agent_browser_runnable(recheck):
@@ -2349,7 +2349,7 @@ def _run_browser_command(
             hint = (
                 "Chromium browser is missing. You're running in Docker — pull "
                 "the latest image to get the bundled Chromium: "
-                "docker pull ghcr.io/nousresearch/hermes-agent:latest"
+                "docker pull ghcr.io/subhxroy/agentic-os:latest"
             )
         else:
             hint = (
@@ -2644,7 +2644,7 @@ def _store_full_snapshot(snapshot_text: str) -> Optional[str]:
     """
     try:
         import hashlib
-        from agentic_os_constants import get_hermes_dir
+        from agentic_os_constants import get_agentic_os_dir
         from agent.redact import redact_sensitive_text
 
         content = redact_sensitive_text(snapshot_text, force=True)
@@ -2654,7 +2654,7 @@ def _store_full_snapshot(snapshot_text: str) -> Optional[str]:
                 + f"\n\n[... stored copy truncated at {MAX_STORED_SNAPSHOT_CHARS:,} chars "
                 f"of {len(content):,} ...]"
             )
-        cache_dir = get_hermes_dir("cache/web", "web_cache")
+        cache_dir = get_agentic_os_dir("cache/web", "web_cache")
         cache_dir.mkdir(parents=True, exist_ok=True)
         digest = hashlib.sha256(content.encode("utf-8")).hexdigest()[:10]
         path = cache_dir / f"browser-snapshot-{digest}.txt"
@@ -3911,7 +3911,7 @@ def _maybe_start_recording(task_id: str):
             return
     try:
         from agentic_os_cli.config import read_raw_config
-        hermes_home = get_hermes_home()
+        hermes_home = get_agentic_os_home()
         cfg = read_raw_config()
         record_enabled = cfg_get(cfg, "browser", "record_sessions", default=False)
 
@@ -4056,8 +4056,8 @@ def browser_vision(question: str, annotate: bool = False, task_id: Optional[str]
 
     import base64
     import uuid as uuid_mod
-    from agentic_os_constants import get_hermes_dir
-    screenshots_dir = get_hermes_dir("cache/screenshots", "browser_screenshots")
+    from agentic_os_constants import get_agentic_os_dir
+    screenshots_dir = get_agentic_os_dir("cache/screenshots", "browser_screenshots")
     screenshot_path = screenshots_dir / f"browser_screenshot_{uuid_mod.uuid4().hex}.png"
     effective_task_id = _last_session_key(task_id or "default")
 
@@ -4115,8 +4115,8 @@ def browser_vision(question: str, annotate: bool = False, task_id: Optional[str]
             _lp_fallback_warning = fb_result.get("fallback_warning")
             fb_path = fb_result.get("data", {}).get("path", "")
             if fb_path and os.path.exists(fb_path):
-                from agentic_os_constants import get_hermes_dir
-                screenshots_dir = get_hermes_dir("cache/screenshots", "browser_screenshots")
+                from agentic_os_constants import get_agentic_os_dir
+                screenshots_dir = get_agentic_os_dir("cache/screenshots", "browser_screenshots")
                 screenshots_dir.mkdir(parents=True, exist_ok=True)
                 import shutil as _shutil_vision
                 persistent_path = screenshots_dir / f"browser_screenshot_{uuid_mod.uuid4().hex}.png"
@@ -4359,7 +4359,7 @@ def _cleanup_old_screenshots(screenshots_dir, max_age_hours=24):
 def _cleanup_old_recordings(max_age_hours=72):
     """Remove browser recordings older than max_age_hours to prevent disk bloat."""
     try:
-        hermes_home = get_hermes_home()
+        hermes_home = get_agentic_os_home()
         recordings_dir = hermes_home / "browser_recordings"
         if not recordings_dir.exists():
             return
@@ -4832,7 +4832,7 @@ if __name__ == "__main__":
                         "     Docker: pull the latest image — the current one "
                         "predates the bundled Chromium install"
                     )
-                    print("       docker pull ghcr.io/nousresearch/hermes-agent:latest")
+                    print("       docker pull ghcr.io/subhxroy/agentic-os:latest")
                 else:
                     print("     Install it with:")
                     print("       npx agent-browser install --with-deps")

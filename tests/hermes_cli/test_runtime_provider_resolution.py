@@ -3287,7 +3287,7 @@ def test_named_custom_provider_with_extra_headers(monkeypatch):
                     "api_key": "custom-host-key",
                     "extra_headers": {
                         "X-Custom-Auth": "auth-123",
-                        "X-Client-Name": "hermes-agent",
+                        "X-Client-Name": "agentic-os",
                     },
                 }
             ]
@@ -3301,7 +3301,7 @@ def test_named_custom_provider_with_extra_headers(monkeypatch):
     assert resolved["api_key"] == "custom-host-key"
     assert resolved["extra_headers"] == {
         "X-Custom-Auth": "auth-123",
-        "X-Client-Name": "hermes-agent",
+        "X-Client-Name": "agentic-os",
     }
 
 

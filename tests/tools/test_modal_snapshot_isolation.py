@@ -65,7 +65,7 @@ def _install_modal_test_modules(
     hermes_home = tmp_path / "hermes-home"
     os.environ["HERMES_HOME"] = str(hermes_home)
     sys.modules["agentic_os_cli.config"] = types.SimpleNamespace(
-        get_hermes_home=lambda: hermes_home,
+        get_agentic_os_home=lambda: hermes_home,
     )
 
     tools_package = types.ModuleType("tools")
@@ -144,7 +144,7 @@ def _install_modal_test_modules(
             return {"kind": "registry", "image": image}
 
     async def _lookup_aio(_name: str, create_if_missing: bool = False):
-        return types.SimpleNamespace(name="hermes-agent", create_if_missing=create_if_missing)
+        return types.SimpleNamespace(name="agentic-os", create_if_missing=create_if_missing)
 
     class _FakeSandboxInstance:
         def __init__(self, image):

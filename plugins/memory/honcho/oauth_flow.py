@@ -73,7 +73,7 @@ _LOCAL_TOKEN_URL = "http://localhost:8000/oauth/token"
 # One OAuth client for every surface. Consent branding/UI adapt via the
 # ``source`` query param (not a separate client_id), so there's a single grant
 # identity to refresh — no clientId-vs-refresh-token desync to revoke the grant.
-_DEFAULT_CLIENT_ID = "hermes-agent"
+_DEFAULT_CLIENT_ID = "agentic-os"
 
 
 def _is_loopback_url(url: str | None) -> bool:

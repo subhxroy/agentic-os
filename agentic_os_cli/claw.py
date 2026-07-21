@@ -18,7 +18,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Optional
 
-from agentic_os_cli.config import get_hermes_home, get_config_path, load_config, save_config
+from agentic_os_cli.config import get_agentic_os_home, get_config_path, load_config, save_config
 from agentic_os_constants import get_optional_skills_dir
 from agentic_os_cli.setup import (
     Colors,
@@ -44,7 +44,7 @@ _OPENCLAW_SCRIPT = (
 
 # Fallback: user may have installed the skill from the Hub
 _OPENCLAW_SCRIPT_INSTALLED = (
-    get_hermes_home()
+    get_agentic_os_home()
     / "skills"
     / "migration"
     / "openclaw-migration"
@@ -379,7 +379,7 @@ def _cmd_migrate(args):
         return
 
     # Show what we're doing
-    hermes_home = get_hermes_home()
+    hermes_home = get_agentic_os_home()
     auto_yes = getattr(args, "yes", False)
     print()
     print_header("Migration Settings")

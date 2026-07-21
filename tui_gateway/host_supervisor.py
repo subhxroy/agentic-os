@@ -22,7 +22,7 @@ from collections.abc import Callable
 from pathlib import Path
 from typing import Any
 
-from agentic_os_constants import get_hermes_home
+from agentic_os_constants import get_agentic_os_home
 from tools.environments.local import hermes_subprocess_env
 
 logger = logging.getLogger(__name__)
@@ -79,7 +79,7 @@ def _build_sha() -> str:
 
 
 def _default_registry_path() -> Path:
-    return get_hermes_home() / "state" / _REGISTRY_NAME
+    return get_agentic_os_home() / "state" / _REGISTRY_NAME
 
 
 def _pid_alive(pid: int) -> bool:
@@ -148,7 +148,7 @@ class HostSupervisor:
         self.respawn_max = max(0, int(respawn_max))
         self.heartbeat_secs = max(1, int(heartbeat_secs))
         self.expected_build_sha = expected_build_sha if expected_build_sha is not None else _build_sha()
-        self.expected_hermes_home = expected_hermes_home if expected_hermes_home is not None else str(get_hermes_home())
+        self.expected_hermes_home = expected_hermes_home if expected_hermes_home is not None else str(get_agentic_os_home())
 
         self._lock = threading.RLock()
         self._proc: subprocess.Popen[str] | None = None

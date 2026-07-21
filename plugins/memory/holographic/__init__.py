@@ -95,8 +95,8 @@ FACT_FEEDBACK_SCHEMA = {
 # ---------------------------------------------------------------------------
 
 def _load_plugin_config() -> dict:
-    from agentic_os_constants import get_hermes_home
-    config_path = get_hermes_home() / "config.yaml"
+    from agentic_os_constants import get_agentic_os_home
+    config_path = get_agentic_os_home() / "config.yaml"
     if not config_path.exists():
         return {}
     try:
@@ -146,8 +146,8 @@ class HolographicMemoryProvider(MemoryProvider):
             pass
 
     def get_config_schema(self):
-        from agentic_os_constants import display_hermes_home
-        _default_db = f"{display_hermes_home()}/memory_store.db"
+        from agentic_os_constants import display_agentic_os_home
+        _default_db = f"{display_agentic_os_home()}/memory_store.db"
         return [
             {"key": "db_path", "description": "SQLite database path", "default": _default_db},
             {"key": "auto_extract", "description": "Auto-extract facts at session end", "default": "false", "choices": ["true", "false"]},
@@ -156,8 +156,8 @@ class HolographicMemoryProvider(MemoryProvider):
         ]
 
     def initialize(self, session_id: str, **kwargs) -> None:
-        from agentic_os_constants import get_hermes_home
-        _hermes_home = str(get_hermes_home())
+        from agentic_os_constants import get_agentic_os_home
+        _hermes_home = str(get_agentic_os_home())
         _default_db = _hermes_home + "/memory_store.db"
         db_path = self._config.get("db_path", _default_db)
         # Expand $HERMES_HOME in user-supplied paths so config values like

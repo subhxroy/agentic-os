@@ -20,7 +20,7 @@ from gateway import delivery_ledger as dl
 @pytest.fixture(autouse=True)
 def _fresh_db(tmp_path, monkeypatch):
     """Isolated state.db per test (autouse HERMES_HOME isolation already
-    redirects get_hermes_home; make the redirect explicit and per-test)."""
+    redirects get_agentic_os_home; make the redirect explicit and per-test)."""
     home = tmp_path / ".hermes"
     home.mkdir()
     monkeypatch.setattr(dl, "_db_path", lambda: home / "state.db")

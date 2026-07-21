@@ -51,7 +51,7 @@ def _install_fake_tools_package(*, credential_mounts=None):
     agentic_os_cli.__path__ = []  # type: ignore[attr-defined]
     sys.modules["agentic_os_cli"] = agentic_os_cli
     sys.modules["agentic_os_cli.config"] = types.SimpleNamespace(
-        get_hermes_home=lambda: Path(tempfile.gettempdir()) / "hermes-home",
+        get_agentic_os_home=lambda: Path(tempfile.gettempdir()) / "hermes-home",
     )
 
     tools_package = types.ModuleType("tools")
