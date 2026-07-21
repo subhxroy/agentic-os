@@ -84,7 +84,7 @@ With `--migrate-secrets`, it will also import a small allowlisted set of Hermes-
 
 ## User interaction protocol
 
-Hermes CLI supports the `clarify` tool for interactive prompts, but it is limited to:
+Agentic OS CLI supports the `clarify` tool for interactive prompts, but it is limited to:
 
 - one choice at a time
 - up to 4 predefined choices

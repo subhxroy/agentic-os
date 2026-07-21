@@ -13,7 +13,7 @@ description: "通过 Termux 在 Android 手机上直接运行 Agentic OS"
 ## 已验证路径支持哪些功能？
 
 已验证的 Termux 安装包含：
-- Hermes CLI
+- Agentic OS CLI
 - cron 支持
 - PTY（伪终端）/后台终端支持
 - Telegram gateway 支持（手动 / 尽力而为的后台运行）

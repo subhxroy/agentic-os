@@ -1,14 +1,14 @@
 ---
 title: "Teams Meeting Pipeline"
 sidebar_label: "Teams Meeting Pipeline"
-description: "Operate the Teams meeting summary pipeline via Hermes CLI — summarize meetings, inspect pipeline status, replay jobs, manage Microsoft Graph subscriptions"
+description: "Operate the Teams meeting summary pipeline via Agentic OS CLI — summarize meetings, inspect pipeline status, replay jobs, manage Microsoft Graph subscriptions"
 ---
 
 {/* This page is auto-generated from the skill's SKILL.md by website/scripts/generate-skill-docs.py. Edit the source SKILL.md, not this page. */}
 
 # Teams Meeting Pipeline
 
-Operate the Teams meeting summary pipeline via Hermes CLI — summarize meetings, inspect pipeline status, replay jobs, manage Microsoft Graph subscriptions.
+Operate the Teams meeting summary pipeline via Agentic OS CLI — summarize meetings, inspect pipeline status, replay jobs, manage Microsoft Graph subscriptions.
 
 ## Skill metadata
 

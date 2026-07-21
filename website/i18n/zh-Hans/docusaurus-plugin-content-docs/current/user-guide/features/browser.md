@@ -322,7 +322,7 @@ google-chrome \
   --no-default-browser-check &
 ```
 
-然后启动 Hermes CLI 并运行 `/browser connect`。
+然后启动 Agentic OS CLI 并运行 `/browser connect`。
 
 **为什么需要 `--user-data-dir`？** 若不指定，在普通实例已运行时启动 Chromium 系浏览器通常只会在现有进程上打开新窗口 — 而该进程启动时未带 `--remote-debugging-port`，因此端口 9222 永远不会开启。专用的 user-data-dir 会强制启动新的浏览器进程，使调试端口正常监听。`--no-first-run --no-default-browser-check` 跳过新 profile 的首次启动向导。
 :::

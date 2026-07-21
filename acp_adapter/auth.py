@@ -43,7 +43,7 @@ def build_auth_methods() -> list[Any]:
 
     The official ACP registry validates that agents advertise at least one
     usable auth method during the initial handshake. A fresh Zed install may
-    not have Hermes provider credentials configured yet, so Hermes always
+    not have Agentic OS provider credentials configured yet, so Agentic OS always
     advertises a terminal setup method. When credentials are already present,
     it also advertises the resolved provider as the default agent-managed
     runtime credential method.
@@ -58,7 +58,7 @@ def build_auth_methods() -> list[Any]:
                 id=provider,
                 name=f"{provider} runtime credentials",
                 description=(
-                    "Authenticate Hermes using the currently configured "
+                    "Authenticate Agentic OS using the currently configured "
                     f"{provider} runtime credentials."
                 ),
             )
@@ -67,10 +67,10 @@ def build_auth_methods() -> list[Any]:
     methods.append(
         TerminalAuthMethod(
             id=TERMINAL_SETUP_AUTH_METHOD_ID,
-            name="Configure Hermes provider",
+            name="Configure Agentic OS provider",
             description=(
-                "Open Hermes' interactive model/provider setup in a terminal. "
-                "Use this when Hermes has not been configured on this machine yet."
+                "Open Agentic OS interactive model/provider setup in a terminal. "
+                "Use this when Agentic OS has not been configured on this machine yet."
             ),
             type="terminal",
             args=["--setup"],

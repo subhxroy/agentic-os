@@ -17,7 +17,7 @@ metadata:
 Browse, install, and select animated "pet" mascots from the public
 [petdex](https://github.com/crafter-station/petdex) gallery. An installed pet
 reacts to agent activity (idle, running a tool, reviewing, error, done) across
-the Hermes CLI, TUI, and desktop app. This skill drives the `hermes pets` CLI
+the Agentic OS CLI, TUI, and desktop app. This skill drives the `hermes pets` CLI
 and the `display.pet` config — it does not generate sprites.
 
 ## When to Use

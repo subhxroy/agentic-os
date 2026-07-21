@@ -24,7 +24,7 @@
 
 ### Install with Hermes (recommended)
 
-Already have the Hermes CLI? Just run:
+Already have the Agentic OS CLI? Just run:
 
 ```bash
 hermes desktop

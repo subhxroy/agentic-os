@@ -34,7 +34,7 @@ WSL2 在轻量级虚拟机中运行真实的 Linux 内核，因此其中的 Herm
 
 WSL2 的实际影响：
 
-- Hermes CLI、gateway、会话、内存、技能和工具运行时均位于 Linux 虚拟机内部。
+- Agentic OS CLI、gateway、会话、内存、技能和工具运行时均位于 Linux 虚拟机内部。
 - Windows 程序（浏览器、原生应用、带登录 profile 的 Chrome）位于虚拟机外部。
 - 每次需要两者通信时 —— 共享文件、打开 URL、控制 Chrome、访问本地模型服务器、将 Hermes gateway 暴露给手机 —— 都需要跨越一道边界。这些边界正是本指南要讲的内容。
 

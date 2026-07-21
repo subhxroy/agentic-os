@@ -1,6 +1,6 @@
 ---
 title: 视觉与图像粘贴
-description: 将剪贴板中的图像粘贴到 Hermes CLI，进行多模态视觉分析。
+description: 将剪贴板中的图像粘贴到 Agentic OS CLI，进行多模态视觉分析。
 sidebar_label: 视觉与图像粘贴
 sidebar_position: 7
 ---
@@ -147,7 +147,7 @@ powershell.exe -NoProfile -Command "Add-Type -AssemblyName System.Windows.Forms;
 
 ## SSH 与远程会话
 
-**通过 SSH 进行剪贴板图像粘贴无法完全正常工作。** 当你 SSH 到远程机器时，Hermes CLI 运行在远程主机上。剪贴板工具（`xclip`、`wl-paste`、`powershell.exe`、`osascript`）读取的是其所在机器的剪贴板——即远程服务器，而非你的本地机器。因此，本地剪贴板中的图像在远程端无法访问。
+**通过 SSH 进行剪贴板图像粘贴无法完全正常工作。** 当你 SSH 到远程机器时，Agentic OS CLI 运行在远程主机上。剪贴板工具（`xclip`、`wl-paste`、`powershell.exe`、`osascript`）读取的是其所在机器的剪贴板——即远程服务器，而非你的本地机器。因此，本地剪贴板中的图像在远程端无法访问。
 
 文本有时仍可通过终端粘贴或 OSC52 传输，但图像剪贴板访问和本地截图临时路径始终绑定于运行 Hermes 的机器。
 

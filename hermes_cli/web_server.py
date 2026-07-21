@@ -16927,7 +16927,7 @@ def _ws_close_reason(text: str) -> str:
 # ---------------------------------------------------------------------------
 # /api/console — safe Hermes Console command WebSocket.
 #
-# Unlike /api/pty, this endpoint never spawns a PTY, shell, or full Hermes CLI
+# Unlike /api/pty, this endpoint never spawns a PTY, shell, or full Agentic OS CLI
 # subprocess. It runs the curated console engine in-process and exchanges
 # structured JSON frames with the dashboard xterm overlay.
 # ---------------------------------------------------------------------------

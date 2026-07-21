@@ -3,7 +3,7 @@
 
 This script reads the in-repo hardcoded curated lists (``OPENROUTER_MODELS``,
 ``_PROVIDER_MODELS["nous"]``) and writes them to a JSON manifest that the
-Hermes CLI fetches at runtime. Publishing the catalog through the docs site
+Agentic OS CLI fetches at runtime. Publishing the catalog through the docs site
 lets maintainers update model lists without shipping a Hermes release.
 
 The runtime fetcher falls back to the same in-repo hardcoded lists if the

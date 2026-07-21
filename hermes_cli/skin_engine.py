@@ -1,4 +1,4 @@
-"""Hermes CLI skin/theme engine.
+"""Agentic OS CLI skin/theme engine.
 
 A data-driven skin system that lets users customize the CLI's visual appearance.
 Skins are defined as YAML files in ~/.hermes/skins/ or as built-in presets.

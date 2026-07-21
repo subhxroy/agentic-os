@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Hermes CLI - Main entry point.
+Agentic OS CLI - Main entry point.
 
 Usage:
     hermes                     # Interactive chat (default)
@@ -4422,7 +4422,7 @@ def _run_anthropic_oauth_flow(save_env_value):
 
 
 def cmd_login(args):
-    """Authenticate Hermes CLI with a provider."""
+    """Authenticate Agentic OS CLI with a provider."""
     from hermes_cli.auth import login_command
 
     login_command(args)

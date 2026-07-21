@@ -34,7 +34,7 @@ WSL2 runs a real Linux kernel in a lightweight VM, so Hermes inside it is essent
 
 Practical consequences of WSL2:
 
-- The Hermes CLI, gateway, sessions, memory, skills, and tool runtimes all live inside the Linux VM.
+- The Agentic OS CLI, gateway, sessions, memory, skills, and tool runtimes all live inside the Linux VM.
 - Windows programs (browsers, native apps, Chrome with your logged-in profile) live outside it.
 - Every time you want the two to talk — share files, open URLs, control Chrome, hit a local model server, expose the Hermes gateway to your phone — you cross a boundary. Those boundaries are what this guide is about.
 

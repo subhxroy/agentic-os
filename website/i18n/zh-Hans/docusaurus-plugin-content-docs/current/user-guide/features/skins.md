@@ -1,12 +1,12 @@
 ---
 sidebar_position: 10
 title: "皮肤与主题"
-description: "使用内置和用户自定义皮肤定制 Hermes CLI 的外观"
+description: "使用内置和用户自定义皮肤定制 Agentic OS CLI 的外观"
 ---
 
 # 皮肤与主题
 
-皮肤控制 Hermes CLI 的**视觉呈现**：横幅颜色、spinner（加载动画）面孔与动词、响应框标签、品牌文本以及工具活动前缀。
+皮肤控制 Agentic OS CLI 的**视觉呈现**：横幅颜色、spinner（加载动画）面孔与动词、响应框标签、品牌文本以及工具活动前缀。
 
 对话风格与视觉风格是两个独立的概念：
 

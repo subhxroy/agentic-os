@@ -1,12 +1,12 @@
 ---
 sidebar_position: 10
 title: "Skins & Themes"
-description: "Customize the Hermes CLI with built-in and user-defined skins"
+description: "Customize the Agentic OS CLI with built-in and user-defined skins"
 ---
 
 # Skins & Themes
 
-Skins control the **visual presentation** of the Hermes CLI: banner colors, spinner faces and verbs, response-box labels, branding text, and the tool activity prefix.
+Skins control the **visual presentation** of the Agentic OS CLI: banner colors, spinner faces and verbs, response-box labels, branding text, and the tool activity prefix.
 
 Conversational style and visual style are separate concepts:
 
