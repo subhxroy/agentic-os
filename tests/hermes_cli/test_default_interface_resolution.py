@@ -23,7 +23,7 @@ These tests pin that precedence at every layer that makes the decision:
     ``cmd_chat`` and the Termux fast-TUI path.
   * ``_wants_tui_early(argv)``  — the dependency-free early resolver used by
     mouse-residue suppression and the Termux fast paths, before argparse and
-    ``hermes_cli.config`` are importable.
+    ``agentic_os_cli.config`` are importable.
   * the argument parser   — both ``--cli`` and ``--tui`` parse at the top
     level and under the ``chat`` subcommand and are relaunch-inherited.
 """
@@ -35,7 +35,7 @@ from types import SimpleNamespace
 
 import pytest
 
-from hermes_cli import main as m
+from agentic_os_cli import main as m
 
 
 @pytest.fixture(autouse=True)
@@ -63,7 +63,7 @@ def _fake_tty(monkeypatch, interactive: bool):
 
 
 def _patch_config(monkeypatch, interface):
-    import hermes_cli.config as cfg
+    import agentic_os_cli.config as cfg
 
     monkeypatch.setattr(
         cfg, "load_config", lambda: {"display": {"interface": interface}}
@@ -109,7 +109,7 @@ class TestResolveUseTui:
         assert m._resolve_use_tui(_args()) is True
 
     def test_load_config_failure_falls_back_to_cli(self, monkeypatch):
-        import hermes_cli.config as cfg
+        import agentic_os_cli.config as cfg
 
         def boom():
             raise RuntimeError("config unreadable")
@@ -207,7 +207,7 @@ class TestWantsTuiEarly:
 # ---------------------------------------------------------------------------
 class TestParserFlags:
     def _parser(self):
-        from hermes_cli._parser import build_top_level_parser
+        from agentic_os_cli._parser import build_top_level_parser
 
         parser, _subparsers, _chat = build_top_level_parser()
         return parser
@@ -229,7 +229,7 @@ class TestParserFlags:
         assert args.tui is True
 
     def test_cli_and_tui_are_relaunch_inherited(self):
-        from hermes_cli.relaunch import _INHERITED_FLAGS_TABLE
+        from agentic_os_cli.relaunch import _INHERITED_FLAGS_TABLE
 
         inherited = {flag for flag, _takes_value in _INHERITED_FLAGS_TABLE}
         assert "--cli" in inherited
@@ -240,6 +240,6 @@ class TestParserFlags:
 # config default — shipped default preserves classic behavior
 # ---------------------------------------------------------------------------
 def test_default_config_interface_is_cli():
-    from hermes_cli.config import DEFAULT_CONFIG
+    from agentic_os_cli.config import DEFAULT_CONFIG
 
     assert DEFAULT_CONFIG["display"]["interface"] == "cli"

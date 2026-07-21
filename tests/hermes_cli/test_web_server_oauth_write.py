@@ -2,7 +2,7 @@ import os
 
 import pytest
 
-from hermes_cli.web_server import _save_anthropic_oauth_creds
+from agentic_os_cli.web_server import _save_anthropic_oauth_creds
 
 
 class _DummyPool:

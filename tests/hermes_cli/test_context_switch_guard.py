@@ -1,11 +1,11 @@
-"""Tests for hermes_cli.context_switch_guard."""
+"""Tests for agentic_os_cli.context_switch_guard."""
 
 from __future__ import annotations
 
 from types import SimpleNamespace
 
-from hermes_cli.context_switch_guard import merge_preflight_compression_warning
-from hermes_cli.model_switch import ModelSwitchResult
+from agentic_os_cli.context_switch_guard import merge_preflight_compression_warning
+from agentic_os_cli.model_switch import ModelSwitchResult
 
 
 def _result(*, model: str = "small-model") -> ModelSwitchResult:
@@ -41,7 +41,7 @@ def _compressor(monkeypatch, *, context_length: int = 200_000):
 
 def test_no_warning_when_below_new_threshold(monkeypatch):
     monkeypatch.setattr(
-        "hermes_cli.context_switch_guard.resolve_display_context_length",
+        "agentic_os_cli.context_switch_guard.resolve_display_context_length",
         lambda *a, **k: 32_000,
     )
     cc = _compressor(monkeypatch)
@@ -60,11 +60,11 @@ def test_no_warning_when_below_new_threshold(monkeypatch):
 
 def test_warns_when_estimate_exceeds_new_threshold(monkeypatch):
     monkeypatch.setattr(
-        "hermes_cli.context_switch_guard.resolve_display_context_length",
+        "agentic_os_cli.context_switch_guard.resolve_display_context_length",
         lambda *a, **k: 32_000,
     )
     monkeypatch.setattr(
-        "hermes_cli.context_switch_guard._estimate_tokens",
+        "agentic_os_cli.context_switch_guard._estimate_tokens",
         lambda *a, **k: 90_000,
     )
     cc = _compressor(monkeypatch)
@@ -84,11 +84,11 @@ def test_warns_when_estimate_exceeds_new_threshold(monkeypatch):
 
 def test_merge_appends_to_existing_warning(monkeypatch):
     monkeypatch.setattr(
-        "hermes_cli.context_switch_guard._estimate_tokens",
+        "agentic_os_cli.context_switch_guard._estimate_tokens",
         lambda *a, **k: 90_000,
     )
     monkeypatch.setattr(
-        "hermes_cli.context_switch_guard.resolve_display_context_length",
+        "agentic_os_cli.context_switch_guard.resolve_display_context_length",
         lambda *a, **k: 32_000,
     )
     cc = _compressor(monkeypatch)

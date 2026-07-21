@@ -15,15 +15,15 @@ def _client():
         from starlette.testclient import TestClient
     except ImportError:
         pytest.skip("fastapi/starlette not installed")
-    import hermes_state
-    from hermes_constants import get_hermes_home
-    from hermes_cli.web_server import app, _SESSION_HEADER_NAME, _SESSION_TOKEN
+    import agentic_os_state
+    from agentic_os_constants import get_hermes_home
+    from agentic_os_cli.web_server import app, _SESSION_HEADER_NAME, _SESSION_TOKEN
 
     client = TestClient(app)
     client.headers[_SESSION_HEADER_NAME] = _SESSION_TOKEN
     # Keep the state DB under the isolated HERMES_HOME for any handler that
     # touches it.
-    hermes_state.DEFAULT_DB_PATH = get_hermes_home() / "state.db"
+    agentic_os_state.DEFAULT_DB_PATH = get_hermes_home() / "state.db"
     return client, _SESSION_HEADER_NAME
 
 
@@ -45,7 +45,7 @@ class TestMcpEndpoints:
         assert [s["name"] for s in servers] == ["srv1"]
 
         # CLI parity: the server is in config.yaml under mcp_servers.
-        from hermes_cli.mcp_config import _get_mcp_servers
+        from agentic_os_cli.mcp_config import _get_mcp_servers
 
         assert "srv1" in _get_mcp_servers()
 
@@ -68,7 +68,7 @@ class TestMcpEndpoints:
     def test_http_bearer_auth_separates_secret_from_config(
         self, _isolate_hermes_home
     ):
-        from hermes_constants import get_hermes_home
+        from agentic_os_constants import get_hermes_home
 
         secret = "dashboard-secret-value"
         response = self.client.post(
@@ -105,7 +105,7 @@ class TestMcpEndpoints:
         assert response.status_code == 200
         assert response.json()["auth"] == "oauth"
 
-        from hermes_cli.mcp_config import _get_mcp_servers
+        from agentic_os_cli.mcp_config import _get_mcp_servers
 
         assert _get_mcp_servers()["oauth-server"]["auth"] == "oauth"
 
@@ -262,8 +262,8 @@ class TestCredentialPoolEndpoints:
         source and suppress (provider, source).
         """
         from agent.credential_pool import load_pool
-        from hermes_cli.auth import is_source_suppressed
-        from hermes_cli.config import save_env_value
+        from agentic_os_cli.auth import is_source_suppressed
+        from agentic_os_cli.config import save_env_value
 
         fake_key = "sk-or-" + "x" * 20  # constructed, never a real key shape
         save_env_value("OPENROUTER_API_KEY", fake_key)
@@ -291,8 +291,8 @@ class TestCredentialPoolEndpoints:
         silently blocked from env re-seeding.
         """
         from agent.credential_pool import load_pool
-        from hermes_cli.auth import is_source_suppressed
-        from hermes_cli.config import save_env_value
+        from agentic_os_cli.auth import is_source_suppressed
+        from agentic_os_cli.config import save_env_value
 
         fake_key = "sk-or-" + "y" * 20
         save_env_value("OPENROUTER_API_KEY", fake_key)
@@ -315,7 +315,7 @@ class TestCredentialPoolEndpoints:
 
     def test_manual_delete_adds_no_suppression(self):
         """Manual entries aren't re-seeded — CLI parity: no suppression marker."""
-        from hermes_cli.auth import _load_auth_store
+        from agentic_os_cli.auth import _load_auth_store
 
         self.client.post(
             "/api/credentials/pool",
@@ -335,8 +335,8 @@ class TestCredentialPoolEndpoints:
     def test_delete_does_not_clobber_other_providers(self):
         """Deleting one provider's env entry leaves other providers' rows alone."""
         from agent.credential_pool import load_pool
-        from hermes_cli.auth import _load_auth_store, read_credential_pool
-        from hermes_cli.config import save_env_value
+        from agentic_os_cli.auth import _load_auth_store, read_credential_pool
+        from agentic_os_cli.config import save_env_value
 
         self.client.post(
             "/api/credentials/pool",
@@ -356,7 +356,7 @@ class TestMemoryEndpoints:
     @pytest.fixture(autouse=True)
     def _setup(self, _isolate_hermes_home):
         self.client, _ = _client()
-        from hermes_constants import get_hermes_home
+        from agentic_os_constants import get_hermes_home
 
         (get_hermes_home() / "memories").mkdir(parents=True, exist_ok=True)
 
@@ -373,7 +373,7 @@ class TestMemoryEndpoints:
         assert r.status_code == 400
 
     def test_reset_targets(self):
-        from hermes_constants import get_hermes_home
+        from agentic_os_constants import get_hermes_home
 
         mem = get_hermes_home() / "memories"
         (mem / "MEMORY.md").write_text("notes")
@@ -414,7 +414,7 @@ class TestWebhookEndpoints:
         assert r.status_code == 400
 
     def test_create_webhook_persists_script(self):
-        from hermes_cli.config import load_config, save_config
+        from agentic_os_cli.config import load_config, save_config
 
         cfg = load_config()
         cfg.setdefault("platforms", {})["webhook"] = {
@@ -438,8 +438,8 @@ class TestWebhookEndpoints:
         assert subs[0]["script"] == "todoist_filter.py"
 
     def test_enable_platform_starts_gateway_restart(self, monkeypatch):
-        import hermes_cli.web_server as ws
-        from hermes_cli.config import load_config
+        import agentic_os_cli.web_server as ws
+        from agentic_os_cli.config import load_config
 
         ws._ACTION_PROCS.pop("gateway-restart", None)
         restart_calls = []
@@ -470,8 +470,8 @@ class TestWebhookEndpoints:
         assert self.client.get("/api/webhooks").json()["enabled"] is True
 
     def test_enable_platform_reports_restart_failure_after_save(self, monkeypatch):
-        import hermes_cli.web_server as ws
-        from hermes_cli.config import load_config
+        import agentic_os_cli.web_server as ws
+        from agentic_os_cli.config import load_config
 
         ws._ACTION_PROCS.pop("gateway-restart", None)
 
@@ -495,8 +495,8 @@ class TestWebhookEndpoints:
         assert load_config()["platforms"]["webhook"]["enabled"] is True
 
     def test_enable_platform_reuses_inflight_gateway_restart(self, monkeypatch):
-        import hermes_cli.web_server as ws
-        from hermes_cli.config import load_config
+        import agentic_os_cli.web_server as ws
+        from agentic_os_cli.config import load_config
 
         ws._ACTION_PROCS.pop("gateway-restart", None)
 
@@ -529,7 +529,7 @@ class TestOpsEndpoints:
         self.client, _ = _client()
 
     def test_backup_output_uses_output_flag(self, monkeypatch):
-        import hermes_cli.web_server as ws
+        import agentic_os_cli.web_server as ws
 
         captured = {}
 
@@ -557,8 +557,8 @@ class TestOpsEndpoints:
     def test_backup_blank_output_uses_default_archive(self, monkeypatch):
         from pathlib import Path
 
-        import hermes_cli.web_server as ws
-        from hermes_cli.config import get_hermes_home
+        import agentic_os_cli.web_server as ws
+        from agentic_os_cli.config import get_hermes_home
 
         captured = {}
 
@@ -583,7 +583,7 @@ class TestOpsEndpoints:
         assert archive.parent == get_hermes_home() / "backups"
 
     def test_hooks_list_reads_config(self):
-        from hermes_cli.config import load_config, save_config
+        from agentic_os_cli.config import load_config, save_config
 
         cfg = load_config()
         cfg["hooks"] = {
@@ -689,7 +689,7 @@ class TestSessionManagementEndpoints:
     @pytest.fixture(autouse=True)
     def _setup(self, _isolate_hermes_home):
         self.client, _ = _client()
-        from hermes_state import SessionDB
+        from agentic_os_state import SessionDB
 
         db = SessionDB()
         db.create_session(session_id="sess-x", source="cli")
@@ -725,7 +725,7 @@ class TestSessionManagementEndpoints:
         # ages (mirrors the CLI: any filter disables the implicit 90-day
         # default). dry_run so nothing is deleted; the seeded session is
         # recent + ended, so it would be invisible under a 90-day cutoff.
-        from hermes_state import SessionDB
+        from agentic_os_state import SessionDB
 
         db = SessionDB()
         db.create_session(session_id="sess-recent-ended", source="cli")
@@ -862,7 +862,7 @@ class TestSkillsHubPreviewEndpoint:
         bundle = _FakeBundle("github/owner/repo/x")
         meta = _FakeMeta("github/owner/repo/x")
         monkeypatch.setattr(
-            "hermes_cli.skills_hub._resolve_source_meta_and_bundle",
+            "agentic_os_cli.skills_hub._resolve_source_meta_and_bundle",
             lambda ident, sources: (meta, bundle, None),
         )
         r = self.client.get(
@@ -881,7 +881,7 @@ class TestSkillsHubPreviewEndpoint:
             "tools.skills_hub.create_source_router", lambda: []
         )
         monkeypatch.setattr(
-            "hermes_cli.skills_hub._resolve_source_meta_and_bundle",
+            "agentic_os_cli.skills_hub._resolve_source_meta_and_bundle",
             lambda ident, sources: (None, None, None),
         )
         r = self.client.get("/api/skills/hub/preview?identifier=nope/x")
@@ -905,7 +905,7 @@ class TestSkillsHubScanEndpoint:
         )
         bundle = _FakeBundle("github/owner/repo/x", trust_level="community")
         monkeypatch.setattr(
-            "hermes_cli.skills_hub._resolve_source_meta_and_bundle",
+            "agentic_os_cli.skills_hub._resolve_source_meta_and_bundle",
             lambda ident, sources: (None, bundle, None),
         )
 
@@ -958,7 +958,7 @@ class TestSkillsHubScanEndpoint:
             "tools.skills_hub.create_source_router", lambda: []
         )
         monkeypatch.setattr(
-            "hermes_cli.skills_hub._resolve_source_meta_and_bundle",
+            "agentic_os_cli.skills_hub._resolve_source_meta_and_bundle",
             lambda ident, sources: (None, None, None),
         )
         r = self.client.get("/api/skills/hub/scan?identifier=nope/x")
@@ -972,7 +972,7 @@ class TestWebhookToggleEndpoint:
     def _setup(self, _isolate_hermes_home):
         self.client, _ = _client()
         # Enable the webhook platform so a subscription can be created.
-        from hermes_cli.config import load_config, save_config
+        from agentic_os_cli.config import load_config, save_config
 
         cfg = load_config()
         cfg.setdefault("platforms", {})["webhook"] = {
@@ -1002,7 +1002,7 @@ class TestAdminEndpointsAuthGate:
     @pytest.fixture(autouse=True)
     def _setup(self, _isolate_hermes_home):
         from starlette.testclient import TestClient
-        from hermes_cli.web_server import app
+        from agentic_os_cli.web_server import app
 
         # No session header → must be rejected.
         self.client = TestClient(app)
@@ -1045,11 +1045,11 @@ class TestUpdateCheckEndpoint:
         self.client, _ = _client()
 
     def test_git_install_reports_behind_count(self, monkeypatch):
-        import hermes_cli.web_server as ws
+        import agentic_os_cli.web_server as ws
 
         monkeypatch.setattr(ws, "detect_install_method", lambda *a, **k: "git")
         # Stub the shared checker so the contract is deterministic (no network).
-        import hermes_cli.banner as banner
+        import agentic_os_cli.banner as banner
 
         monkeypatch.setattr(banner, "check_for_updates", lambda: 5)
 
@@ -1072,8 +1072,8 @@ class TestUpdateCheckEndpoint:
         assert body["can_apply"] is True
 
     def test_up_to_date(self, monkeypatch):
-        import hermes_cli.web_server as ws
-        import hermes_cli.banner as banner
+        import agentic_os_cli.web_server as ws
+        import agentic_os_cli.banner as banner
 
         monkeypatch.setattr(ws, "detect_install_method", lambda *a, **k: "git")
         monkeypatch.setattr(banner, "check_for_updates", lambda: 0)
@@ -1083,7 +1083,7 @@ class TestUpdateCheckEndpoint:
         assert body["update_available"] is False
 
     def test_docker_is_not_applyable(self, monkeypatch):
-        import hermes_cli.web_server as ws
+        import agentic_os_cli.web_server as ws
 
         monkeypatch.setattr(ws, "detect_install_method", lambda *a, **k: "docker")
         body = self.client.get("/api/hermes/update/check").json()
@@ -1093,7 +1093,7 @@ class TestUpdateCheckEndpoint:
         assert body["behind"] is None
 
     def test_managed_runtime_dashboard_is_not_applyable(self, monkeypatch):
-        import hermes_cli.web_server as ws
+        import agentic_os_cli.web_server as ws
 
         monkeypatch.setattr(ws, "_dashboard_local_update_managed_externally", lambda: True)
         monkeypatch.setattr(
@@ -1112,8 +1112,8 @@ class TestUpdateCheckEndpoint:
         assert "managed outside this dashboard" in body["message"]
 
     def test_check_failure_is_soft(self, monkeypatch):
-        import hermes_cli.web_server as ws
-        import hermes_cli.banner as banner
+        import agentic_os_cli.web_server as ws
+        import agentic_os_cli.banner as banner
 
         monkeypatch.setattr(ws, "detect_install_method", lambda *a, **k: "git")
 
@@ -1130,8 +1130,8 @@ class TestUpdateCheckEndpoint:
         assert body["message"]
 
     def test_git_behind_includes_commits(self, monkeypatch):
-        import hermes_cli.web_server as ws
-        import hermes_cli.banner as banner
+        import agentic_os_cli.web_server as ws
+        import agentic_os_cli.banner as banner
 
         monkeypatch.setattr(ws, "detect_install_method", lambda *a, **k: "git")
         monkeypatch.setattr(banner, "check_for_updates", lambda: 3)
@@ -1150,8 +1150,8 @@ class TestUpdateCheckEndpoint:
         assert body["commits"][0]["summary"] == "feat: x"
 
     def test_up_to_date_omits_commits(self, monkeypatch):
-        import hermes_cli.web_server as ws
-        import hermes_cli.banner as banner
+        import agentic_os_cli.web_server as ws
+        import agentic_os_cli.banner as banner
 
         monkeypatch.setattr(ws, "detect_install_method", lambda *a, **k: "git")
         monkeypatch.setattr(banner, "check_for_updates", lambda: 0)
@@ -1168,7 +1168,7 @@ class TestDebugShareEndpoint:
     @pytest.fixture(autouse=True)
     def _setup(self, _isolate_hermes_home):
         self.client, self.header = _client()
-        from hermes_constants import get_hermes_home
+        from agentic_os_constants import get_hermes_home
 
         logs = get_hermes_home() / "logs"
         logs.mkdir(parents=True, exist_ok=True)
@@ -1177,7 +1177,7 @@ class TestDebugShareEndpoint:
         (logs / "gateway.log").write_text("gw line\n")
 
     def test_returns_structured_urls(self, monkeypatch):
-        import hermes_cli.debug as dbg
+        import agentic_os_cli.debug as dbg
 
         count = [0]
 
@@ -1188,7 +1188,7 @@ class TestDebugShareEndpoint:
         monkeypatch.setattr(dbg, "upload_to_pastebin", _upload)
         monkeypatch.setattr(dbg, "_schedule_auto_delete", lambda *a, **k: None)
         monkeypatch.setattr(dbg, "_best_effort_sweep_expired_pastes", lambda: None)
-        monkeypatch.setattr("hermes_cli.dump.run_dump", lambda a: None)
+        monkeypatch.setattr("agentic_os_cli.dump.run_dump", lambda a: None)
 
         r = self.client.post("/api/ops/debug-share", json={"redact": True})
         assert r.status_code == 200
@@ -1200,28 +1200,28 @@ class TestDebugShareEndpoint:
         assert isinstance(body["failures"], list)
 
     def test_redact_false_is_honored(self, monkeypatch):
-        import hermes_cli.debug as dbg
+        import agentic_os_cli.debug as dbg
 
         monkeypatch.setattr(
             dbg, "upload_to_pastebin", lambda c, expiry_days=7: "https://paste.rs/x"
         )
         monkeypatch.setattr(dbg, "_schedule_auto_delete", lambda *a, **k: None)
         monkeypatch.setattr(dbg, "_best_effort_sweep_expired_pastes", lambda: None)
-        monkeypatch.setattr("hermes_cli.dump.run_dump", lambda a: None)
+        monkeypatch.setattr("agentic_os_cli.dump.run_dump", lambda a: None)
 
         r = self.client.post("/api/ops/debug-share", json={"redact": False})
         assert r.status_code == 200
         assert r.json()["redacted"] is False
 
     def test_default_body_redacts(self, monkeypatch):
-        import hermes_cli.debug as dbg
+        import agentic_os_cli.debug as dbg
 
         monkeypatch.setattr(
             dbg, "upload_to_pastebin", lambda c, expiry_days=7: "https://paste.rs/x"
         )
         monkeypatch.setattr(dbg, "_schedule_auto_delete", lambda *a, **k: None)
         monkeypatch.setattr(dbg, "_best_effort_sweep_expired_pastes", lambda: None)
-        monkeypatch.setattr("hermes_cli.dump.run_dump", lambda a: None)
+        monkeypatch.setattr("agentic_os_cli.dump.run_dump", lambda a: None)
 
         # No JSON body at all — should default redact=True.
         r = self.client.post("/api/ops/debug-share")
@@ -1229,7 +1229,7 @@ class TestDebugShareEndpoint:
         assert r.json()["redacted"] is True
 
     def test_upload_failure_returns_502(self, monkeypatch):
-        import hermes_cli.debug as dbg
+        import agentic_os_cli.debug as dbg
 
         monkeypatch.setattr(
             dbg,
@@ -1238,7 +1238,7 @@ class TestDebugShareEndpoint:
         )
         monkeypatch.setattr(dbg, "_schedule_auto_delete", lambda *a, **k: None)
         monkeypatch.setattr(dbg, "_best_effort_sweep_expired_pastes", lambda: None)
-        monkeypatch.setattr("hermes_cli.dump.run_dump", lambda a: None)
+        monkeypatch.setattr("agentic_os_cli.dump.run_dump", lambda a: None)
 
         r = self.client.post("/api/ops/debug-share", json={"redact": True})
         assert r.status_code == 502
@@ -1284,7 +1284,7 @@ class TestToolsConfigEndpoints:
         assert r.status_code == 400
 
     def test_save_env_writes_key_and_validates_allowlist(self):
-        from hermes_cli.config import get_env_value
+        from agentic_os_cli.config import get_env_value
 
         cfg = self.client.get("/api/tools/toolsets/web/config").json()
         # Find a real env-var key from the visible provider matrix.
@@ -1346,7 +1346,7 @@ class TestToolsConfigEndpoints:
         assert r.status_code == 400
 
     def test_post_setup_spawns_action(self, monkeypatch):
-        import hermes_cli.web_server as ws
+        import agentic_os_cli.web_server as ws
 
         spawned = {}
 
@@ -1393,7 +1393,7 @@ def test_spawn_hermes_action_scrubs_gateway_loop_guard_env(monkeypatch, tmp_path
     it, or the in-process restart-loop guard rejects the restart and it silently
     fails (#52470).
     """
-    import hermes_cli.web_server as ws
+    import agentic_os_cli.web_server as ws
 
     monkeypatch.setenv("_HERMES_GATEWAY", "1")
     monkeypatch.setattr(ws, "_ACTION_LOG_DIR", tmp_path)

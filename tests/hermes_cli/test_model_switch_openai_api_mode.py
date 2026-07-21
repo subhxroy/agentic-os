@@ -17,7 +17,7 @@ reasoning_effort into a live one that OpenAI 400s on the chat_completions path.
 
 from unittest.mock import patch
 
-from hermes_cli.model_switch import switch_model
+from agentic_os_cli.model_switch import switch_model
 
 _MOCK_VALIDATION = {
     "accepted": True,
@@ -37,10 +37,10 @@ def _run_openai_switch(
 ):
     """Run switch_model with OpenAI-direct mocks and return the result."""
     with (
-        patch("hermes_cli.model_switch.resolve_alias", return_value=None),
-        patch("hermes_cli.model_switch.list_provider_models", return_value=[]),
+        patch("agentic_os_cli.model_switch.resolve_alias", return_value=None),
+        patch("agentic_os_cli.model_switch.list_provider_models", return_value=[]),
         patch(
-            "hermes_cli.runtime_provider.resolve_runtime_provider",
+            "agentic_os_cli.runtime_provider.resolve_runtime_provider",
             return_value={
                 "api_key": "sk-test",
                 "base_url": runtime_base_url,
@@ -48,12 +48,12 @@ def _run_openai_switch(
             },
         ),
         patch(
-            "hermes_cli.models.validate_requested_model",
+            "agentic_os_cli.models.validate_requested_model",
             return_value=_MOCK_VALIDATION,
         ),
-        patch("hermes_cli.model_switch.get_model_info", return_value=None),
-        patch("hermes_cli.model_switch.get_model_capabilities", return_value=None),
-        patch("hermes_cli.models.detect_provider_for_model", return_value=None),
+        patch("agentic_os_cli.model_switch.get_model_info", return_value=None),
+        patch("agentic_os_cli.model_switch.get_model_capabilities", return_value=None),
+        patch("agentic_os_cli.models.detect_provider_for_model", return_value=None),
     ):
         return switch_model(
             raw_input=raw_input,
@@ -102,7 +102,7 @@ def test_generic_endpoint_keeps_explicit_api_mode():
     generic OpenAI-compatible relay returns None from host_mandated_api_mode,
     so the switch path leaves the resolver's api_mode untouched.
     """
-    from hermes_cli.providers import host_mandated_api_mode
+    from agentic_os_cli.providers import host_mandated_api_mode
 
     assert host_mandated_api_mode("https://generic.example.com/v1") is None
     # Lookalike / path-spoof hosts must also NOT be treated as mandated (#32243).

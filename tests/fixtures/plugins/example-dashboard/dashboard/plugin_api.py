@@ -3,7 +3,7 @@
 This plugin lives under ``tests/fixtures/plugins/`` so it is NOT shipped as
 part of the bundled-plugins set; a stock hermes-agent install does not see
 an "Example" tab in its sidebar. The ``_install_example_plugin`` pytest
-fixture in ``tests/hermes_cli/test_web_server.py`` copies this directory
+fixture in ``tests/agentic_os_cli/test_web_server.py`` copies this directory
 into ``$HERMES_HOME/plugins/example-dashboard/`` and forces the dashboard
 plugin discovery cache to rescan, so tests that need a stable, side-effect-
 free GET endpoint to verify plugin API auth + static-asset behaviour can

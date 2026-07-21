@@ -9,7 +9,7 @@ from unittest.mock import patch
 
 
 def test_prompt_model_selection_uses_curses_radiolist():
-    from hermes_cli.auth import _prompt_model_selection
+    from agentic_os_cli.auth import _prompt_model_selection
 
     seen = {}
 
@@ -18,7 +18,7 @@ def test_prompt_model_selection_uses_curses_radiolist():
         seen["items"] = items
         return 1  # pick second model
 
-    with patch("hermes_cli.curses_ui.curses_radiolist", side_effect=_fake), \
+    with patch("agentic_os_cli.curses_ui.curses_radiolist", side_effect=_fake), \
          patch("builtins.print"):
         result = _prompt_model_selection(["model-a", "model-b"])
 
@@ -30,10 +30,10 @@ def test_prompt_model_selection_uses_curses_radiolist():
 
 
 def test_prompt_model_selection_esc_cancels():
-    from hermes_cli.auth import _prompt_model_selection
+    from agentic_os_cli.auth import _prompt_model_selection
 
     # curses_radiolist returns the cancel sentinel (-1) on ESC.
-    with patch("hermes_cli.curses_ui.curses_radiolist", return_value=-1), \
+    with patch("agentic_os_cli.curses_ui.curses_radiolist", return_value=-1), \
          patch("builtins.print"):
         result = _prompt_model_selection(["model-a", "model-b"])
 
@@ -41,9 +41,9 @@ def test_prompt_model_selection_esc_cancels():
 
 
 def test_reasoning_effort_uses_curses_radiolist():
-    from hermes_cli.main import _prompt_reasoning_effort_selection
+    from agentic_os_cli.main import _prompt_reasoning_effort_selection
 
-    with patch("hermes_cli.curses_ui.curses_radiolist", return_value=2), \
+    with patch("agentic_os_cli.curses_ui.curses_radiolist", return_value=2), \
          patch("builtins.print"):
         result = _prompt_reasoning_effort_selection(["low", "medium", "high"], current_effort="")
 
@@ -51,9 +51,9 @@ def test_reasoning_effort_uses_curses_radiolist():
 
 
 def test_reasoning_effort_esc_cancels():
-    from hermes_cli.main import _prompt_reasoning_effort_selection
+    from agentic_os_cli.main import _prompt_reasoning_effort_selection
 
-    with patch("hermes_cli.curses_ui.curses_radiolist", return_value=-1), \
+    with patch("agentic_os_cli.curses_ui.curses_radiolist", return_value=-1), \
          patch("builtins.print"):
         result = _prompt_reasoning_effort_selection(["low", "medium", "high"], current_effort="")
 
@@ -63,7 +63,7 @@ def test_reasoning_effort_esc_cancels():
 def test_model_selection_with_pricing_passes_description():
     """When pricing is supplied, the aligned header is passed as the curses
     description (multi-line text above the list), not lost."""
-    from hermes_cli.auth import _prompt_model_selection
+    from agentic_os_cli.auth import _prompt_model_selection
 
     seen = {}
 
@@ -75,7 +75,7 @@ def test_model_selection_with_pricing_passes_description():
         "model-a": {"prompt": "0.000001", "completion": "0.000002"},
         "model-b": {"prompt": "0.000003", "completion": "0.000004"},
     }
-    with patch("hermes_cli.curses_ui.curses_radiolist", side_effect=_fake), \
+    with patch("agentic_os_cli.curses_ui.curses_radiolist", side_effect=_fake), \
          patch("builtins.print"):
         _prompt_model_selection(["model-a", "model-b"], pricing=pricing)
 

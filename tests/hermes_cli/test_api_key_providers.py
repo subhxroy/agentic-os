@@ -5,7 +5,7 @@ import os
 
 import pytest
 
-from hermes_cli.auth import (
+from agentic_os_cli.auth import (
     PROVIDER_REGISTRY,
     resolve_provider,
     get_api_key_provider_status,
@@ -19,7 +19,7 @@ from hermes_cli.auth import (
     STEPFUN_STEP_PLAN_CN_BASE_URL,
     _resolve_kimi_base_url,
 )
-from hermes_cli.copilot_auth import _try_gh_cli_token
+from agentic_os_cli.copilot_auth import _try_gh_cli_token
 
 
 # =============================================================================
@@ -151,7 +151,7 @@ class TestProviderRegistry:
 # new provider (and its env var) is added — a hand-maintained tuple here was
 # missing HF_TOKEN/DEEPINFRA_API_KEY, which made the auto-detection tests
 # env-dependent (they failed on any machine with HF_TOKEN exported).
-from hermes_cli.auth import PROVIDER_REGISTRY as _REGISTRY
+from agentic_os_cli.auth import PROVIDER_REGISTRY as _REGISTRY
 
 _EXTRA_ENV_VARS = (
     # Checked directly in resolve_provider("auto"), not via the registry.
@@ -175,7 +175,7 @@ PROVIDER_ENV_VARS = tuple(
 def _clear_provider_env(monkeypatch):
     for key in PROVIDER_ENV_VARS:
         monkeypatch.delenv(key, raising=False)
-    monkeypatch.setattr("hermes_cli.auth._load_auth_store", lambda: {})
+    monkeypatch.setattr("agentic_os_cli.auth._load_auth_store", lambda: {})
 
 
 class TestResolveProvider:
@@ -378,7 +378,7 @@ class TestApiKeyProviderStatus:
         assert status["base_url"] == STEPFUN_STEP_PLAN_CN_BASE_URL
 
     def test_copilot_status_uses_gh_cli_token(self, monkeypatch):
-        monkeypatch.setattr("hermes_cli.copilot_auth._try_gh_cli_token", lambda: "gho_gh_cli_token")
+        monkeypatch.setattr("agentic_os_cli.copilot_auth._try_gh_cli_token", lambda: "gho_gh_cli_token")
         status = get_api_key_provider_status("copilot")
         assert status["configured"] is True
         assert status["logged_in"] is True
@@ -393,7 +393,7 @@ class TestApiKeyProviderStatus:
 
     def test_copilot_acp_status_detects_local_cli(self, monkeypatch):
         monkeypatch.setenv("HERMES_COPILOT_ACP_ARGS", "--acp --stdio --debug")
-        monkeypatch.setattr("hermes_cli.auth.shutil.which", lambda command: f"/usr/local/bin/{command}")
+        monkeypatch.setattr("agentic_os_cli.auth.shutil.which", lambda command: f"/usr/local/bin/{command}")
 
         status = get_external_process_provider_status("copilot-acp")
 
@@ -405,7 +405,7 @@ class TestApiKeyProviderStatus:
         assert status["base_url"] == "acp://copilot"
 
     def test_get_auth_status_dispatches_to_external_process(self, monkeypatch):
-        monkeypatch.setattr("hermes_cli.auth.shutil.which", lambda command: f"/opt/bin/{command}")
+        monkeypatch.setattr("agentic_os_cli.auth.shutil.which", lambda command: f"/opt/bin/{command}")
 
         status = get_auth_status("copilot-acp")
 
@@ -425,7 +425,7 @@ class TestResolveApiKeyProviderCredentials:
 
     def test_resolve_zai_with_key(self, monkeypatch):
         monkeypatch.setenv("GLM_API_KEY", "glm-secret-key")
-        monkeypatch.setattr("hermes_cli.auth.detect_zai_endpoint", lambda *a, **kw: None)
+        monkeypatch.setattr("agentic_os_cli.auth.detect_zai_endpoint", lambda *a, **kw: None)
         creds = resolve_api_key_provider_credentials("zai")
         assert creds["provider"] == "zai"
         assert creds["api_key"] == "glm-secret-key"
@@ -441,7 +441,7 @@ class TestResolveApiKeyProviderCredentials:
         assert creds["source"] == "GITHUB_TOKEN"
 
     def test_resolve_copilot_with_gh_cli_fallback(self, monkeypatch):
-        monkeypatch.setattr("hermes_cli.copilot_auth._try_gh_cli_token", lambda: "gho_cli_secret")
+        monkeypatch.setattr("agentic_os_cli.copilot_auth._try_gh_cli_token", lambda: "gho_cli_secret")
         creds = resolve_api_key_provider_credentials("copilot")
         assert creds["provider"] == "copilot"
         assert creds["api_key"] == "gho_cli_secret"
@@ -481,13 +481,13 @@ class TestResolveApiKeyProviderCredentials:
         assert creds["base_url"] == "http://127.0.0.1:1234/v1"
 
     def test_try_gh_cli_token_uses_homebrew_path_when_not_on_path(self, monkeypatch):
-        monkeypatch.setattr("hermes_cli.copilot_auth.shutil.which", lambda command: None)
+        monkeypatch.setattr("agentic_os_cli.copilot_auth.shutil.which", lambda command: None)
         monkeypatch.setattr(
-            "hermes_cli.copilot_auth.os.path.isfile",
+            "agentic_os_cli.copilot_auth.os.path.isfile",
             lambda path: path == "/opt/homebrew/bin/gh",
         )
         monkeypatch.setattr(
-            "hermes_cli.copilot_auth.os.access",
+            "agentic_os_cli.copilot_auth.os.access",
             lambda path, mode: path == "/opt/homebrew/bin/gh" and mode == os.X_OK,
         )
 
@@ -501,14 +501,14 @@ class TestResolveApiKeyProviderCredentials:
             calls.append(cmd)
             return _Result()
 
-        monkeypatch.setattr("hermes_cli.copilot_auth.subprocess.run", _fake_run)
+        monkeypatch.setattr("agentic_os_cli.copilot_auth.subprocess.run", _fake_run)
 
         assert _try_gh_cli_token() == "gh-cli-secret"
         assert calls == [["/opt/homebrew/bin/gh", "auth", "token"]]
 
     def test_resolve_copilot_acp_with_local_cli(self, monkeypatch):
         monkeypatch.setenv("HERMES_COPILOT_ACP_ARGS", "--acp --stdio")
-        monkeypatch.setattr("hermes_cli.auth.shutil.which", lambda command: f"/usr/local/bin/{command}")
+        monkeypatch.setattr("agentic_os_cli.auth.shutil.which", lambda command: f"/usr/local/bin/{command}")
 
         creds = resolve_external_process_provider_credentials("copilot-acp")
 
@@ -598,7 +598,7 @@ class TestResolveApiKeyProviderCredentials:
         """GLM_API_KEY takes priority over ZAI_API_KEY."""
         monkeypatch.setenv("GLM_API_KEY", "primary")
         monkeypatch.setenv("ZAI_API_KEY", "secondary")
-        monkeypatch.setattr("hermes_cli.auth.detect_zai_endpoint", lambda *a, **kw: None)
+        monkeypatch.setattr("agentic_os_cli.auth.detect_zai_endpoint", lambda *a, **kw: None)
         creds = resolve_api_key_provider_credentials("zai")
         assert creds["api_key"] == "primary"
         assert creds["source"] == "GLM_API_KEY"
@@ -606,7 +606,7 @@ class TestResolveApiKeyProviderCredentials:
     def test_zai_key_fallback(self, monkeypatch):
         """ZAI_API_KEY used when GLM_API_KEY not set."""
         monkeypatch.setenv("ZAI_API_KEY", "secondary")
-        monkeypatch.setattr("hermes_cli.auth.detect_zai_endpoint", lambda *a, **kw: None)
+        monkeypatch.setattr("agentic_os_cli.auth.detect_zai_endpoint", lambda *a, **kw: None)
         creds = resolve_api_key_provider_credentials("zai")
         assert creds["api_key"] == "secondary"
         assert creds["source"] == "ZAI_API_KEY"
@@ -620,7 +620,7 @@ class TestRuntimeProviderResolution:
 
     def test_runtime_zai(self, monkeypatch):
         monkeypatch.setenv("GLM_API_KEY", "glm-key")
-        from hermes_cli.runtime_provider import resolve_runtime_provider
+        from agentic_os_cli.runtime_provider import resolve_runtime_provider
         result = resolve_runtime_provider(requested="zai")
         assert result["provider"] == "zai"
         assert result["api_mode"] == "chat_completions"
@@ -629,7 +629,7 @@ class TestRuntimeProviderResolution:
 
     def test_runtime_kimi(self, monkeypatch):
         monkeypatch.setenv("KIMI_API_KEY", "kimi-key")
-        from hermes_cli.runtime_provider import resolve_runtime_provider
+        from agentic_os_cli.runtime_provider import resolve_runtime_provider
         result = resolve_runtime_provider(requested="kimi-coding")
         assert result["provider"] == "kimi-coding"
         assert result["api_mode"] == "chat_completions"
@@ -638,7 +638,7 @@ class TestRuntimeProviderResolution:
     def test_runtime_stepfun(self, monkeypatch):
         monkeypatch.setenv("STEPFUN_API_KEY", "stepfun-key")
         monkeypatch.setenv("STEPFUN_BASE_URL", STEPFUN_STEP_PLAN_CN_BASE_URL)
-        from hermes_cli.runtime_provider import resolve_runtime_provider
+        from agentic_os_cli.runtime_provider import resolve_runtime_provider
         result = resolve_runtime_provider(requested="stepfun")
         assert result["provider"] == "stepfun"
         assert result["api_mode"] == "chat_completions"
@@ -647,14 +647,14 @@ class TestRuntimeProviderResolution:
 
     def test_runtime_minimax(self, monkeypatch):
         monkeypatch.setenv("MINIMAX_API_KEY", "mm-key")
-        from hermes_cli.runtime_provider import resolve_runtime_provider
+        from agentic_os_cli.runtime_provider import resolve_runtime_provider
         result = resolve_runtime_provider(requested="minimax")
         assert result["provider"] == "minimax"
         assert result["api_key"] == "mm-key"
 
     def test_runtime_kilocode(self, monkeypatch):
         monkeypatch.setenv("KILOCODE_API_KEY", "kilo-key")
-        from hermes_cli.runtime_provider import resolve_runtime_provider
+        from agentic_os_cli.runtime_provider import resolve_runtime_provider
         result = resolve_runtime_provider(requested="kilocode")
         assert result["provider"] == "kilocode"
         assert result["api_mode"] == "chat_completions"
@@ -663,7 +663,7 @@ class TestRuntimeProviderResolution:
 
     def test_runtime_gmi(self, monkeypatch):
         monkeypatch.setenv("GMI_API_KEY", "gmi-key")
-        from hermes_cli.runtime_provider import resolve_runtime_provider
+        from agentic_os_cli.runtime_provider import resolve_runtime_provider
         result = resolve_runtime_provider(requested="gmi")
         assert result["provider"] == "gmi"
         assert result["api_mode"] == "chat_completions"
@@ -672,14 +672,14 @@ class TestRuntimeProviderResolution:
 
     def test_runtime_auto_detects_api_key_provider(self, monkeypatch):
         monkeypatch.setenv("KIMI_API_KEY", "auto-kimi-key")
-        from hermes_cli.runtime_provider import resolve_runtime_provider
+        from agentic_os_cli.runtime_provider import resolve_runtime_provider
         result = resolve_runtime_provider(requested="auto")
         assert result["provider"] == "kimi-coding"
         assert result["api_key"] == "auto-kimi-key"
 
     def test_runtime_copilot_uses_gh_cli_token(self, monkeypatch):
-        monkeypatch.setattr("hermes_cli.copilot_auth._try_gh_cli_token", lambda: "gho_cli_secret")
-        from hermes_cli.runtime_provider import resolve_runtime_provider
+        monkeypatch.setattr("agentic_os_cli.copilot_auth._try_gh_cli_token", lambda: "gho_cli_secret")
+        from agentic_os_cli.runtime_provider import resolve_runtime_provider
         result = resolve_runtime_provider(requested="copilot")
         assert result["provider"] == "copilot"
         assert result["api_mode"] == "chat_completions"
@@ -687,13 +687,13 @@ class TestRuntimeProviderResolution:
         assert result["base_url"] == "https://api.githubcopilot.com"
 
     def test_runtime_copilot_uses_responses_for_gpt_5_4(self, monkeypatch):
-        monkeypatch.setattr("hermes_cli.copilot_auth._try_gh_cli_token", lambda: "gho_cli_secret")
+        monkeypatch.setattr("agentic_os_cli.copilot_auth._try_gh_cli_token", lambda: "gho_cli_secret")
         monkeypatch.setattr(
-            "hermes_cli.runtime_provider._get_model_config",
+            "agentic_os_cli.runtime_provider._get_model_config",
             lambda: {"provider": "copilot", "default": "gpt-5.4"},
         )
         monkeypatch.setattr(
-            "hermes_cli.models.fetch_github_model_catalog",
+            "agentic_os_cli.models.fetch_github_model_catalog",
             lambda api_key=None, timeout=5.0: [
                 {
                     "id": "gpt-5.4",
@@ -702,7 +702,7 @@ class TestRuntimeProviderResolution:
                 }
             ],
         )
-        from hermes_cli.runtime_provider import resolve_runtime_provider
+        from agentic_os_cli.runtime_provider import resolve_runtime_provider
 
         result = resolve_runtime_provider(requested="copilot")
 
@@ -710,10 +710,10 @@ class TestRuntimeProviderResolution:
         assert result["api_mode"] == "codex_responses"
 
     def test_runtime_copilot_acp_uses_process_runtime(self, monkeypatch):
-        monkeypatch.setattr("hermes_cli.auth.shutil.which", lambda command: f"/usr/local/bin/{command}")
+        monkeypatch.setattr("agentic_os_cli.auth.shutil.which", lambda command: f"/usr/local/bin/{command}")
         monkeypatch.setenv("HERMES_COPILOT_ACP_ARGS", "--acp --stdio --debug")
 
-        from hermes_cli.runtime_provider import resolve_runtime_provider
+        from agentic_os_cli.runtime_provider import resolve_runtime_provider
 
         result = resolve_runtime_provider(requested="copilot-acp")
 
@@ -732,44 +732,44 @@ class TestRuntimeProviderResolution:
 class TestHasAnyProviderConfigured:
 
     def test_glm_key_counts(self, monkeypatch, tmp_path):
-        from hermes_cli import config as config_module
+        from agentic_os_cli import config as config_module
         monkeypatch.setenv("GLM_API_KEY", "test-key")
         hermes_home = tmp_path / ".hermes"
         hermes_home.mkdir()
         monkeypatch.setattr(config_module, "get_env_path", lambda: hermes_home / ".env")
         monkeypatch.setattr(config_module, "get_hermes_home", lambda: hermes_home)
-        from hermes_cli.main import _has_any_provider_configured
+        from agentic_os_cli.main import _has_any_provider_configured
         assert _has_any_provider_configured() is True
 
     def test_minimax_key_counts(self, monkeypatch, tmp_path):
-        from hermes_cli import config as config_module
+        from agentic_os_cli import config as config_module
         monkeypatch.setenv("MINIMAX_API_KEY", "test-key")
         hermes_home = tmp_path / ".hermes"
         hermes_home.mkdir()
         monkeypatch.setattr(config_module, "get_env_path", lambda: hermes_home / ".env")
         monkeypatch.setattr(config_module, "get_hermes_home", lambda: hermes_home)
-        from hermes_cli.main import _has_any_provider_configured
+        from agentic_os_cli.main import _has_any_provider_configured
         assert _has_any_provider_configured() is True
 
     def test_gh_cli_token_counts(self, monkeypatch, tmp_path):
-        from hermes_cli import config as config_module
-        monkeypatch.setattr("hermes_cli.copilot_auth._try_gh_cli_token", lambda: "gho_cli_secret")
+        from agentic_os_cli import config as config_module
+        monkeypatch.setattr("agentic_os_cli.copilot_auth._try_gh_cli_token", lambda: "gho_cli_secret")
         hermes_home = tmp_path / ".hermes"
         hermes_home.mkdir()
         monkeypatch.setattr(config_module, "get_env_path", lambda: hermes_home / ".env")
         monkeypatch.setattr(config_module, "get_hermes_home", lambda: hermes_home)
-        from hermes_cli.main import _has_any_provider_configured
+        from agentic_os_cli.main import _has_any_provider_configured
         assert _has_any_provider_configured() is True
 
     def test_claude_code_creds_ignored_on_fresh_install(self, monkeypatch, tmp_path):
         """Claude Code credentials should NOT skip the wizard when Hermes is unconfigured."""
-        from hermes_cli import config as config_module
-        from hermes_cli.auth import PROVIDER_REGISTRY
+        from agentic_os_cli import config as config_module
+        from agentic_os_cli.auth import PROVIDER_REGISTRY
         hermes_home = tmp_path / ".hermes"
         hermes_home.mkdir()
         monkeypatch.setattr(config_module, "get_env_path", lambda: hermes_home / ".env")
         monkeypatch.setattr(config_module, "get_hermes_home", lambda: hermes_home)
-        monkeypatch.setattr("hermes_cli.copilot_auth.resolve_copilot_token", lambda: ("", ""))
+        monkeypatch.setattr("agentic_os_cli.copilot_auth.resolve_copilot_token", lambda: ("", ""))
         # Clear all provider env vars so earlier checks don't short-circuit
         _all_vars = {"OPENROUTER_API_KEY", "OPENAI_API_KEY", "ANTHROPIC_API_KEY",
                       "ANTHROPIC_TOKEN", "OPENAI_BASE_URL"}
@@ -779,7 +779,7 @@ class TestHasAnyProviderConfigured:
         for var in _all_vars:
             monkeypatch.delenv(var, raising=False)
         # Prevent gh-cli / copilot auth fallback from leaking in
-        monkeypatch.setattr("hermes_cli.auth.get_auth_status", lambda _pid: {})
+        monkeypatch.setattr("agentic_os_cli.auth.get_auth_status", lambda _pid: {})
         # Simulate valid Claude Code credentials
         monkeypatch.setattr(
             "agent.anthropic_adapter.read_claude_code_credentials",
@@ -789,13 +789,13 @@ class TestHasAnyProviderConfigured:
             "agent.anthropic_adapter.is_claude_code_token_valid",
             lambda creds: True,
         )
-        from hermes_cli.main import _has_any_provider_configured
+        from agentic_os_cli.main import _has_any_provider_configured
         assert _has_any_provider_configured() is False
 
     def test_config_provider_counts(self, monkeypatch, tmp_path):
         """config.yaml with model.provider set should count as configured."""
         import yaml
-        from hermes_cli import config as config_module
+        from agentic_os_cli import config as config_module
         hermes_home = tmp_path / ".hermes"
         hermes_home.mkdir()
         config_file = hermes_home / "config.yaml"
@@ -809,13 +809,13 @@ class TestHasAnyProviderConfigured:
         for var in ("OPENROUTER_API_KEY", "OPENAI_API_KEY", "ANTHROPIC_API_KEY",
                      "ANTHROPIC_TOKEN", "OPENAI_BASE_URL"):
             monkeypatch.delenv(var, raising=False)
-        from hermes_cli.main import _has_any_provider_configured
+        from agentic_os_cli.main import _has_any_provider_configured
         assert _has_any_provider_configured() is True
 
     def test_config_base_url_counts(self, monkeypatch, tmp_path):
         """config.yaml with model.base_url set (custom endpoint) should count."""
         import yaml
-        from hermes_cli import config as config_module
+        from agentic_os_cli import config as config_module
         hermes_home = tmp_path / ".hermes"
         hermes_home.mkdir()
         config_file = hermes_home / "config.yaml"
@@ -828,13 +828,13 @@ class TestHasAnyProviderConfigured:
         for var in ("OPENROUTER_API_KEY", "OPENAI_API_KEY", "ANTHROPIC_API_KEY",
                      "ANTHROPIC_TOKEN", "OPENAI_BASE_URL"):
             monkeypatch.delenv(var, raising=False)
-        from hermes_cli.main import _has_any_provider_configured
+        from agentic_os_cli.main import _has_any_provider_configured
         assert _has_any_provider_configured() is True
 
     def test_config_api_key_counts(self, monkeypatch, tmp_path):
         """config.yaml with model.api_key set should count."""
         import yaml
-        from hermes_cli import config as config_module
+        from agentic_os_cli import config as config_module
         hermes_home = tmp_path / ".hermes"
         hermes_home.mkdir()
         config_file = hermes_home / "config.yaml"
@@ -847,14 +847,14 @@ class TestHasAnyProviderConfigured:
         for var in ("OPENROUTER_API_KEY", "OPENAI_API_KEY", "ANTHROPIC_API_KEY",
                      "ANTHROPIC_TOKEN", "OPENAI_BASE_URL"):
             monkeypatch.delenv(var, raising=False)
-        from hermes_cli.main import _has_any_provider_configured
+        from agentic_os_cli.main import _has_any_provider_configured
         assert _has_any_provider_configured() is True
 
     def test_config_dict_no_provider_no_creds_still_false(self, monkeypatch, tmp_path):
         """config.yaml model dict with empty default and no creds stays false."""
         import yaml
-        from hermes_cli import config as config_module
-        from hermes_cli.auth import PROVIDER_REGISTRY
+        from agentic_os_cli import config as config_module
+        from agentic_os_cli.auth import PROVIDER_REGISTRY
         hermes_home = tmp_path / ".hermes"
         hermes_home.mkdir()
         config_file = hermes_home / "config.yaml"
@@ -864,7 +864,7 @@ class TestHasAnyProviderConfigured:
         monkeypatch.setattr(config_module, "get_env_path", lambda: hermes_home / ".env")
         monkeypatch.setattr(config_module, "get_hermes_home", lambda: hermes_home)
         monkeypatch.setenv("HERMES_HOME", str(hermes_home))
-        monkeypatch.setattr("hermes_cli.copilot_auth.resolve_copilot_token", lambda: ("", ""))
+        monkeypatch.setattr("agentic_os_cli.copilot_auth.resolve_copilot_token", lambda: ("", ""))
         _all_vars = {"OPENROUTER_API_KEY", "OPENAI_API_KEY", "ANTHROPIC_API_KEY",
                       "ANTHROPIC_TOKEN", "OPENAI_BASE_URL"}
         for pconfig in PROVIDER_REGISTRY.values():
@@ -873,14 +873,14 @@ class TestHasAnyProviderConfigured:
         for var in _all_vars:
             monkeypatch.delenv(var, raising=False)
         # Prevent gh-cli / copilot auth fallback from leaking in
-        monkeypatch.setattr("hermes_cli.auth.get_auth_status", lambda _pid: {})
-        from hermes_cli.main import _has_any_provider_configured
+        monkeypatch.setattr("agentic_os_cli.auth.get_auth_status", lambda _pid: {})
+        from agentic_os_cli.main import _has_any_provider_configured
         assert _has_any_provider_configured() is False
 
     def test_claude_code_creds_counted_when_hermes_configured(self, monkeypatch, tmp_path):
         """Claude Code credentials should count when Hermes has been explicitly configured."""
         import yaml
-        from hermes_cli import config as config_module
+        from agentic_os_cli import config as config_module
         hermes_home = tmp_path / ".hermes"
         hermes_home.mkdir()
         # Write a config with a non-default model to simulate explicit configuration
@@ -902,7 +902,7 @@ class TestHasAnyProviderConfigured:
             "agent.anthropic_adapter.is_claude_code_token_valid",
             lambda creds: True,
         )
-        from hermes_cli.main import _has_any_provider_configured
+        from agentic_os_cli.main import _has_any_provider_configured
         assert _has_any_provider_configured() is True
 
 
@@ -986,7 +986,7 @@ class TestKimiCodeCredentialAutoDetect:
     def test_non_kimi_providers_unaffected(self, monkeypatch):
         """Ensure the auto-detect logic doesn't leak to other providers."""
         monkeypatch.setenv("GLM_API_KEY", "sk-kim...isnt")
-        monkeypatch.setattr("hermes_cli.auth.detect_zai_endpoint", lambda *a, **kw: None)
+        monkeypatch.setattr("agentic_os_cli.auth.detect_zai_endpoint", lambda *a, **kw: None)
         creds = resolve_api_key_provider_credentials("zai")
         assert creds["base_url"] == "https://api.z.ai/api/paas/v4"
 
@@ -997,7 +997,7 @@ class TestZaiEndpointAutoDetect:
     def test_probe_success_returns_detected_url(self, monkeypatch):
         monkeypatch.setenv("GLM_API_KEY", "glm-coding-key")
         monkeypatch.setattr(
-            "hermes_cli.auth.detect_zai_endpoint",
+            "agentic_os_cli.auth.detect_zai_endpoint",
             lambda *a, **kw: {
                 "id": "coding-global",
                 "base_url": "https://api.z.ai/api/coding/paas/v4",
@@ -1010,7 +1010,7 @@ class TestZaiEndpointAutoDetect:
 
     def test_probe_failure_falls_back_to_default(self, monkeypatch):
         monkeypatch.setenv("GLM_API_KEY", "glm-key")
-        monkeypatch.setattr("hermes_cli.auth.detect_zai_endpoint", lambda *a, **kw: None)
+        monkeypatch.setattr("agentic_os_cli.auth.detect_zai_endpoint", lambda *a, **kw: None)
         creds = resolve_api_key_provider_credentials("zai")
         assert creds["base_url"] == "https://api.z.ai/api/paas/v4"
 
@@ -1025,14 +1025,14 @@ class TestZaiEndpointAutoDetect:
             probe_called = True
             return None
 
-        monkeypatch.setattr("hermes_cli.auth.detect_zai_endpoint", _never_called)
+        monkeypatch.setattr("agentic_os_cli.auth.detect_zai_endpoint", _never_called)
         creds = resolve_api_key_provider_credentials("zai")
         assert creds["base_url"] == "https://custom.example/v4"
         assert not probe_called
 
     def test_no_key_skips_probe(self, monkeypatch):
         """Without an API key, no probe should occur."""
-        monkeypatch.setattr("hermes_cli.auth.detect_zai_endpoint", lambda *a, **kw: None)
+        monkeypatch.setattr("agentic_os_cli.auth.detect_zai_endpoint", lambda *a, **kw: None)
         creds = resolve_api_key_provider_credentials("zai")
         assert creds["api_key"] == ""
 
@@ -1045,18 +1045,18 @@ class TestKimiMoonshotModelListIsolation:
     """Moonshot (legacy) users must not see Coding Plan-only models."""
 
     def test_moonshot_list_excludes_coding_plan_only_models(self):
-        from hermes_cli.main import _PROVIDER_MODELS
+        from agentic_os_cli.main import _PROVIDER_MODELS
         moonshot_models = _PROVIDER_MODELS["moonshot"]
         coding_plan_only = {"kimi-for-coding", "kimi-k2-thinking-turbo"}
         leaked = set(moonshot_models) & coding_plan_only
         assert not leaked, f"Moonshot list contains Coding Plan-only models: {leaked}"
 
     def test_moonshot_list_non_empty(self):
-        from hermes_cli.main import _PROVIDER_MODELS
+        from agentic_os_cli.main import _PROVIDER_MODELS
         assert len(_PROVIDER_MODELS["moonshot"]) >= 1
 
     def test_coding_plan_list_non_empty(self):
-        from hermes_cli.main import _PROVIDER_MODELS
+        from agentic_os_cli.main import _PROVIDER_MODELS
         assert len(_PROVIDER_MODELS["kimi-coding"]) >= 1
 
 
@@ -1068,24 +1068,24 @@ class TestHuggingFaceModels:
     """Verify Hugging Face model lists are consistent across all locations."""
 
     def test_main_provider_models_has_huggingface(self):
-        from hermes_cli.main import _PROVIDER_MODELS
+        from agentic_os_cli.main import _PROVIDER_MODELS
         assert "huggingface" in _PROVIDER_MODELS
         assert len(_PROVIDER_MODELS["huggingface"]) >= 1
 
     def test_models_py_has_huggingface(self):
-        from hermes_cli.models import _PROVIDER_MODELS
+        from agentic_os_cli.models import _PROVIDER_MODELS
         assert "huggingface" in _PROVIDER_MODELS
         assert len(_PROVIDER_MODELS["huggingface"]) >= 1
 
     def test_model_lists_match(self):
         """Model lists in main.py and models.py should be identical."""
-        from hermes_cli.main import _PROVIDER_MODELS as main_models
-        from hermes_cli.models import _PROVIDER_MODELS as models_models
+        from agentic_os_cli.main import _PROVIDER_MODELS as main_models
+        from agentic_os_cli.models import _PROVIDER_MODELS as models_models
         assert main_models["huggingface"] == models_models["huggingface"]
 
     def test_model_metadata_has_context_lengths(self):
         """Every HF model should have a context length entry."""
-        from hermes_cli.models import _PROVIDER_MODELS
+        from agentic_os_cli.models import _PROVIDER_MODELS
         from agent.model_metadata import DEFAULT_CONTEXT_LENGTHS
         lower_keys = {k.lower() for k in DEFAULT_CONTEXT_LENGTHS}
         hf_models = _PROVIDER_MODELS["huggingface"]
@@ -1096,17 +1096,17 @@ class TestHuggingFaceModels:
 
     def test_models_use_org_name_format(self):
         """HF models should use org/name format (e.g. Qwen/Qwen3-235B)."""
-        from hermes_cli.models import _PROVIDER_MODELS
+        from agentic_os_cli.models import _PROVIDER_MODELS
         for model in _PROVIDER_MODELS["huggingface"]:
             assert "/" in model, f"HF model {model!r} missing org/ prefix"
 
     def test_provider_aliases_in_models_py(self):
-        from hermes_cli.models import _PROVIDER_ALIASES
+        from agentic_os_cli.models import _PROVIDER_ALIASES
         assert _PROVIDER_ALIASES.get("hf") == "huggingface"
         assert _PROVIDER_ALIASES.get("hugging-face") == "huggingface"
 
     def test_provider_label(self):
-        from hermes_cli.models import _PROVIDER_LABELS
+        from agentic_os_cli.models import _PROVIDER_LABELS
         assert "huggingface" in _PROVIDER_LABELS
         assert _PROVIDER_LABELS["huggingface"] == "Hugging Face"
 
@@ -1152,34 +1152,34 @@ class TestNovitaProvider:
         assert "novitaai" in PROVIDER_REGISTRY
 
     def test_main_provider_models_has_novita(self):
-        from hermes_cli.main import _PROVIDER_MODELS
+        from agentic_os_cli.main import _PROVIDER_MODELS
         assert "novita" in _PROVIDER_MODELS
         assert len(_PROVIDER_MODELS["novita"]) >= 1
 
     def test_models_py_has_novita(self):
-        from hermes_cli.models import _PROVIDER_MODELS
+        from agentic_os_cli.models import _PROVIDER_MODELS
         assert "novita" in _PROVIDER_MODELS
         assert len(_PROVIDER_MODELS["novita"]) >= 1
 
     def test_novita_model_lists_match(self):
         """Model lists in main.py and models.py should be identical."""
-        from hermes_cli.main import _PROVIDER_MODELS as main_models
-        from hermes_cli.models import _PROVIDER_MODELS as models_models
+        from agentic_os_cli.main import _PROVIDER_MODELS as main_models
+        from agentic_os_cli.models import _PROVIDER_MODELS as models_models
         assert main_models["novita"] == models_models["novita"]
 
     def test_novita_models_use_org_name_format(self):
         """Novita models should use org/name format."""
-        from hermes_cli.models import _PROVIDER_MODELS
+        from agentic_os_cli.models import _PROVIDER_MODELS
         for model in _PROVIDER_MODELS["novita"]:
             assert "/" in model, f"Novita model {model!r} missing org/ prefix"
 
     def test_novita_aliases_in_models_py(self):
-        from hermes_cli.models import _PROVIDER_ALIASES
+        from agentic_os_cli.models import _PROVIDER_ALIASES
         assert _PROVIDER_ALIASES.get("novita-ai") == "novita"
         assert _PROVIDER_ALIASES.get("novitaai") == "novita"
 
     def test_novita_label(self):
-        from hermes_cli.models import _PROVIDER_LABELS
+        from agentic_os_cli.models import _PROVIDER_LABELS
         assert "novita" in _PROVIDER_LABELS
         assert _PROVIDER_LABELS["novita"] == "NovitaAI"
 
@@ -1214,7 +1214,7 @@ class TestNovitaProvider:
 
     def test_novita_pricing_cache(self, monkeypatch):
         """_fetch_novita_pricing should cache results in _pricing_cache."""
-        from hermes_cli import models as models_mod
+        from agentic_os_cli import models as models_mod
         monkeypatch.setenv("NOVITA_API_KEY", "sk-test-key")
         monkeypatch.setenv("NOVITA_BASE_URL", "https://api.novita.ai/openai/v1")
         models_mod._pricing_cache.pop("https://api.novita.ai/openai/v1", None)
@@ -1278,7 +1278,7 @@ class TestMinimaxOAuthProvider:
         assert pconfig.id == "minimax-oauth"
 
     def test_minimax_oauth_has_correct_endpoints(self):
-        from hermes_cli.auth import (
+        from agentic_os_cli.auth import (
             MINIMAX_OAUTH_GLOBAL_BASE,
             MINIMAX_OAUTH_GLOBAL_INFERENCE,
             MINIMAX_OAUTH_CN_BASE,
@@ -1303,18 +1303,18 @@ class TestMinimaxOAuthProvider:
         assert result == "minimax-oauth"
 
     def test_minimax_oauth_listed_in_canonical_providers(self):
-        from hermes_cli.models import CANONICAL_PROVIDERS
+        from agentic_os_cli.models import CANONICAL_PROVIDERS
         slugs = [p.slug for p in CANONICAL_PROVIDERS]
         assert "minimax-oauth" in slugs
 
     def test_minimax_oauth_models_alias_in_models_py(self):
-        from hermes_cli.models import _PROVIDER_ALIASES
+        from agentic_os_cli.models import _PROVIDER_ALIASES
         assert _PROVIDER_ALIASES.get("minimax-portal") == "minimax-oauth"
         assert _PROVIDER_ALIASES.get("minimax-global") == "minimax-oauth"
         assert _PROVIDER_ALIASES.get("minimax_oauth") == "minimax-oauth"
 
     def test_minimax_oauth_has_models(self):
-        from hermes_cli.models import _PROVIDER_MODELS
+        from agentic_os_cli.models import _PROVIDER_MODELS
         models = _PROVIDER_MODELS.get("minimax-oauth", [])
         assert len(models) >= 1
 
@@ -1356,7 +1356,7 @@ def _deepinfra_cache_isolation(monkeypatch):
     reset too, so a test that simulates an unreachable catalog can't suppress
     a later test's fetch within the failure TTL.
     """
-    import hermes_cli.models as _models_mod
+    import agentic_os_cli.models as _models_mod
     monkeypatch.setattr(_models_mod, "_deepinfra_catalog_cache", {})
     monkeypatch.setattr(_models_mod, "_deepinfra_catalog_neg_cache", {})
     yield
@@ -1382,11 +1382,11 @@ class TestFetchDeepInfraModels:
                     {"id": "stabilityai/stable-diffusion-xl-base-1.0", "metadata": {}},
                 ]}).encode()
 
-        import hermes_cli.models as models
+        import agentic_os_cli.models as models
         monkeypatch.setattr(
             models, "_urlopen_model_catalog_request", lambda *a, **kw: _Resp()
         )
-        from hermes_cli.models import _fetch_deepinfra_models
+        from agentic_os_cli.models import _fetch_deepinfra_models
         result = _fetch_deepinfra_models()
 
         assert result is not None
@@ -1409,27 +1409,27 @@ class TestFetchDeepInfraModels:
                     {"id": "meta-llama/Llama-3-70B-Instruct", "metadata": {}},
                 ]}).encode()
 
-        import hermes_cli.models as models
+        import agentic_os_cli.models as models
         monkeypatch.setattr(
             models, "_urlopen_model_catalog_request", lambda *a, **kw: _Resp()
         )
-        from hermes_cli.models import _fetch_deepinfra_models
+        from agentic_os_cli.models import _fetch_deepinfra_models
         result = _fetch_deepinfra_models()
         assert result == ["meta-llama/Llama-3-70B-Instruct"]
 
     def test_returns_none_on_network_failure(self, monkeypatch):
         monkeypatch.setenv("DEEPINFRA_API_KEY", "test-key")
-        import hermes_cli.models as models
+        import agentic_os_cli.models as models
         monkeypatch.setattr(
             models,
             "_urlopen_model_catalog_request",
             lambda *a, **kw: (_ for _ in ()).throw(Exception("timeout")),
         )
-        from hermes_cli.models import _fetch_deepinfra_models
+        from agentic_os_cli.models import _fetch_deepinfra_models
         assert _fetch_deepinfra_models() is None
 
     def test_catalog_uses_credential_safe_opener(self, monkeypatch):
-        import hermes_cli.models as models
+        import agentic_os_cli.models as models
 
         seen = {}
 
@@ -1457,7 +1457,7 @@ class TestFetchDeepInfraModels:
     def test_empty_filtered_catalog_never_falls_back_to_mixed_profile_catalog(
         self, monkeypatch
     ):
-        import hermes_cli.models as models
+        import agentic_os_cli.models as models
         from providers import get_provider_profile
 
         profile = get_provider_profile("deepinfra")
@@ -1475,7 +1475,7 @@ class TestFetchDeepInfraModels:
         assert models.provider_model_ids("deepinfra") == []
 
     def test_force_refresh_reaches_deepinfra_catalog(self, monkeypatch):
-        import hermes_cli.models as models
+        import agentic_os_cli.models as models
 
         seen = []
 
@@ -1510,11 +1510,11 @@ class TestFetchDeepInfraModels:
                     {"id": "nvidia/sdxl-turbo", "metadata": {}},
                 ]}).encode()
 
-        import hermes_cli.models as models
+        import agentic_os_cli.models as models
         monkeypatch.setattr(
             models, "_urlopen_model_catalog_request", lambda *a, **kw: _Resp()
         )
-        from hermes_cli.models import _fetch_deepinfra_models
+        from agentic_os_cli.models import _fetch_deepinfra_models
         result = _fetch_deepinfra_models()
 
         assert result == ["Qwen/Qwen3-235B-A22B-Instruct-2507"]
@@ -1563,8 +1563,8 @@ class TestDeepInfraTagFiltering:
             # null metadata — stub model, must be skipped
             {"id": "stub-model", "metadata": None},
         ]}
-        from hermes_cli.models import _fetch_deepinfra_models_by_tag
-        import hermes_cli.models as _m
+        from agentic_os_cli.models import _fetch_deepinfra_models_by_tag
+        import agentic_os_cli.models as _m
 
         for surface in ("chat", "image-gen", "tts", "stt", "embed"):
             monkeypatch.setattr(
@@ -1591,12 +1591,12 @@ class TestDeepInfraTagFiltering:
                     assert surface in item["metadata"]["tags"]
 
     def test_returns_none_on_network_failure(self, monkeypatch):
-        import hermes_cli.models as models
+        import agentic_os_cli.models as models
         monkeypatch.setattr(
             models, "_urlopen_model_catalog_request",
             lambda *a, **kw: (_ for _ in ()).throw(Exception("timeout")),
         )
-        from hermes_cli.models import _fetch_deepinfra_models_by_tag, _fetch_deepinfra_pricing
+        from agentic_os_cli.models import _fetch_deepinfra_models_by_tag, _fetch_deepinfra_pricing
         assert _fetch_deepinfra_models_by_tag("chat") is None
         # Pricing rides the same catalog cache — same failure mode.
         assert _fetch_deepinfra_pricing() == {}
@@ -1627,13 +1627,13 @@ class TestDeepInfraPricingFetcher:
             # non-chat — must not appear
             {"id": "vendor/model-image", "metadata": {"tags": ["image-gen"], "pricing": {"per_image_unit": 0.05}}},
         ]}
-        import hermes_cli.models as models
+        import agentic_os_cli.models as models
         monkeypatch.setattr(
             models,
             "_urlopen_model_catalog_request",
             _make_urlopen_returning(payload),
         )
-        from hermes_cli.models import get_pricing_for_provider
+        from agentic_os_cli.models import get_pricing_for_provider
 
         # get_pricing_for_provider → _fetch_deepinfra_pricing dispatch path
         result = get_pricing_for_provider("deepinfra")
@@ -1651,9 +1651,9 @@ class TestDeepInfraProviderProfile:
     def test_profile_registered_with_alias_and_aux(self):
         from providers import get_provider_profile
         from agent.auxiliary_client import _get_aux_model_for_provider
-        from hermes_cli.auth import PROVIDER_REGISTRY, resolve_provider
-        from hermes_cli.config import OPTIONAL_ENV_VARS
-        from hermes_cli.models import CANONICAL_PROVIDERS
+        from agentic_os_cli.auth import PROVIDER_REGISTRY, resolve_provider
+        from agentic_os_cli.config import OPTIONAL_ENV_VARS
+        from agentic_os_cli.models import CANONICAL_PROVIDERS
 
         profile = get_provider_profile("deepinfra")
         assert profile is not None

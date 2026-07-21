@@ -4,7 +4,7 @@ cannot initialize (e.g. non-TTY, curses unavailable, terminal error)."""
 import subprocess
 from types import SimpleNamespace
 
-from hermes_cli.config import load_config, save_config
+from agentic_os_cli.config import load_config, save_config
 
 
 def _raise_menu(*args, **kwargs):
@@ -14,9 +14,9 @@ def _raise_menu(*args, **kwargs):
 
 
 def test_prompt_model_selection_falls_back_on_menu_runtime_error(monkeypatch):
-    from hermes_cli.auth import _prompt_model_selection
+    from agentic_os_cli.auth import _prompt_model_selection
 
-    monkeypatch.setattr("hermes_cli.curses_ui.curses_radiolist", _raise_menu)
+    monkeypatch.setattr("agentic_os_cli.curses_ui.curses_radiolist", _raise_menu)
     responses = iter(["2"])
     monkeypatch.setattr("builtins.input", lambda _prompt="": next(responses))
 
@@ -26,11 +26,11 @@ def test_prompt_model_selection_falls_back_on_menu_runtime_error(monkeypatch):
 
 
 def test_prompt_model_selection_requires_expensive_confirmation(monkeypatch, capsys):
-    from hermes_cli.auth import _prompt_model_selection
+    from agentic_os_cli.auth import _prompt_model_selection
 
-    monkeypatch.setattr("hermes_cli.curses_ui.curses_radiolist", _raise_menu)
+    monkeypatch.setattr("agentic_os_cli.curses_ui.curses_radiolist", _raise_menu)
     monkeypatch.setattr(
-        "hermes_cli.model_cost_guard.expensive_model_warning",
+        "agentic_os_cli.model_cost_guard.expensive_model_warning",
         lambda *_args, **_kwargs: SimpleNamespace(message="EXPENSIVE MODEL WARNING"),
     )
     responses = iter(["1", "n"])
@@ -47,11 +47,11 @@ def test_prompt_model_selection_requires_expensive_confirmation(monkeypatch, cap
 
 
 def test_prompt_model_selection_allows_confirmed_expensive_model(monkeypatch):
-    from hermes_cli.auth import _prompt_model_selection
+    from agentic_os_cli.auth import _prompt_model_selection
 
-    monkeypatch.setattr("hermes_cli.curses_ui.curses_radiolist", _raise_menu)
+    monkeypatch.setattr("agentic_os_cli.curses_ui.curses_radiolist", _raise_menu)
     monkeypatch.setattr(
-        "hermes_cli.model_cost_guard.expensive_model_warning",
+        "agentic_os_cli.model_cost_guard.expensive_model_warning",
         lambda *_args, **_kwargs: SimpleNamespace(message="EXPENSIVE MODEL WARNING"),
     )
     responses = iter(["1", "y"])
@@ -66,9 +66,9 @@ def test_prompt_model_selection_allows_confirmed_expensive_model(monkeypatch):
 
 
 def test_prompt_reasoning_effort_falls_back_on_menu_runtime_error(monkeypatch):
-    from hermes_cli.main import _prompt_reasoning_effort_selection
+    from agentic_os_cli.main import _prompt_reasoning_effort_selection
 
-    monkeypatch.setattr("hermes_cli.curses_ui.curses_radiolist", _raise_menu)
+    monkeypatch.setattr("agentic_os_cli.curses_ui.curses_radiolist", _raise_menu)
     responses = iter(["3"])
     monkeypatch.setattr("builtins.input", lambda _prompt="": next(responses))
 
@@ -78,10 +78,10 @@ def test_prompt_reasoning_effort_falls_back_on_menu_runtime_error(monkeypatch):
 
 
 def test_remove_custom_provider_falls_back_on_menu_runtime_error(tmp_path, monkeypatch):
-    from hermes_cli.main import _remove_custom_provider
+    from agentic_os_cli.main import _remove_custom_provider
 
     monkeypatch.setenv("HERMES_HOME", str(tmp_path))
-    monkeypatch.setattr("hermes_cli.curses_ui.curses_radiolist", _raise_menu)
+    monkeypatch.setattr("agentic_os_cli.curses_ui.curses_radiolist", _raise_menu)
 
     cfg = load_config()
     cfg["custom_providers"] = [
@@ -102,12 +102,12 @@ def test_remove_custom_provider_falls_back_on_menu_runtime_error(tmp_path, monke
 
 
 def test_named_custom_provider_model_picker_falls_back_on_menu_runtime_error(tmp_path, monkeypatch):
-    from hermes_cli.main import _model_flow_named_custom
+    from agentic_os_cli.main import _model_flow_named_custom
 
     monkeypatch.setenv("HERMES_HOME", str(tmp_path))
-    monkeypatch.setattr("hermes_cli.curses_ui.curses_radiolist", _raise_menu)
-    monkeypatch.setattr("hermes_cli.models.fetch_api_models", lambda *args, **kwargs: ["model-a", "model-b"])
-    monkeypatch.setattr("hermes_cli.auth.deactivate_provider", lambda: None)
+    monkeypatch.setattr("agentic_os_cli.curses_ui.curses_radiolist", _raise_menu)
+    monkeypatch.setattr("agentic_os_cli.models.fetch_api_models", lambda *args, **kwargs: ["model-a", "model-b"])
+    monkeypatch.setattr("agentic_os_cli.auth.deactivate_provider", lambda: None)
 
     cfg = load_config()
     save_config(cfg)

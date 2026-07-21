@@ -26,7 +26,7 @@ from unittest.mock import patch
 
 class TestInstallCuaDriverUpgrade:
     def test_upgrade_on_unsupported_platform_is_silent_noop(self):
-        from hermes_cli import tools_config
+        from agentic_os_cli import tools_config
 
         with patch.object(tools_config, "_print_warning") as warn, \
              patch("platform.system", return_value="FreeBSD"):
@@ -34,7 +34,7 @@ class TestInstallCuaDriverUpgrade:
             warn.assert_not_called()
 
     def test_non_upgrade_on_unsupported_platform_warns(self):
-        from hermes_cli import tools_config
+        from agentic_os_cli import tools_config
 
         with patch.object(tools_config, "_print_warning") as warn, \
              patch("platform.system", return_value="FreeBSD"):
@@ -42,7 +42,7 @@ class TestInstallCuaDriverUpgrade:
             warn.assert_called()
 
     def test_upgrade_on_macos_with_binary_runs_installer(self):
-        from hermes_cli import tools_config
+        from agentic_os_cli import tools_config
 
         with patch("platform.system", return_value="Darwin"), \
              patch.object(tools_config.shutil, "which",
@@ -57,7 +57,7 @@ class TestInstallCuaDriverUpgrade:
             assert kwargs.get("verbose") is False
 
     def test_upgrade_on_macos_without_binary_runs_installer(self):
-        from hermes_cli import tools_config
+        from agentic_os_cli import tools_config
 
         with patch("platform.system", return_value="Darwin"), \
              patch.object(tools_config.shutil, "which",
@@ -68,7 +68,7 @@ class TestInstallCuaDriverUpgrade:
             runner.assert_called_once()
 
     def test_upgrade_on_macos_non_writable_applications_skips_refresh(self):
-        from hermes_cli import tools_config
+        from agentic_os_cli import tools_config
 
         with patch("platform.system", return_value="Darwin"), \
              patch.object(tools_config.shutil, "which",
@@ -86,7 +86,7 @@ class TestInstallCuaDriverUpgrade:
             )
 
     def test_fresh_install_on_macos_non_writable_applications_skips_install(self):
-        from hermes_cli import tools_config
+        from agentic_os_cli import tools_config
 
         with patch("platform.system", return_value="Darwin"), \
              patch.object(tools_config.shutil, "which",
@@ -103,7 +103,7 @@ class TestInstallCuaDriverUpgrade:
             )
 
     def test_non_upgrade_on_macos_with_binary_skips_install(self):
-        from hermes_cli import tools_config
+        from agentic_os_cli import tools_config
 
         with patch("platform.system", return_value="Darwin"), \
              patch.object(tools_config.shutil, "which",
@@ -115,7 +115,7 @@ class TestInstallCuaDriverUpgrade:
             runner.assert_not_called()
 
     def test_non_upgrade_on_macos_without_binary_runs_installer(self):
-        from hermes_cli import tools_config
+        from agentic_os_cli import tools_config
 
         with patch("platform.system", return_value="Darwin"), \
              patch.object(tools_config.shutil, "which",
@@ -148,7 +148,7 @@ class TestArchProbeRemoval:
     """
 
     def test_probe_function_is_gone(self):
-        from hermes_cli import tools_config
+        from agentic_os_cli import tools_config
         assert not hasattr(tools_config, "_check_cua_driver_asset_for_arch")
         assert not hasattr(tools_config, "_latest_cua_driver_rs_release")
 
@@ -158,7 +158,7 @@ class TestArchProbeRemoval:
         line. install.sh errors cleanly when the arch has no asset, so the
         probe was duplicate gatekeeping.
         """
-        from hermes_cli import tools_config
+        from agentic_os_cli import tools_config
 
         with patch("platform.system", return_value="Darwin"), \
              patch.object(tools_config.shutil, "which",
@@ -178,7 +178,7 @@ class TestArchProbeRemoval:
         short-circuits the network re-install via the binary's native
         ``check-update --json`` verb.
         """
-        from hermes_cli import tools_config
+        from agentic_os_cli import tools_config
 
         with patch("platform.system", return_value="Darwin"), \
              patch.object(tools_config.shutil, "which",
@@ -214,7 +214,7 @@ class TestStaleInstallLockClear:
         os.environ.pop("CUA_DRIVER_RS_HOME", None)
 
     def test_dead_holder_lock_is_cleared(self, tmp_path):
-        from hermes_cli import tools_config
+        from agentic_os_cli import tools_config
 
         dead_pid = 4194000  # above default pid_max on most systems
         lock = self._make_lock(tmp_path, pid=dead_pid)
@@ -224,14 +224,14 @@ class TestStaleInstallLockClear:
 
     def test_live_holder_lock_is_kept(self, tmp_path):
         import os
-        from hermes_cli import tools_config
+        from agentic_os_cli import tools_config
 
         lock = self._make_lock(tmp_path, pid=os.getpid())
         tools_config._clear_stale_cua_install_lock()
         assert lock.exists()
 
     def test_pidless_fresh_lock_is_kept(self, tmp_path):
-        from hermes_cli import tools_config
+        from agentic_os_cli import tools_config
 
         lock = self._make_lock(tmp_path, pid=None)
         tools_config._clear_stale_cua_install_lock()
@@ -240,7 +240,7 @@ class TestStaleInstallLockClear:
     def test_pidless_old_lock_is_cleared(self, tmp_path):
         import os
         import time
-        from hermes_cli import tools_config
+        from agentic_os_cli import tools_config
 
         lock = self._make_lock(tmp_path, pid=None)
         old = time.time() - (tools_config._CUA_LOCK_STALE_AFTER + 60)
@@ -252,7 +252,7 @@ class TestStaleInstallLockClear:
     def test_no_lock_is_noop(self, tmp_path):
         import os
         os.environ["CUA_DRIVER_RS_HOME"] = str(tmp_path / ".cua-driver")
-        from hermes_cli import tools_config
+        from agentic_os_cli import tools_config
         tools_config._clear_stale_cua_install_lock()  # must not raise
 
 
@@ -266,7 +266,7 @@ class TestInstallerTimeoutKillsProcessGroup:
         import subprocess
         import sys as _sys
         from unittest.mock import MagicMock
-        from hermes_cli import tools_config
+        from agentic_os_cli import tools_config
 
         killed = {}
 
@@ -299,7 +299,7 @@ class TestInstallerTimeoutKillsProcessGroup:
         assert fake_proc.communicate.call_count == 2
 
     def test_timeout_ceiling_exceeds_upstream_lock_window(self):
-        from hermes_cli import tools_config
+        from agentic_os_cli import tools_config
         # The upstream installer waits up to 600s before reclaiming a stale
         # lock; our ceiling must give that window room to complete.
         assert tools_config._CUA_INSTALLER_TIMEOUT > tools_config._CUA_LOCK_STALE_AFTER
@@ -307,7 +307,7 @@ class TestInstallerTimeoutKillsProcessGroup:
     def test_installer_runs_in_new_session_on_posix(self, tmp_path):
         import subprocess
         from unittest.mock import MagicMock
-        from hermes_cli import tools_config
+        from agentic_os_cli import tools_config
 
         captured = {}
         fake_proc = MagicMock()
@@ -339,7 +339,7 @@ class TestInstallerNoShell:
     def _run(self, download_rc=0):
         import subprocess
         from unittest.mock import MagicMock
-        from hermes_cli import tools_config
+        from agentic_os_cli import tools_config
 
         calls = []
         fake_proc = MagicMock()
@@ -394,7 +394,7 @@ class TestInstallerNoShell:
         captured = {}
         import subprocess
         from unittest.mock import MagicMock
-        from hermes_cli import tools_config
+        from agentic_os_cli import tools_config
 
         fake_proc = MagicMock()
         fake_proc.pid = 1

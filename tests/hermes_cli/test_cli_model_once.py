@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from types import SimpleNamespace
 
-from hermes_cli.model_switch import ModelSwitchResult
+from agentic_os_cli.model_switch import ModelSwitchResult
 
 
 class _FakeAgent:
@@ -45,7 +45,7 @@ def test_cli_model_once_records_restore_and_does_not_persist(monkeypatch):
     monkeypatch.setattr(cli_mod, "_cprint", lambda s, *a, **k: printed.append(str(s)))
     monkeypatch.setattr(cli_mod, "save_config_value", lambda *a, **k: (_ for _ in ()).throw(AssertionError("should not persist")))
     monkeypatch.setattr(
-        "hermes_cli.inventory.load_picker_context",
+        "agentic_os_cli.inventory.load_picker_context",
         lambda: SimpleNamespace(
             user_providers=None,
             custom_providers=None,
@@ -53,7 +53,7 @@ def test_cli_model_once_records_restore_and_does_not_persist(monkeypatch):
         ),
     )
     monkeypatch.setattr(
-        "hermes_cli.model_switch.switch_model",
+        "agentic_os_cli.model_switch.switch_model",
         lambda **_: ModelSwitchResult(
             success=True,
             new_model="claude-sonnet-4.6",
@@ -64,7 +64,7 @@ def test_cli_model_once_records_restore_and_does_not_persist(monkeypatch):
             provider_label="Anthropic",
         ),
     )
-    monkeypatch.setattr("hermes_cli.model_switch.resolve_display_context_length", lambda *a, **k: None)
+    monkeypatch.setattr("agentic_os_cli.model_switch.resolve_display_context_length", lambda *a, **k: None)
 
     cli_mod.HermesCLI._handle_model_switch(
         stub,

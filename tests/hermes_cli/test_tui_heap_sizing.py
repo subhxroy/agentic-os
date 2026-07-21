@@ -11,7 +11,7 @@ import builtins
 import io
 from unittest import mock
 
-import hermes_cli.main as m
+import agentic_os_cli.main as m
 
 V2 = "/sys/fs/cgroup/memory.max"
 V1 = "/sys/fs/cgroup/memory/memory.limit_in_bytes"

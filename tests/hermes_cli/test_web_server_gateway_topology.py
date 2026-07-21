@@ -7,8 +7,8 @@ gateway detection, and per-platform port resolution.
 
 import pytest
 
-from hermes_cli import web_server
-from hermes_cli.web_server import (
+from agentic_os_cli import web_server
+from agentic_os_cli.web_server import (
     _collect_profile_gateway_topology,
     _profile_platform_ports,
 )
@@ -91,7 +91,7 @@ def _patch_topology(monkeypatch, homes, running, runtimes):
     ``homes``: list of (name, Path); ``running``: set of profile names with a
     live gateway; ``runtimes``: {name: runtime dict}.
     """
-    import hermes_cli.profiles as profiles_mod
+    import agentic_os_cli.profiles as profiles_mod
     import gateway.status as status_mod
 
     monkeypatch.setattr(profiles_mod, "profiles_to_serve", lambda multiplex: homes)
@@ -159,7 +159,7 @@ class TestCollectProfileGatewayTopology:
         assert ports == {"default": {"webhook": 8644}, "coder": {"webhook": 9644}}
 
     def test_enumeration_failure_degrades_gracefully(self, monkeypatch):
-        import hermes_cli.profiles as profiles_mod
+        import agentic_os_cli.profiles as profiles_mod
 
         def _boom(multiplex):
             raise RuntimeError("no profiles root")
@@ -181,12 +181,12 @@ class TestStatusEndpointTopology:
         except ImportError:
             pytest.skip("fastapi/starlette not installed")
 
-        import hermes_state
-        from hermes_constants import get_hermes_home
-        from hermes_cli.web_server import app, _SESSION_HEADER_NAME, _SESSION_TOKEN
+        import agentic_os_state
+        from agentic_os_constants import get_hermes_home
+        from agentic_os_cli.web_server import app, _SESSION_HEADER_NAME, _SESSION_TOKEN
 
         monkeypatch.setattr(
-            hermes_state, "DEFAULT_DB_PATH", get_hermes_home() / "state.db"
+            agentic_os_state, "DEFAULT_DB_PATH", get_hermes_home() / "state.db"
         )
         self.client = TestClient(app)
         self.client.headers[_SESSION_HEADER_NAME] = _SESSION_TOKEN

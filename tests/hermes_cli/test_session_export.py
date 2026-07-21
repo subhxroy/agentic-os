@@ -1,8 +1,8 @@
 import json
 import sys
 
-from hermes_cli.session_export import export_record_count, render_sessions_export
-from hermes_cli.session_export_html import (
+from agentic_os_cli.session_export import export_record_count, render_sessions_export
+from agentic_os_cli.session_export_html import (
     _generate_messages_html,
     generate_multi_session_html_export,
 )
@@ -162,8 +162,8 @@ def test_export_record_count_switches_unit_for_prompt_only_exports():
 
 
 def test_sessions_export_cli_prompt_only_stdout(monkeypatch, capsys):
-    import hermes_cli.main as main_mod
-    import hermes_state
+    import agentic_os_cli.main as main_mod
+    import agentic_os_state
 
     captured = {}
 
@@ -179,7 +179,7 @@ def test_sessions_export_cli_prompt_only_stdout(monkeypatch, capsys):
         def close(self):
             captured["closed"] = True
 
-    monkeypatch.setattr(hermes_state, "SessionDB", lambda: FakeDB())
+    monkeypatch.setattr(agentic_os_state, "SessionDB", lambda: FakeDB())
     monkeypatch.setattr(
         sys,
         "argv",
@@ -202,8 +202,8 @@ def test_sessions_export_cli_prompt_only_stdout(monkeypatch, capsys):
 
 
 def test_sessions_export_cli_prompt_only_markdown_file(monkeypatch, capsys, tmp_path):
-    import hermes_cli.main as main_mod
-    import hermes_state
+    import agentic_os_cli.main as main_mod
+    import agentic_os_state
 
     class FakeDB:
         def resolve_session_id(self, _session_id):
@@ -216,7 +216,7 @@ def test_sessions_export_cli_prompt_only_markdown_file(monkeypatch, capsys, tmp_
             pass
 
     output_path = tmp_path / "prompts.md"
-    monkeypatch.setattr(hermes_state, "SessionDB", lambda: FakeDB())
+    monkeypatch.setattr(agentic_os_state, "SessionDB", lambda: FakeDB())
     monkeypatch.setattr(
         sys,
         "argv",
@@ -244,8 +244,8 @@ def test_sessions_export_cli_prompt_only_markdown_file(monkeypatch, capsys, tmp_
 
 
 def test_sessions_export_only_rejects_unsupported_format(monkeypatch, capsys):
-    import hermes_cli.main as main_mod
-    import hermes_state
+    import agentic_os_cli.main as main_mod
+    import agentic_os_state
 
     class FakeDB:
         def export_all(self, source=None):
@@ -254,7 +254,7 @@ def test_sessions_export_only_rejects_unsupported_format(monkeypatch, capsys):
         def close(self):
             pass
 
-    monkeypatch.setattr(hermes_state, "SessionDB", lambda: FakeDB())
+    monkeypatch.setattr(agentic_os_state, "SessionDB", lambda: FakeDB())
     monkeypatch.setattr(
         sys,
         "argv",

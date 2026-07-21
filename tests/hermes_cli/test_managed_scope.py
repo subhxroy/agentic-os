@@ -1,4 +1,4 @@
-"""Unit tests for hermes_cli.managed_scope (resolver + loaders + key helpers)."""
+"""Unit tests for agentic_os_cli.managed_scope (resolver + loaders + key helpers)."""
 import textwrap
 
 import pytest
@@ -8,7 +8,7 @@ import pytest
 
 
 def test_get_managed_dir_env_override(tmp_path, monkeypatch):
-    from hermes_cli import managed_scope
+    from agentic_os_cli import managed_scope
 
     managed = tmp_path / "managed"
     managed.mkdir()
@@ -17,7 +17,7 @@ def test_get_managed_dir_env_override(tmp_path, monkeypatch):
 
 
 def test_get_managed_dir_absent_override_returns_none(tmp_path, monkeypatch):
-    from hermes_cli import managed_scope
+    from agentic_os_cli import managed_scope
 
     monkeypatch.setenv("HERMES_MANAGED_DIR", str(tmp_path / "nope"))
     # Override points at a non-existent dir → no managed scope.
@@ -25,7 +25,7 @@ def test_get_managed_dir_absent_override_returns_none(tmp_path, monkeypatch):
 
 
 def test_get_managed_dir_empty_override_falls_through(tmp_path, monkeypatch):
-    from hermes_cli import managed_scope
+    from agentic_os_cli import managed_scope
 
     monkeypatch.setenv("HERMES_MANAGED_DIR", "   ")  # whitespace = unset
     # Under pytest the /etc/hermes default is ignored, so this is None; the
@@ -36,7 +36,7 @@ def test_get_managed_dir_empty_override_falls_through(tmp_path, monkeypatch):
 
 def test_get_managed_dir_default_ignored_under_pytest(monkeypatch):
     """The system default must be inert in the test suite (isolation guard)."""
-    from hermes_cli import managed_scope
+    from agentic_os_cli import managed_scope
 
     monkeypatch.delenv("HERMES_MANAGED_DIR", raising=False)
     assert managed_scope.get_managed_dir() is None
@@ -46,7 +46,7 @@ def test_get_managed_dir_default_ignored_under_pytest(monkeypatch):
 
 
 def _write_managed(tmp_path, monkeypatch, *, config=None, env=None):
-    from hermes_cli import managed_scope
+    from agentic_os_cli import managed_scope
 
     managed = tmp_path / "managed"
     managed.mkdir(exist_ok=True)
@@ -60,7 +60,7 @@ def _write_managed(tmp_path, monkeypatch, *, config=None, env=None):
 
 
 def test_load_managed_config(tmp_path, monkeypatch):
-    from hermes_cli import managed_scope
+    from agentic_os_cli import managed_scope
 
     _write_managed(
         tmp_path,
@@ -74,7 +74,7 @@ def test_load_managed_config(tmp_path, monkeypatch):
 
 
 def test_load_managed_config_absent_is_empty(tmp_path, monkeypatch):
-    from hermes_cli import managed_scope
+    from agentic_os_cli import managed_scope
 
     monkeypatch.setenv("HERMES_MANAGED_DIR", str(tmp_path / "nope"))
     managed_scope.invalidate_managed_cache()
@@ -82,14 +82,14 @@ def test_load_managed_config_absent_is_empty(tmp_path, monkeypatch):
 
 
 def test_load_managed_config_malformed_fails_open(tmp_path, monkeypatch):
-    from hermes_cli import managed_scope
+    from agentic_os_cli import managed_scope
 
     _write_managed(tmp_path, monkeypatch, config="model: : : not yaml :")
     assert managed_scope.load_managed_config() == {}  # fail-open, no raise
 
 
 def test_managed_config_keys_are_dotted_leaves(tmp_path, monkeypatch):
-    from hermes_cli import managed_scope
+    from agentic_os_cli import managed_scope
 
     _write_managed(
         tmp_path,
@@ -108,7 +108,7 @@ def test_managed_config_keys_are_dotted_leaves(tmp_path, monkeypatch):
 
 
 def test_is_key_managed(tmp_path, monkeypatch):
-    from hermes_cli import managed_scope
+    from agentic_os_cli import managed_scope
 
     _write_managed(tmp_path, monkeypatch, config="model:\n  default: m\n")
     assert managed_scope.is_key_managed("model.default") is True
@@ -116,7 +116,7 @@ def test_is_key_managed(tmp_path, monkeypatch):
 
 
 def test_load_managed_env_and_is_env_managed(tmp_path, monkeypatch):
-    from hermes_cli import managed_scope
+    from agentic_os_cli import managed_scope
 
     _write_managed(
         tmp_path, monkeypatch, env="OPENAI_API_BASE=https://org.example/v1\n"
@@ -129,7 +129,7 @@ def test_load_managed_env_and_is_env_managed(tmp_path, monkeypatch):
 
 
 def test_editing_managed_config_invalidates_cache(tmp_path, monkeypatch):
-    from hermes_cli import managed_scope
+    from agentic_os_cli import managed_scope
 
     managed = _write_managed(tmp_path, monkeypatch, config="model:\n  default: v1\n")
     assert managed_scope.load_managed_config()["model"]["default"] == "v1"

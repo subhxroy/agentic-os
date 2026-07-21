@@ -69,7 +69,7 @@ def test_tui_gateway_git_probe_hides_git_windows(monkeypatch):
 
 
 def test_tui_gateway_fuzzy_file_listing_hides_git_windows(monkeypatch):
-    from hermes_cli import _subprocess_compat
+    from agentic_os_cli import _subprocess_compat
     from tui_gateway import server
 
     captured = []
@@ -154,7 +154,7 @@ def test_context_reference_git_and_rg_hide_windows(monkeypatch):
 
 
 def test_copilot_gh_cli_probe_hides_gh_windows(monkeypatch):
-    from hermes_cli import copilot_auth
+    from agentic_os_cli import copilot_auth
 
     captured = []
 
@@ -173,8 +173,8 @@ def test_copilot_gh_cli_probe_hides_gh_windows(monkeypatch):
 
 
 def test_gateway_pid_scan_hides_wmic_and_powershell_windows(monkeypatch):
-    from hermes_cli import gateway
-    from hermes_cli import _subprocess_compat
+    from agentic_os_cli import gateway
+    from agentic_os_cli import _subprocess_compat
 
     captured = []
 
@@ -212,8 +212,8 @@ def test_gateway_pid_scan_hides_wmic_and_powershell_windows(monkeypatch):
 
 
 def test_stale_dashboard_windows_scan_hides_wmic(monkeypatch):
-    from hermes_cli import main
-    from hermes_cli import _subprocess_compat
+    from agentic_os_cli import main
+    from agentic_os_cli import _subprocess_compat
 
     captured = []
 
@@ -232,7 +232,7 @@ def test_stale_dashboard_windows_scan_hides_wmic(monkeypatch):
 
 def test_gateway_force_kill_hides_taskkill_window(monkeypatch):
     from gateway import status
-    from hermes_cli import _subprocess_compat
+    from agentic_os_cli import _subprocess_compat
 
     captured = []
 
@@ -391,7 +391,7 @@ def test_tui_slash_worker_hides_python_window(monkeypatch):
     monkeypatch.setattr(server.subprocess, "Popen", fake_popen)
     monkeypatch.setattr(server.threading, "Thread", lambda *a, **k: SimpleNamespace(start=lambda: None))
 
-    import hermes_cli._subprocess_compat as subprocess_compat
+    import agentic_os_cli._subprocess_compat as subprocess_compat
 
     monkeypatch.setattr(subprocess_compat, "windows_hide_flags", lambda: _CREATE_NO_WINDOW)
 

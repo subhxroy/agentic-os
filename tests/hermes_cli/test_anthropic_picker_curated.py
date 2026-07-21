@@ -13,7 +13,7 @@ Bug — newly-routed curated aliases vanished on a native Anthropic setup
 
 from unittest.mock import patch
 
-from hermes_cli import models as M
+from agentic_os_cli import models as M
 
 
 def test_anthropic_curated_alias_survives_when_live_omits_it():

@@ -36,7 +36,7 @@ def _fake_rows():
 
 
 def test_usage_lists_all_provenances(monkeypatch, capsys):
-    import hermes_cli.curator as curator_cli
+    import agentic_os_cli.curator as curator_cli
     import tools.skill_usage as skill_usage
 
     monkeypatch.setattr(skill_usage, "usage_report", _fake_rows)
@@ -51,7 +51,7 @@ def test_usage_lists_all_provenances(monkeypatch, capsys):
 
 
 def test_usage_sort_activity_orders_most_used_first(monkeypatch, capsys):
-    import hermes_cli.curator as curator_cli
+    import agentic_os_cli.curator as curator_cli
     import tools.skill_usage as skill_usage
 
     monkeypatch.setattr(skill_usage, "usage_report", _fake_rows)
@@ -63,7 +63,7 @@ def test_usage_sort_activity_orders_most_used_first(monkeypatch, capsys):
 
 
 def test_usage_provenance_filter(monkeypatch, capsys):
-    import hermes_cli.curator as curator_cli
+    import agentic_os_cli.curator as curator_cli
     import tools.skill_usage as skill_usage
 
     monkeypatch.setattr(skill_usage, "usage_report", _fake_rows)
@@ -76,7 +76,7 @@ def test_usage_provenance_filter(monkeypatch, capsys):
 
 
 def test_usage_json_output(monkeypatch, capsys):
-    import hermes_cli.curator as curator_cli
+    import agentic_os_cli.curator as curator_cli
     import tools.skill_usage as skill_usage
 
     monkeypatch.setattr(skill_usage, "usage_report", _fake_rows)
@@ -89,7 +89,7 @@ def test_usage_json_output(monkeypatch, capsys):
 
 
 def test_usage_empty(monkeypatch, capsys):
-    import hermes_cli.curator as curator_cli
+    import agentic_os_cli.curator as curator_cli
     import tools.skill_usage as skill_usage
 
     monkeypatch.setattr(skill_usage, "usage_report", lambda: [])
@@ -101,7 +101,7 @@ def test_usage_empty(monkeypatch, capsys):
 def test_usage_command_is_registered():
     """The `usage` subcommand must be wired into the curator argparse tree."""
     import argparse
-    import hermes_cli.curator as curator_cli
+    import agentic_os_cli.curator as curator_cli
 
     parser = argparse.ArgumentParser(prog="hermes curator")
     curator_cli.register_cli(parser)

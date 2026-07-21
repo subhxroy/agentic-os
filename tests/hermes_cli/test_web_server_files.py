@@ -5,7 +5,7 @@ from types import SimpleNamespace
 import pytest
 from starlette.testclient import TestClient
 
-from hermes_cli import web_server
+from agentic_os_cli import web_server
 
 
 def _client_with_app_state():

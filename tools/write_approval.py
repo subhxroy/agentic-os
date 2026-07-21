@@ -26,7 +26,7 @@ This module lets the user gate those writes per-subsystem with a boolean
 The size asymmetry between memory and skills is real and unavoidable: a memory
 entry can be reviewed inline in a chat bubble; a 100 KB SKILL.md cannot. So
 the gate stages BOTH to disk, but review affordances differ by subsystem
-(see ``hermes_cli`` slash handlers): memory shows full content, skills show
+(see ``agentic_os_cli`` slash handlers): memory shows full content, skills show
 metadata + a one-line gist + a ``diff`` escape hatch (CLI/dashboard/file).
 
 Staging is mandatory for background-origin writes (a daemon thread cannot
@@ -50,7 +50,7 @@ import uuid
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
-from hermes_constants import get_hermes_home
+from agentic_os_constants import get_hermes_home
 
 logger = logging.getLogger(__name__)
 
@@ -81,7 +81,7 @@ def write_approval_enabled(subsystem: str) -> bool:
     if subsystem not in _SUBSYSTEMS:
         return False
     try:
-        from hermes_cli.config import load_config, cfg_get
+        from agentic_os_cli.config import load_config, cfg_get
         cfg = load_config()
         raw = cfg_get(cfg, subsystem, CONFIG_KEY, default=False)
     except Exception:

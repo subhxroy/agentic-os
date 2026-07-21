@@ -28,7 +28,7 @@ def _enable_traces(tmp_path, monkeypatch):
     hermes_home.mkdir()
     monkeypatch.setenv("HERMES_HOME", str(hermes_home))
 
-    # save_moa_turn reads config via hermes_cli.config.load_config; stub it to
+    # save_moa_turn reads config via agentic_os_cli.config.load_config; stub it to
     # return traces-on so the test doesn't depend on a real config file.
     import agent.moa_trace as moa_trace
 
@@ -40,7 +40,7 @@ def _enable_traces(tmp_path, monkeypatch):
     )
     # load_config is imported lazily inside _traces_enabled_and_dir; patch the
     # source module attribute it imports from as well.
-    import hermes_cli.config as cfg
+    import agentic_os_cli.config as cfg
 
     monkeypatch.setattr(
         cfg, "load_config", lambda: {"moa": {"save_traces": True}}, raising=False

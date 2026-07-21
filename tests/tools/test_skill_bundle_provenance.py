@@ -218,7 +218,7 @@ def test_lock_file_persists_scan_provenance(tmp_path):
 
 
 def test_real_temp_repo_and_home_install_e2e(served_repo, monkeypatch, tmp_path):
-    from hermes_cli.skills_hub import do_install
+    from agentic_os_cli.skills_hub import do_install
     import tools.skills_hub as hub
 
     _repo, url = served_repo

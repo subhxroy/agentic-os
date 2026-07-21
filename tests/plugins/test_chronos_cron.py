@@ -66,7 +66,7 @@ def test_is_available_true_with_config_and_token(temp_home, monkeypatch):
     from plugins.cron_providers.chronos import ChronosCronScheduler
 
     monkeypatch.setattr(mod, "_cfg", lambda *k, default="": "https://x" )
-    monkeypatch.setattr("hermes_cli.auth.get_provider_auth_state",
+    monkeypatch.setattr("agentic_os_cli.auth.get_provider_auth_state",
                         lambda pid: {"access_token": "tok"})
     assert ChronosCronScheduler().is_available() is True
 
@@ -77,7 +77,7 @@ def test_is_available_makes_no_network(temp_home, monkeypatch):
     from plugins.cron_providers.chronos import ChronosCronScheduler
 
     monkeypatch.setattr(mod, "_cfg", lambda *k, default="": "https://x")
-    monkeypatch.setattr("hermes_cli.auth.get_provider_auth_state",
+    monkeypatch.setattr("agentic_os_cli.auth.get_provider_auth_state",
                         lambda pid: {"access_token": "tok"})
     p = ChronosCronScheduler()
 

@@ -1,4 +1,4 @@
-"""Tests for the hermes_cli.nous_billing HTTP client's response handling.
+"""Tests for the agentic_os_cli.nous_billing HTTP client's response handling.
 
 Focus: a 2xx response with a NON-JSON body (e.g. a reverse-proxy / SPA fallback
 HTML page when a route isn't actually serving the billing API) must surface as a
@@ -15,7 +15,7 @@ from contextlib import contextmanager
 
 import pytest
 
-from hermes_cli import nous_billing as nb
+from agentic_os_cli import nous_billing as nb
 
 
 class _FakeResp(io.BytesIO):

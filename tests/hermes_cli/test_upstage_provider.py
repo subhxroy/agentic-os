@@ -2,7 +2,7 @@
 
 Regression guard for the bug where `hermes model` saved `provider: upstage`
 correctly but, on re-entry, showed a different provider as active. Root cause:
-`hermes_cli/providers.py` (the resolver behind `resolve_provider_full`) had no
+`agentic_os_cli/providers.py` (the resolver behind `resolve_provider_full`) had no
 `upstage` overlay, so `resolve_provider_full("upstage")` returned None, the
 config provider was discarded, and resolution fell through to env auto-detect.
 """
@@ -23,7 +23,7 @@ class TestUpstageResolver:
     """The providers.py resolver must recognise upstage (the actual bug)."""
 
     def test_resolve_provider_full_recognizes_upstage(self):
-        from hermes_cli.providers import resolve_provider_full
+        from agentic_os_cli.providers import resolve_provider_full
 
         pdef = resolve_provider_full("upstage", {}, [])
         assert pdef is not None, (
@@ -35,14 +35,14 @@ class TestUpstageResolver:
         assert "UPSTAGE_API_KEY" in pdef.api_key_env_vars
 
     def test_get_provider_returns_upstage_def(self):
-        from hermes_cli.providers import get_provider
+        from agentic_os_cli.providers import get_provider
 
         pdef = get_provider("upstage")
         assert pdef is not None and pdef.id == "upstage"
         assert pdef.transport == "openai_chat"
 
     def test_solar_alias_normalizes_to_upstage(self):
-        from hermes_cli.providers import normalize_provider, resolve_provider_full
+        from agentic_os_cli.providers import normalize_provider, resolve_provider_full
 
         assert normalize_provider("solar") == "upstage"
         pdef = resolve_provider_full("solar", {}, [])
@@ -51,7 +51,7 @@ class TestUpstageResolver:
 
 class TestUpstageOverlay:
     def test_overlay_exists(self):
-        from hermes_cli.providers import HERMES_OVERLAYS
+        from agentic_os_cli.providers import HERMES_OVERLAYS
 
         assert "upstage" in HERMES_OVERLAYS
         overlay = HERMES_OVERLAYS["upstage"]
@@ -62,7 +62,7 @@ class TestUpstageOverlay:
         assert not overlay.is_aggregator
 
     def test_provider_label(self):
-        from hermes_cli.providers import get_label
+        from agentic_os_cli.providers import get_label
 
         assert get_label("upstage") == "Upstage Solar"
 
@@ -75,7 +75,7 @@ class TestUpstageEnvCatalog:
     """
 
     def test_optional_env_vars_include_upstage(self):
-        from hermes_cli.config import OPTIONAL_ENV_VARS
+        from agentic_os_cli.config import OPTIONAL_ENV_VARS
 
         assert "UPSTAGE_API_KEY" in OPTIONAL_ENV_VARS
         assert OPTIONAL_ENV_VARS["UPSTAGE_API_KEY"]["category"] == "provider"
@@ -90,14 +90,14 @@ class TestUpstageEnvCatalog:
 class TestUpstageConfigProviderWins:
     """End-to-end: an explicit config provider must beat env auto-detect.
 
-    Mirrors the display logic in `hermes_cli/main.py` (cmd_model): read
+    Mirrors the display logic in `agentic_os_cli/main.py` (cmd_model): read
     `model.provider`, resolve it, and only fall back to auto-detect when that
     resolution fails. With a stray DEEPSEEK_API_KEY present (the user's case),
     upstage must still win because it is configured explicitly.
     """
 
     def test_explicit_upstage_beats_stray_deepseek_key(self, monkeypatch):
-        from hermes_cli.providers import resolve_provider_full
+        from agentic_os_cli.providers import resolve_provider_full
 
         monkeypatch.setenv("DEEPSEEK_API_KEY", "junk")
         monkeypatch.setenv("UPSTAGE_API_KEY", "up-test-key")

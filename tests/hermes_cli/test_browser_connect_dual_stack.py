@@ -15,7 +15,7 @@ import threading
 
 import pytest
 
-from hermes_cli.browser_connect import (
+from agentic_os_cli.browser_connect import (
     DEFAULT_BROWSER_CDP_PORT,
     discover_local_cdp_url,
     find_free_debug_port,
@@ -78,7 +78,7 @@ class TestDiscoverLocalCdpUrl:
     def test_finds_ipv6_only_endpoint(self, monkeypatch):
         """When only [::1] speaks CDP (IPv4 side squatted), discovery
         returns the IPv6 URL instead of giving up."""
-        import hermes_cli.browser_connect as bc
+        import agentic_os_cli.browser_connect as bc
 
         def _ready(url: str, timeout: float = 1.0) -> bool:
             return "[::1]" in url
@@ -87,7 +87,7 @@ class TestDiscoverLocalCdpUrl:
         assert bc.discover_local_cdp_url(9222) == "http://[::1]:9222"
 
     def test_prefers_ipv4_when_both_answer(self, monkeypatch):
-        import hermes_cli.browser_connect as bc
+        import agentic_os_cli.browser_connect as bc
 
         monkeypatch.setattr(bc, "is_browser_debug_ready", lambda *_a, **_k: True)
         assert bc.discover_local_cdp_url(9222) == "http://127.0.0.1:9222"

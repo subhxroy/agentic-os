@@ -17,7 +17,7 @@ import pytest
 
 @pytest.fixture()
 def main_mod():
-    import hermes_cli.main as main
+    import agentic_os_cli.main as main
     return main
 
 
@@ -37,23 +37,23 @@ def _args(**over):
 
 def _wire_common(main_mod, monkeypatch):
     monkeypatch.setattr(
-        "hermes_cli.profiles.get_active_profile_name", lambda: "default"
+        "agentic_os_cli.profiles.get_active_profile_name", lambda: "default"
     )
     monkeypatch.setattr(main_mod, "_sync_bundled_skills_quietly", lambda: None)
     monkeypatch.setitem(sys.modules, "fastapi", types.SimpleNamespace())
     monkeypatch.setitem(sys.modules, "uvicorn", types.SimpleNamespace())
     monkeypatch.setitem(
         sys.modules,
-        "hermes_logging",
+        "agentic_os_logging",
         types.SimpleNamespace(setup_logging=lambda **_k: None),
     )
     monkeypatch.setitem(
         sys.modules,
-        "hermes_cli.plugins",
+        "agentic_os_cli.plugins",
         types.SimpleNamespace(discover_plugins=lambda: None),
     )
     monkeypatch.setattr(
-        "hermes_cli.mcp_startup.start_background_mcp_discovery",
+        "agentic_os_cli.mcp_startup.start_background_mcp_discovery",
         lambda **_k: None,
     )
 
@@ -69,7 +69,7 @@ def test_env_dist_without_index_exits(main_mod, monkeypatch, tmp_path, capsys):
     started = []
     monkeypatch.setitem(
         sys.modules,
-        "hermes_cli.web_server",
+        "agentic_os_cli.web_server",
         types.SimpleNamespace(start_server=lambda **k: started.append(k)),
     )
     builds = []
@@ -99,7 +99,7 @@ def test_env_dist_with_index_starts_server(main_mod, monkeypatch, tmp_path):
     started = []
     monkeypatch.setitem(
         sys.modules,
-        "hermes_cli.web_server",
+        "agentic_os_cli.web_server",
         types.SimpleNamespace(start_server=lambda **k: started.append(k)),
     )
     builds = []
@@ -126,7 +126,7 @@ def test_env_dist_tilde_expanded_for_web_server(main_mod, monkeypatch, tmp_path)
 
     monkeypatch.setitem(
         sys.modules,
-        "hermes_cli.web_server",
+        "agentic_os_cli.web_server",
         types.SimpleNamespace(start_server=lambda **k: None),
     )
 

@@ -4,8 +4,8 @@ from types import SimpleNamespace
 
 import pytest
 
-from hermes_cli import auth as auth_mod
-from hermes_cli.auth import AuthError, resolve_spotify_runtime_credentials
+from agentic_os_cli import auth as auth_mod
+from agentic_os_cli.auth import AuthError, resolve_spotify_runtime_credentials
 
 
 def test_store_provider_state_can_skip_active_provider() -> None:
@@ -81,7 +81,7 @@ def test_auth_spotify_status_command_reports_logged_in(capsys, monkeypatch: pyte
         },
     )
 
-    from hermes_cli.auth_commands import auth_status_command
+    from agentic_os_cli.auth_commands import auth_status_command
 
     auth_status_command(SimpleNamespace(provider="spotify"))
     output = capsys.readouterr().out

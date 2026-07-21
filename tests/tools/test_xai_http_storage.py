@@ -7,7 +7,7 @@ import yaml
 
 def _invalidate_config_cache():
     try:
-        import hermes_cli.config as cfg_mod
+        import agentic_os_cli.config as cfg_mod
 
         if hasattr(cfg_mod, "_invalidate_load_config_cache"):
             cfg_mod._invalidate_load_config_cache()

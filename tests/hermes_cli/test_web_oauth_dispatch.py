@@ -1,4 +1,4 @@
-"""Regression tests for the OAuth dispatcher in hermes_cli.web_server.
+"""Regression tests for the OAuth dispatcher in agentic_os_cli.web_server.
 
 Bug history (2026-05-09): the `_OAUTH_PROVIDER_CATALOG` had two entries
 flagged ``flow: "pkce"`` — anthropic and minimax-oauth — and the
@@ -28,7 +28,7 @@ import httpx
 import pytest
 from fastapi.testclient import TestClient
 
-from hermes_cli.web_server import _SESSION_TOKEN, app
+from agentic_os_cli.web_server import _SESSION_TOKEN, app
 
 client = TestClient(app)
 HEADERS = {"X-Hermes-Session-Token": _SESSION_TOKEN}
@@ -78,13 +78,13 @@ def test_minimax_login_does_not_launch_anthropic_flow():
         "state": "stub-state",
     }
     with patch(
-        "hermes_cli.auth._minimax_request_user_code",
+        "agentic_os_cli.auth._minimax_request_user_code",
         return_value=fake_user_code_resp,
     ), patch(
-        "hermes_cli.auth._minimax_pkce_pair",
+        "agentic_os_cli.auth._minimax_pkce_pair",
         return_value=("verifier-stub", "challenge-stub", "stub-state"),
     ), patch(
-        "hermes_cli.web_server._minimax_poller",
+        "agentic_os_cli.web_server._minimax_poller",
         return_value=None,
     ):
         resp = client.post(
@@ -108,8 +108,8 @@ def test_minimax_login_does_not_launch_anthropic_flow():
 
 
 def test_nous_dashboard_device_flow_ignores_legacy_scope_override(monkeypatch):
-    from hermes_cli import auth as auth_mod
-    from hermes_cli import web_server as ws
+    from agentic_os_cli import auth as auth_mod
+    from agentic_os_cli import web_server as ws
 
     requested_scopes = []
 
@@ -135,8 +135,8 @@ def test_nous_dashboard_device_flow_ignores_legacy_scope_override(monkeypatch):
 
 
 def test_oauth_provider_status_uses_profile_query(tmp_path, monkeypatch):
-    from hermes_cli import web_server as ws
-    from hermes_constants import get_hermes_home
+    from agentic_os_cli import web_server as ws
+    from agentic_os_constants import get_hermes_home
 
     profile_home = _make_profile_home(tmp_path, monkeypatch)
     observed_homes = []
@@ -162,7 +162,7 @@ def test_oauth_provider_status_uses_profile_query(tmp_path, monkeypatch):
 
 
 def test_oauth_start_stores_profile_for_background_completion(tmp_path, monkeypatch):
-    from hermes_cli import web_server as ws
+    from agentic_os_cli import web_server as ws
 
     _make_profile_home(tmp_path, monkeypatch)
     fake_user_code_resp = {
@@ -173,13 +173,13 @@ def test_oauth_start_stores_profile_for_background_completion(tmp_path, monkeypa
         "state": "stub-state",
     }
     with patch(
-        "hermes_cli.auth._minimax_request_user_code",
+        "agentic_os_cli.auth._minimax_request_user_code",
         return_value=fake_user_code_resp,
     ), patch(
-        "hermes_cli.auth._minimax_pkce_pair",
+        "agentic_os_cli.auth._minimax_pkce_pair",
         return_value=("verifier-stub", "challenge-stub", "stub-state"),
     ), patch(
-        "hermes_cli.web_server._minimax_poller",
+        "agentic_os_cli.web_server._minimax_poller",
         return_value=None,
     ):
         resp = client.post(
@@ -196,8 +196,8 @@ def test_oauth_start_stores_profile_for_background_completion(tmp_path, monkeypa
 
 
 def test_nous_dashboard_device_flow_does_not_retry_legacy_scope_on_invoke_refusal(monkeypatch):
-    from hermes_cli import auth as auth_mod
-    from hermes_cli import web_server as ws
+    from agentic_os_cli import auth as auth_mod
+    from agentic_os_cli import web_server as ws
 
     requested_scopes = []
 
@@ -215,9 +215,9 @@ def test_nous_dashboard_device_flow_does_not_retry_legacy_scope_on_invoke_refusa
 
 
 def test_codex_dashboard_worker_persists_runtime_provider(tmp_path, monkeypatch):
-    from hermes_cli import web_server as ws
-    from hermes_cli.auth import get_active_provider
-    from hermes_cli.runtime_provider import resolve_runtime_provider
+    from agentic_os_cli import web_server as ws
+    from agentic_os_cli.auth import get_active_provider
+    from agentic_os_cli.runtime_provider import resolve_runtime_provider
 
     access_token = "h.eyJleHAiOjk5OTk5OTk5OTl9.s"
 
@@ -276,9 +276,9 @@ def test_codex_dashboard_worker_persists_runtime_provider(tmp_path, monkeypatch)
 
 
 def test_codex_dashboard_worker_persists_inside_session_profile(tmp_path, monkeypatch):
-    from hermes_cli import auth as auth_mod
-    from hermes_cli import web_server as ws
-    from hermes_constants import get_hermes_home
+    from agentic_os_cli import auth as auth_mod
+    from agentic_os_cli import web_server as ws
+    from agentic_os_constants import get_hermes_home
 
     profile_home = _make_profile_home(tmp_path, monkeypatch)
 
@@ -341,7 +341,7 @@ def test_codex_dashboard_worker_persists_inside_session_profile(tmp_path, monkey
 
 
 def test_codex_dashboard_start_rewords_device_authorization_error(monkeypatch):
-    from hermes_cli import web_server as ws
+    from agentic_os_cli import web_server as ws
 
     before_sessions = set(ws._oauth_sessions)
 
@@ -391,8 +391,8 @@ def test_codex_dashboard_start_rewords_device_authorization_error(monkeypatch):
 
 
 def test_nous_dashboard_poller_preserves_effective_scope_when_token_omits_scope(monkeypatch):
-    from hermes_cli import auth as auth_mod
-    from hermes_cli import web_server as ws
+    from agentic_os_cli import auth as auth_mod
+    from agentic_os_cli import web_server as ws
 
     session_id = "nous-effective-scope-test"
     ws._oauth_sessions[session_id] = {
@@ -442,7 +442,7 @@ def test_nous_dashboard_poller_preserves_effective_scope_when_token_omits_scope(
 
 def test_minimax_dashboard_poller_accepts_absolute_ms_expired_in():
     """Dashboard MiniMax completion must accept unix-ms token expiry values."""
-    from hermes_cli import web_server as ws
+    from agentic_os_cli import web_server as ws
 
     now = datetime.now(timezone.utc)
     abs_ms = int((now.timestamp() + 1800) * 1000)
@@ -466,7 +466,7 @@ def test_minimax_dashboard_poller_accepts_absolute_ms_expired_in():
 
     try:
         with patch(
-            "hermes_cli.auth._minimax_poll_token",
+            "agentic_os_cli.auth._minimax_poll_token",
             return_value={
                 "status": "success",
                 "access_token": "access",
@@ -475,7 +475,7 @@ def test_minimax_dashboard_poller_accepts_absolute_ms_expired_in():
                 "token_type": "Bearer",
             },
         ), patch(
-            "hermes_cli.auth._minimax_save_auth_state",
+            "agentic_os_cli.auth._minimax_save_auth_state",
             side_effect=lambda state: captured_state.update(state),
         ):
             ws._minimax_poller(session_id)
@@ -496,7 +496,7 @@ def test_anthropic_pkce_branch_still_works():
         "expires_in": 600,
     }
     with patch(
-        "hermes_cli.web_server._start_anthropic_pkce",
+        "agentic_os_cli.web_server._start_anthropic_pkce",
         return_value=fake_anthropic_response,
     ):
         resp = client.post(
@@ -526,7 +526,7 @@ def test_accounts_offers_every_oauth_provider_from_catalog():
     the desktop Accounts tab in lockstep with the CLI picker — no provider the
     CLI can sign into may be missing from the GUI.
     """
-    from hermes_cli.provider_catalog import provider_catalog
+    from agentic_os_cli.provider_catalog import provider_catalog
 
     resp = client.get("/api/providers/oauth", headers=HEADERS)
     assert resp.status_code == 200, resp.text
@@ -577,7 +577,7 @@ def test_oauth_catalog_marks_external_providers_not_disconnectable():
 
 def test_external_oauth_disconnect_rejected_before_auth_mutation(monkeypatch):
     """DELETE must not pretend to remove credentials owned by another CLI."""
-    from hermes_cli import auth as auth_mod
+    from agentic_os_cli import auth as auth_mod
 
     def fail_clear_provider_auth(provider_id=None):
         raise AssertionError("external providers must not reach clear_provider_auth")
@@ -609,8 +609,8 @@ def test_env_sourced_oauth_status_is_not_disconnectable(monkeypatch):
 
 def test_xai_oauth_device_code_start_returns_user_code(monkeypatch):
     """Start MUST hand back xAI's verification URL and user code."""
-    from hermes_cli import auth as auth_mod
-    from hermes_cli import web_server as ws
+    from agentic_os_cli import auth as auth_mod
+    from agentic_os_cli import web_server as ws
 
     monkeypatch.setattr(
         auth_mod,
@@ -657,8 +657,8 @@ def test_xai_dashboard_poller_seeds_single_entry_and_clears_suppression(tmp_path
     ``device_code`` suppression left by a prior ``hermes auth remove
     xai-oauth``.
     """
-    from hermes_cli import auth as auth_mod
-    from hermes_cli import web_server as ws
+    from agentic_os_cli import auth as auth_mod
+    from agentic_os_cli import web_server as ws
     from agent.credential_pool import load_pool
 
     monkeypatch.setenv("HERMES_HOME", str(tmp_path))
@@ -728,7 +728,7 @@ def test_unknown_pkce_provider_rejected_cleanly():
     branch, then hit "Unsupported flow" — proving the bug class is
     structurally prevented.
     """
-    from hermes_cli import web_server as ws
+    from agentic_os_cli import web_server as ws
 
     # Inject a hypothetical catalog entry that's pkce-flagged but isn't
     # anthropic. This shape mirrors what would happen if a developer
@@ -764,10 +764,10 @@ def test_status_falls_through_to_generic_dispatcher_for_catalog_only_provider():
     Providers appended to the Accounts tab from the unified provider_catalog()
     carry status_fn=None and may have no explicit branch in
     _resolve_provider_status. Before the fallthrough they rendered permanently
-    logged-out; now they dispatch to hermes_cli.auth.get_auth_status (the
+    logged-out; now they dispatch to agentic_os_cli.auth.get_auth_status (the
     canonical slug dispatcher) so membership AND status both auto-extend.
     """
-    import hermes_cli.web_server as ws
+    import agentic_os_cli.web_server as ws
 
     fake_status = {
         "logged_in": True,
@@ -777,7 +777,7 @@ def test_status_falls_through_to_generic_dispatcher_for_catalog_only_provider():
         "expires_at": "2026-12-01T00:00:00Z",
         "has_refresh_token": True,
     }
-    with patch("hermes_cli.auth.get_auth_status", return_value=fake_status):
+    with patch("agentic_os_cli.auth.get_auth_status", return_value=fake_status):
         out = ws._resolve_provider_status("some-future-oauth", None)
 
     assert out["logged_in"] is True
@@ -791,10 +791,10 @@ def test_status_falls_through_to_generic_dispatcher_for_catalog_only_provider():
 
 def test_status_hardcoded_branch_wins_over_generic_fallback():
     """An existing hardcoded branch (nous) is unaffected by the fallthrough."""
-    import hermes_cli.web_server as ws
+    import agentic_os_cli.web_server as ws
 
     with patch(
-        "hermes_cli.auth.get_nous_auth_status",
+        "agentic_os_cli.auth.get_nous_auth_status",
         return_value={"logged_in": True, "portal_base_url": "https://portal.test"},
     ):
         out = ws._resolve_provider_status("nous", None)
@@ -804,8 +804,8 @@ def test_status_hardcoded_branch_wins_over_generic_fallback():
 
 def test_status_unknown_provider_degrades_to_logged_out():
     """A provider the generic dispatcher can't resolve stays logged-out cleanly."""
-    import hermes_cli.web_server as ws
+    import agentic_os_cli.web_server as ws
 
-    with patch("hermes_cli.auth.get_auth_status", return_value={"logged_in": False}):
+    with patch("agentic_os_cli.auth.get_auth_status", return_value={"logged_in": False}):
         out = ws._resolve_provider_status("totally-unknown", None)
     assert out["logged_in"] is False

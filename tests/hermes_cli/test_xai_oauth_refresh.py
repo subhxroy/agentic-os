@@ -4,7 +4,7 @@ import base64
 import json
 import time
 
-from hermes_cli import auth
+from agentic_os_cli import auth
 
 
 def _jwt_with_exp(exp: int) -> str:

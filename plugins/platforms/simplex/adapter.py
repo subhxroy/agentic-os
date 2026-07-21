@@ -1223,7 +1223,7 @@ def interactive_setup() -> None:
 
     Prompts for the WebSocket URL and the optional allowlist / groups /
     auto-accept / home channel. Writes to ``~/.hermes/.env`` via
-    ``hermes_cli.config``.
+    ``agentic_os_cli.config``.
     """
     print()
     print("SimpleX Chat setup")
@@ -1234,10 +1234,10 @@ def interactive_setup() -> None:
     print()
 
     try:
-        from hermes_cli.config import get_env_value, save_env_value
+        from agentic_os_cli.config import get_env_value, save_env_value
     except ImportError:
         print(
-            "hermes_cli.config not available; set SIMPLEX_* vars manually in "
+            "agentic_os_cli.config not available; set SIMPLEX_* vars manually in "
             "~/.hermes/.env"
         )
         return
@@ -1247,7 +1247,7 @@ def interactive_setup() -> None:
         suffix = " [keep current]" if existing else ""
         try:
             if secret:
-                from hermes_cli.secret_prompt import masked_secret_prompt
+                from agentic_os_cli.secret_prompt import masked_secret_prompt
                 value = masked_secret_prompt(f"{prompt}{suffix}: ")
             else:
                 value = input(f"{prompt}{suffix}: ").strip()

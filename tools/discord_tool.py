@@ -174,7 +174,7 @@ _capability_bg_lock = threading.Lock()
 def _capability_disk_cache_path() -> "Path":
     from pathlib import Path
 
-    from hermes_constants import get_hermes_home
+    from agentic_os_constants import get_hermes_home
 
     return get_hermes_home() / "cache" / "discord_capabilities.json"
 
@@ -711,7 +711,7 @@ def _load_allowed_actions_config() -> Optional[List[str]]:
     Unknown action names are dropped with a log warning.
     """
     try:
-        from hermes_cli.config import load_config
+        from agentic_os_cli.config import load_config
         cfg = load_config()
     except Exception as exc:
         logger.debug("discord: could not load config (%s); allowing all actions.", exc)

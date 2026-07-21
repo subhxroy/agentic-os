@@ -15,7 +15,7 @@ import pytest
 class TestSlotRuntimeApiMode:
     """_slot_runtime should include api_mode when resolve_runtime_provider returns it."""
 
-    @patch("hermes_cli.runtime_provider.resolve_runtime_provider")
+    @patch("agentic_os_cli.runtime_provider.resolve_runtime_provider")
     def test_slot_runtime_includes_api_mode(self, mock_resolve):
         """api_mode from resolve_runtime_provider is forwarded in output dict."""
         mock_resolve.return_value = {
@@ -32,7 +32,7 @@ class TestSlotRuntimeApiMode:
         assert result["base_url"] == "https://api.githubcopilot.com"
         assert result["api_key"] == "test-key"
 
-    @patch("hermes_cli.runtime_provider.resolve_runtime_provider")
+    @patch("agentic_os_cli.runtime_provider.resolve_runtime_provider")
     def test_slot_runtime_omits_api_mode_when_absent(self, mock_resolve):
         """When resolve_runtime_provider does not return api_mode, output omits it."""
         mock_resolve.return_value = {
@@ -46,7 +46,7 @@ class TestSlotRuntimeApiMode:
         result = _slot_runtime({"provider": "openai", "model": "gpt-4o"})
         assert "api_mode" not in result
 
-    @patch("hermes_cli.runtime_provider.resolve_runtime_provider")
+    @patch("agentic_os_cli.runtime_provider.resolve_runtime_provider")
     def test_slot_runtime_omits_api_mode_when_empty(self, mock_resolve):
         """Empty string api_mode is treated as absent."""
         mock_resolve.return_value = {

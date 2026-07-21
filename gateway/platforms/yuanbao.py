@@ -103,7 +103,7 @@ logger = logging.getLogger(__name__)
 # Version / platform constants (used in AUTH_BIND and sign-token headers)
 # ---------------------------------------------------------------------------
 try:
-    from hermes_cli import __version__ as _HERMES_VERSION
+    from agentic_os_cli import __version__ as _HERMES_VERSION
 except ImportError:
     _HERMES_VERSION = "0.0.0"
 
@@ -1659,8 +1659,8 @@ class AutoSetHomeMiddleware(InboundMiddleware):
                 adapter._auto_sethome_done = True  # DM seen — no further upgrades needed
             if _should_set:
                 try:
-                    from hermes_constants import get_hermes_home
-                    from hermes_cli.config import atomic_config_write
+                    from agentic_os_constants import get_hermes_home
+                    from agentic_os_cli.config import atomic_config_write
                     import yaml
 
                     _home = get_hermes_home()

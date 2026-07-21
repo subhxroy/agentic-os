@@ -95,7 +95,7 @@ class TestDesktopHintEntry:
     def test_desktop_hint_does_not_inherit_tui_cron_local_only_block(self):
         """The desktop chat surface's cron delivery semantics differ from
         the standalone TUI — desktop runs its own cron ticker in-process
-        (hermes_cli/web_server.py under HERMES_DESKTOP=1). We deliberately
+        (agentic_os_cli/web_server.py under HERMES_DESKTOP=1). We deliberately
         do NOT parrot the tui "LOCAL-ONLY … no live-delivery channel" block
         into the desktop hint, since partially-correct cron guidance is
         exactly the bug class we are fixing. Cron guidance for desktop is

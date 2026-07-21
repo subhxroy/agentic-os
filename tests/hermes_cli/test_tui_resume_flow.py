@@ -29,7 +29,7 @@ def _raise_exit(rc):
 
 @pytest.fixture
 def main_mod(monkeypatch):
-    import hermes_cli.main as mod
+    import agentic_os_cli.main as mod
 
     monkeypatch.setattr(mod, "_has_any_provider_configured", lambda: True)
     # Reset the idempotency guard so each test starts fresh.
@@ -227,12 +227,12 @@ def test_cmd_chat_tui_forwards_chat_flags(monkeypatch, main_mod):
 def test_main_top_level_tui_accepts_toolsets(monkeypatch, main_mod):
     captured = {}
 
-    import hermes_cli.config as config_mod
+    import agentic_os_cli.config as config_mod
 
     monkeypatch.setattr(sys, "argv", ["hermes", "--tui", "--toolsets", "web,terminal"])
     monkeypatch.setitem(
         sys.modules,
-        "hermes_cli.plugins",
+        "agentic_os_cli.plugins",
         types.SimpleNamespace(discover_plugins=lambda: None),
     )
     monkeypatch.setitem(
@@ -378,7 +378,7 @@ def test_termux_fast_cli_launch_oneshot_uses_light_parser(monkeypatch, main_mod)
     )
     monkeypatch.setitem(
         sys.modules,
-        "hermes_cli.oneshot",
+        "agentic_os_cli.oneshot",
         types.SimpleNamespace(
             run_oneshot=lambda prompt, **kwargs: captured.update(
                 {"prompt": prompt, **kwargs}
@@ -597,7 +597,7 @@ def test_read_git_revision_fingerprint_unresolved_ref_is_stable(tmp_path, main_m
 def test_main_top_level_oneshot_accepts_toolsets(monkeypatch, main_mod):
     captured = {}
 
-    import hermes_cli.config as config_mod
+    import agentic_os_cli.config as config_mod
 
     monkeypatch.setattr(
         sys,
@@ -614,7 +614,7 @@ def test_main_top_level_oneshot_accepts_toolsets(monkeypatch, main_mod):
     )
     monkeypatch.setitem(
         sys.modules,
-        "hermes_cli.plugins",
+        "agentic_os_cli.plugins",
         types.SimpleNamespace(discover_plugins=lambda: None),
     )
     monkeypatch.setitem(
@@ -633,7 +633,7 @@ def test_main_top_level_oneshot_accepts_toolsets(monkeypatch, main_mod):
     )
     monkeypatch.setitem(
         sys.modules,
-        "hermes_cli.oneshot",
+        "agentic_os_cli.oneshot",
         types.SimpleNamespace(
             run_oneshot=lambda prompt, **kwargs: captured.update(
                 {"prompt": prompt, **kwargs}
@@ -802,7 +802,7 @@ def test_run_and_exit_oneshot_routes_system_exit_to_hard_exit(monkeypatch, main_
 
     monkeypatch.setitem(
         sys.modules,
-        "hermes_cli.oneshot",
+        "agentic_os_cli.oneshot",
         types.SimpleNamespace(run_oneshot=fake_run_oneshot),
     )
     monkeypatch.setattr(main_mod, "_cleanup_oneshot_runtime", lambda: None)
@@ -821,7 +821,7 @@ def test_run_and_exit_oneshot_routes_bare_system_exit_to_zero(monkeypatch, main_
 
     monkeypatch.setitem(
         sys.modules,
-        "hermes_cli.oneshot",
+        "agentic_os_cli.oneshot",
         types.SimpleNamespace(run_oneshot=fake_run_oneshot),
     )
     monkeypatch.setattr(main_mod, "_cleanup_oneshot_runtime", lambda: None)
@@ -842,7 +842,7 @@ def test_run_and_exit_oneshot_prints_system_exit_message(
 
     monkeypatch.setitem(
         sys.modules,
-        "hermes_cli.oneshot",
+        "agentic_os_cli.oneshot",
         types.SimpleNamespace(run_oneshot=fake_run_oneshot),
     )
     monkeypatch.setattr(main_mod, "_cleanup_oneshot_runtime", lambda: None)
@@ -869,7 +869,7 @@ def test_run_and_exit_oneshot_cleans_global_runtime_before_hard_exit(
 
     monkeypatch.setitem(
         sys.modules,
-        "hermes_cli.oneshot",
+        "agentic_os_cli.oneshot",
         types.SimpleNamespace(run_oneshot=lambda *_args, **_kwargs: events.append("run") or 0),
     )
     monkeypatch.setitem(
@@ -916,7 +916,7 @@ def test_run_and_exit_oneshot_still_exits_when_global_cleanup_raises(
 
     monkeypatch.setitem(
         sys.modules,
-        "hermes_cli.oneshot",
+        "agentic_os_cli.oneshot",
         types.SimpleNamespace(run_oneshot=lambda *_args, **_kwargs: 0),
     )
     monkeypatch.setitem(
@@ -961,7 +961,7 @@ def test_run_and_exit_oneshot_hard_exits_when_cleanup_is_interrupted(
 
     monkeypatch.setitem(
         sys.modules,
-        "hermes_cli.oneshot",
+        "agentic_os_cli.oneshot",
         types.SimpleNamespace(run_oneshot=lambda *_args, **_kwargs: 0),
     )
     monkeypatch.setattr(
@@ -985,7 +985,7 @@ def test_run_and_exit_oneshot_routes_keyboard_interrupt_to_130(
 
     monkeypatch.setitem(
         sys.modules,
-        "hermes_cli.oneshot",
+        "agentic_os_cli.oneshot",
         types.SimpleNamespace(run_oneshot=fake_run_oneshot),
     )
     monkeypatch.setattr(main_mod, "_cleanup_oneshot_runtime", lambda: None)
@@ -1012,7 +1012,7 @@ def test_run_and_exit_oneshot_hard_exits_on_unexpected_exception(
 
     monkeypatch.setitem(
         sys.modules,
-        "hermes_cli.oneshot",
+        "agentic_os_cli.oneshot",
         types.SimpleNamespace(run_oneshot=fake_run_oneshot),
     )
     monkeypatch.setattr(
@@ -1040,7 +1040,7 @@ def test_run_and_exit_oneshot_hard_exits_when_oneshot_import_fails(
     real_import = builtins.__import__
 
     def fake_import(name, globals=None, locals=None, fromlist=(), level=0):
-        if name == "hermes_cli.oneshot" and "run_oneshot" in (fromlist or ()):
+        if name == "agentic_os_cli.oneshot" and "run_oneshot" in (fromlist or ()):
             raise RuntimeError("oneshot import blew up")
         return real_import(name, globals, locals, fromlist, level)
 
@@ -1060,8 +1060,8 @@ def test_run_and_exit_oneshot_hard_exits_when_oneshot_import_fails(
 def test_oneshot_subprocess_exits_without_teardown_abort():
     program = textwrap.dedent(
         """
-        import hermes_cli.oneshot as oneshot
-        from hermes_cli.main import _exit_after_oneshot
+        import agentic_os_cli.oneshot as oneshot
+        from agentic_os_cli.main import _exit_after_oneshot
 
         oneshot._run_agent = lambda *args, **kwargs: ("ok", {"final_response": "ok"})
         _exit_after_oneshot(oneshot.run_oneshot("hello"))
@@ -1089,7 +1089,7 @@ def test_exit_after_oneshot_bypasses_late_atexit_abort():
         import atexit
         import os
         import sys
-        from hermes_cli.main import _exit_after_oneshot
+        from agentic_os_cli.main import _exit_after_oneshot
 
         atexit.register(os.abort)
         sys.stdout.write("done\\n")
@@ -1115,7 +1115,7 @@ def test_run_and_exit_oneshot_passes_through_nonzero_return(monkeypatch, main_mo
     exits = []
     monkeypatch.setitem(
         sys.modules,
-        "hermes_cli.oneshot",
+        "agentic_os_cli.oneshot",
         types.SimpleNamespace(run_oneshot=lambda *a, **k: 2),
     )
     monkeypatch.setattr(main_mod, "_cleanup_oneshot_runtime", lambda: None)
@@ -1137,7 +1137,7 @@ def test_main_oneshot_path_bypasses_late_atexit_abort():
         import sys
         import types
 
-        import hermes_cli.main as main_mod
+        import agentic_os_cli.main as main_mod
 
         sys.argv = ["hermes", "-z", "hello"]
         main_mod._prepare_agent_startup = lambda args: None
@@ -1146,7 +1146,7 @@ def test_main_oneshot_path_bypasses_late_atexit_abort():
             print("ok")
             return 0
 
-        sys.modules["hermes_cli.oneshot"] = types.SimpleNamespace(
+        sys.modules["agentic_os_cli.oneshot"] = types.SimpleNamespace(
             run_oneshot=_fake_run_oneshot
         )
         atexit.register(os.abort)
@@ -1168,7 +1168,7 @@ def test_main_oneshot_path_bypasses_late_atexit_abort():
 
 
 def test_oneshot_run_agent_closes_agent_after_chat(monkeypatch):
-    import hermes_cli.oneshot as oneshot_mod
+    import agentic_os_cli.oneshot as oneshot_mod
 
     closed = []
     shutdown_messages = []
@@ -1194,11 +1194,11 @@ def test_oneshot_run_agent_closes_agent_after_chat(monkeypatch):
         sys.modules, "run_agent", types.SimpleNamespace(AIAgent=FakeAgent)
     )
     monkeypatch.setattr(
-        "hermes_cli.config.load_config",
+        "agentic_os_cli.config.load_config",
         lambda: {"model": {"default": "gpt-test", "provider": "openai"}},
     )
     monkeypatch.setattr(
-        "hermes_cli.runtime_provider.resolve_runtime_provider",
+        "agentic_os_cli.runtime_provider.resolve_runtime_provider",
         lambda **_kwargs: {
             "api_key": "key",
             "base_url": "https://example.invalid",
@@ -1220,7 +1220,7 @@ def test_oneshot_run_agent_closes_agent_after_chat(monkeypatch):
 
 
 def test_oneshot_run_agent_closes_agent_when_chat_raises(monkeypatch):
-    import hermes_cli.oneshot as oneshot_mod
+    import agentic_os_cli.oneshot as oneshot_mod
 
     closed = []
     shutdowns = []
@@ -1244,11 +1244,11 @@ def test_oneshot_run_agent_closes_agent_when_chat_raises(monkeypatch):
         sys.modules, "run_agent", types.SimpleNamespace(AIAgent=FakeAgent)
     )
     monkeypatch.setattr(
-        "hermes_cli.config.load_config",
+        "agentic_os_cli.config.load_config",
         lambda: {"model": {"default": "gpt-test", "provider": "openai"}},
     )
     monkeypatch.setattr(
-        "hermes_cli.runtime_provider.resolve_runtime_provider",
+        "agentic_os_cli.runtime_provider.resolve_runtime_provider",
         lambda **_kwargs: {
             "api_key": "key",
             "base_url": "https://example.invalid",
@@ -1271,7 +1271,7 @@ def test_oneshot_run_agent_closes_session_db(monkeypatch):
     # The one-shot exit path hard-exits via os._exit and skips finalizers, so
     # the recall SQLite store it opens must be closed explicitly (checkpointing
     # its WAL) rather than left to interpreter teardown.
-    import hermes_cli.oneshot as oneshot_mod
+    import agentic_os_cli.oneshot as oneshot_mod
 
     db_closed = []
 
@@ -1299,11 +1299,11 @@ def test_oneshot_run_agent_closes_session_db(monkeypatch):
         sys.modules, "run_agent", types.SimpleNamespace(AIAgent=FakeAgent)
     )
     monkeypatch.setattr(
-        "hermes_cli.config.load_config",
+        "agentic_os_cli.config.load_config",
         lambda: {"model": {"default": "gpt-test", "provider": "openai"}},
     )
     monkeypatch.setattr(
-        "hermes_cli.runtime_provider.resolve_runtime_provider",
+        "agentic_os_cli.runtime_provider.resolve_runtime_provider",
         lambda **_kwargs: {
             "api_key": "key",
             "base_url": "https://example.invalid",
@@ -1330,7 +1330,7 @@ def test_oneshot_run_agent_closes_session_db_when_agent_init_raises(monkeypatch)
     # raises (bad provider/config/model), the store must still be closed — the
     # one-shot exit hard-exits via os._exit and skips finalizers, so an
     # un-closed connection would leave a stale WAL behind.
-    import hermes_cli.oneshot as oneshot_mod
+    import agentic_os_cli.oneshot as oneshot_mod
 
     db_closed = []
 
@@ -1346,11 +1346,11 @@ def test_oneshot_run_agent_closes_session_db_when_agent_init_raises(monkeypatch)
         sys.modules, "run_agent", types.SimpleNamespace(AIAgent=FakeAgent)
     )
     monkeypatch.setattr(
-        "hermes_cli.config.load_config",
+        "agentic_os_cli.config.load_config",
         lambda: {"model": {"default": "gpt-test", "provider": "openai"}},
     )
     monkeypatch.setattr(
-        "hermes_cli.runtime_provider.resolve_runtime_provider",
+        "agentic_os_cli.runtime_provider.resolve_runtime_provider",
         lambda **_kwargs: {
             "api_key": "key",
             "base_url": "https://example.invalid",
@@ -1374,14 +1374,14 @@ def test_oneshot_run_agent_closes_session_db_when_agent_init_raises(monkeypatch)
 def _stub_plugin_discovery(monkeypatch):
     monkeypatch.setitem(
         sys.modules,
-        "hermes_cli.plugins",
+        "agentic_os_cli.plugins",
         types.SimpleNamespace(discover_plugins=lambda: None),
     )
 
 
 def test_oneshot_rejects_invalid_only_toolsets(monkeypatch, capsys):
     _stub_plugin_discovery(monkeypatch)
-    from hermes_cli.oneshot import run_oneshot
+    from agentic_os_cli.oneshot import run_oneshot
 
     assert run_oneshot("hello", toolsets="nope") == 2
     err = capsys.readouterr().err
@@ -1391,7 +1391,7 @@ def test_oneshot_rejects_invalid_only_toolsets(monkeypatch, capsys):
 
 def test_oneshot_fails_closed_on_empty_final_response(monkeypatch, capsys):
     _stub_plugin_discovery(monkeypatch)
-    import hermes_cli.oneshot as oneshot_mod
+    import agentic_os_cli.oneshot as oneshot_mod
 
     monkeypatch.setattr(oneshot_mod, "_run_agent", lambda *_args, **_kwargs: ("", {}))
 
@@ -1403,7 +1403,7 @@ def test_oneshot_fails_closed_on_empty_final_response(monkeypatch, capsys):
 
 def test_oneshot_prints_nonempty_final_response(monkeypatch, capsys):
     _stub_plugin_discovery(monkeypatch)
-    import hermes_cli.oneshot as oneshot_mod
+    import agentic_os_cli.oneshot as oneshot_mod
 
     monkeypatch.setattr(oneshot_mod, "_run_agent", lambda *_args, **_kwargs: ("done", {}))
 
@@ -1415,7 +1415,7 @@ def test_oneshot_prints_nonempty_final_response(monkeypatch, capsys):
 
 def test_oneshot_fails_closed_on_agent_exception(monkeypatch, capsys):
     _stub_plugin_discovery(monkeypatch)
-    import hermes_cli.oneshot as oneshot_mod
+    import agentic_os_cli.oneshot as oneshot_mod
 
     def _boom(*_args, **_kwargs):
         raise OSError("not a TTY")
@@ -1430,20 +1430,20 @@ def test_oneshot_fails_closed_on_agent_exception(monkeypatch, capsys):
 
 
 def test_oneshot_exit_code_when_failed_without_response(monkeypatch):
-    from hermes_cli.oneshot import run_oneshot
+    from agentic_os_cli.oneshot import run_oneshot
 
     monkeypatch.setattr(
-        "hermes_cli.oneshot._run_agent",
+        "agentic_os_cli.oneshot._run_agent",
         lambda *_a, **_k: ("", {"failed": True, "partial": False}),
     )
     assert run_oneshot("hi") == 2
 
 
 def test_oneshot_exit_code_zero_when_failed_with_error_text(monkeypatch, capsys):
-    from hermes_cli.oneshot import run_oneshot
+    from agentic_os_cli.oneshot import run_oneshot
 
     monkeypatch.setattr(
-        "hermes_cli.oneshot._run_agent",
+        "agentic_os_cli.oneshot._run_agent",
         lambda *_a, **_k: (
             "API call failed after 3 retries: HTTP 404: model not found",
             {"failed": True, "partial": False},
@@ -1455,7 +1455,7 @@ def test_oneshot_exit_code_zero_when_failed_with_error_text(monkeypatch, capsys)
 
 def test_oneshot_reraises_keyboard_interrupt(monkeypatch):
     _stub_plugin_discovery(monkeypatch)
-    import hermes_cli.oneshot as oneshot_mod
+    import agentic_os_cli.oneshot as oneshot_mod
     import pytest as _pytest
 
     def _interrupt(*_args, **_kwargs):
@@ -1469,7 +1469,7 @@ def test_oneshot_reraises_keyboard_interrupt(monkeypatch):
 
 def test_oneshot_filters_invalid_toolsets_before_redirect(monkeypatch, capsys):
     _stub_plugin_discovery(monkeypatch)
-    from hermes_cli.oneshot import _validate_explicit_toolsets
+    from agentic_os_cli.oneshot import _validate_explicit_toolsets
 
     valid, error = _validate_explicit_toolsets("web,nope")
 
@@ -1479,7 +1479,7 @@ def test_oneshot_filters_invalid_toolsets_before_redirect(monkeypatch, capsys):
 
 
 def test_oneshot_all_toolsets_means_all_not_configured_cli():
-    from hermes_cli.oneshot import _validate_explicit_toolsets
+    from agentic_os_cli.oneshot import _validate_explicit_toolsets
 
     valid, error = _validate_explicit_toolsets("all")
 
@@ -1489,7 +1489,7 @@ def test_oneshot_all_toolsets_means_all_not_configured_cli():
 
 def test_oneshot_all_toolsets_warns_about_ignored_extra_entries(monkeypatch, capsys):
     _stub_plugin_discovery(monkeypatch)
-    from hermes_cli.oneshot import _validate_explicit_toolsets
+    from agentic_os_cli.oneshot import _validate_explicit_toolsets
 
     valid, error = _validate_explicit_toolsets("all,nope")
 
@@ -1501,7 +1501,7 @@ def test_oneshot_all_toolsets_warns_about_ignored_extra_entries(monkeypatch, cap
 def test_oneshot_accepts_plugin_toolset_after_discovery(monkeypatch):
     import toolsets
 
-    from hermes_cli.oneshot import _validate_explicit_toolsets
+    from agentic_os_cli.oneshot import _validate_explicit_toolsets
 
     discovered = {"ready": False}
     original_validate = toolsets.validate_toolset
@@ -1512,7 +1512,7 @@ def test_oneshot_accepts_plugin_toolset_after_discovery(monkeypatch):
     monkeypatch.setattr(toolsets, "validate_toolset", fake_validate)
     monkeypatch.setitem(
         sys.modules,
-        "hermes_cli.plugins",
+        "agentic_os_cli.plugins",
         types.SimpleNamespace(
             discover_plugins=lambda: discovered.update({"ready": True})
         ),
@@ -1526,9 +1526,9 @@ def test_oneshot_accepts_plugin_toolset_after_discovery(monkeypatch):
 
 def test_oneshot_rejects_disabled_mcp_toolset(monkeypatch, capsys):
     _stub_plugin_discovery(monkeypatch)
-    import hermes_cli.config as config_mod
+    import agentic_os_cli.config as config_mod
 
-    from hermes_cli.oneshot import _validate_explicit_toolsets
+    from agentic_os_cli.oneshot import _validate_explicit_toolsets
 
     monkeypatch.setattr(
         config_mod,
@@ -1547,9 +1547,9 @@ def test_oneshot_rejects_disabled_mcp_toolset(monkeypatch, capsys):
 
 def test_oneshot_distinguishes_disabled_mcp_from_unknown(monkeypatch, capsys):
     _stub_plugin_discovery(monkeypatch)
-    import hermes_cli.config as config_mod
+    import agentic_os_cli.config as config_mod
 
-    from hermes_cli.oneshot import _validate_explicit_toolsets
+    from agentic_os_cli.oneshot import _validate_explicit_toolsets
 
     monkeypatch.setattr(
         config_mod,
@@ -1569,7 +1569,7 @@ def test_oneshot_distinguishes_disabled_mcp_from_unknown(monkeypatch, capsys):
 
 def test_oneshot_wires_session_db_for_recall(monkeypatch):
     """hermes -z bypasses HermesCLI, but recall still needs SessionDB."""
-    from hermes_cli.oneshot import _run_agent
+    from agentic_os_cli.oneshot import _run_agent
 
     captured = {}
     sentinel_db = object()
@@ -1596,22 +1596,22 @@ def test_oneshot_wires_session_db_for_recall(monkeypatch):
         return module
 
     monkeypatch.setitem(sys.modules, "run_agent", mod("run_agent", AIAgent=FakeAgent))
-    monkeypatch.setitem(sys.modules, "hermes_state", mod("hermes_state", SessionDB=FakeSessionDB))
+    monkeypatch.setitem(sys.modules, "agentic_os_state", mod("agentic_os_state", SessionDB=FakeSessionDB))
     monkeypatch.setitem(
         sys.modules,
-        "hermes_cli.config",
-        mod("hermes_cli.config", load_config=lambda: {"model": {"default": "m"}}),
+        "agentic_os_cli.config",
+        mod("agentic_os_cli.config", load_config=lambda: {"model": {"default": "m"}}),
     )
     monkeypatch.setitem(
         sys.modules,
-        "hermes_cli.models",
-        mod("hermes_cli.models", detect_provider_for_model=lambda *_args, **_kwargs: None),
+        "agentic_os_cli.models",
+        mod("agentic_os_cli.models", detect_provider_for_model=lambda *_args, **_kwargs: None),
     )
     monkeypatch.setitem(
         sys.modules,
-        "hermes_cli.runtime_provider",
+        "agentic_os_cli.runtime_provider",
         mod(
-            "hermes_cli.runtime_provider",
+            "agentic_os_cli.runtime_provider",
             resolve_runtime_provider=lambda **_kwargs: {
                 "api_key": "k",
                 "base_url": "u",
@@ -1623,8 +1623,8 @@ def test_oneshot_wires_session_db_for_recall(monkeypatch):
     )
     monkeypatch.setitem(
         sys.modules,
-        "hermes_cli.tools_config",
-        mod("hermes_cli.tools_config", _get_platform_tools=lambda *_args, **_kwargs: {"session_search"}),
+        "agentic_os_cli.tools_config",
+        mod("agentic_os_cli.tools_config", _get_platform_tools=lambda *_args, **_kwargs: {"session_search"}),
     )
 
     text, result = _run_agent("recall this")
@@ -1765,7 +1765,7 @@ def test_launch_tui_exit_code_42_relaunches_update(monkeypatch, main_mod):
     )
     monkeypatch.setattr(main_mod.subprocess, "call", lambda *args, **kwargs: 42)
 
-    with patch("hermes_cli.relaunch.relaunch") as mock_relaunch:
+    with patch("agentic_os_cli.relaunch.relaunch") as mock_relaunch:
         with pytest.raises(SystemExit) as exc:
             main_mod._launch_tui()
 
@@ -1844,7 +1844,7 @@ def test_make_tui_argv_dev_prebuilds_hermes_ink(monkeypatch, main_mod, tmp_path)
 
 
 def test_print_tui_exit_summary_includes_resume_and_token_totals(monkeypatch, capsys):
-    import hermes_cli.main as main_mod
+    import agentic_os_cli.main as main_mod
 
     class _FakeDB:
         def get_session(self, session_id):
@@ -1865,7 +1865,7 @@ def test_print_tui_exit_summary_includes_resume_and_token_totals(monkeypatch, ca
             return None
 
     monkeypatch.setitem(
-        sys.modules, "hermes_state", types.SimpleNamespace(SessionDB=lambda: _FakeDB())
+        sys.modules, "agentic_os_state", types.SimpleNamespace(SessionDB=lambda: _FakeDB())
     )
 
     main_mod._print_tui_exit_summary("20260409_000001_abc123")
@@ -1880,7 +1880,7 @@ def test_print_tui_exit_summary_includes_resume_and_token_totals(monkeypatch, ca
 def test_print_tui_exit_summary_prefers_actual_active_session_file(
     monkeypatch, capsys, tmp_path
 ):
-    import hermes_cli.main as main_mod
+    import agentic_os_cli.main as main_mod
 
     seen = []
 
@@ -1905,7 +1905,7 @@ def test_print_tui_exit_summary_prefers_actual_active_session_file(
     active = tmp_path / "active.json"
     active.write_text('{"session_id":"actual_session"}', encoding="utf-8")
     monkeypatch.setitem(
-        sys.modules, "hermes_state", types.SimpleNamespace(SessionDB=lambda: _FakeDB())
+        sys.modules, "agentic_os_state", types.SimpleNamespace(SessionDB=lambda: _FakeDB())
     )
 
     main_mod._print_tui_exit_summary("startup_resume", str(active))

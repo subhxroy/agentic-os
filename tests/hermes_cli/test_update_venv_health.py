@@ -23,7 +23,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from hermes_cli import main as cli_main
+from agentic_os_cli import main as cli_main
 
 
 # ---------------------------------------------------------------------------
@@ -151,7 +151,7 @@ def test_detect_venv_python_finds_backend(_winp, tmp_path):
     fake_psutil = types.SimpleNamespace(
         process_iter=lambda attrs: iter(
             [
-                _proc(101, venv_py, "python.exe", ["python.exe", "-m", "hermes_cli.main", "serve"]),
+                _proc(101, venv_py, "python.exe", ["python.exe", "-m", "agentic_os_cli.main", "serve"]),
                 _proc(102, other_py, "python.exe", ["python.exe", "somescript.py"]),
             ]
         ),
@@ -200,8 +200,8 @@ def test_detect_venv_python_no_psutil_is_empty(_winp, tmp_path):
 
 def test_format_venv_holders_message_flags_desktop_backend(tmp_path):
     matches = [
-        (101, "python.exe", "python.exe -m hermes_cli.main serve --host 127.0.0.1"),
-        (102, "pythonw.exe", "pythonw.exe -m hermes_cli.main gateway run"),
+        (101, "python.exe", "python.exe -m agentic_os_cli.main serve --host 127.0.0.1"),
+        (102, "pythonw.exe", "pythonw.exe -m agentic_os_cli.main gateway run"),
     ]
     msg = cli_main._format_venv_python_holders_message(matches)
     assert "101" in msg
@@ -226,12 +226,12 @@ def test_detect_venv_python_catches_outside_venv_trampoline(_winp, tmp_path):
             [
                 # cmdline references the venv path directly
                 _proc(201, base_py, "python.exe", [base_py, venv_path, "-m", "x"]),
-                # `-m hermes_cli.main serve` with the install root as cwd
+                # `-m agentic_os_cli.main serve` with the install root as cwd
                 _proc(
                     202,
                     base_py,
                     "python.exe",
-                    [base_py, "-m", "hermes_cli.main", "serve"],
+                    [base_py, "-m", "agentic_os_cli.main", "serve"],
                     cwd=str(tmp_path),
                 ),
                 # unrelated base-interpreter python → NOT a holder
@@ -249,8 +249,8 @@ def test_detect_venv_python_catches_outside_venv_trampoline(_winp, tmp_path):
 
 
 @patch.object(cli_main, "_is_windows", return_value=True)
-def test_detect_venv_hermes_cli_cmdline_outside_install_not_matched(_winp, tmp_path):
-    """A hermes_cli.main process belonging to a DIFFERENT install (neither
+def test_detect_venv_agentic_os_cli_cmdline_outside_install_not_matched(_winp, tmp_path):
+    """A agentic_os_cli.main process belonging to a DIFFERENT install (neither
     install root in cmdline nor cwd under it) must not be flagged."""
     base_py = "C:\\Python311\\python.exe"
     me = MagicMock()
@@ -262,7 +262,7 @@ def test_detect_venv_hermes_cli_cmdline_outside_install_not_matched(_winp, tmp_p
                     301,
                     base_py,
                     "python.exe",
-                    [base_py, "-m", "hermes_cli.main", "serve"],
+                    [base_py, "-m", "agentic_os_cli.main", "serve"],
                     cwd="C:\\other-install",
                 ),
             ]
@@ -319,7 +319,7 @@ def _run_update_until_guard(args):
     ), patch.object(
         cli_main,
         "_detect_venv_python_processes",
-        return_value=[(101, "python.exe", "python.exe -m hermes_cli.main serve")],
+        return_value=[(101, "python.exe", "python.exe -m agentic_os_cli.main serve")],
     ), patch.object(
         cli_main, "PROJECT_ROOT", _RootSentinel()
     ):

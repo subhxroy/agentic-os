@@ -12,9 +12,9 @@ from unittest.mock import patch
 import pytest
 import yaml
 
-from hermes_cli.dashboard_auth import clear_providers, list_providers
-from hermes_cli.plugins import PluginManager, discover_plugins
-from hermes_cli.plugins_cmd import ensure_basic_auth_plugin_enabled_in_config
+from agentic_os_cli.dashboard_auth import clear_providers, list_providers
+from agentic_os_cli.plugins import PluginManager, discover_plugins
+from agentic_os_cli.plugins_cmd import ensure_basic_auth_plugin_enabled_in_config
 import plugins.dashboard_auth.basic as basic_plugin
 
 
@@ -70,7 +70,7 @@ class TestBasicProviderLoadsAfterUnblock:
             },
         )
 
-        import hermes_cli.plugins as plugins_mod
+        import agentic_os_cli.plugins as plugins_mod
 
         with patch.object(plugins_mod, "_plugin_manager", None):
             discover_plugins(force=True)
@@ -96,7 +96,7 @@ class TestBasicProviderLoadsAfterUnblock:
         assert ensure_basic_auth_plugin_enabled_in_config(cfg) is True
         _write_config(hermes_home, cfg)
 
-        import hermes_cli.plugins as plugins_mod
+        import agentic_os_cli.plugins as plugins_mod
 
         with patch.object(plugins_mod, "_plugin_manager", None):
             discover_plugins(force=True)

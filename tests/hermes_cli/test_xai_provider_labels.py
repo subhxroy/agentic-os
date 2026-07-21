@@ -1,7 +1,7 @@
 """Regression tests for xAI provider label disambiguation."""
 
-from hermes_cli.models import provider_label
-from hermes_cli.providers import get_label
+from agentic_os_cli.models import provider_label
+from agentic_os_cli.providers import get_label
 
 
 def test_xai_oauth_provider_label_is_not_collapsed_to_api_key_label():

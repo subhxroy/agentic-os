@@ -18,7 +18,7 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any, Optional
 
-from hermes_constants import get_hermes_home
+from agentic_os_constants import get_hermes_home
 
 
 _DB_LOCK = threading.Lock()

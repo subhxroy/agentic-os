@@ -17,7 +17,7 @@ import sys
 from pathlib import Path
 from typing import Optional
 
-from hermes_constants import get_hermes_home
+from agentic_os_constants import get_hermes_home
 
 from plugins.google_meet import process_manager as pm
 from plugins.google_meet.meet_bot import _is_safe_meet_url
@@ -250,7 +250,7 @@ def _cmd_install(*, realtime: bool, assume_yes: bool) -> int:
     pip_pkgs = ["playwright", "websockets"]
     print(f"\n[1/3] pip install: {' '.join(pip_pkgs)}")
     try:
-        from hermes_cli.tools_config import _pip_install
+        from agentic_os_cli.tools_config import _pip_install
 
         res = _pip_install(["--upgrade", *pip_pkgs], capture_output=False)
         if res.returncode != 0:

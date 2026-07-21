@@ -1,6 +1,6 @@
 import asyncio
 
-from hermes_cli import web_server
+from agentic_os_cli import web_server
 
 
 class _FakeSessionDB:
@@ -60,7 +60,7 @@ class _FakeSessionDB:
 
 
 def test_desktop_session_search_merges_id_matches_before_content_matches(monkeypatch):
-    monkeypatch.setattr("hermes_state.SessionDB", _FakeSessionDB)
+    monkeypatch.setattr("agentic_os_state.SessionDB", _FakeSessionDB)
 
     response = asyncio.run(web_server.search_sessions(q="20260603", limit=2))
 

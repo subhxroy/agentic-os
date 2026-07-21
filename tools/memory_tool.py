@@ -30,7 +30,7 @@ import tempfile
 import time
 from contextlib import contextmanager
 from pathlib import Path
-from hermes_constants import get_hermes_home
+from agentic_os_constants import get_hermes_home
 from typing import Dict, Any, List, Optional
 
 from utils import atomic_replace
@@ -814,7 +814,7 @@ def load_on_disk_store() -> "MemoryStore":
     memory_char_limit = 2200
     user_char_limit = 1375
     try:
-        from hermes_cli.config import load_config
+        from agentic_os_cli.config import load_config
 
         mem_cfg = (load_config() or {}).get("memory", {}) or {}
         memory_char_limit = int(mem_cfg.get("memory_char_limit", memory_char_limit))

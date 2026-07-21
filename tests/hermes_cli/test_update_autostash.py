@@ -5,8 +5,8 @@ from unittest.mock import patch
 
 import pytest
 
-from hermes_cli import config as hermes_config
-from hermes_cli import main as hermes_main
+from agentic_os_cli import config as hermes_config
+from agentic_os_cli import main as hermes_main
 
 
 # ---------------------------------------------------------------------------
@@ -34,9 +34,9 @@ def _patch_managed_uv(request):
     def _fake_update_managed_uv():
         return None  # never actually self-update in tests
 
-    with patch("hermes_cli.managed_uv.resolve_uv", side_effect=_fake_resolve_uv), \
-         patch("hermes_cli.managed_uv.ensure_uv", side_effect=_fake_ensure_uv), \
-         patch("hermes_cli.managed_uv.update_managed_uv", side_effect=_fake_update_managed_uv):
+    with patch("agentic_os_cli.managed_uv.resolve_uv", side_effect=_fake_resolve_uv), \
+         patch("agentic_os_cli.managed_uv.ensure_uv", side_effect=_fake_ensure_uv), \
+         patch("agentic_os_cli.managed_uv.update_managed_uv", side_effect=_fake_update_managed_uv):
         yield
 
 def test_stash_local_changes_if_needed_returns_none_when_tree_clean(monkeypatch, tmp_path):
@@ -62,7 +62,7 @@ def test_stash_local_changes_if_needed_returns_specific_stash_commit(monkeypatch
     def fake_run(cmd, **kwargs):
         calls.append((cmd, kwargs))
         if cmd[-2:] == ["status", "--porcelain"]:
-            return SimpleNamespace(stdout=" M hermes_cli/main.py\n?? notes.txt\n", returncode=0)
+            return SimpleNamespace(stdout=" M agentic_os_cli/main.py\n?? notes.txt\n", returncode=0)
         if cmd[-2:] == ["ls-files", "--unmerged"]:
             return SimpleNamespace(stdout="", returncode=0)
         if cmd[1:4] == ["stash", "push", "--include-untracked"]:
@@ -257,7 +257,7 @@ def test_restore_stashed_changes_always_resets_on_conflict(monkeypatch, tmp_path
         if cmd[1:3] == ["stash", "apply"]:
             return SimpleNamespace(stdout="conflict output\n", stderr="conflict stderr\n", returncode=1)
         if cmd[1:3] == ["diff", "--name-only"]:
-            return SimpleNamespace(stdout="hermes_cli/main.py\n", stderr="", returncode=0)
+            return SimpleNamespace(stdout="agentic_os_cli/main.py\n", stderr="", returncode=0)
         if cmd[1:3] == ["reset", "--hard"]:
             return SimpleNamespace(stdout="", stderr="", returncode=0)
         raise AssertionError(f"unexpected command: {cmd}")
@@ -270,7 +270,7 @@ def test_restore_stashed_changes_always_resets_on_conflict(monkeypatch, tmp_path
     assert result is False
     out = capsys.readouterr().out
     assert "Conflicted files:" in out
-    assert "hermes_cli/main.py" in out
+    assert "agentic_os_cli/main.py" in out
     assert "stashed changes are preserved" in out
     assert "Working tree reset to clean state" in out
     assert "git stash apply abc123" in out
@@ -307,7 +307,7 @@ def test_restore_stashed_changes_auto_resets_non_interactive(monkeypatch, tmp_pa
 def test_stash_local_changes_if_needed_raises_when_stash_ref_missing(monkeypatch, tmp_path):
     def fake_run(cmd, **kwargs):
         if cmd[-2:] == ["status", "--porcelain"]:
-            return SimpleNamespace(stdout=" M hermes_cli/main.py\n", returncode=0)
+            return SimpleNamespace(stdout=" M agentic_os_cli/main.py\n", returncode=0)
         if cmd[-2:] == ["ls-files", "--unmerged"]:
             return SimpleNamespace(stdout="", returncode=0)
         if cmd[1:4] == ["stash", "push", "--include-untracked"]:
@@ -889,7 +889,7 @@ def test_bootstrap_marker_not_autostashed_by_update(tmp_path):
     marker = tmp_path / ".hermes-bootstrap-complete"
     marker.write_text("")
 
-    # Exact flags used by hermes update (hermes_cli/main.py).
+    # Exact flags used by hermes update (agentic_os_cli/main.py).
     git("stash", "push", "--include-untracked", "-m", "hermes-update-autostash")
 
     assert marker.exists(), (

@@ -5,7 +5,7 @@ import pytest
 from rich.console import Console
 
 from cli import ChatConsole
-from hermes_cli.skills_hub import do_check, do_install, do_list, do_update, handle_skills_slash
+from agentic_os_cli.skills_hub import do_check, do_install, do_list, do_update, handle_skills_slash
 
 
 class _DummyLockFile:
@@ -82,7 +82,7 @@ def _capture_check(monkeypatch, results, name=None) -> str:
 
 def _capture_update(monkeypatch, results) -> tuple[str, list[tuple[str, str, bool]]]:
     import tools.skills_hub as hub
-    import hermes_cli.skills_hub as cli_hub
+    import agentic_os_cli.skills_hub as cli_hub
 
     sink = StringIO()
     console = Console(file=sink, force_terminal=False, color_system=None)
@@ -583,7 +583,7 @@ def test_url_install_cancel_name_prompt_aborts(monkeypatch, tmp_path, hub_env):
 
 def test_existing_categories_skips_top_level_skills(monkeypatch, tmp_path, hub_env):
     import tools.skills_hub as hub
-    from hermes_cli.skills_hub import _existing_categories
+    from agentic_os_cli.skills_hub import _existing_categories
 
     # Category bucket with nested skill.
     (hub.SKILLS_DIR / "productivity" / "notion").mkdir(parents=True)
@@ -608,7 +608,7 @@ def test_existing_categories_returns_empty_when_skills_dir_missing(monkeypatch, 
     import tools.skills_hub as hub
     monkeypatch.setattr(hub, "SKILLS_DIR", tmp_path / "does-not-exist")
 
-    from hermes_cli.skills_hub import _existing_categories
+    from agentic_os_cli.skills_hub import _existing_categories
     assert _existing_categories() == []
 
 
@@ -625,7 +625,7 @@ def test_browse_skills_dedup_uses_identifier_not_name(monkeypatch):
     fix, each unique identifier produces a distinct result.
     """
     from tools.skills_hub import SkillMeta
-    from hermes_cli.skills_hub import browse_skills
+    from agentic_os_cli.skills_hub import browse_skills
 
     airbnb = SkillMeta(
         name="search-listings", description="Airbnb search", source="browse-sh",
@@ -642,7 +642,7 @@ def test_browse_skills_dedup_uses_identifier_not_name(monkeypatch):
     })()
 
     # browse_skills() imports create_source_router locally from tools.skills_hub,
-    # so the patch must target the source module, not hermes_cli.skills_hub.
+    # so the patch must target the source module, not agentic_os_cli.skills_hub.
     with patch("tools.skills_hub.create_source_router", return_value=[mock_src]):
         result = browse_skills(page=1, page_size=50)
 
@@ -658,7 +658,7 @@ def test_do_browse_reports_live_per_source_progress():
     off each source as it resolves, instead of showing a frozen spinner while
     a slow source blocks. The page is still rendered once, after the full
     result set is merged and trust-sorted."""
-    from hermes_cli.skills_hub import do_browse
+    from agentic_os_cli.skills_hub import do_browse
     from tools.skills_hub import SkillMeta
 
     meta = SkillMeta(
@@ -715,7 +715,7 @@ def test_do_search_identifier_column_does_not_truncate_long_slug():
     trailing -1uezib hash) must still appear in the output. Before the fix,
     Rich would render `browse-sh/weather…` and lose the hash.
     """
-    from hermes_cli.skills_hub import do_search
+    from agentic_os_cli.skills_hub import do_search
 
     sink = StringIO()
     # Narrow width forces Rich to apply overflow rules — exactly the scenario
@@ -760,7 +760,7 @@ def test_do_search_identifier_column_does_not_truncate_long_slug():
 
 def test_do_search_json_flag_emits_full_identifiers(capsys):
     """`--json` must print a parseable array with full identifiers and skip the table."""
-    from hermes_cli.skills_hub import do_search
+    from agentic_os_cli.skills_hub import do_search
 
     sink = StringIO()
     console = Console(file=sink, force_terminal=False, color_system=None, width=40)

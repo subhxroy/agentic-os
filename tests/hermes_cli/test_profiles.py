@@ -1,4 +1,4 @@
-"""Comprehensive tests for hermes_cli.profiles module.
+"""Comprehensive tests for agentic_os_cli.profiles module.
 
 Tests cover: validation, directory resolution, CRUD operations, active profile
 management, export/import, renaming, alias collision checks, profile isolation,
@@ -18,8 +18,8 @@ from unittest.mock import patch, MagicMock
 import pytest
 import yaml
 
-from hermes_cli import profiles
-from hermes_cli.profiles import (
+from agentic_os_cli import profiles
+from agentic_os_cli.profiles import (
     normalize_profile_name,
     validate_profile_name,
     get_profile_dir,
@@ -45,7 +45,7 @@ from hermes_cli.profiles import (
     backfill_profile_envs,
     profiles_to_serve,
 )
-from hermes_cli.config import DEFAULT_CONFIG
+from agentic_os_cli.config import DEFAULT_CONFIG
 
 
 # ---------------------------------------------------------------------------
@@ -566,7 +566,7 @@ class TestDeleteProfile:
         profile_dir = create_profile("coder", no_alias=True)
         assert profile_dir.is_dir()
         # Mock gateway import to avoid real systemd/launchd interaction
-        with patch("hermes_cli.profiles._cleanup_gateway_service"):
+        with patch("agentic_os_cli.profiles._cleanup_gateway_service"):
             delete_profile("coder", yes=True)
         assert not profile_dir.is_dir()
 
@@ -582,9 +582,9 @@ class TestDeleteProfile:
         profile_dir = create_profile("coder", no_alias=True)
         set_active_profile("coder")
 
-        with patch("hermes_cli.profiles._cleanup_gateway_service"), \
-             patch("hermes_cli.profiles.time.sleep"), \
-             patch("hermes_cli.profiles.shutil.rmtree", side_effect=PermissionError("locked")):
+        with patch("agentic_os_cli.profiles._cleanup_gateway_service"), \
+             patch("agentic_os_cli.profiles.time.sleep"), \
+             patch("agentic_os_cli.profiles.shutil.rmtree", side_effect=PermissionError("locked")):
             with pytest.raises(RuntimeError, match="Could not remove profile directory"):
                 delete_profile("coder", yes=True)
 
@@ -595,8 +595,8 @@ class TestDeleteProfile:
         """A Desktop-spawned backend (not in gateway.pid) is stopped first."""
         profile_dir = create_profile("coder", no_alias=True)
 
-        with patch("hermes_cli.profiles._cleanup_gateway_service"), \
-             patch("hermes_cli.profiles._profile_bound_backend_pids", return_value=[4242]) as pids, \
+        with patch("agentic_os_cli.profiles._cleanup_gateway_service"), \
+             patch("agentic_os_cli.profiles._profile_bound_backend_pids", return_value=[4242]) as pids, \
              patch("gateway.status.terminate_pid") as terminate, \
              patch("gateway.status._pid_exists", return_value=False):
             delete_profile("coder", yes=True)
@@ -617,10 +617,10 @@ class TestDeleteProfile:
                 raise OSError(66, "Directory not empty")
             return real_rmtree(path)
 
-        with patch("hermes_cli.profiles._cleanup_gateway_service"), \
-             patch("hermes_cli.profiles._profile_bound_backend_pids", return_value=[]), \
-             patch("hermes_cli.profiles.time.sleep"), \
-             patch("hermes_cli.profiles.shutil.rmtree", side_effect=flaky_rmtree):
+        with patch("agentic_os_cli.profiles._cleanup_gateway_service"), \
+             patch("agentic_os_cli.profiles._profile_bound_backend_pids", return_value=[]), \
+             patch("agentic_os_cli.profiles.time.sleep"), \
+             patch("agentic_os_cli.profiles.shutil.rmtree", side_effect=flaky_rmtree):
             delete_profile("coder", yes=True)
 
         assert calls["n"] == 2
@@ -648,13 +648,13 @@ class TestDeleteProfile:
         self_pid = os.getpid()
         procs = [
             # Backend bound to coder → matched.
-            FakeProc(101, ["python", "-m", "hermes_cli.main", "--profile", "coder", "serve"]),
+            FakeProc(101, ["python", "-m", "agentic_os_cli.main", "--profile", "coder", "serve"]),
             # Interactive chat for coder → NOT a backend subcommand, skipped.
-            FakeProc(102, ["python", "-m", "hermes_cli.main", "--profile", "coder", "chat"]),
+            FakeProc(102, ["python", "-m", "agentic_os_cli.main", "--profile", "coder", "chat"]),
             # Backend for a different profile → skipped.
-            FakeProc(103, ["python", "-m", "hermes_cli.main", "--profile", "other", "serve"]),
+            FakeProc(103, ["python", "-m", "agentic_os_cli.main", "--profile", "other", "serve"]),
             # This very process → skipped even if it matched.
-            FakeProc(self_pid, ["python", "-m", "hermes_cli.main", "--profile", "coder", "serve"]),
+            FakeProc(self_pid, ["python", "-m", "agentic_os_cli.main", "--profile", "coder", "serve"]),
         ]
 
         fake_psutil = types.SimpleNamespace(
@@ -874,8 +874,8 @@ class TestWrapperScript:
 
     def test_creates_sh_on_posix(self, profile_env, monkeypatch):
         monkeypatch.setattr("sys.platform", "darwin")
-        monkeypatch.setattr("hermes_cli.profiles.shutil.which", lambda name: "/opt/hermes/bin/hermes")
-        from hermes_cli.profiles import create_wrapper_script
+        monkeypatch.setattr("agentic_os_cli.profiles.shutil.which", lambda name: "/opt/hermes/bin/hermes")
+        from agentic_os_cli.profiles import create_wrapper_script
         wrapper = create_wrapper_script("mybot")
         assert wrapper is not None
         assert wrapper.name == "mybot"
@@ -885,7 +885,7 @@ class TestWrapperScript:
 
     def test_creates_bat_on_windows(self, profile_env, monkeypatch):
         monkeypatch.setattr("sys.platform", "win32")
-        from hermes_cli.profiles import create_wrapper_script
+        from agentic_os_cli.profiles import create_wrapper_script
         wrapper = create_wrapper_script("mybot")
         assert wrapper is not None
         assert wrapper.name == "mybot.bat"
@@ -896,7 +896,7 @@ class TestWrapperScript:
 
     def test_remove_finds_bat_on_windows(self, profile_env, monkeypatch):
         monkeypatch.setattr("sys.platform", "win32")
-        from hermes_cli.profiles import create_wrapper_script, remove_wrapper_script
+        from agentic_os_cli.profiles import create_wrapper_script, remove_wrapper_script
         wrapper = create_wrapper_script("mybot")
         assert wrapper is not None
         assert wrapper.exists()
@@ -906,7 +906,7 @@ class TestWrapperScript:
 
     def test_remove_finds_sh_on_posix(self, profile_env, monkeypatch):
         monkeypatch.setattr("sys.platform", "darwin")
-        from hermes_cli.profiles import create_wrapper_script, remove_wrapper_script
+        from agentic_os_cli.profiles import create_wrapper_script, remove_wrapper_script
         wrapper = create_wrapper_script("mybot")
         assert wrapper is not None
         assert wrapper.exists()
@@ -915,14 +915,14 @@ class TestWrapperScript:
         assert not wrapper.exists()
 
     def test_remove_returns_false_when_absent(self, profile_env):
-        from hermes_cli.profiles import remove_wrapper_script
+        from agentic_os_cli.profiles import remove_wrapper_script
         assert remove_wrapper_script("nonexistent") is False
 
     def test_custom_alias_target_on_posix(self, profile_env, monkeypatch):
         # Custom alias name pointing at a differently-named profile: the file
         # is named after the alias, the -p content references the profile.
         monkeypatch.setattr("sys.platform", "darwin")
-        from hermes_cli.profiles import create_wrapper_script
+        from agentic_os_cli.profiles import create_wrapper_script
         wrapper = create_wrapper_script("rq", target="redqueen")
         assert wrapper is not None
         assert wrapper.name == "rq"
@@ -934,7 +934,7 @@ class TestWrapperScript:
         # Regression: custom-name aliases must still produce an executable
         # .bat (not a clobbered #!/bin/sh) on Windows.
         monkeypatch.setattr("sys.platform", "win32")
-        from hermes_cli.profiles import create_wrapper_script
+        from agentic_os_cli.profiles import create_wrapper_script
         wrapper = create_wrapper_script("rq", target="redqueen")
         assert wrapper is not None
         assert wrapper.name == "rq.bat"
@@ -985,7 +985,7 @@ class TestWrapperScriptSecurity:
 
     def test_legit_alias_stays_inside_wrapper_dir(self, profile_env, monkeypatch):
         monkeypatch.setattr("sys.platform", "darwin")
-        from hermes_cli.profiles import _get_wrapper_dir
+        from agentic_os_cli.profiles import _get_wrapper_dir
         wrapper = create_wrapper_script("mybot", target="coder")
         assert wrapper is not None
         assert wrapper.resolve().is_relative_to(_get_wrapper_dir().resolve())
@@ -1001,7 +1001,7 @@ class TestFindAliasForProfile:
 
     def test_profile_named_alias(self, profile_env, monkeypatch):
         monkeypatch.setattr("sys.platform", "darwin")
-        from hermes_cli.profiles import create_wrapper_script, find_alias_for_profile
+        from agentic_os_cli.profiles import create_wrapper_script, find_alias_for_profile
         create_wrapper_script("steve")
         assert find_alias_for_profile("steve") == "steve"
 
@@ -1009,19 +1009,19 @@ class TestFindAliasForProfile:
         # qiaobusi -> steve-jobs: the custom alias name must surface, not the
         # profile name, because that's the command the user actually typed.
         monkeypatch.setattr("sys.platform", "darwin")
-        from hermes_cli.profiles import create_wrapper_script, find_alias_for_profile
+        from agentic_os_cli.profiles import create_wrapper_script, find_alias_for_profile
         create_wrapper_script("qiaobusi", target="steve")
         assert find_alias_for_profile("steve") == "qiaobusi"
 
     def test_no_alias_returns_none(self, profile_env, monkeypatch):
         monkeypatch.setattr("sys.platform", "darwin")
-        from hermes_cli.profiles import find_alias_for_profile
+        from agentic_os_cli.profiles import find_alias_for_profile
         assert find_alias_for_profile("steve") is None
 
     def test_ignores_unrelated_files(self, profile_env, monkeypatch):
         # ~/.local/bin commonly holds unrelated binaries; they must not match.
         monkeypatch.setattr("sys.platform", "darwin")
-        from hermes_cli.profiles import _get_wrapper_dir, find_alias_for_profile
+        from agentic_os_cli.profiles import _get_wrapper_dir, find_alias_for_profile
         wrapper_dir = _get_wrapper_dir()
         wrapper_dir.mkdir(parents=True, exist_ok=True)
         (wrapper_dir / "pip").write_text("#!/bin/sh\nexec python -m pip \"$@\"\n")
@@ -1029,14 +1029,14 @@ class TestFindAliasForProfile:
 
     def test_custom_alias_on_windows(self, profile_env, monkeypatch):
         monkeypatch.setattr("sys.platform", "win32")
-        from hermes_cli.profiles import create_wrapper_script, find_alias_for_profile
+        from agentic_os_cli.profiles import create_wrapper_script, find_alias_for_profile
         create_wrapper_script("qiaobusi", target="steve")
         # The .bat extension must be stripped from the returned alias name.
         assert find_alias_for_profile("steve") == "qiaobusi"
 
     def test_list_profiles_surfaces_custom_alias(self, profile_env, monkeypatch):
         monkeypatch.setattr("sys.platform", "darwin")
-        from hermes_cli.profiles import (
+        from agentic_os_cli.profiles import (
             create_profile,
             create_wrapper_script,
             list_profiles,
@@ -1063,7 +1063,7 @@ class TestRenameProfile:
         assert old_dir.is_dir()
 
         # Mock alias collision to avoid subprocess calls
-        with patch("hermes_cli.profiles.check_alias_collision", return_value="skip"):
+        with patch("agentic_os_cli.profiles.check_alias_collision", return_value="skip"):
             new_dir = rename_profile("oldname", "newname")
 
         assert not old_dir.is_dir()
@@ -1089,7 +1089,7 @@ class TestRenameProfile:
             }
         }))
 
-        with patch("hermes_cli.profiles.check_alias_collision", return_value="skip"):
+        with patch("agentic_os_cli.profiles.check_alias_collision", return_value="skip"):
             rename_profile("ssi_health", "heimdall")
 
         cfg = json.loads(honcho_path.read_text())
@@ -1107,7 +1107,7 @@ class TestRenameProfile:
             }
         }))
 
-        with patch("hermes_cli.profiles.check_alias_collision", return_value="skip"):
+        with patch("agentic_os_cli.profiles.check_alias_collision", return_value="skip"):
             rename_profile("ssi_health", "heimdall")
 
         cfg = json.loads(honcho_path.read_text())
@@ -1126,7 +1126,7 @@ class TestRenameProfile:
             }
         }))
 
-        with patch("hermes_cli.profiles.check_alias_collision", return_value="skip"):
+        with patch("agentic_os_cli.profiles.check_alias_collision", return_value="skip"):
             rename_profile("ssi_health", "heimdall")
 
         cfg = json.loads(honcho_path.read_text())
@@ -1583,7 +1583,7 @@ class TestInternalHelpers:
 
     def test_active_profile_path_docker(self, tmp_path, monkeypatch):
         """In Docker, active_profile file lives under HERMES_HOME."""
-        from hermes_cli.profiles import _get_active_profile_path
+        from agentic_os_cli.profiles import _get_active_profile_path
         docker_home = tmp_path / "opt" / "data"
         docker_home.mkdir(parents=True)
         monkeypatch.setattr(Path, "home", lambda: tmp_path)
@@ -1642,7 +1642,7 @@ class TestEdgeCases:
 
     def test_gateway_running_check_with_pid_file(self, profile_env):
         """Verify _check_gateway_running uses the shared gateway PID validator."""
-        from hermes_cli.profiles import _check_gateway_running
+        from agentic_os_cli.profiles import _check_gateway_running
         tmp_path = profile_env
         default_home = tmp_path / ".hermes"
 
@@ -1655,7 +1655,7 @@ class TestEdgeCases:
 
     def test_gateway_running_check_plain_pid(self, profile_env):
         """Shared PID validator returning None means the profile is not running."""
-        from hermes_cli.profiles import _check_gateway_running
+        from agentic_os_cli.profiles import _check_gateway_running
         tmp_path = profile_env
         default_home = tmp_path / ".hermes"
 
@@ -1678,7 +1678,7 @@ class TestEdgeCases:
         """
         import os
         import gateway.status as gw_status
-        from hermes_cli.profiles import _check_gateway_running
+        from agentic_os_cli.profiles import _check_gateway_running
 
         tmp_path = profile_env
         default_home = tmp_path / ".hermes"
@@ -1718,7 +1718,7 @@ class TestEdgeCases:
         """A gateway_state.json with state 'stopped' must NOT be reported running,
         even when the recorded PID happens to be alive."""
         import os
-        from hermes_cli.profiles import _check_gateway_running
+        from agentic_os_cli.profiles import _check_gateway_running
 
         tmp_path = profile_env
         default_home = tmp_path / ".hermes"
@@ -1750,7 +1750,7 @@ class TestEdgeCases:
         profile's command line, so a recycled PID hosting another profile's
         gateway is not reported running for ``coder``.
         """
-        from hermes_cli.profiles import _check_gateway_running
+        from agentic_os_cli.profiles import _check_gateway_running
 
         tmp_path = profile_env
         coder_home = tmp_path / ".hermes" / "profiles" / "coder"
@@ -1782,7 +1782,7 @@ class TestEdgeCases:
     def test_gateway_running_check_detects_matching_named_profile(self, profile_env):
         """A genuinely-live named gateway (``-p coder`` on its command line) is
         still reported running for that profile."""
-        from hermes_cli.profiles import _check_gateway_running
+        from agentic_os_cli.profiles import _check_gateway_running
 
         tmp_path = profile_env
         coder_home = tmp_path / ".hermes" / "profiles" / "coder"
@@ -1847,7 +1847,7 @@ class TestEdgeCases:
         set_active_profile("coder")
         assert get_active_profile() == "coder"
 
-        with patch("hermes_cli.profiles._cleanup_gateway_service"):
+        with patch("agentic_os_cli.profiles._cleanup_gateway_service"):
             delete_profile("coder", yes=True)
 
         assert get_active_profile() == "default"

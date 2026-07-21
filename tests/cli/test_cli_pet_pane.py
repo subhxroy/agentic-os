@@ -115,7 +115,7 @@ def test_pet_fragments_render_half_blocks(boba_like):
 
 
 def test_pet_resolve_config_enables_and_disables(boba_like):
-    from hermes_cli.config import load_config, save_config
+    from agentic_os_cli.config import load_config, save_config
 
     cli_obj = _make_cli()
 

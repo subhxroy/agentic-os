@@ -65,7 +65,7 @@ class TestGatewayPidState:
         pid_path.write_text(json.dumps({
             "pid": dead_pid,
             "kind": "hermes-gateway",
-            "argv": ["python", "-m", "hermes_cli.main", "gateway", "run"],
+            "argv": ["python", "-m", "agentic_os_cli.main", "gateway", "run"],
             "start_time": 111,
         }))
 
@@ -83,7 +83,7 @@ class TestGatewayPidState:
         pid_path.write_text(json.dumps({
             "pid": os.getpid(),
             "kind": "hermes-gateway",
-            "argv": ["python", "-m", "hermes_cli.main", "gateway"],
+            "argv": ["python", "-m", "agentic_os_cli.main", "gateway"],
             "start_time": 123,
         }))
 
@@ -103,7 +103,7 @@ class TestGatewayPidState:
         pid_path.write_text(json.dumps({
             "pid": os.getpid(),
             "kind": "hermes-gateway",
-            "argv": ["/venv/bin/python", "/repo/hermes_cli/main.py", "gateway", "run", "--replace"],
+            "argv": ["/venv/bin/python", "/repo/agentic_os_cli/main.py", "gateway", "run", "--replace"],
             "start_time": 123,
         }))
 
@@ -112,7 +112,7 @@ class TestGatewayPidState:
         monkeypatch.setattr(
             status,
             "_read_process_cmdline",
-            lambda pid: "/venv/bin/python /repo/hermes_cli/main.py gateway run --replace",
+            lambda pid: "/venv/bin/python /repo/agentic_os_cli/main.py gateway run --replace",
         )
 
         assert status.acquire_gateway_runtime_lock() is True
@@ -128,7 +128,7 @@ class TestGatewayPidState:
         pid_path.write_text(json.dumps({
             "pid": os.getpid(),
             "kind": "hermes-gateway",
-            "argv": ["python", "-m", "hermes_cli.main", "gateway"],
+            "argv": ["python", "-m", "agentic_os_cli.main", "gateway"],
             "start_time": 123,
         }))
 
@@ -140,7 +140,7 @@ class TestGatewayPidState:
         lock_path.write_text(json.dumps({
             "pid": os.getpid(),
             "kind": "hermes-gateway",
-            "argv": ["python", "-m", "hermes_cli.main", "gateway"],
+            "argv": ["python", "-m", "agentic_os_cli.main", "gateway"],
             "start_time": 123,
         }))
         monkeypatch.setattr(status, "is_gateway_runtime_lock_active", lambda lock_path=None: True)
@@ -165,7 +165,7 @@ class TestGatewayPidState:
         pid_path.write_text(json.dumps({
             "pid": os.getpid(),
             "kind": "hermes-gateway",
-            "argv": ["python", "-m", "hermes_cli.main", "gateway"],
+            "argv": ["python", "-m", "agentic_os_cli.main", "gateway"],
             "start_time": 123,
         }))
 
@@ -183,7 +183,7 @@ class TestGatewayPidState:
         record = {
             "pid": os.getpid(),
             "kind": "hermes-gateway",
-            "argv": ["python", "-m", "hermes_cli.main", "gateway", "restart"],
+            "argv": ["python", "-m", "agentic_os_cli.main", "gateway", "restart"],
             "start_time": 123,
         }
         pid_path.write_text(json.dumps(record))
@@ -193,7 +193,7 @@ class TestGatewayPidState:
         monkeypatch.setattr(
             status,
             "_read_process_cmdline",
-            lambda pid: "python -m hermes_cli.main gateway restart",
+            lambda pid: "python -m agentic_os_cli.main gateway restart",
         )
 
         assert status.acquire_gateway_runtime_lock() is True
@@ -210,7 +210,7 @@ class TestGatewayPidState:
             "gateway_state": "running",
             "pid": os.getpid(),
             "kind": "hermes-gateway",
-            "argv": ["python", "-m", "hermes_cli.main", "gateway", "restart"],
+            "argv": ["python", "-m", "agentic_os_cli.main", "gateway", "restart"],
             "start_time": 123,
         }))
 
@@ -219,7 +219,7 @@ class TestGatewayPidState:
         monkeypatch.setattr(
             status,
             "_read_process_cmdline",
-            lambda pid: "python -m hermes_cli.main gateway restart",
+            lambda pid: "python -m agentic_os_cli.main gateway restart",
         )
 
         assert status.get_running_pid() == os.getpid()
@@ -232,7 +232,7 @@ class TestGatewayPidState:
         record = {
             "pid": os.getpid(),
             "kind": "hermes-gateway",
-            "argv": ["python", "-m", "hermes_cli.main", "gateway"],
+            "argv": ["python", "-m", "agentic_os_cli.main", "gateway"],
             "start_time": 123,
         }
         pid_path.write_text(json.dumps(record))
@@ -263,7 +263,7 @@ class TestGatewayPidState:
             record = {
                 "pid": pid,
                 "kind": "hermes-gateway",
-                "argv": ["python", "-m", "hermes_cli.main", "gateway"],
+                "argv": ["python", "-m", "agentic_os_cli.main", "gateway"],
                 "start_time": start_time,
             }
             pid_path.write_text(json.dumps(record))
@@ -308,13 +308,13 @@ class TestGatewayPidState:
         pid_path.write_text(json.dumps({
             "pid": dead_foreign_pid,
             "kind": "hermes-gateway",
-            "argv": ["python", "-m", "hermes_cli.main", "gateway"],
+            "argv": ["python", "-m", "agentic_os_cli.main", "gateway"],
             "start_time": 123,
         }))
         lock_path.write_text(json.dumps({
             "pid": dead_foreign_pid,
             "kind": "hermes-gateway",
-            "argv": ["python", "-m", "hermes_cli.main", "gateway"],
+            "argv": ["python", "-m", "agentic_os_cli.main", "gateway"],
             "start_time": 123,
         }))
 
@@ -329,7 +329,7 @@ class TestGatewayPidState:
         pid_path.write_text(json.dumps({
             "pid": 99999,
             "kind": "hermes-gateway",
-            "argv": ["python", "-m", "hermes_cli.main", "gateway"],
+            "argv": ["python", "-m", "agentic_os_cli.main", "gateway"],
             "start_time": 123,
         }))
 
@@ -341,7 +341,7 @@ class TestGatewayPidState:
             lambda: {
                 "pid": os.getpid(),
                 "kind": "hermes-gateway",
-                "argv": ["python", "-m", "hermes_cli.main", "gateway"],
+                "argv": ["python", "-m", "agentic_os_cli.main", "gateway"],
                 "start_time": 123,
             },
         )
@@ -368,7 +368,7 @@ class TestGatewayPidState:
         for a named profile), gateway identity files should still be written to
         the process-level HERMES_HOME, not the profile's directory.  See #56986.
         """
-        from hermes_constants import set_hermes_home_override, reset_hermes_home_override
+        from agentic_os_constants import set_hermes_home_override, reset_hermes_home_override
 
         process_home = tmp_path / "default"
         process_home.mkdir()
@@ -735,7 +735,7 @@ class TestTerminatePid:
         # pythonw.exe backend doesn't flash a conhost window on force-kill.
         # windows_hide_flags() is 0 on the POSIX test host (a valid no-op
         # creationflags value); on real Windows it is CREATE_NO_WINDOW.
-        from hermes_cli._subprocess_compat import windows_hide_flags
+        from agentic_os_cli._subprocess_compat import windows_hide_flags
 
         assert calls == [
             (["taskkill", "/PID", "123", "/T", "/F"], True, True, 10, windows_hide_flags())
@@ -824,7 +824,7 @@ class TestScopedLocks:
             "pid": 873,
             "start_time": None,
             "kind": "hermes-gateway",
-            "argv": ["/Users/user/.hermes/hermes-agent/hermes_cli/main.py", "gateway", "run", "--replace"],
+            "argv": ["/Users/user/.hermes/hermes-agent/agentic_os_cli/main.py", "gateway", "run", "--replace"],
         }))
 
         # Post-#21561 the liveness probe routes through
@@ -860,7 +860,7 @@ class TestScopedLocks:
             "pid": 99999,
             "start_time": None,
             "kind": "hermes-gateway",
-            "argv": ["hermes_cli/main.py", "gateway", "run"],
+            "argv": ["agentic_os_cli/main.py", "gateway", "run"],
         }))
 
         monkeypatch.setattr(status, "_pid_exists", lambda pid: True)
@@ -884,7 +884,7 @@ class TestScopedLocks:
             "pid": 99999,
             "start_time": None,
             "kind": "hermes-gateway",
-            "argv": ["/Users/user/.hermes/hermes-agent/hermes_cli/main.py", "gateway", "run", "--replace"],
+            "argv": ["/Users/user/.hermes/hermes-agent/agentic_os_cli/main.py", "gateway", "run", "--replace"],
         }))
 
         monkeypatch.setattr(status, "_pid_exists", lambda pid: True)
@@ -1016,7 +1016,7 @@ class TestScopedLocks:
             "pid": 840,
             "start_time": 123,
             "kind": "hermes-gateway",
-            "argv": ["/usr/bin/python", "-m", "hermes_cli.main", "gateway", "run"],
+            "argv": ["/usr/bin/python", "-m", "agentic_os_cli.main", "gateway", "run"],
         }))
 
         monkeypatch.setattr(status, "_pid_exists", lambda pid: True)
@@ -1476,11 +1476,11 @@ class TestReadProcessCmdlinePsFallback:
 
         def fake_read_bytes(self):
             calls.append("proc")
-            return b"python\x00hermes_cli/main.py\x00gateway\x00"
+            return b"python\x00agentic_os_cli/main.py\x00gateway\x00"
 
         monkeypatch.setattr(status.Path, "read_bytes", fake_read_bytes)
         result = status._read_process_cmdline(12345)
-        assert "hermes_cli/main.py" in result
+        assert "agentic_os_cli/main.py" in result
         assert calls == ["proc"]
 
     def test_ps_fallback_used_when_proc_returns_empty(self, monkeypatch):
@@ -1488,10 +1488,10 @@ class TestReadProcessCmdlinePsFallback:
         monkeypatch.setattr(status, "_IS_WINDOWS", False)
         monkeypatch.setattr(
             status.subprocess, "run",
-            lambda args, **kwargs: SimpleNamespace(returncode=0, stdout="python hermes_cli/main.py gateway run\n"),
+            lambda args, **kwargs: SimpleNamespace(returncode=0, stdout="python agentic_os_cli/main.py gateway run\n"),
         )
         result = status._read_process_cmdline(12345)
-        assert "hermes_cli/main.py" in result
+        assert "agentic_os_cli/main.py" in result
 
     def test_windows_skips_ps_fallback_and_uses_psutil(self, monkeypatch):
         monkeypatch.setattr(status.Path, "read_bytes", lambda self: (_ for _ in ()).throw(FileNotFoundError))
@@ -1508,7 +1508,7 @@ class TestReadProcessCmdlinePsFallback:
                 self.pid = pid
 
             def cmdline(self):
-                return ["pythonw.exe", "-m", "hermes_cli.main", "gateway", "run"]
+                return ["pythonw.exe", "-m", "agentic_os_cli.main", "gateway", "run"]
 
         monkeypatch.setitem(
             sys.modules,
@@ -1518,7 +1518,7 @@ class TestReadProcessCmdlinePsFallback:
 
         result = status._read_process_cmdline(12345)
 
-        assert result == "pythonw.exe -m hermes_cli.main gateway run"
+        assert result == "pythonw.exe -m agentic_os_cli.main gateway run"
         assert ps_calls == []
 
 
@@ -1715,7 +1715,7 @@ class TestRespawnStormBreaker:
 class TestLaunchdPlistRespawnGovernance:
     def test_plist_has_throttle_interval(self, tmp_path, monkeypatch):
         monkeypatch.setenv("HERMES_HOME", str(tmp_path))
-        from hermes_cli.gateway import generate_launchd_plist
+        from agentic_os_cli.gateway import generate_launchd_plist
 
         plist = generate_launchd_plist()
         assert "<key>ThrottleInterval</key>" in plist

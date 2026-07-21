@@ -130,7 +130,7 @@ def _slot_reasoning_config(slot: dict[str, Any]) -> dict[str, Any] | None:
     """Translate optional per-MoA-slot reasoning_effort into runtime config."""
     effort = slot.get("reasoning_effort")
     try:
-        from hermes_constants import parse_reasoning_effort
+        from agentic_os_constants import parse_reasoning_effort
 
         return parse_reasoning_effort(effort)
     except Exception:  # pragma: no cover - defensive; bad config must not break MoA
@@ -157,8 +157,8 @@ def _aggregator_reasoning_config(aggregator: dict[str, Any]) -> dict[str, Any] |
     if cfg is not None:
         return cfg
     try:
-        from hermes_cli.config import load_config
-        from hermes_constants import resolve_reasoning_config
+        from agentic_os_cli.config import load_config
+        from agentic_os_constants import resolve_reasoning_config
 
         return resolve_reasoning_config(
             load_config() or {}, str(aggregator.get("model") or "")
@@ -188,7 +188,7 @@ def _slot_runtime(slot: dict[str, Any]) -> dict[str, Any]:
     model = str(slot.get("model") or "").strip()
     out: dict[str, Any] = {"provider": provider, "model": model}
     try:
-        from hermes_cli.runtime_provider import resolve_runtime_provider
+        from agentic_os_cli.runtime_provider import resolve_runtime_provider
 
         rt = resolve_runtime_provider(requested=provider, target_model=model)
         # Forward the resolved endpoint through to call_llm unconditionally.
@@ -906,8 +906,8 @@ class MoAChatCompletions:
             logger.debug("MoA reference_callback failed for %s: %s", event, exc)
 
     def create(self, **api_kwargs: Any) -> Any:
-        from hermes_cli.config import load_config
-        from hermes_cli.moa_config import resolve_moa_preset
+        from agentic_os_cli.config import load_config
+        from agentic_os_cli.moa_config import resolve_moa_preset
 
         preset = resolve_moa_preset(load_config().get("moa") or {}, self.preset_name)
         messages = list(api_kwargs.get("messages") or [])

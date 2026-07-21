@@ -3,7 +3,7 @@ from pathlib import Path
 
 import pytest
 
-from hermes_cli import web_server
+from agentic_os_cli import web_server
 
 pytest.importorskip("starlette.testclient")
 from starlette.testclient import TestClient

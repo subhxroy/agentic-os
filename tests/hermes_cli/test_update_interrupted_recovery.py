@@ -9,7 +9,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-import hermes_cli.main as m
+import agentic_os_cli.main as m
 
 
 def test_marker_round_trip(tmp_path, monkeypatch):
@@ -83,7 +83,7 @@ def test_recovery_runs_install_and_clears_marker(tmp_path, monkeypatch):
 
     monkeypatch.setattr(m.subprocess, "run", fake_run)
     monkeypatch.setattr(m, "_is_termux_env", lambda *a, **k: False)
-    monkeypatch.setattr("hermes_cli.managed_uv.ensure_uv", lambda: None)
+    monkeypatch.setattr("agentic_os_cli.managed_uv.ensure_uv", lambda: None)
     monkeypatch.setattr(
         m,
         "_install_python_dependencies_with_optional_fallback",
@@ -109,7 +109,7 @@ def test_recovery_keeps_marker_on_failure(tmp_path, monkeypatch):
 
     monkeypatch.setattr(m.subprocess, "run", lambda *a, **k: R())
     monkeypatch.setattr(m, "_is_termux_env", lambda *a, **k: False)
-    monkeypatch.setattr("hermes_cli.managed_uv.ensure_uv", lambda: None)
+    monkeypatch.setattr("agentic_os_cli.managed_uv.ensure_uv", lambda: None)
 
     def boom(*a, **k):
         raise RuntimeError("install died")
@@ -131,7 +131,7 @@ def _stub_install_env(monkeypatch, m, seen):
 
     monkeypatch.setattr(m.subprocess, "run", lambda *a, **k: R())
     monkeypatch.setattr(m, "_is_termux_env", lambda *a, **k: False)
-    monkeypatch.setattr("hermes_cli.managed_uv.ensure_uv", lambda: None)
+    monkeypatch.setattr("agentic_os_cli.managed_uv.ensure_uv", lambda: None)
     monkeypatch.setattr(
         m,
         "_install_python_dependencies_with_optional_fallback",

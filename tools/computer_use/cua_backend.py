@@ -179,7 +179,7 @@ def _cua_telemetry_disabled() -> bool:
     privacy-preserving default of telemetry disabled.
     """
     try:
-        from hermes_cli.config import load_config
+        from agentic_os_cli.config import load_config
 
         cfg = load_config() or {}
         cu = cfg.get("computer_use") or {}
@@ -802,7 +802,7 @@ class _CuaDriverSession:
             # passes but the wrapper times out" reports are undiagnosable
             # from a bare "never reached ready".
             phase = getattr(self, "_startup_phase", "unknown")
-            from hermes_constants import display_hermes_home
+            from agentic_os_constants import display_hermes_home
             raise RuntimeError(
                 "cua-driver session never reached ready (timeout 30s; "
                 f"stuck in phase: {phase}). "

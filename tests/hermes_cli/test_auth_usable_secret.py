@@ -1,6 +1,6 @@
-"""Tests for placeholder API key detection in hermes_cli.auth."""
+"""Tests for placeholder API key detection in agentic_os_cli.auth."""
 
-from hermes_cli.auth import has_usable_secret
+from agentic_os_cli.auth import has_usable_secret
 
 
 def test_has_usable_secret_rejects_documented_placeholder_key() -> None:

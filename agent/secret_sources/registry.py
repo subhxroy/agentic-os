@@ -14,7 +14,7 @@ so no individual source can get it wrong:
 * provenance: which source supplied every applied var
 
 The single entry point for startup is :func:`apply_all`, called from
-``hermes_cli.env_loader._apply_external_secret_sources()``.
+``agentic_os_cli.env_loader._apply_external_secret_sources()``.
 
 Plugins register additional sources via
 ``PluginContext.register_secret_source()`` which lands in

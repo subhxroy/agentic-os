@@ -2,7 +2,7 @@ import asyncio
 import threading
 import time
 
-from hermes_cli import mcp_startup
+from agentic_os_cli import mcp_startup
 from tui_gateway import server
 from tui_gateway import ws as ws_mod
 

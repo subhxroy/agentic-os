@@ -7,8 +7,8 @@ NAS re-mint + machine restart on a healthy box). A mid-rotation blip, a
 transient error, or a merely-expiring token must NOT report "terminal".
 """
 
-import hermes_cli.auth as auth
-from hermes_cli.auth import (
+import agentic_os_cli.auth as auth
+from agentic_os_cli.auth import (
     NOUS_SESSION_TERMINAL,
     NOUS_SESSION_UNKNOWN,
     NOUS_SESSION_VALID,

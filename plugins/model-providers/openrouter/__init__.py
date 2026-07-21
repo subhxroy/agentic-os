@@ -56,7 +56,7 @@ class OpenRouterProfile(ProviderProfile):
     ) -> list[str] | None:
         """Fetch from public OpenRouter catalog — no auth required.
 
-        Note: Tool-call capability filtering is applied by hermes_cli/models.py
+        Note: Tool-call capability filtering is applied by agentic_os_cli/models.py
         via fetch_openrouter_models() → _openrouter_model_supports_tools(), not
         here. The picker early-returns via the dedicated openrouter path before
         reaching this method, so filtering here would be unreachable.

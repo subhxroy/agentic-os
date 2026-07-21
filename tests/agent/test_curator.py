@@ -961,7 +961,7 @@ def test_curator_review_prompt_offers_support_file_actions():
 
 def test_cli_unpin_refuses_bundled_skill(curator_env, capsys):
     """hermes curator unpin must refuse bundled/hub skills too (matches pin)."""
-    from hermes_cli import curator as cli
+    from agentic_os_cli import curator as cli
     skills_dir = curator_env["home"] / "skills"
     _write_skill(skills_dir, "ship-skill")
     (skills_dir / ".bundled_manifest").write_text(
@@ -978,7 +978,7 @@ def test_cli_unpin_refuses_bundled_skill(curator_env, capsys):
 
 
 def test_cli_pin_refuses_bundled_skill(curator_env, capsys):
-    from hermes_cli import curator as cli
+    from agentic_os_cli import curator as cli
     skills_dir = curator_env["home"] / "skills"
     _write_skill(skills_dir, "ship-skill")
     (skills_dir / ".bundled_manifest").write_text(
@@ -1219,9 +1219,9 @@ def test_curator_slot_is_canonical_aux_task():
     (test_aux_config.py) for the main tasks — this test pins `curator`
     specifically so the unification doesn't silently regress.
     """
-    from hermes_cli.config import DEFAULT_CONFIG
-    from hermes_cli.main import _AUX_TASKS
-    from hermes_cli.web_server import _AUX_TASK_SLOTS
+    from agentic_os_cli.config import DEFAULT_CONFIG
+    from agentic_os_cli.main import _AUX_TASKS
+    from agentic_os_cli.web_server import _AUX_TASK_SLOTS
 
     # 1. DEFAULT_CONFIG.auxiliary — schema source
     assert "curator" in DEFAULT_CONFIG["auxiliary"], \
@@ -1231,11 +1231,11 @@ def test_curator_slot_is_canonical_aux_task():
     assert slot["model"] == ""
     assert slot["timeout"] > 0, "curator timeout should be set (reviews run long)"
 
-    # 2. hermes_cli/main.py _AUX_TASKS — CLI picker
+    # 2. agentic_os_cli/main.py _AUX_TASKS — CLI picker
     aux_keys = {k for k, _name, _desc in _AUX_TASKS}
     assert "curator" in aux_keys, "curator missing from _AUX_TASKS (CLI picker)"
 
-    # 3. hermes_cli/web_server.py _AUX_TASK_SLOTS — REST API allowlist
+    # 3. agentic_os_cli/web_server.py _AUX_TASK_SLOTS — REST API allowlist
     assert "curator" in _AUX_TASK_SLOTS, \
         "curator missing from _AUX_TASK_SLOTS (dashboard REST API)"
 
@@ -1329,11 +1329,11 @@ def test_review_fork_forwards_runtime_pool_and_overrides(curator_env, monkeypatc
             pass
 
     monkeypatch.setattr(
-        "hermes_cli.config.load_config",
+        "agentic_os_cli.config.load_config",
         lambda: {"model": {"provider": "custom:hyper-charm", "default": "glm-5.2"}},
     )
     monkeypatch.setattr(
-        "hermes_cli.runtime_provider.resolve_runtime_provider",
+        "agentic_os_cli.runtime_provider.resolve_runtime_provider",
         _fake_resolve_runtime_provider,
     )
     monkeypatch.setattr("run_agent.AIAgent", _StubAgent)
@@ -1352,11 +1352,11 @@ def test_review_fork_uses_runtime_model_and_output_cap(curator_env, monkeypatch)
     captured = {}
 
     monkeypatch.setattr(
-        "hermes_cli.config.load_config",
+        "agentic_os_cli.config.load_config",
         lambda: {"model": {"provider": "custom:gateway", "default": "gateway"}},
     )
     monkeypatch.setattr(
-        "hermes_cli.runtime_provider.resolve_runtime_provider",
+        "agentic_os_cli.runtime_provider.resolve_runtime_provider",
         lambda **_kwargs: {
             "provider": "custom",
             "model": "real-model-id",
@@ -1393,7 +1393,7 @@ def test_review_fork_merges_slot_extra_body_over_runtime(curator_env, monkeypatc
     captured = {}
 
     monkeypatch.setattr(
-        "hermes_cli.config.load_config",
+        "agentic_os_cli.config.load_config",
         lambda: {
             "auxiliary": {
                 "curator": {
@@ -1405,7 +1405,7 @@ def test_review_fork_merges_slot_extra_body_over_runtime(curator_env, monkeypatc
         },
     )
     monkeypatch.setattr(
-        "hermes_cli.runtime_provider.resolve_runtime_provider",
+        "agentic_os_cli.runtime_provider.resolve_runtime_provider",
         lambda **_kwargs: {
             "provider": "custom",
             "api_key": "test-key",

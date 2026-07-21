@@ -3,7 +3,7 @@ also tell the user how to find them.
 
 `hermes update` keeps (does not overwrite) bundled skills the user edited and
 prints a ``~ N user-modified (kept)`` count. There are two independent update
-code paths in ``hermes_cli/main.py`` that print this notice (the git-pull path
+code paths in ``agentic_os_cli/main.py`` that print this notice (the git-pull path
 in ``_cmd_update_impl`` and the unpack/install path). Both must point the user
 at ``hermes skills list-modified`` so the count is actionable — otherwise,
 depending on which path a user hits, they may never learn the discovery command
@@ -17,7 +17,7 @@ keeps holding if the wording is reworded, as long as both sites stay in sync.
 import re
 from pathlib import Path
 
-import hermes_cli.main as main_mod
+import agentic_os_cli.main as main_mod
 
 
 _COUNT_RE = re.compile(r"user-modified \(kept\)")

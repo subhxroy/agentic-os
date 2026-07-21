@@ -4,7 +4,7 @@ from types import SimpleNamespace
 
 import pytest
 
-import hermes_cli.gateway as gateway
+import agentic_os_cli.gateway as gateway
 
 
 def _clear_native_supervisor_markers(monkeypatch):
@@ -48,7 +48,7 @@ def test_update_hands_external_supervisor_gateway_back_without_watcher(monkeypat
         lambda _pid: [
             "python",
             "-m",
-            "hermes_cli.main",
+            "agentic_os_cli.main",
             "gateway",
             "run",
             "--external-supervisor",
@@ -69,7 +69,7 @@ def test_update_keeps_detached_restart_for_ordinary_foreground_gateway(monkeypat
     monkeypatch.setattr(
         gateway,
         "_capture_gateway_argv",
-        lambda _pid: ["python", "-m", "hermes_cli.main", "gateway", "run"],
+        lambda _pid: ["python", "-m", "agentic_os_cli.main", "gateway", "run"],
     )
     calls = []
     monkeypatch.setattr(

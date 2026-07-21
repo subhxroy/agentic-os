@@ -5,7 +5,7 @@ of the dashboard-OAuth plan; used by Phase 3's end-to-end gate tests.
 
 Import via::
 
-    from tests.hermes_cli.conftest_dashboard_auth import StubAuthProvider
+    from tests.agentic_os_cli.conftest_dashboard_auth import StubAuthProvider
 
 The stub bounces straight back to the callback with a fake code so tests
 can complete the OAuth round trip in-process without external network.
@@ -22,7 +22,7 @@ import json
 import secrets
 import time
 
-from hermes_cli.dashboard_auth.base import (
+from agentic_os_cli.dashboard_auth.base import (
     DashboardAuthProvider,
     InvalidCodeError,
     LoginStart,

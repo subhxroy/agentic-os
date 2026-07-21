@@ -2,8 +2,8 @@
 
 from unittest.mock import patch
 
-from hermes_cli.auth import is_runtime_provider_routable
-from hermes_cli.model_switch import list_authenticated_providers
+from agentic_os_cli.auth import is_runtime_provider_routable
+from agentic_os_cli.model_switch import list_authenticated_providers
 
 
 def _rows_with_env(monkeypatch, env_name: str, provider: str) -> list[dict]:
@@ -17,8 +17,8 @@ def _rows_with_env(monkeypatch, env_name: str, provider: str) -> list[dict]:
             "agent.models_dev.PROVIDER_TO_MODELS_DEV",
             {provider: provider},
         ),
-        patch("hermes_cli.models.cached_provider_model_ids", return_value=["model-a"]),
-        patch("hermes_cli.providers.HERMES_OVERLAYS", {}),
+        patch("agentic_os_cli.models.cached_provider_model_ids", return_value=["model-a"]),
+        patch("agentic_os_cli.providers.HERMES_OVERLAYS", {}),
     ):
         return list_authenticated_providers(max_models=5)
 

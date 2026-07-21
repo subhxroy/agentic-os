@@ -99,7 +99,7 @@ def test_nudge_budget_exhausted(clear_kanban_env):
 # These tests verify the two layers compose correctly: the agent-side
 # nudge fires first (up to 2 attempts), and if the worker still exits
 # without a terminal call, the dispatcher's bounded retry (streak of 3)
-# handles it.  See also tests/hermes_cli/test_kanban_core_functionality.py
+# handles it.  See also tests/agentic_os_cli/test_kanban_core_functionality.py
 # for the dispatcher-side streak tests.
 
 

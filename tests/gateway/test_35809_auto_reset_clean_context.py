@@ -39,7 +39,7 @@ import inspect
 from gateway import run as gateway_run
 from gateway.config import GatewayConfig, Platform
 from gateway.session import SessionSource, SessionStore
-from hermes_state import SessionDB
+from agentic_os_state import SessionDB
 
 
 # ---------------------------------------------------------------------------

@@ -18,7 +18,7 @@ from agent.usage_pricing import (
     _lookup_official_docs_pricing,
     resolve_billing_route,
 )
-from hermes_cli.model_switch import _model_sort_key
+from agentic_os_cli.model_switch import _model_sort_key
 
 
 class TestGpt56SortInvariants:

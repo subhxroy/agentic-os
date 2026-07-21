@@ -1,4 +1,4 @@
-"""Fixtures shared across hermes_cli kanban tests."""
+"""Fixtures shared across agentic_os_cli kanban tests."""
 
 from __future__ import annotations
 
@@ -15,7 +15,7 @@ def all_assignees_spawnable(monkeypatch):
     those tasks into ``skipped_nonspawnable`` instead of spawning, which
     would break tests that assert spawn behavior.
     """
-    from hermes_cli import profiles
+    from agentic_os_cli import profiles
     monkeypatch.setattr(profiles, "profile_exists", lambda name: True)
 
 
@@ -38,11 +38,11 @@ def _suppress_concurrent_hermes_gate(request, monkeypatch):
     if request.node.get_closest_marker("real_concurrent_gate"):
         return
     try:
-        from hermes_cli import main as _cli_main
+        from agentic_os_cli import main as _cli_main
     except Exception:
         return
     # raising=False: under pytest's per-test spawn isolation, a concurrent
-    # xdist worker importing a module that transitively touches hermes_cli.main
+    # xdist worker importing a module that transitively touches agentic_os_cli.main
     # can briefly expose a partially-initialized module object here — one where
     # _detect_concurrent_hermes_instances isn't defined yet. A bare setattr
     # would raise AttributeError and error the (unrelated) test. The attribute

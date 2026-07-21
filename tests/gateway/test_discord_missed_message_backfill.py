@@ -461,7 +461,7 @@ def test_missed_message_backfill_config_bridge(monkeypatch, tmp_path):
 
 
 def test_default_config_exposes_missed_message_backfill_settings():
-    from hermes_cli.config import DEFAULT_CONFIG
+    from agentic_os_cli.config import DEFAULT_CONFIG
 
     assert DEFAULT_CONFIG["discord"]["missed_message_backfill"] == {
         "enabled": False,

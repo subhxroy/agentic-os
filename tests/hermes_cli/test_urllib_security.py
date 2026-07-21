@@ -10,7 +10,7 @@ import urllib.request
 
 import pytest
 
-from hermes_cli.urllib_security import (
+from agentic_os_cli.urllib_security import (
     SafeCredentialRedirectHandler,
     open_credentialed_url,
     url_origin,
@@ -276,7 +276,7 @@ def test_installed_custom_opener_policy_is_preserved(monkeypatch):
     ]
     monkeypatch.setattr(urllib.request, "_opener", installed)
 
-    from hermes_cli.urllib_security import _secure_opener_from_installed_policy
+    from agentic_os_cli.urllib_security import _secure_opener_from_installed_policy
 
     secured = _secure_opener_from_installed_policy(
         "foo://models.example.test/catalog"
@@ -303,7 +303,7 @@ def test_installed_proxy_handler_is_preserved(monkeypatch):
     )
     monkeypatch.setattr(urllib.request, "_opener", installed)
 
-    from hermes_cli.urllib_security import _secure_opener_from_installed_policy
+    from agentic_os_cli.urllib_security import _secure_opener_from_installed_policy
 
     secured = _secure_opener_from_installed_policy(
         "https://models.example.test/catalog"
@@ -407,7 +407,7 @@ def test_multihop_redirects_never_resurrect_credentials():
 
 
 def test_probe_api_models_drops_custom_credentials_on_wire():
-    from hermes_cli.models import probe_api_models
+    from agentic_os_cli.models import probe_api_models
 
     source = _server()
     sink = _server()
@@ -484,7 +484,7 @@ def test_anthropic_profile_drops_x_api_key_on_redirect(monkeypatch):
 
 
 def test_azure_catalog_probe_drops_api_key_and_bearer_on_redirect():
-    from hermes_cli import azure_detect
+    from agentic_os_cli import azure_detect
 
     source = _server()
     sink = _server()
@@ -507,7 +507,7 @@ def test_azure_catalog_probe_drops_api_key_and_bearer_on_redirect():
 
 
 def test_azure_anthropic_probe_drops_api_key_and_bearer_on_redirect():
-    from hermes_cli import azure_detect
+    from agentic_os_cli import azure_detect
 
     sink = _server()
     source = ThreadingHTTPServer(("127.0.0.1", 0), _LmStudioSourceHandler)
@@ -528,7 +528,7 @@ def test_azure_anthropic_probe_drops_api_key_and_bearer_on_redirect():
 
 
 def test_lmstudio_load_post_drops_bearer_on_redirect(monkeypatch):
-    from hermes_cli import models
+    from agentic_os_cli import models
 
     sink = _server()
     source = ThreadingHTTPServer(("127.0.0.1", 0), _LmStudioSourceHandler)

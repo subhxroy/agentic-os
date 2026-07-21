@@ -6,7 +6,7 @@ These are invariant tests, not catalog snapshots: they assert how
 vendors, which is expected to change over time.
 """
 
-from hermes_cli.models import (
+from agentic_os_cli.models import (
     CANONICAL_PROVIDERS,
     PROVIDER_GROUPS,
     group_providers,

@@ -59,7 +59,7 @@ agent:
     root.joinpath("config.yaml").write_text("toolsets:\n  - kanban\n", encoding="utf-8")
     monkeypatch.setenv("HERMES_HOME", str(root))
 
-    from hermes_cli import kanban_db as kb
+    from agentic_os_cli import kanban_db as kb
 
     monkeypatch.setattr(kb, "_resolve_hermes_argv", lambda: ["hermes"])
 
@@ -101,7 +101,7 @@ def test_default_spawn_never_boots_the_tui(monkeypatch, tmp_path):
     monkeypatch.setenv("HERMES_HOME", str(root))
     monkeypatch.setenv("HERMES_TUI", "1")
 
-    from hermes_cli import kanban_db as kb
+    from agentic_os_cli import kanban_db as kb
 
     monkeypatch.setattr(kb, "_resolve_hermes_argv", lambda: ["hermes"])
 
@@ -137,8 +137,8 @@ def test_default_spawn_model_override_survives_real_cli_parse(monkeypatch, tmp_p
     root.joinpath("config.yaml").write_text("{}\n", encoding="utf-8")
     monkeypatch.setenv("HERMES_HOME", str(root))
 
-    from hermes_cli import kanban_db as kb
-    from hermes_cli._parser import build_top_level_parser
+    from agentic_os_cli import kanban_db as kb
+    from agentic_os_cli._parser import build_top_level_parser
 
     monkeypatch.setattr(kb, "_resolve_hermes_argv", lambda: ["hermes"])
     captured = {}
@@ -188,7 +188,7 @@ toolsets:
     )
     monkeypatch.setenv("HERMES_HOME", str(root))
 
-    from hermes_cli import kanban_db as kb
+    from agentic_os_cli import kanban_db as kb
 
     resolved = kb._resolve_worker_cli_toolsets(str(profile))
 

@@ -1,8 +1,8 @@
-"""Tests for the shared session-listing helpers (hermes_cli/session_listing.py)."""
+"""Tests for the shared session-listing helpers (agentic_os_cli/session_listing.py)."""
 
 import pytest
 
-from hermes_cli.session_listing import (
+from agentic_os_cli.session_listing import (
     parse_session_listing_args,
     query_session_listing,
 )
@@ -44,7 +44,7 @@ class TestParseSessionListingArgs:
 class TestQuerySessionListingSearch:
     @pytest.fixture
     def db(self, tmp_path):
-        from hermes_state import SessionDB
+        from agentic_os_state import SessionDB
         db = SessionDB(db_path=tmp_path / "state.db")
         db.create_session("sess_an94", "telegram", user_id="1", chat_id="2")
         db.set_session_title("sess_an94", "AN-94 Prestige Barrel Build #2")
@@ -79,7 +79,7 @@ class TestQuerySessionListingSearch:
 
     def test_search_matches_compression_root_title(self, tmp_path):
         """Searching an old (compressed-away) title surfaces the live tip."""
-        from hermes_state import SessionDB
+        from agentic_os_state import SessionDB
         db = SessionDB(db_path=tmp_path / "chain.db")
         db.create_session("root_1", "telegram", user_id="1", chat_id="2")
         db.set_session_title("root_1", "Old Chat")

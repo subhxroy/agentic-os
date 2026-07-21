@@ -1,4 +1,4 @@
-"""Unit tests for _print_loopback_ssh_hint() in hermes_cli/auth.py.
+"""Unit tests for _print_loopback_ssh_hint() in agentic_os_cli/auth.py.
 
 The helper warns users that loopback OAuth flows (Spotify) don't work over
 SSH unless they set up an `ssh -L` port forward between their laptop's
@@ -15,7 +15,7 @@ import contextlib
 import socket
 
 
-from hermes_cli import auth as auth_mod
+from agentic_os_cli import auth as auth_mod
 
 
 def _cap(fn):

@@ -42,7 +42,7 @@ def _make_event(text):
 
 
 def _fake_switch_result():
-    from hermes_cli.model_switch import ModelSwitchResult
+    from agentic_os_cli.model_switch import ModelSwitchResult
 
     return ModelSwitchResult(
         success=True,
@@ -80,13 +80,13 @@ def _setup_isolated_home(tmp_path, monkeypatch, *, warn):
     monkeypatch.setattr(gateway_run, "_hermes_home", hermes_home)
     monkeypatch.setattr("agent.models_dev.fetch_models_dev", lambda: {})
     monkeypatch.setattr(
-        "hermes_cli.model_switch.switch_model",
+        "agentic_os_cli.model_switch.switch_model",
         lambda **kw: _fake_switch_result(),
     )
-    monkeypatch.setattr("hermes_constants.get_hermes_home", lambda: hermes_home)
-    monkeypatch.setattr("hermes_cli.config.get_hermes_home", lambda: hermes_home)
+    monkeypatch.setattr("agentic_os_constants.get_hermes_home", lambda: hermes_home)
+    monkeypatch.setattr("agentic_os_cli.config.get_hermes_home", lambda: hermes_home)
     monkeypatch.setattr(
-        "hermes_cli.model_cost_guard.expensive_model_warning",
+        "agentic_os_cli.model_cost_guard.expensive_model_warning",
         (lambda *a, **kw: _fake_warning()) if warn else (lambda *a, **kw: None),
     )
     return cfg_path

@@ -34,7 +34,7 @@ from typing import Any
 
 import yaml
 
-from hermes_constants import get_hermes_home
+from agentic_os_constants import get_hermes_home
 
 # These are Hermes UI surfaces, not app/vendor/domain buckets.  Keep this
 # long-running-only: regular tool/thinking/interim chatter is intentionally not

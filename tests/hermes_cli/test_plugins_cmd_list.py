@@ -2,7 +2,7 @@ import argparse
 import json
 from types import SimpleNamespace
 
-from hermes_cli import plugins_cmd
+from agentic_os_cli import plugins_cmd
 
 
 def _args(**kwargs):
@@ -108,7 +108,7 @@ def test_discover_all_plugins_includes_entrypoint_plugins(monkeypatch, tmp_path)
 
     monkeypatch.setattr(plugins_cmd, "_plugins_dir", lambda: user_dir)
     monkeypatch.setattr(
-        "hermes_cli.plugins.get_bundled_plugins_dir",
+        "agentic_os_cli.plugins.get_bundled_plugins_dir",
         lambda: bundled_dir,
     )
     monkeypatch.setattr(

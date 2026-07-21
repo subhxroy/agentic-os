@@ -5,7 +5,7 @@ import ast
 
 def _parse_setup_imports():
     """Parse setup.py and return top-level import names."""
-    with open("hermes_cli/setup.py") as f:
+    with open("agentic_os_cli/setup.py") as f:
         tree = ast.parse(f.read())
     names = set()
     for node in ast.walk(tree):
@@ -24,7 +24,7 @@ class TestSetupShutilImport:
         for the mautrix auto-install path."""
         names = _parse_setup_imports()
         assert "shutil" in names, (
-            "shutil is not imported at the top of hermes_cli/setup.py. "
+            "shutil is not imported at the top of agentic_os_cli/setup.py. "
             "This causes a NameError when the Matrix E2EE auto-install "
             "tries to call shutil.which('uv')."
         )

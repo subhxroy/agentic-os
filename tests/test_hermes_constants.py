@@ -1,4 +1,4 @@
-"""Tests for hermes_constants module."""
+"""Tests for agentic_os_constants module."""
 
 import os
 from pathlib import Path
@@ -6,8 +6,8 @@ from types import SimpleNamespace
 
 import pytest
 
-import hermes_constants
-from hermes_constants import (
+import agentic_os_constants
+from agentic_os_constants import (
     VALID_REASONING_EFFORTS,
     agent_browser_runnable,
     find_hermes_node_executable,
@@ -89,7 +89,7 @@ class TestGetDefaultHermesRoot:
         monkeypatch.delenv("HERMES_HOME", raising=False)
         monkeypatch.setenv("LOCALAPPDATA", str(local_appdata))
         monkeypatch.setattr(Path, "home", lambda: tmp_path / "Home")
-        monkeypatch.setattr(hermes_constants.sys, "platform", "win32")
+        monkeypatch.setattr(agentic_os_constants.sys, "platform", "win32")
 
         assert get_default_hermes_root() == local_appdata / "hermes"
 
@@ -99,7 +99,7 @@ class TestGetDefaultHermesRoot:
         monkeypatch.delenv("HERMES_HOME", raising=False)
         monkeypatch.delenv("LOCALAPPDATA", raising=False)
         monkeypatch.setattr(Path, "home", lambda: home)
-        monkeypatch.setattr(hermes_constants.sys, "platform", "win32")
+        monkeypatch.setattr(agentic_os_constants.sys, "platform", "win32")
 
         assert get_default_hermes_root() == home / "AppData" / "Local" / "hermes"
 
@@ -113,8 +113,8 @@ class TestGetHermesHome:
         monkeypatch.delenv("HERMES_HOME", raising=False)
         monkeypatch.setenv("LOCALAPPDATA", str(local_appdata))
         monkeypatch.setattr(Path, "home", lambda: tmp_path / "Home")
-        monkeypatch.setattr(hermes_constants.sys, "platform", "win32")
-        monkeypatch.setattr(hermes_constants, "_profile_fallback_warned", False)
+        monkeypatch.setattr(agentic_os_constants.sys, "platform", "win32")
+        monkeypatch.setattr(agentic_os_constants, "_profile_fallback_warned", False)
 
         assert get_hermes_home() == local_appdata / "hermes"
 
@@ -158,7 +158,7 @@ class TestHermesManagedNode:
         bin_dir = node_dir / "bin"
         node_dir.mkdir(parents=True)
         bin_dir.mkdir()
-        monkeypatch.setattr(hermes_constants.sys, "platform", "win32")
+        monkeypatch.setattr(agentic_os_constants.sys, "platform", "win32")
         monkeypatch.setenv("HERMES_HOME", str(home))
 
         assert iter_hermes_node_dirs() == [node_dir, bin_dir]
@@ -169,9 +169,9 @@ class TestHermesManagedNode:
         node_dir.mkdir(parents=True)
         npm_cmd = node_dir / "npm.cmd"
         npm_cmd.write_text("@echo off\n")
-        monkeypatch.setattr(hermes_constants.sys, "platform", "win32")
+        monkeypatch.setattr(agentic_os_constants.sys, "platform", "win32")
         monkeypatch.setenv("HERMES_HOME", str(home))
-        monkeypatch.setattr(hermes_constants, "node_tool_runnable", lambda path: True)
+        monkeypatch.setattr(agentic_os_constants, "node_tool_runnable", lambda path: True)
 
         assert find_hermes_node_executable("npm") == str(npm_cmd)
 
@@ -184,7 +184,7 @@ class TestHermesManagedNode:
         extensionless.write_text("#!/usr/bin/env node\n")
         powershell.write_text("Write-Output npm\n")
         npm_cmd.write_text("@echo off\n")
-        monkeypatch.setattr(hermes_constants.sys, "platform", "win32")
+        monkeypatch.setattr(agentic_os_constants.sys, "platform", "win32")
         monkeypatch.setenv("PATH", str(bin_dir))
 
         assert find_node_executable_on_path("npm") == str(npm_cmd)
@@ -198,7 +198,7 @@ class TestHermesManagedNode:
         npm_cmd = bin_dir / "npm.cmd"
         extensionless.write_text("#!/usr/bin/env node\n")
         npm_cmd.write_text("@echo off\n")
-        monkeypatch.setattr(hermes_constants.sys, "platform", "win32")
+        monkeypatch.setattr(agentic_os_constants.sys, "platform", "win32")
         monkeypatch.setenv("HERMES_HOME", str(home))
         monkeypatch.setenv("PATH", str(bin_dir))
 
@@ -213,13 +213,13 @@ class TestHermesManagedNode:
         bin_dir.mkdir()
         path_npm = bin_dir / "npm.cmd"
         path_npm.write_text("@echo off\n")
-        monkeypatch.setattr(hermes_constants.sys, "platform", "win32")
+        monkeypatch.setattr(agentic_os_constants.sys, "platform", "win32")
         monkeypatch.setenv("HERMES_HOME", str(home))
         monkeypatch.setenv("PATH", str(bin_dir))
-        monkeypatch.setattr(hermes_constants, "_managed_node_heal_attempted", False)
-        monkeypatch.setattr(hermes_constants, "heal_hermes_managed_node", lambda: False)
+        monkeypatch.setattr(agentic_os_constants, "_managed_node_heal_attempted", False)
+        monkeypatch.setattr(agentic_os_constants, "heal_hermes_managed_node", lambda: False)
         monkeypatch.setattr(
-            hermes_constants,
+            agentic_os_constants,
             "node_tool_runnable",
             lambda path: False,
         )
@@ -234,7 +234,7 @@ class TestHermesManagedNode:
         bin_dir = node_dir / "bin"
         node_dir.mkdir(parents=True)
         bin_dir.mkdir()
-        monkeypatch.setattr(hermes_constants.sys, "platform", "win32")
+        monkeypatch.setattr(agentic_os_constants.sys, "platform", "win32")
         monkeypatch.setenv("HERMES_HOME", str(home))
 
         env = with_hermes_node_path({"PATH": "system-node"})
@@ -281,7 +281,7 @@ class TestNodeToolRunnable:
 
         monkeypatch.setenv("HERMES_HOME", str(profile_home))
         monkeypatch.setenv("PATH", str(system_bin))
-        monkeypatch.setattr(hermes_constants, "_managed_node_heal_attempted", False)
+        monkeypatch.setattr(agentic_os_constants, "_managed_node_heal_attempted", False)
 
         def _heal():
             heal_called["value"] = True
@@ -289,7 +289,7 @@ class TestNodeToolRunnable:
             broken_npm.chmod(0o755)
             return True
 
-        monkeypatch.setattr(hermes_constants, "heal_hermes_managed_node", _heal)
+        monkeypatch.setattr(agentic_os_constants, "heal_hermes_managed_node", _heal)
 
         resolved = find_node_executable("npm")
         assert heal_called["value"] is True
@@ -309,14 +309,14 @@ class TestNodeToolRunnable:
 
         monkeypatch.setenv("HERMES_HOME", str(profile_home))
         monkeypatch.setenv("PATH", str(system_bin))
-        monkeypatch.setattr(hermes_constants, "_managed_node_heal_attempted", False)
+        monkeypatch.setattr(agentic_os_constants, "_managed_node_heal_attempted", False)
 
         def _heal():
             broken_npm.write_text(healed_npm.read_text())
             broken_npm.chmod(0o755)
             return True
 
-        monkeypatch.setattr(hermes_constants, "heal_hermes_managed_node", _heal)
+        monkeypatch.setattr(agentic_os_constants, "heal_hermes_managed_node", _heal)
 
         assert find_hermes_node_executable("npm") == str(healed_npm)
         assert find_node_executable("npm") == str(healed_npm)
@@ -334,8 +334,8 @@ class TestNodeToolRunnable:
 
         monkeypatch.setenv("HERMES_HOME", str(profile_home))
         monkeypatch.setenv("PATH", str(system_bin))
-        monkeypatch.setattr(hermes_constants, "_managed_node_heal_attempted", False)
-        monkeypatch.setattr(hermes_constants, "heal_hermes_managed_node", lambda: False)
+        monkeypatch.setattr(agentic_os_constants, "_managed_node_heal_attempted", False)
+        monkeypatch.setattr(agentic_os_constants, "heal_hermes_managed_node", lambda: False)
 
         assert find_node_executable("npm") is None
 
@@ -360,7 +360,7 @@ class TestIsContainer:
 
     def _reset_cache(self, monkeypatch):
         """Reset the cached detection result before each test."""
-        monkeypatch.setattr(hermes_constants, "_container_detected", None)
+        monkeypatch.setattr(agentic_os_constants, "_container_detected", None)
 
     def test_detects_dockerenv(self, monkeypatch, tmp_path):
         """/.dockerenv triggers container detection."""
@@ -452,7 +452,7 @@ class TestIsContainer:
 
     def test_caches_result(self, monkeypatch):
         """Second call uses cached value without re-probing."""
-        monkeypatch.setattr(hermes_constants, "_container_detected", True)
+        monkeypatch.setattr(agentic_os_constants, "_container_detected", True)
         assert is_container() is True
         # Even if we make os.path.exists return False, cached value wins
         monkeypatch.setattr(os.path, "exists", lambda p: False)
@@ -539,39 +539,39 @@ class TestResolvePerModelReasoningEffort:
 
     def test_exact_match(self):
         """Exact model string match returns the parsed override."""
-        from hermes_constants import resolve_per_model_reasoning_effort
+        from agentic_os_constants import resolve_per_model_reasoning_effort
         overrides = {"claude-opus-4.5": "xhigh"}
         result = resolve_per_model_reasoning_effort("claude-opus-4.5", overrides)
         assert result == {"enabled": True, "effort": "xhigh"}
 
     def test_none_when_no_matching_key(self):
         """Model not in overrides returns None (caller falls back to global)."""
-        from hermes_constants import resolve_per_model_reasoning_effort
+        from agentic_os_constants import resolve_per_model_reasoning_effort
         overrides = {"claude-opus-4.5": "xhigh"}
         assert resolve_per_model_reasoning_effort("gpt-5", overrides) is None
 
     def test_none_value_returns_disabled(self):
         """Override set to 'none' returns {'enabled': False}."""
-        from hermes_constants import resolve_per_model_reasoning_effort
+        from agentic_os_constants import resolve_per_model_reasoning_effort
         overrides = {"claude-opus-4.5": "none"}
         result = resolve_per_model_reasoning_effort("claude-opus-4.5", overrides)
         assert result == {"enabled": False}
 
     def test_invalid_value_returns_none(self):
         """Override with invalid effort falls back to None (global)."""
-        from hermes_constants import resolve_per_model_reasoning_effort
+        from agentic_os_constants import resolve_per_model_reasoning_effort
         overrides = {"claude-opus-4.5": "banana"}
         assert resolve_per_model_reasoning_effort("claude-opus-4.5", overrides) is None
 
     def test_none_or_empty_overrides_returns_none(self):
         """None or empty overrides dict returns None."""
-        from hermes_constants import resolve_per_model_reasoning_effort
+        from agentic_os_constants import resolve_per_model_reasoning_effort
         assert resolve_per_model_reasoning_effort("claude-opus-4.5", None) is None
         assert resolve_per_model_reasoning_effort("claude-opus-4.5", {}) is None
 
     def test_empty_model_returns_none(self):
         """Empty model string returns None."""
-        from hermes_constants import resolve_per_model_reasoning_effort
+        from agentic_os_constants import resolve_per_model_reasoning_effort
         assert resolve_per_model_reasoning_effort("", {"gpt-5": "low"}) is None
 
     # --- Spelling tolerance layer ---
@@ -582,14 +582,14 @@ class TestResolvePerModelReasoningEffort:
         normalize_model_for_provider converts claude-opus-4.5 → claude-opus-4-5
         for the anthropic provider. The user's override key should still match.
         """
-        from hermes_constants import resolve_per_model_reasoning_effort
+        from agentic_os_constants import resolve_per_model_reasoning_effort
         overrides = {"claude-opus-4.5": "xhigh"}
         result = resolve_per_model_reasoning_effort("claude-opus-4-5", overrides)
         assert result == {"enabled": True, "effort": "xhigh"}
 
     def test_dashes_to_dots_variant(self):
         """User wrote key with dashes; input comes in with dots."""
-        from hermes_constants import resolve_per_model_reasoning_effort
+        from agentic_os_constants import resolve_per_model_reasoning_effort
         overrides = {"claude-opus-4-5": "high"}
         result = resolve_per_model_reasoning_effort("claude-opus.4.5", overrides)
         assert result == {"enabled": True, "effort": "high"}
@@ -600,7 +600,7 @@ class TestResolvePerModelReasoningEffort:
         E.g. user config: model.default: claude-opus-4.5 (no prefix),
         but override key: anthropic/claude-opus-4.5.
         """
-        from hermes_constants import resolve_per_model_reasoning_effort
+        from agentic_os_constants import resolve_per_model_reasoning_effort
         overrides = {"anthropic/claude-opus-4.5": "high"}
         result = resolve_per_model_reasoning_effort("claude-opus-4.5", overrides)
         assert result == {"enabled": True, "effort": "high"}
@@ -611,7 +611,7 @@ class TestResolvePerModelReasoningEffort:
         E.g. user config: model.default: anthropic/claude-opus-4.5,
         but override key: claude-opus-4.5 (no prefix).
         """
-        from hermes_constants import resolve_per_model_reasoning_effort
+        from agentic_os_constants import resolve_per_model_reasoning_effort
         overrides = {"claude-opus-4.5": "high"}
         result = resolve_per_model_reasoning_effort("anthropic/claude-opus-4.5", overrides)
         assert result == {"enabled": True, "effort": "high"}
@@ -623,7 +623,7 @@ class TestResolvePerModelReasoningEffort:
         creating a triple-prefix. The resolver strips the aggregator
         layer to find the user's two-segment key.
         """
-        from hermes_constants import resolve_per_model_reasoning_effort
+        from agentic_os_constants import resolve_per_model_reasoning_effort
         overrides = {"anthropic/claude-opus-4.5": "xhigh"}
         result = resolve_per_model_reasoning_effort("openrouter/anthropic/claude-opus-4.5", overrides)
         assert result == {"enabled": True, "effort": "xhigh"}
@@ -634,14 +634,14 @@ class TestResolvePerModelReasoningEffort:
         If both 'claude-opus-4.5' (exact) and 'claude-opus-4-5' (dashes
         variant) are keys, the exact input matches the exact key first.
         """
-        from hermes_constants import resolve_per_model_reasoning_effort
+        from agentic_os_constants import resolve_per_model_reasoning_effort
         overrides = {"claude-opus-4.5": "high", "claude-opus-4-5": "xhigh"}
         result = resolve_per_model_reasoning_effort("claude-opus-4.5", overrides)
         assert result == {"enabled": True, "effort": "high"}
 
     def test_none_when_no_variant_matches(self):
         """All variants exhausted without a match returns None."""
-        from hermes_constants import resolve_per_model_reasoning_effort
+        from agentic_os_constants import resolve_per_model_reasoning_effort
         overrides = {"gpt-5": "low"}
         assert resolve_per_model_reasoning_effort("claude-opus-4.5", overrides) is None
 
@@ -653,7 +653,7 @@ class TestResolvePerModelReasoningEffort:
         all_dashed = model.replace('.', '-') collapsed version dots,
         making the canonical form unreachable from all-dotted input.
         """
-        from hermes_constants import resolve_per_model_reasoning_effort
+        from agentic_os_constants import resolve_per_model_reasoning_effort
         overrides = {"claude-opus-4.5": "xhigh"}
         result = resolve_per_model_reasoning_effort("claude-opus.4.5", overrides)
         assert result is not None
@@ -661,7 +661,7 @@ class TestResolvePerModelReasoningEffort:
 
     def test_different_models_do_not_match(self):
         """No false positives: gemini-2.0-flash must not match gemini-flash."""
-        from hermes_constants import resolve_per_model_reasoning_effort
+        from agentic_os_constants import resolve_per_model_reasoning_effort
         overrides = {"gemini-flash": "low"}
         assert resolve_per_model_reasoning_effort("gemini-2.0-flash", overrides) is None
 
@@ -685,20 +685,20 @@ class TestResolveReasoningConfig:
         }
 
     def test_per_model_override_wins(self):
-        from hermes_constants import resolve_reasoning_config
+        from agentic_os_constants import resolve_reasoning_config
         cfg = self._cfg(overrides={"claude-opus-4.5": "xhigh"})
         result = resolve_reasoning_config(cfg, "claude-opus-4.5")
         assert result == {"enabled": True, "effort": "xhigh"}
 
     def test_global_fallback_when_no_override(self):
-        from hermes_constants import resolve_reasoning_config
+        from agentic_os_constants import resolve_reasoning_config
         cfg = self._cfg(effort="low", overrides={"claude-opus-4.5": "xhigh"})
         assert resolve_reasoning_config(cfg, "gpt-5") == {"enabled": True, "effort": "low"}
 
     def test_explicit_model_wins_over_config_default(self):
         """The session's effective model (e.g. after a session-only /model
         switch) must be used for override lookup — NOT model.default."""
-        from hermes_constants import resolve_reasoning_config
+        from agentic_os_constants import resolve_reasoning_config
         cfg = self._cfg(
             effort="medium",
             overrides={"gpt-5": "low", "claude-opus-4.5": "xhigh"},
@@ -709,13 +709,13 @@ class TestResolveReasoningConfig:
         assert result == {"enabled": True, "effort": "xhigh"}
 
     def test_empty_model_derives_from_config_default(self):
-        from hermes_constants import resolve_reasoning_config
+        from agentic_os_constants import resolve_reasoning_config
         cfg = self._cfg(overrides={"gpt-5": "high"}, default_model="gpt-5")
         assert resolve_reasoning_config(cfg) == {"enabled": True, "effort": "high"}
 
     def test_empty_model_derives_from_model_alias_key(self):
         """model: {model: ...} alias shape (older configs) also resolves."""
-        from hermes_constants import resolve_reasoning_config
+        from agentic_os_constants import resolve_reasoning_config
         cfg = {
             "model": {"model": "gpt-5"},
             "agent": {"reasoning_effort": "medium", "reasoning_overrides": {"gpt-5": "high"}},
@@ -724,7 +724,7 @@ class TestResolveReasoningConfig:
 
     def test_string_model_section(self):
         """Top-level ``model: <string>`` config shape (cron raw-YAML path)."""
-        from hermes_constants import resolve_reasoning_config
+        from agentic_os_constants import resolve_reasoning_config
         cfg = {
             "model": "claude-opus-4.5",
             "agent": {"reasoning_effort": "low", "reasoning_overrides": {"claude-opus-4.5": "xhigh"}},
@@ -733,41 +733,41 @@ class TestResolveReasoningConfig:
 
     def test_yaml_false_global_uncoerced(self):
         """YAML boolean False must mean disabled — never coerced to ''."""
-        from hermes_constants import resolve_reasoning_config
+        from agentic_os_constants import resolve_reasoning_config
         cfg = self._cfg(effort=False)
         assert resolve_reasoning_config(cfg, "gpt-5") == {"enabled": False}
 
     def test_yaml_false_not_shadowed_by_other_models_override(self):
-        from hermes_constants import resolve_reasoning_config
+        from agentic_os_constants import resolve_reasoning_config
         cfg = self._cfg(effort=False, overrides={"claude-opus-4.5": "xhigh"})
         assert resolve_reasoning_config(cfg, "gpt-5") == {"enabled": False}
 
     def test_override_none_disables_for_model(self):
         """Per-model override value 'none' disables thinking for that model."""
-        from hermes_constants import resolve_reasoning_config
+        from agentic_os_constants import resolve_reasoning_config
         cfg = self._cfg(effort="high", overrides={"gemini-flash": "none"})
         assert resolve_reasoning_config(cfg, "gemini-flash") == {"enabled": False}
 
     def test_unknown_global_returns_none(self):
-        from hermes_constants import resolve_reasoning_config
+        from agentic_os_constants import resolve_reasoning_config
         cfg = self._cfg(effort="bogus-level")
         assert resolve_reasoning_config(cfg, "gpt-5") is None
 
     def test_empty_config_returns_none(self):
-        from hermes_constants import resolve_reasoning_config
+        from agentic_os_constants import resolve_reasoning_config
         assert resolve_reasoning_config({}) is None
         assert resolve_reasoning_config(None) is None
 
     def test_malformed_sections_tolerated(self):
         """Non-dict agent/model sections must not raise."""
-        from hermes_constants import resolve_reasoning_config
+        from agentic_os_constants import resolve_reasoning_config
         assert resolve_reasoning_config({"agent": "oops", "model": 42}) is None
         assert resolve_reasoning_config({"agent": None, "model": None}) is None
         assert resolve_reasoning_config({"agent": {"reasoning_overrides": "bad"}}) is None
 
     def test_invalid_override_value_falls_back_to_global(self):
         """A junk override value for the matching model falls through to global."""
-        from hermes_constants import resolve_reasoning_config
+        from agentic_os_constants import resolve_reasoning_config
         cfg = self._cfg(effort="medium", overrides={"gpt-5": "turbo-max"})
         assert resolve_reasoning_config(cfg, "gpt-5") == {"enabled": True, "effort": "medium"}
 
@@ -777,14 +777,14 @@ class TestReasoningOverridesDefaultConfig:
 
     def test_default_config_has_reasoning_overrides_key(self):
         """DEFAULT_CONFIG['agent'] contains 'reasoning_overrides' as an empty dict."""
-        from hermes_cli.config import DEFAULT_CONFIG
+        from agentic_os_cli.config import DEFAULT_CONFIG
         assert "reasoning_overrides" in DEFAULT_CONFIG["agent"]
         assert DEFAULT_CONFIG["agent"]["reasoning_overrides"] == {}
 
     def test_load_config_preserves_user_reasoning_overrides(self, tmp_path, monkeypatch):
         """User-added reasoning_overrides are preserved through load_config()."""
         import yaml
-        from hermes_cli.config import load_config, get_config_path
+        from agentic_os_cli.config import load_config, get_config_path
 
         user_config = {
             "agent": {
@@ -810,7 +810,7 @@ class TestReasoningOverridesDefaultConfig:
 
     def test_spelling_tolerant_lookup_works_with_user_config(self):
         """resolve_per_model_reasoning_effort works with user-added overrides."""
-        from hermes_constants import resolve_per_model_reasoning_effort
+        from agentic_os_constants import resolve_per_model_reasoning_effort
         # User config with one override, query uses different spelling
         overrides = {
             "anthropic/claude-opus-4.5": "xhigh",  # user wrote with dots
@@ -968,7 +968,7 @@ class TestAgentBrowserRunnable:
             captured.append((cmd, kwargs))
             return SimpleNamespace(returncode=0)
 
-        import hermes_cli._subprocess_compat as subprocess_compat
+        import agentic_os_cli._subprocess_compat as subprocess_compat
         import subprocess as subprocess_mod
 
         monkeypatch.setattr(subprocess_compat, "windows_hide_flags", lambda: 0x08000000)
@@ -987,7 +987,7 @@ class TestAgentBrowserRunnable:
             captured.append((cmd, kwargs))
             return SimpleNamespace(returncode=0)
 
-        import hermes_cli._subprocess_compat as subprocess_compat
+        import agentic_os_cli._subprocess_compat as subprocess_compat
         import subprocess as subprocess_mod
 
         monkeypatch.setattr(subprocess_compat, "windows_hide_flags", lambda: 0x08000000)
@@ -1176,32 +1176,32 @@ class TestWslPathTranslation:
     """Cross-boundary path translation for a Windows-host UI + WSL backend."""
 
     def test_windows_drive_to_wsl_mount(self):
-        assert hermes_constants.windows_path_to_wsl(r"C:\Users\alex") == "/mnt/c/Users/alex"
-        assert hermes_constants.windows_path_to_wsl("C:/Users/alex") == "/mnt/c/Users/alex"
-        assert hermes_constants.windows_path_to_wsl("D:\\") == "/mnt/d/"
+        assert agentic_os_constants.windows_path_to_wsl(r"C:\Users\alex") == "/mnt/c/Users/alex"
+        assert agentic_os_constants.windows_path_to_wsl("C:/Users/alex") == "/mnt/c/Users/alex"
+        assert agentic_os_constants.windows_path_to_wsl("D:\\") == "/mnt/d/"
 
     def test_windows_drive_ignores_non_drive_paths(self):
-        assert hermes_constants.windows_path_to_wsl("/home/alex") is None
-        assert hermes_constants.windows_path_to_wsl("relative\\dir") is None
+        assert agentic_os_constants.windows_path_to_wsl("/home/alex") is None
+        assert agentic_os_constants.windows_path_to_wsl("relative\\dir") is None
 
     def test_wsl_unc_to_posix_both_spellings(self):
-        assert hermes_constants.wsl_unc_path_to_posix(r"\\wsl.localhost\Ubuntu\home\alex") == "/home/alex"
-        assert hermes_constants.wsl_unc_path_to_posix(r"\\wsl$\Ubuntu\home\alex") == "/home/alex"
+        assert agentic_os_constants.wsl_unc_path_to_posix(r"\\wsl.localhost\Ubuntu\home\alex") == "/home/alex"
+        assert agentic_os_constants.wsl_unc_path_to_posix(r"\\wsl$\Ubuntu\home\alex") == "/home/alex"
         # Forward-slash spelling and distro root.
-        assert hermes_constants.wsl_unc_path_to_posix("//wsl.localhost/Debian/srv/app") == "/srv/app"
-        assert hermes_constants.wsl_unc_path_to_posix("\\\\wsl.localhost\\Ubuntu\\") == "/"
+        assert agentic_os_constants.wsl_unc_path_to_posix("//wsl.localhost/Debian/srv/app") == "/srv/app"
+        assert agentic_os_constants.wsl_unc_path_to_posix("\\\\wsl.localhost\\Ubuntu\\") == "/"
 
     def test_wsl_unc_ignores_non_unc_paths(self):
-        assert hermes_constants.wsl_unc_path_to_posix(r"C:\Users\alex") is None
-        assert hermes_constants.wsl_unc_path_to_posix("/home/alex") is None
+        assert agentic_os_constants.wsl_unc_path_to_posix(r"C:\Users\alex") is None
+        assert agentic_os_constants.wsl_unc_path_to_posix("/home/alex") is None
 
     def test_translate_is_noop_off_wsl(self, monkeypatch):
-        monkeypatch.setattr(hermes_constants, "is_wsl", lambda: False)
-        assert hermes_constants.translate_cwd_for_wsl_backend(r"C:\Users\alex") == r"C:\Users\alex"
+        monkeypatch.setattr(agentic_os_constants, "is_wsl", lambda: False)
+        assert agentic_os_constants.translate_cwd_for_wsl_backend(r"C:\Users\alex") == r"C:\Users\alex"
 
     def test_translate_maps_windows_and_unc_on_wsl(self, monkeypatch):
-        monkeypatch.setattr(hermes_constants, "is_wsl", lambda: True)
-        assert hermes_constants.translate_cwd_for_wsl_backend(r"C:\Users\alex") == "/mnt/c/Users/alex"
-        assert hermes_constants.translate_cwd_for_wsl_backend(r"\\wsl.localhost\Ubuntu\home\alex") == "/home/alex"
+        monkeypatch.setattr(agentic_os_constants, "is_wsl", lambda: True)
+        assert agentic_os_constants.translate_cwd_for_wsl_backend(r"C:\Users\alex") == "/mnt/c/Users/alex"
+        assert agentic_os_constants.translate_cwd_for_wsl_backend(r"\\wsl.localhost\Ubuntu\home\alex") == "/home/alex"
         # Already-POSIX paths pass through untouched.
-        assert hermes_constants.translate_cwd_for_wsl_backend("/home/alex") == "/home/alex"
+        assert agentic_os_constants.translate_cwd_for_wsl_backend("/home/alex") == "/home/alex"

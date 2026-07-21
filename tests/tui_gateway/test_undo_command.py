@@ -20,7 +20,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from hermes_state import SessionDB
+from agentic_os_state import SessionDB
 
 
 @pytest.fixture()
@@ -37,8 +37,8 @@ def server(hermes_home):
     with patch.dict(
         "sys.modules",
         {
-            "hermes_cli.env_loader": MagicMock(),
-            "hermes_cli.banner": MagicMock(),
+            "agentic_os_cli.env_loader": MagicMock(),
+            "agentic_os_cli.banner": MagicMock(),
         },
     ):
         mod = importlib.import_module("tui_gateway.server")

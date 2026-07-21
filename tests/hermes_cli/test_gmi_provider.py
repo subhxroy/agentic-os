@@ -16,9 +16,9 @@ if "dotenv" not in sys.modules:
     fake_dotenv.load_dotenv = lambda *args, **kwargs: None
     sys.modules["dotenv"] = fake_dotenv
 
-from hermes_cli.auth import resolve_provider
-from hermes_cli.config import load_config
-from hermes_cli.models import (
+from agentic_os_cli.auth import resolve_provider
+from agentic_os_cli.config import load_config
+from agentic_os_cli.models import (
     CANONICAL_PROVIDERS,
     _PROVIDER_LABELS,
     _PROVIDER_MODELS,
@@ -56,7 +56,7 @@ class TestGmiAliases:
         assert normalize_provider("gmicloud") == "gmi"
 
     def test_providers_normalize_provider(self):
-        from hermes_cli.providers import normalize_provider as normalize_provider_in_providers
+        from agentic_os_cli.providers import normalize_provider as normalize_provider_in_providers
 
         assert normalize_provider_in_providers("gmi-cloud") == "gmi"
         assert normalize_provider_in_providers("gmicloud") == "gmi"
@@ -64,7 +64,7 @@ class TestGmiAliases:
 
 class TestGmiConfigRegistry:
     def test_optional_env_vars_include_gmi(self):
-        from hermes_cli.config import OPTIONAL_ENV_VARS
+        from agentic_os_cli.config import OPTIONAL_ENV_VARS
 
         assert "GMI_API_KEY" in OPTIONAL_ENV_VARS
         assert OPTIONAL_ENV_VARS["GMI_API_KEY"]["category"] == "provider"
@@ -86,7 +86,7 @@ class TestGmiModelCatalog:
 
     def test_provider_model_ids_prefers_live_api(self, monkeypatch):
         monkeypatch.setattr(
-            "hermes_cli.auth.resolve_api_key_provider_credentials",
+            "agentic_os_cli.auth.resolve_api_key_provider_credentials",
             lambda provider_id: {
                 "provider": provider_id,
                 "api_key": "gmi-live-key",
@@ -95,7 +95,7 @@ class TestGmiModelCatalog:
             },
         )
         monkeypatch.setattr(
-            "hermes_cli.models.fetch_api_models",
+            "agentic_os_cli.models.fetch_api_models",
             lambda api_key, base_url: [
                 "openai/gpt-5.4-mini",
                 "zai-org/GLM-5.1-FP8",
@@ -109,7 +109,7 @@ class TestGmiModelCatalog:
 
     def test_provider_model_ids_falls_back_to_static_models(self, monkeypatch):
         monkeypatch.setattr(
-            "hermes_cli.auth.resolve_api_key_provider_credentials",
+            "agentic_os_cli.auth.resolve_api_key_provider_credentials",
             lambda provider_id: {
                 "provider": provider_id,
                 "api_key": "gmi-live-key",
@@ -117,7 +117,7 @@ class TestGmiModelCatalog:
                 "source": "GMI_API_KEY",
             },
         )
-        monkeypatch.setattr("hermes_cli.models.fetch_api_models", lambda api_key, base_url: None)
+        monkeypatch.setattr("agentic_os_cli.models.fetch_api_models", lambda api_key, base_url: None)
         # Generic profile path uses ProviderProfile.fetch_models (urllib), not
         # fetch_api_models — must stub it or CI can hit the real endpoint.
         monkeypatch.setattr(
@@ -130,7 +130,7 @@ class TestGmiModelCatalog:
 
 class TestGmiProvidersModule:
     def test_overlay_exists(self):
-        from hermes_cli.providers import HERMES_OVERLAYS
+        from agentic_os_cli.providers import HERMES_OVERLAYS
 
         assert "gmi" in HERMES_OVERLAYS
         overlay = HERMES_OVERLAYS["gmi"]
@@ -146,12 +146,12 @@ class TestGmiProvidersModule:
 
 class TestGmiDoctor:
     def test_provider_env_hints_include_gmi(self):
-        from hermes_cli.doctor import _PROVIDER_ENV_HINTS
+        from agentic_os_cli.doctor import _PROVIDER_ENV_HINTS
 
         assert "GMI_API_KEY" in _PROVIDER_ENV_HINTS
 
     def test_run_doctor_checks_gmi_models_endpoint(self, monkeypatch, tmp_path):
-        from hermes_cli import doctor as doctor_mod
+        from agentic_os_cli import doctor as doctor_mod
 
         home = tmp_path / ".hermes"
         home.mkdir(parents=True, exist_ok=True)
@@ -195,7 +195,7 @@ class TestGmiDoctor:
         monkeypatch.setitem(sys.modules, "model_tools", fake_model_tools)
 
         try:
-            from hermes_cli import auth as _auth_mod
+            from agentic_os_cli import auth as _auth_mod
 
             monkeypatch.setattr(_auth_mod, "get_nous_auth_status", lambda: {})
             monkeypatch.setattr(_auth_mod, "get_codex_auth_status", lambda: {})
@@ -308,14 +308,14 @@ class TestGmiMainFlow:
     def test_chat_parser_accepts_gmi_provider(self, monkeypatch):
         recorded: dict[str, str] = {}
 
-        monkeypatch.setattr("hermes_cli.config.get_container_exec_info", lambda: None)
+        monkeypatch.setattr("agentic_os_cli.config.get_container_exec_info", lambda: None)
         monkeypatch.setattr(
-            "hermes_cli.main.cmd_chat",
+            "agentic_os_cli.main.cmd_chat",
             lambda args: recorded.setdefault("provider", args.provider),
         )
         monkeypatch.setattr(sys, "argv", ["hermes", "chat", "--provider", "gmi"])
 
-        from hermes_cli.main import main
+        from agentic_os_cli.main import main
 
         main()
 
@@ -324,7 +324,7 @@ class TestGmiMainFlow:
     def test_select_provider_and_model_routes_gmi_to_generic_flow(self, monkeypatch):
         recorded: dict[str, str] = {}
 
-        monkeypatch.setattr("hermes_cli.auth.resolve_provider", lambda *args, **kwargs: None)
+        monkeypatch.setattr("agentic_os_cli.auth.resolve_provider", lambda *args, **kwargs: None)
 
         def fake_prompt_provider_choice(choices, default=0):
             return next(i for i, label in enumerate(choices) if label.startswith("GMI Cloud"))
@@ -332,10 +332,10 @@ class TestGmiMainFlow:
         def fake_model_flow_api_key_provider(config, provider_id, current_model=""):
             recorded["provider_id"] = provider_id
 
-        monkeypatch.setattr("hermes_cli.main._prompt_provider_choice", fake_prompt_provider_choice)
-        monkeypatch.setattr("hermes_cli.main._model_flow_api_key_provider", fake_model_flow_api_key_provider)
+        monkeypatch.setattr("agentic_os_cli.main._prompt_provider_choice", fake_prompt_provider_choice)
+        monkeypatch.setattr("agentic_os_cli.main._model_flow_api_key_provider", fake_model_flow_api_key_provider)
 
-        from hermes_cli.main import select_provider_and_model
+        from agentic_os_cli.main import select_provider_and_model
 
         select_provider_and_model()
 
@@ -345,23 +345,23 @@ class TestGmiMainFlow:
         monkeypatch.setenv("GMI_API_KEY", "gmi-test-key")
 
         with patch(
-            "hermes_cli.models.fetch_api_models",
+            "agentic_os_cli.models.fetch_api_models",
             return_value=["zai-org/GLM-5.1-FP8", "openai/gpt-5.4-mini"],
         ), patch(
-            "hermes_cli.auth._prompt_model_selection",
+            "agentic_os_cli.auth._prompt_model_selection",
             return_value="openai/gpt-5.4-mini",
         ), patch(
-            "hermes_cli.auth.deactivate_provider",
+            "agentic_os_cli.auth.deactivate_provider",
         ), patch(
             "builtins.input",
             return_value="",
         ):
-            from hermes_cli.main import _model_flow_api_key_provider
+            from agentic_os_cli.main import _model_flow_api_key_provider
 
             _model_flow_api_key_provider(load_config(), "gmi", "old-model")
 
         import yaml
-        from hermes_constants import get_hermes_home
+        from agentic_os_constants import get_hermes_home
 
         config = yaml.safe_load((get_hermes_home() / "config.yaml").read_text()) or {}
         model_cfg = config.get("model")

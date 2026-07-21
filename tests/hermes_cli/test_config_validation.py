@@ -1,7 +1,7 @@
 """Tests for config.yaml structure validation (validate_config_structure)."""
 
 
-from hermes_cli.config import (
+from agentic_os_cli.config import (
     DEFAULT_CONFIG,
     _EXTRA_KNOWN_ROOT_KEYS,
     _KNOWN_ROOT_KEYS,

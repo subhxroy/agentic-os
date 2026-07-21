@@ -49,7 +49,7 @@ of hub install would write into the dashboard's *own* active profile, not the
 new one.
 
 The correct mechanism is the existing subprocess path: `_spawn_hermes_action`
-runs `python -m hermes_cli.main <subcommand>`, and `_apply_profile_override()`
+runs `python -m agentic_os_cli.main <subcommand>`, and `_apply_profile_override()`
 re-reads `sys.argv` at import in the fresh child. Prepend `-p <profile>`:
 
 ```python

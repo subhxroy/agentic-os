@@ -8,10 +8,10 @@ from __future__ import annotations
 
 import pytest
 
-from hermes_cli.dashboard_auth.base import (
+from agentic_os_cli.dashboard_auth.base import (
     InvalidCodeError, RefreshExpiredError, assert_protocol_compliance,
 )
-from tests.hermes_cli.conftest_dashboard_auth import StubAuthProvider
+from tests.agentic_os_cli.conftest_dashboard_auth import StubAuthProvider
 
 
 def _pkce_payload(ls) -> dict:

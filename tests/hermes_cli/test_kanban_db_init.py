@@ -4,7 +4,7 @@ import sqlite3
 import threading
 from pathlib import Path
 
-from hermes_cli import kanban_db as kb
+from agentic_os_cli import kanban_db as kb
 
 
 def _make_legacy_db(path: Path) -> None:

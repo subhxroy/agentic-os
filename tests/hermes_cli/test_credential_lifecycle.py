@@ -15,7 +15,7 @@ import json
 import pytest
 from fastapi.testclient import TestClient
 
-from hermes_cli.web_server import _SESSION_TOKEN, app
+from agentic_os_cli.web_server import _SESSION_TOKEN, app
 
 client = TestClient(app)
 HEADERS = {"X-Hermes-Session-Token": _SESSION_TOKEN}
@@ -32,7 +32,7 @@ def hermes_home(monkeypatch, tmp_path):
     home = tmp_path / "cred_home"
     home.mkdir()
     monkeypatch.setenv("HERMES_HOME", str(home))
-    from hermes_cli.config import invalidate_env_cache
+    from agentic_os_cli.config import invalidate_env_cache
 
     invalidate_env_cache()
     return home
@@ -42,7 +42,7 @@ def _write_env(home, **pairs):
     home.joinpath(".env").write_text(
         "".join(f"{k}={v}\n" for k, v in pairs.items()), encoding="utf-8"
     )
-    from hermes_cli.config import invalidate_env_cache
+    from agentic_os_cli.config import invalidate_env_cache
 
     invalidate_env_cache()
 
@@ -100,7 +100,7 @@ def test_delete_env_key_prunes_env_seeded_pool_entry(hermes_home):
     assert "zai" in body["pool_pruned"]
 
     # .env cleared
-    from hermes_cli.config import load_env
+    from agentic_os_cli.config import load_env
 
     assert "ZAI_API_KEY" not in load_env()
 
@@ -244,7 +244,7 @@ def test_update_rotates_config_yaml_model_mirror(hermes_home):
     assert old not in cfg_text, "stale old key left in config.yaml (#62269)"
     assert new in cfg_text, "config.yaml mirror not rotated to the new key"
 
-    from hermes_cli.config import load_env
+    from agentic_os_cli.config import load_env
 
     assert load_env()["OPENAI_API_KEY"] == new
 
@@ -315,7 +315,7 @@ def test_delete_then_resave_round_trip(hermes_home):
     )
     assert resp.status_code == 200
 
-    from hermes_cli.auth import is_source_suppressed
+    from agentic_os_cli.auth import is_source_suppressed
 
     assert is_source_suppressed("zai", "env:ZAI_API_KEY"), (
         "delete must suppress the env source so a lingering shell export "
@@ -330,6 +330,6 @@ def test_delete_then_resave_round_trip(hermes_home):
         "an explicit re-save must lift the suppression (like `hermes auth add`)"
     )
 
-    from hermes_cli.config import load_env
+    from agentic_os_cli.config import load_env
 
     assert load_env()["ZAI_API_KEY"] == NEW_KEY

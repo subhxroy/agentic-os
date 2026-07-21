@@ -24,7 +24,7 @@ class _FakeProc:
 
 
 def test_whatsapp_pairing_watcher_records_qr_and_connected():
-    from hermes_cli import web_server as ws
+    from agentic_os_cli import web_server as ws
 
     proc = _FakeProc([
         '{"event":"started","session":"/tmp/session"}\n',
@@ -54,7 +54,7 @@ def test_whatsapp_pairing_watcher_records_qr_and_connected():
 
 
 def test_whatsapp_pairing_payload_includes_linked_account():
-    from hermes_cli import web_server as ws
+    from agentic_os_cli import web_server as ws
 
     record = ws._WhatsAppOnboardingSession(
         proc=None,
@@ -77,7 +77,7 @@ def test_whatsapp_pairing_payload_includes_linked_account():
 
 
 def test_messaging_payload_includes_safe_whatsapp_setup(monkeypatch):
-    from hermes_cli import web_server as ws
+    from agentic_os_cli import web_server as ws
 
     entry = {
         "id": "whatsapp",
@@ -126,7 +126,7 @@ def test_messaging_payload_includes_safe_whatsapp_setup(monkeypatch):
 
 
 def test_apply_whatsapp_onboarding_saves_pairing_policy(monkeypatch):
-    from hermes_cli import web_server as ws
+    from agentic_os_cli import web_server as ws
 
     saved = {}
     removed = []
@@ -170,7 +170,7 @@ def test_apply_whatsapp_onboarding_saves_pairing_policy(monkeypatch):
 
 
 def test_apply_whatsapp_onboarding_self_chat_defaults_to_linked_account(monkeypatch):
-    from hermes_cli import web_server as ws
+    from agentic_os_cli import web_server as ws
 
     saved = {}
     removed = []
@@ -213,7 +213,7 @@ def test_apply_whatsapp_onboarding_self_chat_defaults_to_linked_account(monkeypa
 
 
 def test_start_whatsapp_onboarding_existing_creds_returns_linked_account(monkeypatch, tmp_path):
-    from hermes_cli import web_server as ws
+    from agentic_os_cli import web_server as ws
 
     session_dir = tmp_path / "session"
     session_dir.mkdir()
@@ -255,7 +255,7 @@ def test_start_whatsapp_onboarding_existing_creds_returns_linked_account(monkeyp
 
 
 def test_start_whatsapp_onboarding_returns_before_bridge_spawn(monkeypatch, tmp_path):
-    from hermes_cli import web_server as ws
+    from agentic_os_cli import web_server as ws
 
     captured = {}
 
@@ -292,8 +292,8 @@ def test_start_whatsapp_onboarding_returns_before_bridge_spawn(monkeypatch, tmp_
 
 def test_spawn_whatsapp_pairing_process_uses_json_mode(monkeypatch, tmp_path):
     from gateway.platforms import whatsapp_common
-    from hermes_cli import web_server as ws
-    import hermes_constants
+    from agentic_os_cli import web_server as ws
+    import agentic_os_constants
 
     bridge_dir = tmp_path / "bridge"
     bridge_dir.mkdir()
@@ -302,8 +302,8 @@ def test_spawn_whatsapp_pairing_process_uses_json_mode(monkeypatch, tmp_path):
     captured = {}
 
     monkeypatch.setattr(whatsapp_common, "resolve_whatsapp_bridge_dir", lambda: bridge_dir)
-    monkeypatch.setattr(hermes_constants, "find_node_executable", lambda command: "/usr/bin/node")
-    monkeypatch.setattr(hermes_constants, "with_hermes_node_path", lambda env=None: {})
+    monkeypatch.setattr(agentic_os_constants, "find_node_executable", lambda command: "/usr/bin/node")
+    monkeypatch.setattr(agentic_os_constants, "with_hermes_node_path", lambda env=None: {})
     monkeypatch.setattr(ws, "_ensure_whatsapp_bridge_dependencies", lambda bridge_dir: None)
 
     def fake_popen(args, **kwargs):

@@ -3,7 +3,7 @@
 import time
 import pytest
 
-from hermes_state import SessionDB
+from agentic_os_state import SessionDB
 from agent.insights import (
     InsightsEngine,
     _estimate_cost,

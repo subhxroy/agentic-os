@@ -18,7 +18,7 @@ def hermes_home(tmp_path, monkeypatch):
     # /etc/hermes on the dev/CI box can't influence the test.
     monkeypatch.setenv("HERMES_MANAGED_DIR", str(tmp_path / "no_such_managed_dir"))
     # Clear caches so each test re-reads from disk.
-    import hermes_cli.config as cfg
+    import agentic_os_cli.config as cfg
 
     cfg._LOAD_CONFIG_CACHE.clear()
     cfg._RAW_CONFIG_CACHE.clear()
@@ -28,14 +28,14 @@ def hermes_home(tmp_path, monkeypatch):
 
 def _write_user_config(home, body: str):
     (home / "config.yaml").write_text(textwrap.dedent(body), encoding="utf-8")
-    import hermes_cli.config as cfg
+    import agentic_os_cli.config as cfg
 
     cfg._LOAD_CONFIG_CACHE.clear()
     cfg._RAW_CONFIG_CACHE.clear()
 
 
 def test_user_config_overrides_default(hermes_home, monkeypatch):
-    from hermes_cli.config import load_config, cfg_get
+    from agentic_os_cli.config import load_config, cfg_get
 
     _write_user_config(
         hermes_home,
@@ -49,7 +49,7 @@ def test_user_config_overrides_default(hermes_home, monkeypatch):
 
 
 def test_env_expansion_in_user_config(hermes_home, monkeypatch):
-    from hermes_cli.config import load_config, cfg_get
+    from agentic_os_cli.config import load_config, cfg_get
 
     monkeypatch.setenv("MY_BASE", "https://example.test")
     _write_user_config(
@@ -66,7 +66,7 @@ def test_env_expansion_in_user_config(hermes_home, monkeypatch):
 
 def test_no_managed_dir_means_user_value_wins(hermes_home):
     """Sanity: with the managed override pointing at an absent dir, nothing changes."""
-    from hermes_cli.config import load_config, cfg_get
+    from agentic_os_cli.config import load_config, cfg_get
 
     _write_user_config(
         hermes_home,
@@ -79,7 +79,7 @@ def test_no_managed_dir_means_user_value_wins(hermes_home):
 
 
 def test_user_env_overrides_shell(tmp_path, monkeypatch):
-    from hermes_cli.env_loader import load_hermes_dotenv
+    from agentic_os_cli.env_loader import load_hermes_dotenv
 
     home = tmp_path / "home"
     home.mkdir()
@@ -90,7 +90,7 @@ def test_user_env_overrides_shell(tmp_path, monkeypatch):
 
 
 def test_missing_user_env_is_noop(tmp_path, monkeypatch):
-    from hermes_cli.env_loader import load_hermes_dotenv
+    from agentic_os_cli.env_loader import load_hermes_dotenv
 
     home = tmp_path / "home"
     home.mkdir()

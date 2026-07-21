@@ -1,4 +1,4 @@
-"""Tests for hermes_cli.managed_uv — one path, no guessing."""
+"""Tests for agentic_os_cli.managed_uv — one path, no guessing."""
 
 from __future__ import annotations
 
@@ -27,15 +27,15 @@ def _make_executable(path: Path) -> None:
 
 class TestManagedUvPath:
     def test_posix(self, tmp_path):
-        with patch("hermes_cli.managed_uv.get_hermes_home", return_value=tmp_path), \
-             patch("hermes_cli.managed_uv.platform.system", return_value="Linux"):
-            from hermes_cli.managed_uv import managed_uv_path
+        with patch("agentic_os_cli.managed_uv.get_hermes_home", return_value=tmp_path), \
+             patch("agentic_os_cli.managed_uv.platform.system", return_value="Linux"):
+            from agentic_os_cli.managed_uv import managed_uv_path
             assert managed_uv_path() == tmp_path / "bin" / "uv"
 
     def test_windows(self, tmp_path):
-        with patch("hermes_cli.managed_uv.get_hermes_home", return_value=tmp_path), \
-             patch("hermes_cli.managed_uv.platform.system", return_value="Windows"):
-            from hermes_cli.managed_uv import managed_uv_path
+        with patch("agentic_os_cli.managed_uv.get_hermes_home", return_value=tmp_path), \
+             patch("agentic_os_cli.managed_uv.platform.system", return_value="Windows"):
+            from agentic_os_cli.managed_uv import managed_uv_path
             assert managed_uv_path() == tmp_path / "bin" / "uv.exe"
 
 
@@ -45,14 +45,14 @@ class TestManagedUvPath:
 
 class TestResolveUv:
     def test_missing_returns_none(self, tmp_path):
-        with patch("hermes_cli.managed_uv.get_hermes_home", return_value=tmp_path):
-            from hermes_cli.managed_uv import resolve_uv
+        with patch("agentic_os_cli.managed_uv.get_hermes_home", return_value=tmp_path):
+            from agentic_os_cli.managed_uv import resolve_uv
             assert resolve_uv() is None
 
     def test_existing_executable(self, tmp_path):
         _make_executable(tmp_path / "bin" / "uv")
-        with patch("hermes_cli.managed_uv.get_hermes_home", return_value=tmp_path):
-            from hermes_cli.managed_uv import resolve_uv
+        with patch("agentic_os_cli.managed_uv.get_hermes_home", return_value=tmp_path):
+            from agentic_os_cli.managed_uv import resolve_uv
             result = resolve_uv()
             assert result == str(tmp_path / "bin" / "uv")
 
@@ -62,8 +62,8 @@ class TestResolveUv:
         uv.write_text("not a binary")
         # Ensure no execute bit
         uv.chmod(0o644)
-        with patch("hermes_cli.managed_uv.get_hermes_home", return_value=tmp_path):
-            from hermes_cli.managed_uv import resolve_uv
+        with patch("agentic_os_cli.managed_uv.get_hermes_home", return_value=tmp_path):
+            from agentic_os_cli.managed_uv import resolve_uv
             assert resolve_uv() is None
 
 
@@ -74,28 +74,28 @@ class TestResolveUv:
 class TestEnsureUv:
     def test_already_installed_no_bootstrap(self, tmp_path):
         _make_executable(tmp_path / "bin" / "uv")
-        with patch("hermes_cli.managed_uv.get_hermes_home", return_value=tmp_path):
-            from hermes_cli.managed_uv import ensure_uv
+        with patch("agentic_os_cli.managed_uv.get_hermes_home", return_value=tmp_path):
+            from agentic_os_cli.managed_uv import ensure_uv
             path = ensure_uv()
             assert path == str(tmp_path / "bin" / "uv")
 
     def test_installs_if_missing(self, tmp_path):
-        with patch("hermes_cli.managed_uv.get_hermes_home", return_value=tmp_path), \
-             patch("hermes_cli.managed_uv._install_uv") as mock_install:
+        with patch("agentic_os_cli.managed_uv.get_hermes_home", return_value=tmp_path), \
+             patch("agentic_os_cli.managed_uv._install_uv") as mock_install:
             # Simulate the installer creating the binary
             def fake_install(target):
                 _make_executable(target)
             mock_install.side_effect = fake_install
 
-            from hermes_cli.managed_uv import ensure_uv
+            from agentic_os_cli.managed_uv import ensure_uv
             path = ensure_uv()
             assert path == str(tmp_path / "bin" / "uv")
             mock_install.assert_called_once()
 
     def test_install_failure_returns_falsy(self, tmp_path):
-        with patch("hermes_cli.managed_uv.get_hermes_home", return_value=tmp_path), \
-             patch("hermes_cli.managed_uv._install_uv", side_effect=RuntimeError("network down")):
-            from hermes_cli.managed_uv import ensure_uv
+        with patch("agentic_os_cli.managed_uv.get_hermes_home", return_value=tmp_path), \
+             patch("agentic_os_cli.managed_uv._install_uv", side_effect=RuntimeError("network down")):
+            from agentic_os_cli.managed_uv import ensure_uv
             path = ensure_uv()
             # Failure is a falsy sentinel (not None) so legacy 2-target call
             # sites can still unpack it without raising — see
@@ -108,7 +108,7 @@ class TestEnsureUvUpdateBoundary:
     ``(path, fresh_bootstrap)`` call conventions — **on POSIX**.
 
     ``hermes update`` runs the call site from the old, already-imported
-    ``hermes_cli.main`` against the freshly pulled ``managed_uv``. A release
+    ``agentic_os_cli.main`` against the freshly pulled ``managed_uv``. A release
     parked on a ``(path, fresh)`` tuple runs ``uv_bin, fresh = ensure_uv()``
     against the single-value module; the path is an iterable ``str`` so the
     2-target unpack walked its characters and raised
@@ -124,27 +124,27 @@ class TestEnsureUvUpdateBoundary:
 
     def test_success_usable_as_single_value(self, tmp_path):
         _make_executable(tmp_path / "bin" / "uv")
-        with patch("hermes_cli.managed_uv.get_hermes_home", return_value=tmp_path), \
-             patch("hermes_cli.managed_uv.platform.system", return_value="Linux"):
-            from hermes_cli.managed_uv import ensure_uv
+        with patch("agentic_os_cli.managed_uv.get_hermes_home", return_value=tmp_path), \
+             patch("agentic_os_cli.managed_uv.platform.system", return_value="Linux"):
+            from agentic_os_cli.managed_uv import ensure_uv
             uv_bin = ensure_uv()
             assert uv_bin == str(tmp_path / "bin" / "uv")
             assert bool(uv_bin) is True
 
     def test_success_unpacks_as_legacy_two_tuple(self, tmp_path):
         _make_executable(tmp_path / "bin" / "uv")
-        with patch("hermes_cli.managed_uv.get_hermes_home", return_value=tmp_path), \
-             patch("hermes_cli.managed_uv.platform.system", return_value="Linux"):
-            from hermes_cli.managed_uv import ensure_uv
+        with patch("agentic_os_cli.managed_uv.get_hermes_home", return_value=tmp_path), \
+             patch("agentic_os_cli.managed_uv.platform.system", return_value="Linux"):
+            from agentic_os_cli.managed_uv import ensure_uv
             uv_bin, fresh = ensure_uv()  # old: uv_bin, fresh_bootstrap = ensure_uv()
             assert uv_bin == str(tmp_path / "bin" / "uv")
             assert fresh is False
 
     def test_failure_unpacks_without_raising(self, tmp_path):
-        with patch("hermes_cli.managed_uv.get_hermes_home", return_value=tmp_path), \
-             patch("hermes_cli.managed_uv.platform.system", return_value="Linux"), \
-             patch("hermes_cli.managed_uv._install_uv", side_effect=RuntimeError("network down")):
-            from hermes_cli.managed_uv import ensure_uv
+        with patch("agentic_os_cli.managed_uv.get_hermes_home", return_value=tmp_path), \
+             patch("agentic_os_cli.managed_uv.platform.system", return_value="Linux"), \
+             patch("agentic_os_cli.managed_uv._install_uv", side_effect=RuntimeError("network down")):
+            from agentic_os_cli.managed_uv import ensure_uv
             uv_bin, fresh = ensure_uv()
             assert uv_bin is None
             assert fresh is False
@@ -171,7 +171,7 @@ class TestEnsureUvWindowsSafe:
         # change makes _UvResult char-iterable (and thus list2cmdline-safe),
         # the gate may be revisited.
         import subprocess
-        from hermes_cli.managed_uv import _UvResult
+        from agentic_os_cli.managed_uv import _UvResult
         with pytest.raises(TypeError):
             subprocess.list2cmdline([_UvResult("C:\\hermes\\uv.exe"), "pip"])
 
@@ -179,9 +179,9 @@ class TestEnsureUvWindowsSafe:
         import subprocess
         # On (mocked) Windows the managed binary is uv.exe.
         _make_executable(tmp_path / "bin" / "uv.exe")
-        with patch("hermes_cli.managed_uv.get_hermes_home", return_value=tmp_path), \
-             patch("hermes_cli.managed_uv.platform.system", return_value="Windows"):
-            from hermes_cli.managed_uv import _UvResult, ensure_uv
+        with patch("agentic_os_cli.managed_uv.get_hermes_home", return_value=tmp_path), \
+             patch("agentic_os_cli.managed_uv.platform.system", return_value="Windows"):
+            from agentic_os_cli.managed_uv import _UvResult, ensure_uv
             uv_bin = ensure_uv()
             assert type(uv_bin) is str and not isinstance(uv_bin, _UvResult)
             # The exact operation that crashed in the field must now succeed.
@@ -189,10 +189,10 @@ class TestEnsureUvWindowsSafe:
             assert "pip" in cmdline and "install" in cmdline
 
     def test_windows_failure_returns_none(self, tmp_path):
-        with patch("hermes_cli.managed_uv.get_hermes_home", return_value=tmp_path), \
-             patch("hermes_cli.managed_uv.platform.system", return_value="Windows"), \
-             patch("hermes_cli.managed_uv._install_uv", side_effect=RuntimeError("network down")):
-            from hermes_cli.managed_uv import ensure_uv
+        with patch("agentic_os_cli.managed_uv.get_hermes_home", return_value=tmp_path), \
+             patch("agentic_os_cli.managed_uv.platform.system", return_value="Windows"), \
+             patch("agentic_os_cli.managed_uv._install_uv", side_effect=RuntimeError("network down")):
+            from agentic_os_cli.managed_uv import ensure_uv
             assert ensure_uv() is None
 
 
@@ -202,17 +202,17 @@ class TestEnsureUvWindowsSafe:
 
 class TestUpdateManagedUv:
     def test_no_uv_returns_none(self, tmp_path):
-        with patch("hermes_cli.managed_uv.get_hermes_home", return_value=tmp_path):
-            from hermes_cli.managed_uv import update_managed_uv
+        with patch("agentic_os_cli.managed_uv.get_hermes_home", return_value=tmp_path):
+            from agentic_os_cli.managed_uv import update_managed_uv
             assert update_managed_uv() is None
 
     def test_self_update_success(self, tmp_path):
         _make_executable(tmp_path / "bin" / "uv")
-        with patch("hermes_cli.managed_uv.get_hermes_home", return_value=tmp_path), \
-             patch("hermes_cli.managed_uv.subprocess.run") as mock_run:
+        with patch("agentic_os_cli.managed_uv.get_hermes_home", return_value=tmp_path), \
+             patch("agentic_os_cli.managed_uv.subprocess.run") as mock_run:
             # uv self update succeeds
             mock_run.return_value = MagicMock(returncode=0, stdout="uv 0.2.0")
-            from hermes_cli.managed_uv import update_managed_uv
+            from agentic_os_cli.managed_uv import update_managed_uv
             result = update_managed_uv()
             assert result == str(tmp_path / "bin" / "uv")
             # First call is self update, second is --version
@@ -221,10 +221,10 @@ class TestUpdateManagedUv:
 
     def test_self_update_failure_non_fatal(self, tmp_path):
         _make_executable(tmp_path / "bin" / "uv")
-        with patch("hermes_cli.managed_uv.get_hermes_home", return_value=tmp_path), \
-             patch("hermes_cli.managed_uv.subprocess.run") as mock_run:
+        with patch("agentic_os_cli.managed_uv.get_hermes_home", return_value=tmp_path), \
+             patch("agentic_os_cli.managed_uv.subprocess.run") as mock_run:
             mock_run.return_value = MagicMock(returncode=1, stderr="nope")
-            from hermes_cli.managed_uv import update_managed_uv
+            from agentic_os_cli.managed_uv import update_managed_uv
             result = update_managed_uv()
             # Still returns the path — failure is non-fatal
             assert result == str(tmp_path / "bin" / "uv")
@@ -237,8 +237,8 @@ class TestUpdateManagedUv:
 class TestInstallUvInternals:
     def test_posix_sets_uv_unmanaged_install(self, tmp_path):
         target = tmp_path / "bin" / "uv"
-        with patch("hermes_cli.managed_uv._install_uv_posix") as mock_posix:
-            from hermes_cli.managed_uv import _install_uv
+        with patch("agentic_os_cli.managed_uv._install_uv_posix") as mock_posix:
+            from agentic_os_cli.managed_uv import _install_uv
             _install_uv(target)
             mock_posix.assert_called_once()
             call_env = mock_posix.call_args[0][0]
@@ -246,9 +246,9 @@ class TestInstallUvInternals:
 
     def test_windows_sets_uv_install_dir(self, tmp_path):
         target = tmp_path / "bin" / "uv.exe"
-        with patch("hermes_cli.managed_uv.platform.system", return_value="Windows"), \
-             patch("hermes_cli.managed_uv._install_uv_windows") as mock_windows:
-            from hermes_cli.managed_uv import _install_uv
+        with patch("agentic_os_cli.managed_uv.platform.system", return_value="Windows"), \
+             patch("agentic_os_cli.managed_uv._install_uv_windows") as mock_windows:
+            from agentic_os_cli.managed_uv import _install_uv
             _install_uv(target)
             mock_windows.assert_called_once()
             call_env = mock_windows.call_args[0][0]

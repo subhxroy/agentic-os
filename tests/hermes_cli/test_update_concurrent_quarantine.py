@@ -17,11 +17,11 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from hermes_cli import main as cli_main
+from agentic_os_cli import main as cli_main
 
 
 # Tests in this module either exercise the REAL _detect_concurrent_hermes_instances
-# helper (and need the autouse stub in tests/hermes_cli/conftest.py disabled),
+# helper (and need the autouse stub in tests/agentic_os_cli/conftest.py disabled),
 # or supply their own explicit return value via patch.object. Mark the whole
 # module so the conftest fixture skips its default stub.
 pytestmark = pytest.mark.real_concurrent_gate
@@ -460,7 +460,7 @@ def test_pause_windows_gateways_for_update_stops_profile_and_unmapped_pids(
     capsys,
 ):
     import gateway.status as status_mod
-    import hermes_cli.gateway as gateway_mod
+    import agentic_os_cli.gateway as gateway_mod
 
     profile_home = tmp_path / "profiles" / "work"
     profile_home.mkdir(parents=True)
@@ -483,7 +483,7 @@ def test_pause_windows_gateways_for_update_stops_profile_and_unmapped_pids(
     monkeypatch.setattr(
         gateway_mod,
         "_capture_gateway_argv",
-        lambda pid: ["pythonw.exe", "-m", "hermes_cli.main", "gateway", "run"]
+        lambda pid: ["pythonw.exe", "-m", "agentic_os_cli.main", "gateway", "run"]
         if pid == 202
         else None,
     )
@@ -504,7 +504,7 @@ def test_pause_windows_gateways_for_update_stops_profile_and_unmapped_pids(
         "unmapped": [
             {
                 "pid": 202,
-                "argv": ["pythonw.exe", "-m", "hermes_cli.main", "gateway", "run"],
+                "argv": ["pythonw.exe", "-m", "agentic_os_cli.main", "gateway", "run"],
             }
         ],
     }
@@ -529,7 +529,7 @@ def test_resume_windows_gateways_after_update_relaunches_paused_profiles(
     monkeypatch,
     capsys,
 ):
-    import hermes_cli.gateway as gateway_mod
+    import agentic_os_cli.gateway as gateway_mod
 
     relaunched = []
     monkeypatch.setattr(
@@ -562,7 +562,7 @@ def test_resume_windows_gateways_after_update_respawns_unmapped_by_cmdline(
 ):
     """Unmapped gateways (no profile→PID-file mapping, e.g. a Scheduled Task)
     are respawned by replaying the argv snapshotted before the force-kill."""
-    import hermes_cli.gateway as gateway_mod
+    import agentic_os_cli.gateway as gateway_mod
 
     by_cmdline = []
     monkeypatch.setattr(
@@ -576,7 +576,7 @@ def test_resume_windows_gateways_after_update_respawns_unmapped_by_cmdline(
         lambda profile, old_pid: True,
     )
 
-    scheduled_argv = ["pythonw.exe", "-m", "hermes_cli.main", "gateway", "run"]
+    scheduled_argv = ["pythonw.exe", "-m", "agentic_os_cli.main", "gateway", "run"]
     token = {
         "resume_needed": True,
         "profiles": {},
@@ -609,8 +609,8 @@ def test_pause_returns_cold_start_token_when_installed_but_none_running(
     is an explicit "I want a gateway" signal. The pause step must return a
     token that tells resume to cold-start one.
     """
-    import hermes_cli.gateway as gateway_mod
-    from hermes_cli import gateway_windows
+    import agentic_os_cli.gateway as gateway_mod
+    from agentic_os_cli import gateway_windows
 
     monkeypatch.setattr(gateway_mod, "find_gateway_pids", lambda **_k: [])
     monkeypatch.setattr(gateway_windows, "is_installed", lambda: True)
@@ -636,8 +636,8 @@ def test_pause_returns_none_when_nothing_running_and_not_installed(
     Users who deliberately run without a gateway must not get one forced on
     them by an update.
     """
-    import hermes_cli.gateway as gateway_mod
-    from hermes_cli import gateway_windows
+    import agentic_os_cli.gateway as gateway_mod
+    from agentic_os_cli import gateway_windows
 
     monkeypatch.setattr(gateway_mod, "find_gateway_pids", lambda **_k: [])
     monkeypatch.setattr(gateway_windows, "is_installed", lambda: False)
@@ -652,8 +652,8 @@ def test_resume_cold_starts_gateway_when_token_requests_it(
     capsys,
 ):
     """cold_start_if_installed token + nothing running → fresh detached spawn."""
-    import hermes_cli.gateway as gateway_mod
-    from hermes_cli import gateway_windows
+    import agentic_os_cli.gateway as gateway_mod
+    from agentic_os_cli import gateway_windows
 
     monkeypatch.setattr(gateway_mod, "find_gateway_pids", lambda **_k: [])
     spawned = []
@@ -686,8 +686,8 @@ def test_resume_cold_start_skips_when_gateway_already_running(
 ):
     """Don't double-start: if a gateway came up between pause and resume
     (e.g. the autostart entry fired), the cold-start must no-op."""
-    import hermes_cli.gateway as gateway_mod
-    from hermes_cli import gateway_windows
+    import agentic_os_cli.gateway as gateway_mod
+    from agentic_os_cli import gateway_windows
 
     monkeypatch.setattr(gateway_mod, "find_gateway_pids", lambda **_k: [9001])
     spawned = []

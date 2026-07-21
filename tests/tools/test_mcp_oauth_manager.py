@@ -13,7 +13,7 @@ import pytest
 
 
 def test_manager_isolates_same_named_servers_by_profile_home(tmp_path, monkeypatch):
-    from hermes_constants import reset_hermes_home_override, set_hermes_home_override
+    from agentic_os_constants import reset_hermes_home_override, set_hermes_home_override
     from tools.mcp_oauth import HermesTokenStorage
     from tools.mcp_oauth_manager import MCPOAuthManager
 
@@ -48,7 +48,7 @@ def test_manager_isolates_same_named_servers_by_profile_home(tmp_path, monkeypat
 
 
 def test_manager_explicit_home_removes_only_that_profiles_tokens(tmp_path):
-    from hermes_constants import reset_hermes_home_override, set_hermes_home_override
+    from agentic_os_constants import reset_hermes_home_override, set_hermes_home_override
     from tools.mcp_oauth import HermesTokenStorage
     from tools.mcp_oauth_manager import MCPOAuthManager
 

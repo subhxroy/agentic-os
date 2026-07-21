@@ -35,7 +35,7 @@ def _synthetic_worker_script() -> str:
     """A standalone script that mirrors cli.py's single-query SIGTERM handler.
 
     Keeping the synthetic copy here means the test exercises the exact handler
-    shape without needing the full hermes_cli boot path (config, providers,
+    shape without needing the full agentic_os_cli boot path (config, providers,
     skills, etc.). If the production handler in cli.py drifts, the test
     that loads the real handler (test_real_handler_uses_os_exit) will catch it.
     """
@@ -79,7 +79,7 @@ def _synthetic_worker_script() -> str:
 
 
 def _is_alive_like_dispatcher(pid: int) -> bool:
-    """Mirrors hermes_cli/kanban_db.py:_pid_alive on Linux.
+    """Mirrors agentic_os_cli/kanban_db.py:_pid_alive on Linux.
 
     A zombie is treated as dead — the dispatcher's _pid_alive checks
     /proc/<pid>/status for State: Z. We replicate that here so a clean

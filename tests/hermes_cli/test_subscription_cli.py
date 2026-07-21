@@ -14,7 +14,7 @@ import pytest
 
 import agent.billing_usage as bu
 import agent.subscription_view as sv
-import hermes_cli.nous_billing as nb
+import agentic_os_cli.nous_billing as nb
 from agent.subscription_view import CurrentSubscription, SubscriptionState, SubscriptionTier
 from cli import HermesCLI
 
@@ -162,7 +162,7 @@ def test_insufficient_scope_triggers_stepup_then_replays(cli, monkeypatch, capsy
         return {"message": "Scheduled."}
 
     monkeypatch.setattr(nb, "put_subscription_pending_change", _put)
-    import hermes_cli.auth as auth
+    import agentic_os_cli.auth as auth
 
     monkeypatch.setattr(auth, "step_up_nous_billing_scope", lambda **kw: True, raising=False)
 
@@ -186,7 +186,7 @@ def test_stepup_declined_grant_does_not_replay(cli, monkeypatch, capsys):
         raise nb.BillingScopeRequired("remote spending required")
 
     monkeypatch.setattr(nb, "put_subscription_pending_change", _put)
-    import hermes_cli.auth as auth
+    import agentic_os_cli.auth as auth
 
     monkeypatch.setattr(auth, "step_up_nous_billing_scope", lambda **kw: False, raising=False)
 
@@ -227,7 +227,7 @@ def test_bounded_stepup_does_not_loop_on_repeat_denial(cli, monkeypatch, capsys)
         raise nb.BillingScopeRequired("still no scope")
 
     monkeypatch.setattr(nb, "put_subscription_pending_change", _put)
-    import hermes_cli.auth as auth
+    import agentic_os_cli.auth as auth
 
     monkeypatch.setattr(auth, "step_up_nous_billing_scope", lambda **kw: True, raising=False)
 

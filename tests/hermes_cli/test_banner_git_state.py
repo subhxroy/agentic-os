@@ -2,7 +2,7 @@ from unittest.mock import MagicMock, patch
 
 
 def test_format_banner_version_label_without_git_state():
-    from hermes_cli import banner
+    from agentic_os_cli import banner
 
     with patch.object(banner, "get_git_banner_state", return_value=None):
         value = banner.format_banner_version_label()
@@ -11,7 +11,7 @@ def test_format_banner_version_label_without_git_state():
 
 
 def test_format_banner_version_label_on_upstream_main():
-    from hermes_cli import banner
+    from agentic_os_cli import banner
 
     with patch.object(
         banner,
@@ -25,7 +25,7 @@ def test_format_banner_version_label_on_upstream_main():
 
 
 def test_format_banner_version_label_with_carried_commits():
-    from hermes_cli import banner
+    from agentic_os_cli import banner
 
     with patch.object(
         banner,
@@ -40,7 +40,7 @@ def test_format_banner_version_label_with_carried_commits():
 
 
 def test_get_git_banner_state_reads_origin_and_head(tmp_path):
-    from hermes_cli import banner
+    from agentic_os_cli import banner
 
     repo_dir = tmp_path / "repo"
     (repo_dir / ".git").mkdir(parents=True)
@@ -57,7 +57,7 @@ def test_get_git_banner_state_reads_origin_and_head(tmp_path):
             raise AssertionError(f"unexpected command: {cmd}")
         return results[key]
 
-    with patch("hermes_cli.banner.subprocess.run", side_effect=fake_run):
+    with patch("agentic_os_cli.banner.subprocess.run", side_effect=fake_run):
         state = banner.get_git_banner_state(repo_dir)
 
     assert state == {"upstream": "b2f477a3", "local": "af8aad31", "ahead": 3}
@@ -72,10 +72,10 @@ def test_get_git_banner_state_falls_back_to_build_sha_when_no_repo():
     The banner should still report the build SHA so support bug reports
     can identify the running commit.
     """
-    from hermes_cli import banner
+    from agentic_os_cli import banner
 
     with patch.object(banner, "_resolve_repo_dir", return_value=None), \
-         patch("hermes_cli.build_info.get_build_sha", return_value="abcdef12"):
+         patch("agentic_os_cli.build_info.get_build_sha", return_value="abcdef12"):
         state = banner.get_git_banner_state()
 
     assert state == {"upstream": "abcdef12", "local": "abcdef12", "ahead": 0}
@@ -86,10 +86,10 @@ def test_get_git_banner_state_returns_none_when_no_repo_and_no_build_sha():
 
     Banner correctly omits the upstream/local suffix in this case.
     """
-    from hermes_cli import banner
+    from agentic_os_cli import banner
 
     with patch.object(banner, "_resolve_repo_dir", return_value=None), \
-         patch("hermes_cli.build_info.get_build_sha", return_value=None):
+         patch("agentic_os_cli.build_info.get_build_sha", return_value=None):
         state = banner.get_git_banner_state()
 
     assert state is None
@@ -102,15 +102,15 @@ def test_get_git_banner_state_falls_back_when_live_git_returns_nothing(tmp_path)
     a ``.git`` directory but ``git rev-parse origin/main`` fails.  When that
     happens AND a baked SHA exists, return the baked one instead of None.
     """
-    from hermes_cli import banner
+    from agentic_os_cli import banner
 
     repo_dir = tmp_path / "repo"
     (repo_dir / ".git").mkdir(parents=True)
 
     # All git invocations fail (returncode=1, empty stdout).
     failed = MagicMock(returncode=1, stdout="")
-    with patch("hermes_cli.banner.subprocess.run", return_value=failed), \
-         patch("hermes_cli.build_info.get_build_sha", return_value="cafef00d"):
+    with patch("agentic_os_cli.banner.subprocess.run", return_value=failed), \
+         patch("agentic_os_cli.build_info.get_build_sha", return_value="cafef00d"):
         state = banner.get_git_banner_state(repo_dir)
 
     assert state == {"upstream": "cafef00d", "local": "cafef00d", "ahead": 0}

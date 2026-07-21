@@ -1,7 +1,7 @@
 """Tests that ``model_catalog.excluded_providers`` hides providers from the
 interactive ``hermes model`` CLI picker.
 
-The CLI picker (``hermes_cli.main.select_provider_and_model``) builds its
+The CLI picker (``agentic_os_cli.main.select_provider_and_model``) builds its
 provider menu from ``CANONICAL_PROVIDERS`` via ``group_providers`` — a
 separate code path from ``list_authenticated_providers``. These tests
 verify the exclusion config is honored there too, matching the
@@ -42,7 +42,7 @@ def _capture_provider_labels(config_home):
     """Drive ``select_provider_and_model`` and return the provider-menu labels
     shown to the user (the first ``_prompt_provider_choice`` call). Cancels
     immediately after capturing."""
-    from hermes_cli.main import select_provider_and_model
+    from agentic_os_cli.main import select_provider_and_model
 
     captured: dict = {}
 
@@ -52,7 +52,7 @@ def _capture_provider_labels(config_home):
             captured["labels"] = list(labels)
         return None  # cancel
 
-    with patch("hermes_cli.main._prompt_provider_choice",
+    with patch("agentic_os_cli.main._prompt_provider_choice",
                side_effect=_capture_and_cancel), \
          patch("builtins.print"):
         select_provider_and_model()
@@ -79,7 +79,7 @@ def test_cli_picker_hides_excluded_provider_by_alias(config_home):
     # 'openai' is an alias-style hermes id; ensure excluding it hides the
     # canonical openai provider row if present. Use the canonical slug's
     # alias from _PROVIDER_ALIASES to stay robust to renames.
-    from hermes_cli.models import _PROVIDER_ALIASES, CANONICAL_PROVIDERS
+    from agentic_os_cli.models import _PROVIDER_ALIASES, CANONICAL_PROVIDERS
 
     # Find a canonical provider that has at least one alias and is a leaf
     # row (not folded into a multi-member group) so its label appears
@@ -94,7 +94,7 @@ def test_cli_picker_hides_excluded_provider_by_alias(config_home):
     if target_slug is None:
         pytest.skip("no aliased canonical provider available to test")
 
-    from hermes_cli.models import _PROVIDER_LABELS
+    from agentic_os_cli.models import _PROVIDER_LABELS
     target_label_fragment = _PROVIDER_LABELS.get(target_slug, target_slug)
 
     # Baseline: the provider appears without exclusion.

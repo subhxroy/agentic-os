@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from gateway.config import GatewayConfig
-from hermes_cli import gateway as gateway_cli
+from agentic_os_cli import gateway as gateway_cli
 
 
 def test_default_user_unit_keeps_simple_service_without_watchdog(monkeypatch):
@@ -114,7 +114,7 @@ def test_managed_watchdog_override_controls_generated_unit(tmp_path, monkeypatch
     monkeypatch.setenv("HERMES_HOME", str(hermes_home))
     monkeypatch.setenv("HERMES_MANAGED_DIR", str(managed_home))
 
-    from hermes_cli import managed_scope
+    from agentic_os_cli import managed_scope
 
     managed_scope.invalidate_managed_cache()
     unit = gateway_cli.generate_systemd_unit(system=False)

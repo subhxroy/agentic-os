@@ -34,7 +34,7 @@ from agent.prompt_builder import (
     PLATFORM_HINTS,
     WSL_ENVIRONMENT_HINT,
 )
-from hermes_cli.nous_subscription import NousFeatureState, NousSubscriptionFeatures
+from agentic_os_cli.nous_subscription import NousFeatureState, NousSubscriptionFeatures
 
 
 # =========================================================================
@@ -136,7 +136,7 @@ class TestTruncateContent:
         def default_load_config():
             return {}
 
-        monkeypatch.setattr("hermes_cli.config.load_config", default_load_config)
+        monkeypatch.setattr("agentic_os_cli.config.load_config", default_load_config)
 
     def test_context_file_max_chars_default_matches_upstream_limit(self):
         assert CONTEXT_FILE_MAX_CHARS == 20_000
@@ -170,7 +170,7 @@ class TestTruncateContent:
         def fake_load_config():
             return {"context_file_max_chars": 120}
 
-        monkeypatch.setattr("hermes_cli.config.load_config", fake_load_config)
+        monkeypatch.setattr("agentic_os_cli.config.load_config", fake_load_config)
         content = "HEAD" + "x" * 160 + "TAIL"
 
         result = _truncate_content(content, "config.md")
@@ -185,7 +185,7 @@ class TestTruncateContent:
         def fake_load_config():
             return {"context_file_max_chars": 120}
 
-        monkeypatch.setattr("hermes_cli.config.load_config", fake_load_config)
+        monkeypatch.setattr("agentic_os_cli.config.load_config", fake_load_config)
         content = "x" * 180
 
         result = _truncate_content(content, "explicit.md", max_chars=200)
@@ -196,7 +196,7 @@ class TestTruncateContent:
         def fake_load_config():
             return {"context_file_max_chars": 120}
 
-        monkeypatch.setattr("hermes_cli.config.load_config", fake_load_config)
+        monkeypatch.setattr("agentic_os_cli.config.load_config", fake_load_config)
 
         _truncate_content("x" * 180, "warning.md")
 
@@ -213,7 +213,7 @@ class TestTruncateContent:
         def fake_load_config():
             return {"context_file_max_chars": 120}
 
-        monkeypatch.setattr("hermes_cli.config.load_config", fake_load_config)
+        monkeypatch.setattr("agentic_os_cli.config.load_config", fake_load_config)
 
         # Generate a warning in a fresh child context, then assert it did NOT
         # leak into the parent context's accumulator.
@@ -241,7 +241,7 @@ class TestDynamicContextFileCap:
     @pytest.fixture(autouse=True)
     def _no_explicit_config(self, monkeypatch):
         # No explicit context_file_max_chars → dynamic path is eligible.
-        monkeypatch.setattr("hermes_cli.config.load_config", lambda: {})
+        monkeypatch.setattr("agentic_os_cli.config.load_config", lambda: {})
 
     def test_dynamic_floor_for_small_window(self):
         # A small context window never drops below the historical 20K floor.
@@ -270,7 +270,7 @@ class TestDynamicContextFileCap:
     def test_explicit_config_beats_dynamic(self, monkeypatch):
         # An explicit value always wins, even when a big window is available.
         monkeypatch.setattr(
-            "hermes_cli.config.load_config",
+            "agentic_os_cli.config.load_config",
             lambda: {"context_file_max_chars": 1_000},
         )
         assert _get_context_file_max_chars(200_000) == 1_000
@@ -640,7 +640,7 @@ class TestBuildNousSubscriptionPrompt:
     def test_includes_active_subscription_features(self, monkeypatch):
         monkeypatch.setattr("tools.tool_backend_helpers.managed_nous_tools_enabled", lambda: True)
         monkeypatch.setattr(
-            "hermes_cli.nous_subscription.get_nous_subscription_features",
+            "agentic_os_cli.nous_subscription.get_nous_subscription_features",
             lambda config=None: NousSubscriptionFeatures(
                 subscribed=True,
                 nous_auth_present=True,
@@ -666,7 +666,7 @@ class TestBuildNousSubscriptionPrompt:
     def test_non_subscriber_prompt_includes_relevant_upgrade_guidance(self, monkeypatch):
         monkeypatch.setattr("tools.tool_backend_helpers.managed_nous_tools_enabled", lambda: True)
         monkeypatch.setattr(
-            "hermes_cli.nous_subscription.get_nous_subscription_features",
+            "agentic_os_cli.nous_subscription.get_nous_subscription_features",
             lambda config=None: NousSubscriptionFeatures(
                 subscribed=False,
                 nous_auth_present=False,
@@ -1384,7 +1384,7 @@ class TestEnvironmentHints:
         monkeypatch.delenv("TERMINAL_ENV", raising=False)
         monkeypatch.setenv("HERMES_ENVIRONMENT_HINT", "ENV-WINS")
         monkeypatch.setattr(
-            "hermes_cli.config.load_config",
+            "agentic_os_cli.config.load_config",
             lambda: {"agent": {"environment_hint": "CONFIG-VALUE"}},
         )
         _pb._clear_backend_probe_cache()
@@ -1399,7 +1399,7 @@ class TestEnvironmentHints:
         monkeypatch.delenv("TERMINAL_ENV", raising=False)
         monkeypatch.delenv("HERMES_ENVIRONMENT_HINT", raising=False)
         monkeypatch.setattr(
-            "hermes_cli.config.load_config",
+            "agentic_os_cli.config.load_config",
             lambda: {"agent": {"environment_hint": "CONFIG-VALUE"}},
         )
         _pb._clear_backend_probe_cache()
@@ -1412,7 +1412,7 @@ class TestEnvironmentHints:
         monkeypatch.setattr(_pb, "is_wsl", lambda: False)
         monkeypatch.delenv("TERMINAL_ENV", raising=False)
         monkeypatch.delenv("HERMES_ENVIRONMENT_HINT", raising=False)
-        monkeypatch.setattr("hermes_cli.config.load_config", lambda: {"agent": {}})
+        monkeypatch.setattr("agentic_os_cli.config.load_config", lambda: {"agent": {}})
         _pb._clear_backend_probe_cache()
         result = _pb.build_environment_hints()
         assert "Host:" in result

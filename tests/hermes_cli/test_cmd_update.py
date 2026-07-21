@@ -7,7 +7,7 @@ from unittest.mock import patch
 
 import pytest
 
-from hermes_cli.main import cmd_update, PROJECT_ROOT
+from agentic_os_cli.main import cmd_update, PROJECT_ROOT
 
 
 def _make_run_side_effect(branch="main", verify_ok=True, commit_count="0"):
@@ -65,9 +65,9 @@ def _patch_managed_uv(request):
     def _fake_update_managed_uv():
         return None  # never actually self-update in tests
 
-    with patch("hermes_cli.managed_uv.resolve_uv", side_effect=_fake_resolve_uv), \
-         patch("hermes_cli.managed_uv.ensure_uv", side_effect=_fake_ensure_uv), \
-         patch("hermes_cli.managed_uv.update_managed_uv", side_effect=_fake_update_managed_uv):
+    with patch("agentic_os_cli.managed_uv.resolve_uv", side_effect=_fake_resolve_uv), \
+         patch("agentic_os_cli.managed_uv.ensure_uv", side_effect=_fake_ensure_uv), \
+         patch("agentic_os_cli.managed_uv.update_managed_uv", side_effect=_fake_update_managed_uv):
         yield
 
 
@@ -78,7 +78,7 @@ class TestCmdUpdateNpmLockfileCache:
         return hermes_root / f".npm_lock_hash_{cache_key}"
 
     def test_npm_lockfile_changed_no_cache(self, tmp_path, monkeypatch):
-        from hermes_cli import main as hm
+        from agentic_os_cli import main as hm
 
         monkeypatch.setattr(hm, "PROJECT_ROOT", tmp_path)
         (tmp_path / "package-lock.json").write_text('{"lockfileVersion": 3}')
@@ -87,7 +87,7 @@ class TestCmdUpdateNpmLockfileCache:
         assert hm._npm_lockfile_changed(tmp_path) is True
 
     def test_npm_lockfile_changed_matching(self, tmp_path, monkeypatch):
-        from hermes_cli import main as hm
+        from agentic_os_cli import main as hm
 
         monkeypatch.setattr(hm, "PROJECT_ROOT", tmp_path)
         (tmp_path / "package-lock.json").write_text('{"lockfileVersion": 3}')
@@ -97,7 +97,7 @@ class TestCmdUpdateNpmLockfileCache:
         assert hm._npm_lockfile_changed(tmp_path) is False
 
     def test_npm_lockfile_changed_mismatch(self, tmp_path, monkeypatch):
-        from hermes_cli import main as hm
+        from agentic_os_cli import main as hm
 
         monkeypatch.setattr(hm, "PROJECT_ROOT", tmp_path)
         (tmp_path / "package-lock.json").write_text('{"lockfileVersion": 3}')
@@ -107,7 +107,7 @@ class TestCmdUpdateNpmLockfileCache:
         assert hm._npm_lockfile_changed(tmp_path) is True
 
     def test_npm_lockfile_changed_missing_node_modules(self, tmp_path, monkeypatch):
-        from hermes_cli import main as hm
+        from agentic_os_cli import main as hm
 
         content = b'{"lockfileVersion": 3}'
         monkeypatch.setattr(hm, "PROJECT_ROOT", tmp_path)
@@ -119,7 +119,7 @@ class TestCmdUpdateNpmLockfileCache:
         assert hm._npm_lockfile_changed(tmp_path) is True
 
     def test_record_npm_lockfile_hash(self, tmp_path, monkeypatch):
-        from hermes_cli import main as hm
+        from agentic_os_cli import main as hm
 
         monkeypatch.setattr(hm, "PROJECT_ROOT", tmp_path)
         (tmp_path / "package-lock.json").write_text('{"lockfileVersion": 3}')
@@ -135,7 +135,7 @@ class TestCmdUpdateNpmLockfileCache:
         """Reviewer scenario (#61580): dev edits package.json WITHOUT running
         npm — lockfile unchanged. `hermes update` must still install (the
         npm-install fallback is what syncs node_modules in that state)."""
-        from hermes_cli import main as hm
+        from agentic_os_cli import main as hm
 
         monkeypatch.setattr(hm, "PROJECT_ROOT", tmp_path)
         (tmp_path / "package-lock.json").write_text('{"lockfileVersion": 3}')
@@ -153,7 +153,7 @@ class TestCmdUpdateNpmLockfileCache:
         """The manifest list comes from the root package.json `workspaces`
         globs (npm's source of truth), so ANY workspace (desktop included)
         defeats the skip, not a hardcoded set."""
-        from hermes_cli import main as hm
+        from agentic_os_cli import main as hm
 
         monkeypatch.setattr(hm, "PROJECT_ROOT", tmp_path)
         (tmp_path / "package-lock.json").write_text('{"lockfileVersion": 3}')
@@ -183,7 +183,7 @@ class TestCmdUpdateNpmLockfileCache:
     def test_new_workspace_added_defeats_skip(self, tmp_path, monkeypatch):
         """Adding a whole new workspace dir under an existing glob changes
         the manifest set itself — must also defeat the skip."""
-        from hermes_cli import main as hm
+        from agentic_os_cli import main as hm
 
         monkeypatch.setattr(hm, "PROJECT_ROOT", tmp_path)
         (tmp_path / "package-lock.json").write_text('{"lockfileVersion": 3}')
@@ -197,7 +197,7 @@ class TestCmdUpdateNpmLockfileCache:
         assert hm._npm_lockfile_changed(tmp_path) is True
 
     def test_npm_lockfile_changed_cache_read_error(self, tmp_path, monkeypatch):
-        from hermes_cli import main as hm
+        from agentic_os_cli import main as hm
 
         monkeypatch.setattr(hm, "PROJECT_ROOT", tmp_path)
         (tmp_path / "package-lock.json").write_text('{"lockfileVersion": 3}')
@@ -208,7 +208,7 @@ class TestCmdUpdateNpmLockfileCache:
         assert hm._npm_lockfile_changed(tmp_path) is True
 
     def test_update_skips_npm_when_lockfile_unchanged(self, tmp_path, monkeypatch):
-        from hermes_cli import main as hm
+        from agentic_os_cli import main as hm
 
         monkeypatch.setattr(hm, "PROJECT_ROOT", tmp_path)
         (tmp_path / "package.json").write_text("{}")
@@ -224,8 +224,8 @@ class TestCmdUpdateNpmLockfileCache:
         self, tmp_path, monkeypatch
     ):
         """The npm cache describes checkout-global node_modules, not a profile."""
-        from hermes_cli import main as hm
-        import hermes_constants
+        from agentic_os_cli import main as hm
+        import agentic_os_constants
 
         checkout = tmp_path / "checkout"
         checkout.mkdir()
@@ -235,9 +235,9 @@ class TestCmdUpdateNpmLockfileCache:
         named_profile.mkdir(parents=True)
 
         monkeypatch.setattr(hm, "PROJECT_ROOT", checkout)
-        monkeypatch.setattr(hermes_constants.Path, "home", lambda: tmp_path)
+        monkeypatch.setattr(agentic_os_constants.Path, "home", lambda: tmp_path)
         monkeypatch.setattr(
-            hermes_constants, "find_node_executable", lambda _name: "/usr/bin/npm"
+            agentic_os_constants, "find_node_executable", lambda _name: "/usr/bin/npm"
         )
 
         cache_roots = []
@@ -263,7 +263,7 @@ class TestCmdUpdatePip:
     def test_update_pip_exports_virtualenv_from_sys_prefix(
         self, mock_run, _mock_which, mock_args, monkeypatch
     ):
-        from hermes_cli import main as hm
+        from agentic_os_cli import main as hm
 
         mock_run.return_value = subprocess.CompletedProcess([], 0, stdout="", stderr="")
         monkeypatch.delenv("VIRTUAL_ENV", raising=False)
@@ -281,7 +281,7 @@ class TestCmdUpdatePip:
     def test_update_pip_does_not_export_virtualenv_for_system_python(
         self, mock_run, _mock_which, mock_args, monkeypatch
     ):
-        from hermes_cli import main as hm
+        from agentic_os_cli import main as hm
 
         mock_run.return_value = subprocess.CompletedProcess([], 0, stdout="", stderr="")
         monkeypatch.delenv("VIRTUAL_ENV", raising=False)
@@ -302,7 +302,7 @@ class TestCmdUpdateTermuxUvBootstrap:
     def test_termux_uv_bootstrap_uses_binary_only_install(
         self, mock_run, _mock_which, monkeypatch
     ):
-        from hermes_cli import main as hm
+        from agentic_os_cli import main as hm
 
         mock_run.return_value = subprocess.CompletedProcess([], 1, stdout="", stderr="")
         monkeypatch.setattr(hm, "_is_termux_env", lambda env=None: True)
@@ -326,13 +326,13 @@ class TestCmdUpdateTermuxUvBootstrap:
     @patch("subprocess.run")
     def test_termux_reuses_existing_path_uv_without_pip(self, mock_run, monkeypatch):
         """A uv already on PATH (e.g. ``pkg install uv``) is reused before pip runs."""
-        from hermes_cli import main as hm
+        from agentic_os_cli import main as hm
 
         pkg_uv = "/data/data/com.termux/files/usr/bin/uv"
         monkeypatch.setattr(hm, "_is_termux_env", lambda env=None: True)
         # Production resolve_uv only checks $HERMES_HOME/bin/uv; model an empty
         # managed dir so the PATH probe is what surfaces the packaged uv.
-        monkeypatch.setattr("hermes_cli.managed_uv.resolve_uv", lambda: None)
+        monkeypatch.setattr("agentic_os_cli.managed_uv.resolve_uv", lambda: None)
         monkeypatch.setattr("shutil.which", lambda name: pkg_uv if name == "uv" else None)
 
         uv_bin = hm._ensure_uv_for_termux(["/termux/python", "-m", "pip"])
@@ -418,7 +418,7 @@ class TestCmdUpdateBranchFallback:
         "Already up to date!" — otherwise a fork that's caught up to its own
         origin but behind NousResearch/hermes-agent silently misses updates.
         """
-        from hermes_cli import main as hm
+        from agentic_os_cli import main as hm
 
         mock_run.side_effect = _make_run_side_effect(
             branch="main", verify_ok=True, commit_count="0"
@@ -443,7 +443,7 @@ class TestCmdUpdateBranchFallback:
     def test_update_refreshes_repo_and_tui_node_dependencies(
         self, mock_run, mock_which, mock_args
     ):
-        from hermes_cli import main as hm
+        from agentic_os_cli import main as hm
 
         mock_which.side_effect = {"uv": "/usr/bin/uv", "npm": "/usr/bin/npm"}.get
         mock_run.side_effect = _make_run_side_effect(
@@ -543,14 +543,14 @@ class TestCmdUpdateBranchFallback:
         with patch("shutil.which", return_value=None), patch(
             "subprocess.run"
         ) as mock_run, patch("builtins.input") as mock_input, patch(
-            "hermes_cli.config.get_missing_env_vars", return_value=["MISSING_KEY"]
+            "agentic_os_cli.config.get_missing_env_vars", return_value=["MISSING_KEY"]
         ), patch(
-            "hermes_cli.config.get_missing_config_fields",
+            "agentic_os_cli.config.get_missing_config_fields",
             return_value=[{"key": "new.option", "default": True}],
-        ), patch("hermes_cli.config.check_config_version", return_value=(1, 2)), patch(
-            "hermes_cli.config.migrate_config",
+        ), patch("agentic_os_cli.config.check_config_version", return_value=(1, 2)), patch(
+            "agentic_os_cli.config.migrate_config",
             return_value={"env_added": [], "config_added": ["new.option"]},
-        ), patch("hermes_cli.main.sys") as mock_sys:
+        ), patch("agentic_os_cli.main.sys") as mock_sys:
             mock_sys.stdin.isatty.return_value = False
             mock_sys.stdout.isatty.return_value = False
             mock_run.side_effect = _make_run_side_effect(
@@ -560,7 +560,7 @@ class TestCmdUpdateBranchFallback:
             cmd_update(mock_args)
 
             mock_input.assert_not_called()
-            from hermes_cli.config import migrate_config
+            from agentic_os_cli.config import migrate_config
 
             migrate_config.assert_called_once_with(interactive=False, quiet=False)
             captured = capsys.readouterr()
@@ -585,13 +585,13 @@ class TestCmdUpdateMigrationPrompt:
         with patch("shutil.which", return_value=None), patch(
             "subprocess.run"
         ) as mock_run, patch("builtins.input") as mock_input, patch(
-            "hermes_cli.config.get_missing_env_vars", return_value=[]
+            "agentic_os_cli.config.get_missing_env_vars", return_value=[]
         ), patch(
-            "hermes_cli.config.get_missing_config_fields", return_value=[]
+            "agentic_os_cli.config.get_missing_config_fields", return_value=[]
         ), patch(
-            "hermes_cli.config.check_config_version", return_value=(5, 24)
+            "agentic_os_cli.config.check_config_version", return_value=(5, 24)
         ), patch(
-            "hermes_cli.config.migrate_config",
+            "agentic_os_cli.config.migrate_config",
             return_value={"env_added": [], "config_added": [], "warnings": []},
         ) as mock_migrate:
             mock_run.side_effect = _make_run_side_effect(
@@ -621,15 +621,15 @@ class TestCmdUpdateMigrationPrompt:
         with patch("shutil.which", return_value=None), patch(
             "subprocess.run"
         ) as mock_run, patch("builtins.input", return_value="n"), patch(
-            "hermes_cli.config.get_missing_env_vars", return_value=env_items
+            "agentic_os_cli.config.get_missing_env_vars", return_value=env_items
         ), patch(
-            "hermes_cli.config.get_missing_config_fields", return_value=cfg_items
+            "agentic_os_cli.config.get_missing_config_fields", return_value=cfg_items
         ), patch(
-            "hermes_cli.config.check_config_version", return_value=(1, 24)
+            "agentic_os_cli.config.check_config_version", return_value=(1, 24)
         ), patch(
-            "hermes_cli.config.migrate_config",
+            "agentic_os_cli.config.migrate_config",
             return_value={"env_added": [], "config_added": [], "warnings": []},
-        ), patch("hermes_cli.main.sys") as mock_sys:
+        ), patch("agentic_os_cli.main.sys") as mock_sys:
             mock_sys.stdin.isatty.return_value = True
             mock_sys.stdout.isatty.return_value = True
             mock_run.side_effect = _make_run_side_effect(
@@ -677,8 +677,8 @@ class TestCmdUpdateProfileSkillSync:
         empty_sync = {"copied": [], "updated": [], "user_modified": [], "cleaned": []}
 
         with (
-            patch("hermes_cli.profiles.list_profiles", return_value=all_profiles),
-            patch("hermes_cli.profiles.seed_profile_skills", side_effect=fake_seed),
+            patch("agentic_os_cli.profiles.list_profiles", return_value=all_profiles),
+            patch("agentic_os_cli.profiles.seed_profile_skills", side_effect=fake_seed),
             patch("tools.skills_sync.sync_skills", return_value=empty_sync),
         ):
             cmd_update(mock_args)
@@ -711,8 +711,8 @@ class TestCmdUpdateProfileSkillSync:
         empty_sync = {"copied": [], "updated": [], "user_modified": [], "cleaned": []}
 
         with (
-            patch("hermes_cli.profiles.list_profiles", return_value=[default_p]),
-            patch("hermes_cli.profiles.seed_profile_skills", side_effect=fake_seed),
+            patch("agentic_os_cli.profiles.list_profiles", return_value=[default_p]),
+            patch("agentic_os_cli.profiles.seed_profile_skills", side_effect=fake_seed),
             patch("tools.skills_sync.sync_skills", return_value=empty_sync),
         ):
             cmd_update(mock_args)
@@ -915,7 +915,7 @@ class TestCmdUpdateCheckBranchFlag:
 
         return side_effect
 
-    @patch("hermes_cli.config.detect_install_method", return_value="git")
+    @patch("agentic_os_cli.config.detect_install_method", return_value="git")
     @patch("subprocess.run")
     def test_check_branch_compares_against_named_origin_branch(
         self, mock_run, _mock_method, capsys
@@ -938,7 +938,7 @@ class TestCmdUpdateCheckBranchFlag:
         assert any("origin/bb/gui" in c for c in rev_list_cmds), rev_list_cmds
         assert not any("origin/main" in c for c in rev_list_cmds), rev_list_cmds
 
-    @patch("hermes_cli.config.detect_install_method", return_value="git")
+    @patch("agentic_os_cli.config.detect_install_method", return_value="git")
     @patch("subprocess.run")
     def test_check_branch_missing_on_origin_exits_cleanly(
         self, mock_run, _mock_method, capsys
@@ -969,7 +969,7 @@ class TestCmdUpdateCheckBranchFlag:
         commands = [" ".join(str(a) for a in c.args[0]) for c in mock_run.call_args_list]
         assert not any("rev-list" in c for c in commands), commands
 
-    @patch("hermes_cli.config.detect_install_method", return_value="git")
+    @patch("agentic_os_cli.config.detect_install_method", return_value="git")
     @patch("subprocess.run")
     def test_check_default_main_still_prefers_upstream(
         self, mock_run, _mock_method, capsys
@@ -989,8 +989,8 @@ class TestCmdUpdateCheckBranchFlag:
         rev_list_cmds = [c for c in commands if "rev-list" in c]
         assert any("upstream/main" in c for c in rev_list_cmds), rev_list_cmds
 
-    @patch("hermes_cli.config.detect_install_method", return_value="pip")
-    @patch("hermes_cli.banner.check_via_pypi", return_value=0)
+    @patch("agentic_os_cli.config.detect_install_method", return_value="pip")
+    @patch("agentic_os_cli.banner.check_via_pypi", return_value=0)
     @patch("subprocess.run")
     def test_check_branch_warns_on_pypi_install(
         self, mock_run, _mock_pypi, _mock_method, capsys
@@ -1015,7 +1015,7 @@ class TestCmdUpdateZipBranchRefusal:
     """
 
     def test_zip_fallback_refuses_non_main_branch(self, capsys):
-        from hermes_cli.main import _update_via_zip
+        from agentic_os_cli.main import _update_via_zip
 
         args = SimpleNamespace(branch="bb/gui")
         with pytest.raises(SystemExit) as exc_info:
@@ -1030,19 +1030,19 @@ class TestCmdUpdateZipBranchRefusal:
 
 
 def test_is_termux_env_true_for_termux_prefix():
-    from hermes_cli import main as hm
+    from agentic_os_cli import main as hm
 
     assert hm._is_termux_env({"PREFIX": "/data/data/com.termux/files/usr"}) is True
 
 
 def test_is_termux_env_false_for_non_termux_prefix():
-    from hermes_cli import main as hm
+    from agentic_os_cli import main as hm
 
     assert hm._is_termux_env({"PREFIX": "/usr/local"}) is False
 
 
 def test_load_installable_optional_extras_supports_termux_group(tmp_path, monkeypatch):
-    from hermes_cli import main as hm
+    from agentic_os_cli import main as hm
 
     pyproject = tmp_path / "pyproject.toml"
     pyproject.write_text(
@@ -1078,7 +1078,7 @@ class TestNodeRuntimeNpmResolution:
         ],
     )
     def test_windows_npm_paths_detected(self, path):
-        from hermes_cli import main as hm
+        from agentic_os_cli import main as hm
 
         assert hm._is_windows_npm_path(path) is True
 
@@ -1091,15 +1091,15 @@ class TestNodeRuntimeNpmResolution:
         ],
     )
     def test_linux_npm_paths_not_flagged(self, path):
-        from hermes_cli import main as hm
+        from agentic_os_cli import main as hm
 
         assert hm._is_windows_npm_path(path) is False
 
     def test_resolve_rejects_windows_npm_and_rescans_path(self, monkeypatch):
         """On WSL/Linux, a Windows npm is refused and PATH is re-scanned
         (skipping /mnt mounts) for a Linux-native npm."""
-        from hermes_cli import main as hm
-        import hermes_constants
+        from agentic_os_cli import main as hm
+        import agentic_os_constants
 
         monkeypatch.setattr(hm, "_is_windows", lambda: False)
         monkeypatch.setenv(
@@ -1115,7 +1115,7 @@ class TestNodeRuntimeNpmResolution:
             return None
 
         monkeypatch.setattr(
-            hermes_constants,
+            agentic_os_constants,
             "find_node_executable",
             lambda _command: "/mnt/c/Program Files/nodejs/npm",
         )
@@ -1123,8 +1123,8 @@ class TestNodeRuntimeNpmResolution:
         assert hm._resolve_node_runtime_npm() == "/root/.local/bin/npm"
 
     def test_resolve_returns_none_when_only_windows_npm(self, monkeypatch):
-        from hermes_cli import main as hm
-        import hermes_constants
+        from agentic_os_cli import main as hm
+        import agentic_os_constants
 
         monkeypatch.setattr(hm, "_is_windows", lambda: False)
         monkeypatch.setenv("PATH", "/mnt/c/Program Files/nodejs:/usr/bin")
@@ -1135,7 +1135,7 @@ class TestNodeRuntimeNpmResolution:
             return None
 
         monkeypatch.setattr(
-            hermes_constants,
+            agentic_os_constants,
             "find_node_executable",
             lambda _command: "/mnt/c/Program Files/nodejs/npm",
         )
@@ -1143,12 +1143,12 @@ class TestNodeRuntimeNpmResolution:
         assert hm._resolve_node_runtime_npm() is None
 
     def test_resolve_keeps_platform_npm_on_windows(self, monkeypatch):
-        from hermes_cli import main as hm
-        import hermes_constants
+        from agentic_os_cli import main as hm
+        import agentic_os_constants
 
         monkeypatch.setattr(hm, "_is_windows", lambda: True)
         monkeypatch.setattr(
-            hermes_constants,
+            agentic_os_constants,
             "find_node_executable",
             lambda _command: "C:\\nodejs\\npm.cmd",
         )
@@ -1157,7 +1157,7 @@ class TestNodeRuntimeNpmResolution:
     def test_node_failure_returns_failed_labels_and_warns(
         self, tmp_path, monkeypatch, capsys
     ):
-        from hermes_cli import main as hm
+        from agentic_os_cli import main as hm
 
         (tmp_path / "package.json").write_text("{}")
         monkeypatch.setattr(hm, "PROJECT_ROOT", tmp_path)
@@ -1174,7 +1174,7 @@ class TestNodeRuntimeNpmResolution:
         assert "mixed state" in out
 
     def test_node_success_returns_empty(self, tmp_path, monkeypatch):
-        from hermes_cli import main as hm
+        from agentic_os_cli import main as hm
 
         (tmp_path / "package.json").write_text("{}")
         monkeypatch.setattr(hm, "PROJECT_ROOT", tmp_path)
@@ -1188,13 +1188,13 @@ class TestNodeRuntimeNpmResolution:
         assert hm._update_node_dependencies() == []
 
     def test_wsl_windows_only_npm_flags_skip(self, tmp_path, monkeypatch, capsys):
-        from hermes_cli import main as hm
-        import hermes_constants
+        from agentic_os_cli import main as hm
+        import agentic_os_constants
 
         (tmp_path / "package.json").write_text("{}")
         monkeypatch.setattr(hm, "PROJECT_ROOT", tmp_path)
         monkeypatch.setattr(hm, "_resolve_node_runtime_npm", lambda: None)
-        monkeypatch.setattr(hermes_constants, "is_wsl", lambda: True)
+        monkeypatch.setattr(agentic_os_constants, "is_wsl", lambda: True)
         monkeypatch.setattr(
             hm.shutil, "which", lambda cmd, path=None: "/mnt/c/nodejs/npm"
         )
@@ -1205,14 +1205,14 @@ class TestNodeRuntimeNpmResolution:
 
     def test_wsl_update_skips_windows_npm_build_paths(self, mock_args, monkeypatch):
         """A Windows-only npm on WSL must not reach web or desktop builds."""
-        from hermes_cli import main as hm
-        import hermes_constants
+        from agentic_os_cli import main as hm
+        import agentic_os_constants
 
         windows_npm = "/mnt/c/Program Files/nodejs/npm"
         monkeypatch.setattr(hm, "_is_windows", lambda: False)
-        monkeypatch.setattr(hermes_constants, "is_wsl", lambda: True)
+        monkeypatch.setattr(agentic_os_constants, "is_wsl", lambda: True)
         monkeypatch.setattr(
-            hermes_constants,
+            agentic_os_constants,
             "find_node_executable",
             lambda command: windows_npm if command == "npm" else None,
         )

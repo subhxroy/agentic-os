@@ -1,9 +1,9 @@
-"""Tests for hermes_cli.logs — log viewing and filtering."""
+"""Tests for agentic_os_cli.logs — log viewing and filtering."""
 
 from datetime import datetime, timedelta
 
 
-from hermes_cli.logs import (
+from agentic_os_cli.logs import (
     LOG_FILES,
     _extract_level,
     _extract_logger_name,
@@ -121,7 +121,7 @@ class TestLineMatchesComponent:
         # gateway prefixes (COMPONENT_PREFIXES["gateway"]) the CLI passes, not a
         # bare ("gateway",), since the logger name no longer literally starts
         # with "gateway".
-        from hermes_logging import COMPONENT_PREFIXES
+        from agentic_os_logging import COMPONENT_PREFIXES
         line = "2026-04-11 10:23:45 INFO plugins.platforms.telegram.adapter: msg"
         assert _line_matches_component(line, COMPONENT_PREFIXES["gateway"])
 

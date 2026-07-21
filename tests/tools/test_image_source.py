@@ -21,8 +21,8 @@ JPEG = b"\xff\xd8\xff" + b"\x00" * 64
 
 def _reload(monkeypatch, hermes_home: Path):
     monkeypatch.setenv("HERMES_HOME", str(hermes_home))
-    import hermes_constants
-    importlib.reload(hermes_constants)
+    import agentic_os_constants
+    importlib.reload(agentic_os_constants)
     import tools.image_source as isrc
     importlib.reload(isrc)
     return isrc

@@ -33,7 +33,7 @@ _PREFETCH_WAIT_SECS = 2
 
 
 def _load_config() -> dict:
-    from hermes_constants import get_hermes_home
+    from agentic_os_constants import get_hermes_home
 
     config = {
         "vault_path": os.environ.get("OBSIDIAN_BRAIN_VAULT_PATH", ""),

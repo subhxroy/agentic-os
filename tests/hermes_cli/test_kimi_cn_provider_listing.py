@@ -14,12 +14,12 @@ through.
 import os
 from unittest.mock import patch
 
-from hermes_cli.model_switch import (
+from agentic_os_cli.model_switch import (
     list_authenticated_providers,
     parse_model_flags,
     switch_model,
 )
-from hermes_cli.providers import resolve_provider_full
+from agentic_os_cli.providers import resolve_provider_full
 
 
 # -- Only KIMI_CN_API_KEY set ------------------------------------------------

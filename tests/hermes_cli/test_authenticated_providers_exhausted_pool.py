@@ -26,7 +26,7 @@ class _FakePool:
 def _patch_opencode_pool(monkeypatch, *, available: bool):
     """Make the opencode-go aggregator look configured but with a pool whose
     only credential is (un)available, depending on ``available``."""
-    import hermes_cli.auth as auth
+    import agentic_os_cli.auth as auth
     import agent.credential_pool as cp
 
     monkeypatch.setattr(
@@ -60,7 +60,7 @@ def _strip_provider_env(monkeypatch):
 def test_exhausted_pool_provider_is_not_authenticated(monkeypatch):
     """The fix: an exhausted pool is NOT authenticated. Fails on main, where
     the gate accepted any stored pool entry regardless of usability."""
-    from hermes_cli.model_switch import get_authenticated_provider_slugs
+    from agentic_os_cli.model_switch import get_authenticated_provider_slugs
 
     _patch_opencode_pool(monkeypatch, available=False)
     slugs = get_authenticated_provider_slugs(current_provider="alibaba")
@@ -71,7 +71,7 @@ def test_pool_provider_with_available_credential_is_authenticated(monkeypatch):
     """Control: with a usable credential the provider IS authenticated, proving
     the test drives the credential gate rather than excluding it for some other
     reason."""
-    from hermes_cli.model_switch import get_authenticated_provider_slugs
+    from agentic_os_cli.model_switch import get_authenticated_provider_slugs
 
     _patch_opencode_pool(monkeypatch, available=True)
     slugs = get_authenticated_provider_slugs(current_provider="alibaba")
@@ -80,7 +80,7 @@ def test_pool_provider_with_available_credential_is_authenticated(monkeypatch):
 
 def test_opaque_legacy_pool_value_stays_visible(monkeypatch):
     """Legacy token-style auth-store values have no parsed pool entries."""
-    from hermes_cli.model_switch import _credential_pool_is_usable
+    from agentic_os_cli.model_switch import _credential_pool_is_usable
 
     monkeypatch.setattr(
         "agent.credential_pool.load_pool",
@@ -101,7 +101,7 @@ def test_picker_shows_exhausted_pool_provider(monkeypatch):
     """The interactive picker must include providers whose credential pool
     entries are all exhausted, so the user can still switch to a different
     model under the same provider."""
-    from hermes_cli.model_switch import list_picker_providers
+    from agentic_os_cli.model_switch import list_picker_providers
 
     _patch_opencode_pool(monkeypatch, available=False)
     providers = list_picker_providers(

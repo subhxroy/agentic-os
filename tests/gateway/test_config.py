@@ -8,7 +8,7 @@ from unittest.mock import patch
 import pytest
 
 from agent.secret_scope import reset_secret_scope, set_secret_scope
-from hermes_constants import reset_hermes_home_override, set_hermes_home_override
+from agentic_os_constants import reset_hermes_home_override, set_hermes_home_override
 from gateway.config import (
     ChannelOverride,
     GatewayConfig,
@@ -1727,7 +1727,7 @@ class TestLoadGatewayConfig:
 
         monkeypatch.setenv("HERMES_HOME", str(hermes_home))
 
-        from hermes_cli.config import load_config
+        from agentic_os_cli.config import load_config
 
         config = load_config()
 

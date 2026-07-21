@@ -121,7 +121,7 @@ def _brief_in_transcript(store, sid):
     """Best-effort read of the session transcript to confirm the brief landed."""
     # Try the SQLite DB first (the mirror writes both JSONL + SQLite).
     try:
-        from hermes_state import SessionDB
+        from agentic_os_state import SessionDB
         db = SessionDB()
         msgs = db.get_messages(sid)
         for m in msgs:

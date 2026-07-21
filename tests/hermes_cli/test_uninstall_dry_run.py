@@ -1,7 +1,7 @@
 from pathlib import Path
 from types import SimpleNamespace
 
-from hermes_cli import uninstall
+from agentic_os_cli import uninstall
 
 
 def test_dry_run_prints_plan_without_mutating(monkeypatch, tmp_path, capsys):
@@ -36,7 +36,7 @@ def test_dry_run_prints_plan_without_mutating(monkeypatch, tmp_path, capsys):
 
 def test_build_uninstall_parser_accepts_dry_run():
     import argparse
-    from hermes_cli.subcommands.uninstall import build_uninstall_parser
+    from agentic_os_cli.subcommands.uninstall import build_uninstall_parser
 
     parser = argparse.ArgumentParser()
     subparsers = parser.add_subparsers(dest="command")

@@ -2,7 +2,7 @@
 
 import json
 
-from hermes_cli.oneshot import _write_usage_file
+from agentic_os_cli.oneshot import _write_usage_file
 
 
 def _result(**overrides):

@@ -1,4 +1,4 @@
-"""Unit tests for hermes_cli.toolset_validation (see #38798).
+"""Unit tests for agentic_os_cli.toolset_validation (see #38798).
 
 Pure logic — the validity predicate is injected, so these tests need neither the
 tool registry nor a running Hermes.
@@ -6,7 +6,7 @@ tool registry nor a running Hermes.
 
 import pytest
 
-from hermes_cli.toolset_validation import validate_platform_toolsets
+from agentic_os_cli.toolset_validation import validate_platform_toolsets
 
 # A representative set of real toolset names. `hermes` is deliberately absent —
 # that is the corruption #38798 reported (`hermes-cli` rewritten to `hermes`).
@@ -80,7 +80,7 @@ def test_all_invalid_reports_each_and_the_zero_state():
     assert any("zero valid toolsets" in w for w in warnings)
 
 
-def test_real_validate_toolset_treats_hermes_cli_valid_and_hermes_invalid():
+def test_real_validate_toolset_treats_agentic_os_cli_valid_and_hermes_invalid():
     # Ties the helper to reality: the canonical registry check agrees that
     # `hermes-cli` is the real toolset and `hermes` is not (the #38798 crux).
     from toolsets import validate_toolset

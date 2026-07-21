@@ -13,7 +13,7 @@ from __future__ import annotations
 
 import argparse
 
-from hermes_cli.subcommands.dashboard import build_dashboard_parser
+from agentic_os_cli.subcommands.dashboard import build_dashboard_parser
 
 
 def _dash(args):  # sentinel handler — identity-compared, never invoked

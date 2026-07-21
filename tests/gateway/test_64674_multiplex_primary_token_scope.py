@@ -52,7 +52,7 @@ class TestLoadGatewayConfigForRunner:
     def test_scoped_reload_picks_up_default_profile_token(self, tmp_path, monkeypatch):
         """Token only in default profile .env, not in process os.environ."""
         from gateway import run as run_mod
-        import hermes_constants as hc
+        import agentic_os_constants as hc
 
         home = tmp_path / "home"
         home.mkdir()
@@ -66,7 +66,7 @@ class TestLoadGatewayConfigForRunner:
         # Simulate a clean process env where the token was NOT exported and
         # was not bulk-loaded into os.environ (multiplex isolation path).
         monkeypatch.delenv("TELEGRAM_BOT_TOKEN", raising=False)
-        # Point both hermes_constants and gateway.run at our temp home.
+        # Point both agentic_os_constants and gateway.run at our temp home.
         monkeypatch.setattr(hc, "get_hermes_home", lambda: home)
         monkeypatch.setattr(run_mod, "get_hermes_home", lambda: home)
         monkeypatch.setattr(run_mod, "_hermes_home", home)

@@ -29,7 +29,7 @@ When the venv is partially refreshed, or when one of those env vars points at a 
 4. Builds an `ssl.SSLContext` from each checked bundle,
 5. Raises a typed `SSLConfigurationError` with a repair hint before httpx/OpenAI can raise a raw low-level error.
 
-`hermes_cli doctor` exposes the same check under `SSL / CA Certificates`, so users can diagnose the problem without starting a model session.
+`agentic_os_cli doctor` exposes the same check under `SSL / CA Certificates`, so users can diagnose the problem without starting a model session.
 
 ## Recovery
 

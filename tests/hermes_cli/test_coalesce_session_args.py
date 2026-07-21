@@ -1,6 +1,6 @@
 """Tests for _coalesce_session_name_args — multi-word session name merging."""
 
-from hermes_cli.main import _coalesce_session_name_args
+from agentic_os_cli.main import _coalesce_session_name_args
 
 
 class TestCoalesceSessionNameArgs:

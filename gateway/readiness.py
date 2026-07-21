@@ -9,7 +9,7 @@ from typing import Any
 
 import yaml
 
-from hermes_constants import get_hermes_home
+from agentic_os_constants import get_hermes_home
 
 
 _DISK_DEGRADED_PERCENT = 90.0

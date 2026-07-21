@@ -1,4 +1,4 @@
-from hermes_cli import cli_output
+from agentic_os_cli import cli_output
 
 
 def test_password_prompt_uses_masked_secret_prompt(monkeypatch):

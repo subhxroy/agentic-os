@@ -42,7 +42,7 @@ def test_gateway_checkpoint_config_reaches_real_agent(tmp_path, monkeypatch):
 
 def test_checkpoint_agent_kwargs_supports_legacy_boolean_config():
     from gateway.run import _checkpoint_agent_kwargs
-    from hermes_cli.config import DEFAULT_CONFIG
+    from agentic_os_cli.config import DEFAULT_CONFIG
 
     kwargs = _checkpoint_agent_kwargs({"checkpoints": True})
     defaults = DEFAULT_CONFIG["checkpoints"]

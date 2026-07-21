@@ -27,7 +27,7 @@ incomparable seeds remain no-ops, so a retained env cannot roll auth backward.
 
 Design constraints
 ------------------
-- Pure stdlib, no hermes_cli imports: runs early in the boot hook, before the
+- Pure stdlib, no agentic_os_cli imports: runs early in the boot hook, before the
   app venv/modules are guaranteed importable, as its own subprocess.
 - Surgical: replaces ONLY ``providers.nous`` in the existing auth.json, leaving
   every other provider, the version, and any other top-level state untouched.
@@ -54,7 +54,7 @@ def _nous_entry_is_terminal(nous_state: Any) -> bool:
     """True iff the on-disk Nous provider entry is in the terminal/quarantined
     state AND holds no usable credential.
 
-    Mirrors the ``terminal`` predicate in ``hermes_cli.auth.get_nous_session_validity``:
+    Mirrors the ``terminal`` predicate in ``agentic_os_cli.auth.get_nous_session_validity``:
     a persisted ``last_auth_error.relogin_required`` with the token material
     already cleared. Keeping this in lockstep is what guarantees we only re-seed
     a session that is genuinely dead.

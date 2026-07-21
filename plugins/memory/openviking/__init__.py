@@ -854,7 +854,7 @@ def _is_local_openviking_url(value: str) -> bool:
 
 def _load_hermes_openviking_config() -> dict:
     try:
-        from hermes_cli.config import load_config
+        from agentic_os_cli.config import load_config
 
         config = load_config()
         memory_config = config.get("memory", {}) if isinstance(config, dict) else {}
@@ -1148,7 +1148,7 @@ def _local_openviking_bind(endpoint: str) -> tuple[str, int]:
 
 def _openviking_server_log_path() -> Path:
     try:
-        from hermes_constants import get_hermes_home
+        from agentic_os_constants import get_hermes_home
         home = get_hermes_home()
     except Exception:
         home = Path(os.environ.get("HERMES_HOME", "")).expanduser() if os.environ.get("HERMES_HOME") else Path.home() / ".hermes"
@@ -1962,8 +1962,8 @@ class OpenVikingMemoryProvider(MemoryProvider):
 
     def post_setup(self, hermes_home: str, config: dict) -> None:
         """Custom setup that can reuse OpenViking's shared CLI config."""
-        from hermes_cli.config import save_config
-        from hermes_cli.memory_setup import _CANCELLED, _curses_select, _print_cancelled_setup, _prompt
+        from agentic_os_cli.config import save_config
+        from agentic_os_cli.memory_setup import _CANCELLED, _curses_select, _print_cancelled_setup, _prompt
 
         hermes_home_path = Path(hermes_home)
         env_path = hermes_home_path / ".env"

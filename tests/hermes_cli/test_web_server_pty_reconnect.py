@@ -42,7 +42,7 @@ class _OneFrameBridge:
 def pty_client(monkeypatch, _isolate_hermes_home):
     from starlette.testclient import TestClient
 
-    import hermes_cli.web_server as ws
+    import agentic_os_cli.web_server as ws
 
     monkeypatch.setattr(ws, "_DASHBOARD_EMBEDDED_CHAT_ENABLED", True)
     monkeypatch.setattr(ws.PtyBridge, "spawn", _OneFrameBridge.spawn)
@@ -58,8 +58,8 @@ def _url(token: str, **params: str) -> str:
 
 def test_resolve_chat_argv_sets_active_session_file_env(monkeypatch):
     """Dashboard chat gives the TUI a breadcrumb file for reconnect resume."""
-    import hermes_cli.main as main_mod
-    import hermes_cli.web_server as ws
+    import agentic_os_cli.main as main_mod
+    import agentic_os_cli.web_server as ws
 
     monkeypatch.setattr(
         main_mod,

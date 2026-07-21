@@ -8,7 +8,7 @@ from types import SimpleNamespace
 
 import pytest
 
-from hermes_cli.auth import (
+from agentic_os_cli.auth import (
     AuthError,
     DEFAULT_CODEX_BASE_URL,
     PROVIDER_REGISTRY,
@@ -96,7 +96,7 @@ def test_resolve_codex_runtime_credentials_refreshes_expiring_token(tmp_path, mo
         called["count"] += 1
         return {"access_token": "access-new", "refresh_token": "refresh-new"}
 
-    monkeypatch.setattr("hermes_cli.auth._refresh_codex_auth_tokens", _fake_refresh)
+    monkeypatch.setattr("agentic_os_cli.auth._refresh_codex_auth_tokens", _fake_refresh)
 
     resolved = resolve_codex_runtime_credentials()
 
@@ -115,7 +115,7 @@ def test_resolve_codex_runtime_credentials_force_refresh(tmp_path, monkeypatch):
         called["count"] += 1
         return {"access_token": "access-forced", "refresh_token": "refresh-new"}
 
-    monkeypatch.setattr("hermes_cli.auth._refresh_codex_auth_tokens", _fake_refresh)
+    monkeypatch.setattr("agentic_os_cli.auth._refresh_codex_auth_tokens", _fake_refresh)
 
     resolved = resolve_codex_runtime_credentials(force_refresh=True, refresh_if_expiring=False)
 
@@ -815,7 +815,7 @@ def _patch_httpx(monkeypatch, response):
     def _factory(*args, **kwargs):
         return _StubHTTPClient(response)
 
-    monkeypatch.setattr("hermes_cli.auth.httpx.Client", _factory)
+    monkeypatch.setattr("agentic_os_cli.auth.httpx.Client", _factory)
 
 
 def test_refresh_parses_openai_nested_error_shape_refresh_token_reused(monkeypatch):
@@ -912,7 +912,7 @@ def test_refresh_429_classified_as_quota_not_auth_failure(monkeypatch):
     dedicated rate-limit code so callers surface a "retry later" notice rather
     than a misleading "run hermes auth".
     """
-    from hermes_cli.auth import (
+    from agentic_os_cli.auth import (
         CODEX_RATE_LIMITED_CODE,
         format_auth_error,
         is_rate_limited_auth_error,
@@ -941,7 +941,7 @@ def test_refresh_429_classified_as_quota_not_auth_failure(monkeypatch):
 
 def test_refresh_429_without_retry_after_header(monkeypatch):
     """429 without a Retry-After header still classifies as quota, no relogin."""
-    from hermes_cli.auth import CODEX_RATE_LIMITED_CODE
+    from agentic_os_cli.auth import CODEX_RATE_LIMITED_CODE
 
     response = _StubHTTPResponse(429, {"error": "rate_limited"})
     _patch_httpx(monkeypatch, response)
@@ -957,7 +957,7 @@ def test_refresh_429_without_retry_after_header(monkeypatch):
 
 def test_is_rate_limited_auth_error_distinguishes_credential_errors():
     """Missing/expired credentials must NOT be treated as rate-limit errors."""
-    from hermes_cli.auth import CODEX_RATE_LIMITED_CODE, is_rate_limited_auth_error
+    from agentic_os_cli.auth import CODEX_RATE_LIMITED_CODE, is_rate_limited_auth_error
 
     rate_limited = AuthError(
         "quota", provider="openai-codex", code=CODEX_RATE_LIMITED_CODE, relogin_required=False
@@ -977,15 +977,15 @@ def test_login_openai_codex_force_new_login_skips_existing_reuse_prompt(monkeypa
     called = {"device_login": 0}
 
     monkeypatch.setattr(
-        "hermes_cli.auth.resolve_codex_runtime_credentials",
+        "agentic_os_cli.auth.resolve_codex_runtime_credentials",
         lambda: {"base_url": DEFAULT_CODEX_BASE_URL},
     )
     monkeypatch.setattr(
-        "hermes_cli.auth._import_codex_cli_tokens",
+        "agentic_os_cli.auth._import_codex_cli_tokens",
         lambda: {"access_token": "cli-at", "refresh_token": "cli-rt"},
     )
     monkeypatch.setattr(
-        "hermes_cli.auth._codex_device_code_login",
+        "agentic_os_cli.auth._codex_device_code_login",
         lambda: {
             "tokens": {"access_token": "fresh-at", "refresh_token": "fresh-rt"},
             "last_refresh": "2026-04-01T00:00:00Z",
@@ -998,8 +998,8 @@ def test_login_openai_codex_force_new_login_skips_existing_reuse_prompt(monkeypa
         called["tokens"] = dict(tokens)
         called["last_refresh"] = last_refresh
 
-    monkeypatch.setattr("hermes_cli.auth._save_codex_tokens", _fake_save)
-    monkeypatch.setattr("hermes_cli.auth._update_config_for_provider", lambda *args, **kwargs: "/tmp/config.yaml")
+    monkeypatch.setattr("agentic_os_cli.auth._save_codex_tokens", _fake_save)
+    monkeypatch.setattr("agentic_os_cli.auth._update_config_for_provider", lambda *args, **kwargs: "/tmp/config.yaml")
     monkeypatch.setattr(
         "builtins.input",
         lambda prompt="": (_ for _ in ()).throw(AssertionError("force_new_login should not prompt for reuse/import")),
@@ -1022,7 +1022,7 @@ class _FakeResp:
 
 
 def _patch_httpx_post(monkeypatch, responses):
-    """Patch hermes_cli.auth.httpx.Client so .post() returns queued responses."""
+    """Patch agentic_os_cli.auth.httpx.Client so .post() returns queued responses."""
     seq = iter(responses)
 
     class _FakeClient:
@@ -1035,12 +1035,12 @@ def _patch_httpx_post(monkeypatch, responses):
         def post(self, *args, **kwargs):
             return next(seq)
 
-    monkeypatch.setattr("hermes_cli.auth.httpx.Client", lambda *a, **k: _FakeClient())
+    monkeypatch.setattr("agentic_os_cli.auth.httpx.Client", lambda *a, **k: _FakeClient())
 
 
 def test_device_code_login_retries_on_429_then_succeeds(monkeypatch):
     """A transient 429 on the device-code request is retried, not surfaced."""
-    from hermes_cli import auth as auth_mod
+    from agentic_os_cli import auth as auth_mod
 
     sleeps = []
     monkeypatch.setattr("time.sleep", lambda s: sleeps.append(s))
@@ -1067,7 +1067,7 @@ def test_device_code_login_retries_on_429_then_succeeds(monkeypatch):
 
 def test_device_code_login_persistent_429_raises_rate_limited(monkeypatch):
     """A persistent 429 surfaces a clear rate-limit error, not a bare status."""
-    from hermes_cli import auth as auth_mod
+    from agentic_os_cli import auth as auth_mod
 
     monkeypatch.setattr("time.sleep", lambda s: None)
     _patch_httpx_post(monkeypatch, [_FakeResp(429, headers={"retry-after": "30"})] * 4)
@@ -1084,7 +1084,7 @@ def test_device_code_login_persistent_429_raises_rate_limited(monkeypatch):
 
 def test_device_code_login_non_429_error_unchanged(monkeypatch):
     """Non-429 failures keep the generic device_code_request_error code."""
-    from hermes_cli import auth as auth_mod
+    from agentic_os_cli import auth as auth_mod
 
     monkeypatch.setattr("time.sleep", lambda s: None)
     _patch_httpx_post(monkeypatch, [_FakeResp(500)])

@@ -35,8 +35,8 @@ def _restore_tool_modules():
         for name, module in sys.modules.items()
         if name == "tools"
         or name.startswith("tools.")
-        or name == "hermes_cli"
-        or name.startswith("hermes_cli.")
+        or name == "agentic_os_cli"
+        or name.startswith("agentic_os_cli.")
         or name == "modal"
         or name.startswith("modal.")
     }
@@ -47,7 +47,7 @@ def _restore_tool_modules():
             os.environ.pop("HERMES_HOME", None)
         else:
             os.environ["HERMES_HOME"] = original_hermes_home
-        _reset_modules(("tools", "hermes_cli", "modal"))
+        _reset_modules(("tools", "agentic_os_cli", "modal"))
         sys.modules.update(original_modules)
 
 
@@ -57,14 +57,14 @@ def _install_modal_test_modules(
     fail_on_snapshot_ids: set[str] | None = None,
     snapshot_id: str = "im-fresh",
 ):
-    _reset_modules(("tools", "hermes_cli", "modal"))
+    _reset_modules(("tools", "agentic_os_cli", "modal"))
 
-    hermes_cli = types.ModuleType("hermes_cli")
-    hermes_cli.__path__ = []  # type: ignore[attr-defined]
-    sys.modules["hermes_cli"] = hermes_cli
+    agentic_os_cli = types.ModuleType("agentic_os_cli")
+    agentic_os_cli.__path__ = []  # type: ignore[attr-defined]
+    sys.modules["agentic_os_cli"] = agentic_os_cli
     hermes_home = tmp_path / "hermes-home"
     os.environ["HERMES_HOME"] = str(hermes_home)
-    sys.modules["hermes_cli.config"] = types.SimpleNamespace(
+    sys.modules["agentic_os_cli.config"] = types.SimpleNamespace(
         get_hermes_home=lambda: hermes_home,
     )
 

@@ -9,7 +9,7 @@ import pytest
 
 @pytest.fixture
 def main_mod():
-    import hermes_cli.main as m
+    import agentic_os_cli.main as m
 
     return m
 
@@ -365,7 +365,7 @@ def test_make_tui_argv_uses_bundled_tui_when_workspace_missing(
     tmp_path: Path, main_mod, monkeypatch
 ) -> None:
     """pip/pipx install regression (#56665): the wheel ships
-    hermes_cli/tui_dist/entry.js but never ships ui-tui/ (that directory only
+    agentic_os_cli/tui_dist/entry.js but never ships ui-tui/ (that directory only
     exists in a git checkout). Before this fix, _make_tui_argv called
     _ensure_tui_workspace() unconditionally before checking for the bundled
     entry.js, so every pip/pipx dashboard Chat tab connection hard-exited

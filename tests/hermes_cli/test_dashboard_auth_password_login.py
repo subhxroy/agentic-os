@@ -18,8 +18,8 @@ import pytest
 
 from fastapi.testclient import TestClient
 
-from hermes_cli import web_server
-from hermes_cli.dashboard_auth import (
+from agentic_os_cli import web_server
+from agentic_os_cli.dashboard_auth import (
     DashboardAuthProvider,
     InvalidCredentialsError,
     ProviderError,
@@ -28,10 +28,10 @@ from hermes_cli.dashboard_auth import (
     clear_providers,
     register_provider,
 )
-from hermes_cli.dashboard_auth.cookies import SESSION_AT_COOKIE, SESSION_RT_COOKIE
-from hermes_cli.dashboard_auth.login_page import render_login_html
-from hermes_cli.dashboard_auth.routes import _reset_password_rate_limit
-from tests.hermes_cli.conftest_dashboard_auth import StubAuthProvider
+from agentic_os_cli.dashboard_auth.cookies import SESSION_AT_COOKIE, SESSION_RT_COOKIE
+from agentic_os_cli.dashboard_auth.login_page import render_login_html
+from agentic_os_cli.dashboard_auth.routes import _reset_password_rate_limit
+from tests.agentic_os_cli.conftest_dashboard_auth import StubAuthProvider
 
 
 # ---------------------------------------------------------------------------
@@ -117,7 +117,7 @@ class PasswordProvider(DashboardAuthProvider):
         )
 
     def refresh_session(self, *, refresh_token: str) -> Session:
-        from hermes_cli.dashboard_auth import RefreshExpiredError
+        from agentic_os_cli.dashboard_auth import RefreshExpiredError
 
         p = _unsign(self._secret, refresh_token)
         if not p or p.get("kind") != "refresh" or p["exp"] <= int(time.time()):

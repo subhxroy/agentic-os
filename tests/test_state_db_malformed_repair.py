@@ -18,8 +18,8 @@ from pathlib import Path
 
 import pytest
 
-import hermes_state
-from hermes_state import (
+import agentic_os_state
+from agentic_os_state import (
     SessionDB,
     is_malformed_db_error,
     repair_state_db_schema,
@@ -109,7 +109,7 @@ def test_sessiondb_auto_heals_on_open(tmp_path, monkeypatch):
     _corrupt_duplicate_fts(db_path)
 
     # Fresh process-global guard so the attempt isn't pre-claimed.
-    monkeypatch.setattr(hermes_state, "_repair_attempted_paths", set())
+    monkeypatch.setattr(agentic_os_state, "_repair_attempted_paths", set())
 
     db = SessionDB(db_path=db_path)
     try:
@@ -126,17 +126,17 @@ def test_auto_heal_attempted_once_per_process(tmp_path, monkeypatch):
     db_path = tmp_path / "state.db"
     _build_healthy_db(db_path)
     _corrupt_duplicate_fts(db_path)
-    monkeypatch.setattr(hermes_state, "_repair_attempted_paths", set())
+    monkeypatch.setattr(agentic_os_state, "_repair_attempted_paths", set())
 
     calls = {"n": 0}
-    real_repair = hermes_state.repair_state_db_schema
+    real_repair = agentic_os_state.repair_state_db_schema
 
     def fake_repair(path, **kw):
         calls["n"] += 1
         # Pretend repair failed so the guard's one-shot behavior is exercised.
         return {"repaired": False, "strategy": None, "backup_path": None, "error": "x"}
 
-    monkeypatch.setattr(hermes_state, "repair_state_db_schema", fake_repair)
+    monkeypatch.setattr(agentic_os_state, "repair_state_db_schema", fake_repair)
 
     with pytest.raises(sqlite3.DatabaseError):
         SessionDB(db_path=db_path)
@@ -144,7 +144,7 @@ def test_auto_heal_attempted_once_per_process(tmp_path, monkeypatch):
         SessionDB(db_path=db_path)
     assert calls["n"] == 1  # repair attempted only once across both opens
 
-    monkeypatch.setattr(hermes_state, "repair_state_db_schema", real_repair)
+    monkeypatch.setattr(agentic_os_state, "repair_state_db_schema", real_repair)
 
 
 def test_is_malformed_db_error_discriminates():
@@ -172,7 +172,7 @@ def test_strategy_b_rebuild_when_dedup_insufficient(tmp_path, monkeypatch):
     # + VACUUM) and runs its real SQL against the file. Keyed on whether the FTS
     # schema is still present rather than a call counter, so it stays correct as
     # earlier verification call sites are added/removed.
-    real_check = hermes_state._db_opens_cleanly
+    real_check = agentic_os_state._db_opens_cleanly
     calls = {"n": 0}
 
     def flaky_check(path):
@@ -191,7 +191,7 @@ def test_strategy_b_rebuild_when_dedup_insufficient(tmp_path, monkeypatch):
             return "pretend in-place/dedup passes were insufficient"
         return real_check(path)
 
-    monkeypatch.setattr(hermes_state, "_db_opens_cleanly", flaky_check)
+    monkeypatch.setattr(agentic_os_state, "_db_opens_cleanly", flaky_check)
     report = repair_state_db_schema(db_path)
     monkeypatch.undo()
 
@@ -227,16 +227,16 @@ def test_non_malformed_error_is_not_auto_repaired(tmp_path, monkeypatch):
     e.g. 'file is not a database' — those raise unchanged."""
     db_path = tmp_path / "state.db"
     db_path.write_bytes(b"this is definitely not a sqlite database")
-    monkeypatch.setattr(hermes_state, "_repair_attempted_paths", set())
+    monkeypatch.setattr(agentic_os_state, "_repair_attempted_paths", set())
 
     called = {"n": 0}
-    orig = hermes_state.repair_state_db_schema
+    orig = agentic_os_state.repair_state_db_schema
 
     def spy(*a, **kw):
         called["n"] += 1
         return orig(*a, **kw)
 
-    monkeypatch.setattr(hermes_state, "repair_state_db_schema", spy)
+    monkeypatch.setattr(agentic_os_state, "repair_state_db_schema", spy)
     with pytest.raises(sqlite3.DatabaseError):
         SessionDB(db_path=db_path)
     assert called["n"] == 0  # never attempted repair for a non-malformed error
@@ -277,7 +277,7 @@ def _corrupt_fts_index_data(db_path: Path) -> None:
 
 def test_fts_write_corruption_detected_by_write_probe(tmp_path):
     """_db_opens_cleanly's rolled-back write probe flags FTS write corruption."""
-    from hermes_state import _db_opens_cleanly
+    from agentic_os_state import _db_opens_cleanly
 
     db_path = tmp_path / "state.db"
     _build_healthy_db(db_path)
@@ -298,7 +298,7 @@ def test_fts_write_corruption_detected_by_write_probe(tmp_path):
 
 def test_fts_write_corruption_repaired_in_place(tmp_path):
     """repair_state_db_schema rebuilds the FTS index; reads + writes resume."""
-    from hermes_state import _db_opens_cleanly
+    from agentic_os_state import _db_opens_cleanly
 
     db_path = tmp_path / "state.db"
     _build_healthy_db(db_path)

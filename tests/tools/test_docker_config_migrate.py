@@ -9,7 +9,7 @@ from pathlib import Path
 import pytest
 import yaml
 
-from hermes_cli.config import DEFAULT_CONFIG
+from agentic_os_cli.config import DEFAULT_CONFIG
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 SCRIPT = REPO_ROOT / "scripts" / "docker_config_migrate.py"

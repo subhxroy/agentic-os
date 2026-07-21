@@ -12,8 +12,8 @@ def homes(tmp_path, monkeypatch):
     managed.mkdir()
     monkeypatch.setenv("HERMES_HOME", str(home))
     monkeypatch.setenv("HERMES_MANAGED_DIR", str(managed))
-    import hermes_cli.config as cfg
-    from hermes_cli import managed_scope
+    import agentic_os_cli.config as cfg
+    from agentic_os_cli import managed_scope
 
     cfg._LOAD_CONFIG_CACHE.clear()
     cfg._RAW_CONFIG_CACHE.clear()
@@ -23,8 +23,8 @@ def homes(tmp_path, monkeypatch):
 
 def _write(path, body):
     path.write_text(textwrap.dedent(body), encoding="utf-8")
-    import hermes_cli.config as cfg
-    from hermes_cli import managed_scope
+    import agentic_os_cli.config as cfg
+    from agentic_os_cli import managed_scope
 
     cfg._LOAD_CONFIG_CACHE.clear()
     cfg._RAW_CONFIG_CACHE.clear()
@@ -32,7 +32,7 @@ def _write(path, body):
 
 
 def test_managed_beats_user(homes):
-    from hermes_cli.config import load_config, cfg_get
+    from agentic_os_cli.config import load_config, cfg_get
 
     home, managed = homes
     _write(home / "config.yaml", "model:\n  default: user/model\n")
@@ -42,7 +42,7 @@ def test_managed_beats_user(homes):
 
 def test_managed_leaf_does_not_freeze_siblings(homes):
     """D3/Q4: pinning model.default leaves model.fallback user-controlled."""
-    from hermes_cli.config import load_config, cfg_get
+    from agentic_os_cli.config import load_config, cfg_get
 
     home, managed = homes
     _write(home / "config.yaml", "model:\n  default: user/model\n  fallback: user/fb\n")
@@ -53,7 +53,7 @@ def test_managed_leaf_does_not_freeze_siblings(homes):
 
 
 def test_no_managed_config_is_unchanged(homes):
-    from hermes_cli.config import load_config, cfg_get
+    from agentic_os_cli.config import load_config, cfg_get
 
     home, _ = homes
     _write(home / "config.yaml", "model:\n  default: user/model\n")
@@ -62,7 +62,7 @@ def test_no_managed_config_is_unchanged(homes):
 
 def test_managed_list_wins_wholesale(homes):
     """D3: a managed list value replaces the user's wholesale."""
-    from hermes_cli.config import load_config, cfg_get
+    from agentic_os_cli.config import load_config, cfg_get
 
     home, managed = homes
     _write(home / "config.yaml", "toolsets:\n  enabled: [a, b, c]\n")
@@ -71,7 +71,7 @@ def test_managed_list_wins_wholesale(homes):
 
 
 def test_editing_managed_file_invalidates_cache(homes):
-    from hermes_cli.config import load_config, cfg_get
+    from agentic_os_cli.config import load_config, cfg_get
 
     home, managed = homes
     _write(home / "config.yaml", "model:\n  default: user/model\n")
@@ -88,7 +88,7 @@ def test_user_cannot_shadow_managed_literal_via_envref(homes, monkeypatch):
     user-defined env var has nothing to substitute. This asserts the managed
     literal survives verbatim regardless of user env, and that managed wins.
     """
-    from hermes_cli.config import load_config, cfg_get
+    from agentic_os_cli.config import load_config, cfg_get
 
     home, managed = homes
     monkeypatch.setenv("EVIL", "user/override")

@@ -1,4 +1,4 @@
-from hermes_state import AsyncSessionDB
+from agentic_os_state import AsyncSessionDB
 """Tests for gateway /status behavior and token persistence."""
 
 from datetime import datetime

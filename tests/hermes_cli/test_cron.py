@@ -1,4 +1,4 @@
-"""Tests for hermes_cli.cron command handling."""
+"""Tests for agentic_os_cli.cron command handling."""
 
 from argparse import Namespace
 from types import SimpleNamespace
@@ -6,8 +6,8 @@ from types import SimpleNamespace
 import pytest
 
 from cron.jobs import create_job, get_job, list_jobs
-from hermes_cli import cron as cron_cli
-from hermes_cli.cron import cron_command
+from agentic_os_cli import cron as cron_cli
+from agentic_os_cli.cron import cron_command
 
 
 @pytest.fixture()
@@ -163,7 +163,7 @@ class TestGatewayNotRunningWarning:
     """
 
     def test_create_warns_when_gateway_absent(self, tmp_cron_dir, capsys, monkeypatch):
-        monkeypatch.setattr("hermes_cli.gateway.find_gateway_pids", lambda: [])
+        monkeypatch.setattr("agentic_os_cli.gateway.find_gateway_pids", lambda: [])
         cron_command(
             Namespace(
                 cron_command="create",
@@ -184,7 +184,7 @@ class TestGatewayNotRunningWarning:
         assert "Gateway is not running" in out
 
     def test_create_silent_when_gateway_running(self, tmp_cron_dir, capsys, monkeypatch):
-        monkeypatch.setattr("hermes_cli.gateway.find_gateway_pids", lambda: [4242])
+        monkeypatch.setattr("agentic_os_cli.gateway.find_gateway_pids", lambda: [4242])
         cron_command(
             Namespace(
                 cron_command="create",
@@ -206,7 +206,7 @@ class TestGatewayNotRunningWarning:
 
     def test_list_warns_when_gateway_absent(self, tmp_cron_dir, capsys, monkeypatch):
         create_job(prompt="Daily report", schedule="0 11 * * *")
-        monkeypatch.setattr("hermes_cli.gateway.find_gateway_pids", lambda: [])
+        monkeypatch.setattr("agentic_os_cli.gateway.find_gateway_pids", lambda: [])
         cron_command(Namespace(cron_command="list", all=True))
         out = capsys.readouterr().out
         assert "Gateway is not running" in out
@@ -226,11 +226,11 @@ class TestExternalCronProviderStatus:
     ):
         create_job(prompt="Ping", schedule="every 2m")
         monkeypatch.setattr(
-            "hermes_cli.cron._active_cron_provider_name", lambda: "chronos"
+            "agentic_os_cli.cron._active_cron_provider_name", lambda: "chronos"
         )
         # Even with NO gateway process and NO ticker heartbeat, Chronos status
         # must NOT report a stall / "not firing".
-        monkeypatch.setattr("hermes_cli.gateway.find_gateway_pids", lambda: [])
+        monkeypatch.setattr("agentic_os_cli.gateway.find_gateway_pids", lambda: [])
         cron_command(Namespace(cron_command="status"))
         out = capsys.readouterr().out
         assert "chronos" in out
@@ -244,9 +244,9 @@ class TestExternalCronProviderStatus:
     def test_status_unchanged_for_builtin(self, tmp_cron_dir, capsys, monkeypatch):
         create_job(prompt="Ping", schedule="every 2m")
         monkeypatch.setattr(
-            "hermes_cli.cron._active_cron_provider_name", lambda: "builtin"
+            "agentic_os_cli.cron._active_cron_provider_name", lambda: "builtin"
         )
-        monkeypatch.setattr("hermes_cli.gateway.find_gateway_pids", lambda: [])
+        monkeypatch.setattr("agentic_os_cli.gateway.find_gateway_pids", lambda: [])
         cron_command(Namespace(cron_command="status"))
         out = capsys.readouterr().out
         # Built-in path is the historical ticker-based report.
@@ -259,9 +259,9 @@ class TestExternalCronProviderStatus:
         # The create-time "gateway not running" nag is a ticker-only concern;
         # an external provider doesn't depend on a live in-process ticker.
         monkeypatch.setattr(
-            "hermes_cli.cron._active_cron_provider_name", lambda: "chronos"
+            "agentic_os_cli.cron._active_cron_provider_name", lambda: "chronos"
         )
-        monkeypatch.setattr("hermes_cli.gateway.find_gateway_pids", lambda: [])
+        monkeypatch.setattr("agentic_os_cli.gateway.find_gateway_pids", lambda: [])
         cron_command(
             Namespace(
                 cron_command="create",
@@ -297,7 +297,7 @@ def test_cron_list_warns_when_gateway_not_running(monkeypatch, capsys):
             }
         ],
     )
-    monkeypatch.setattr("hermes_cli.gateway.find_gateway_pids", lambda: [])
+    monkeypatch.setattr("agentic_os_cli.gateway.find_gateway_pids", lambda: [])
     monkeypatch.setattr(cron_cli, "_active_cron_provider_name", lambda: "builtin")
 
     cron_cli.cron_list()
@@ -309,7 +309,7 @@ def test_cron_list_warns_when_gateway_not_running(monkeypatch, capsys):
 
 def test_cron_status_reports_running_gateway(monkeypatch, capsys):
     monkeypatch.setattr(cron_cli, "_active_cron_provider_name", lambda: "builtin")
-    monkeypatch.setattr("hermes_cli.gateway.find_gateway_pids", lambda: [1234, 5678])
+    monkeypatch.setattr("agentic_os_cli.gateway.find_gateway_pids", lambda: [1234, 5678])
     monkeypatch.setattr(
         "cron.jobs.list_jobs",
         lambda include_disabled=False: [

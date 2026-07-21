@@ -2,8 +2,8 @@
 
 Bash-compatible .env files commonly prefix lines with ``export `` (users
 copy-paste from shell profiles, cloud provider docs, tutorials). The three
-hand-rolled parsers — ``hermes_cli.config.load_env``,
-``hermes_cli.main._has_any_provider_configured``, and
+hand-rolled parsers — ``agentic_os_cli.config.load_env``,
+``agentic_os_cli.main._has_any_provider_configured``, and
 ``tools.skills_tool.load_env`` — split on ``line.partition("=")`` and must
 strip the ``export `` prefix first, otherwise ``export API_KEY=sk-...`` is
 stored under the wrong key ``"export API_KEY"`` and the real key is lost
@@ -26,7 +26,7 @@ def _write_env(path: Path, contents: str) -> None:
 
 
 def test_config_load_env_strips_export_prefix(tmp_path):
-    from hermes_cli.config import invalidate_env_cache, load_env
+    from agentic_os_cli.config import invalidate_env_cache, load_env
 
     env_path = tmp_path / ".env"
     _write_env(
@@ -37,7 +37,7 @@ def test_config_load_env_strips_export_prefix(tmp_path):
     )
     invalidate_env_cache()
     try:
-        with patch("hermes_cli.config.get_env_path", return_value=env_path):
+        with patch("agentic_os_cli.config.get_env_path", return_value=env_path):
             env = load_env()
     finally:
         invalidate_env_cache()
@@ -51,13 +51,13 @@ def test_config_load_env_strips_export_prefix(tmp_path):
 
 def test_config_load_env_does_not_mangle_non_export(tmp_path):
     """A bare 'export' word without trailing space is not a prefix."""
-    from hermes_cli.config import invalidate_env_cache, load_env
+    from agentic_os_cli.config import invalidate_env_cache, load_env
 
     env_path = tmp_path / ".env"
     _write_env(env_path, "PLAIN_KEY=val1\nexportNOSPACE=val2\nexport REAL=val3\n")
     invalidate_env_cache()
     try:
-        with patch("hermes_cli.config.get_env_path", return_value=env_path):
+        with patch("agentic_os_cli.config.get_env_path", return_value=env_path):
             env = load_env()
     finally:
         invalidate_env_cache()
@@ -108,7 +108,7 @@ def test_has_any_provider_configured_with_export_prefix(tmp_path, monkeypatch):
         "export OPENAI_API_KEY=sk-export-only-123\n", encoding="utf-8"
     )
 
-    import hermes_cli.main as hmain
+    import agentic_os_cli.main as hmain
 
     importlib.reload(hmain)
     # get_env_path() derives from HERMES_HOME (set above) → tmp_path/.env, so

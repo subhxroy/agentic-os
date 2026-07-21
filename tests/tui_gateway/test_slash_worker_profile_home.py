@@ -11,7 +11,7 @@ import pytest
 def test_slash_worker_accepts_profile_home():
     """_SlashWorker.__init__ accepts profile_home parameter."""
     with patch.dict("sys.modules", {
-        "hermes_constants": MagicMock(get_hermes_home=MagicMock(return_value="/tmp/hermes_test")),
+        "agentic_os_constants": MagicMock(get_hermes_home=MagicMock(return_value="/tmp/hermes_test")),
     }):
         with patch("subprocess.Popen") as mock_popen:
             mock_popen.return_value.stdout = MagicMock()
@@ -38,7 +38,7 @@ def test_slash_worker_accepts_profile_home():
 def test_slash_worker_without_profile_home():
     """_SlashWorker works without profile_home parameter (backward compatible)."""
     with patch.dict("sys.modules", {
-        "hermes_constants": MagicMock(get_hermes_home=MagicMock(return_value="/tmp/hermes_test")),
+        "agentic_os_constants": MagicMock(get_hermes_home=MagicMock(return_value="/tmp/hermes_test")),
     }):
         with patch("subprocess.Popen") as mock_popen:
             mock_popen.return_value.stdout = MagicMock()
@@ -68,7 +68,7 @@ def test_slash_worker_without_profile_home():
 def test_slash_worker_with_none_profile_home():
     """_SlashWorker with explicit profile_home=None works."""
     with patch.dict("sys.modules", {
-        "hermes_constants": MagicMock(get_hermes_home=MagicMock(return_value="/tmp/hermes_test")),
+        "agentic_os_constants": MagicMock(get_hermes_home=MagicMock(return_value="/tmp/hermes_test")),
     }):
         with patch("subprocess.Popen") as mock_popen:
             mock_popen.return_value.stdout = MagicMock()
@@ -98,7 +98,7 @@ def test_slash_worker_with_none_profile_home():
 def test_slash_worker_inherits_argv_correctly():
     """_SlashWorker passes correct argv to Popen."""
     with patch.dict("sys.modules", {
-        "hermes_constants": MagicMock(get_hermes_home=MagicMock(return_value="/tmp/hermes_test")),
+        "agentic_os_constants": MagicMock(get_hermes_home=MagicMock(return_value="/tmp/hermes_test")),
     }):
         with patch("subprocess.Popen") as mock_popen:
             mock_popen.return_value.stdout = MagicMock()

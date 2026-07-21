@@ -32,8 +32,8 @@ from agent.billing_view import (
     parse_money,
     validate_charge_amount,
 )
-import hermes_cli.nous_billing as nb
-from hermes_cli.nous_billing import (
+import agentic_os_cli.nous_billing as nb
+from agentic_os_cli.nous_billing import (
     BillingAuthError,
     BillingError,
     BillingRateLimited,

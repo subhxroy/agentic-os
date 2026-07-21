@@ -4,13 +4,13 @@ server's dashboard plugin loader.
 
 Two primitives combined into the original advisory chain:
 
-1. ``hermes_cli.web_server._discover_dashboard_plugins`` opted into
+1. ``agentic_os_cli.web_server._discover_dashboard_plugins`` opted into
    the untrusted ``./.hermes/plugins/`` source via
    ``os.environ.get("HERMES_ENABLE_PROJECT_PLUGINS")`` — truthy for
    any non-empty string, so ``=0`` / ``=false`` / ``=no`` (all of
    which the agent loader treats as off, and which operators set to
    *disable* project plugins) silently *enabled* the source.
-2. ``hermes_cli.web_server._mount_plugin_api_routes`` then imported
+2. ``agentic_os_cli.web_server._mount_plugin_api_routes`` then imported
    each plugin's manifest ``api`` field as a Python module via
    ``importlib.util.spec_from_file_location``.  The field was used
    raw, with no path-traversal check, so a single manifest line
@@ -37,7 +37,7 @@ from unittest.mock import patch
 
 import pytest
 
-from hermes_cli import web_server
+from agentic_os_cli import web_server
 
 
 @pytest.fixture(autouse=True)

@@ -118,7 +118,7 @@ def test_approval_adds_to_configured_allowlist(store, monkeypatch):
     monkeypatch.setenv("TELEGRAM_ALLOWED_USERS", "owner1")
     # save_env_value writes to .env under HERMES_HOME; patch it to capture.
     captured = {}
-    import hermes_cli.config as cfg
+    import agentic_os_cli.config as cfg
 
     monkeypatch.setattr(cfg, "save_env_value",
                         lambda k, v: (captured.__setitem__(k, v),
@@ -132,7 +132,7 @@ def test_approval_adds_to_configured_allowlist(store, monkeypatch):
 def test_approval_no_allowlist_leaves_gateway_open(store, monkeypatch):
     """Open gateway: approval must NOT create an allowlist (option i)."""
     called = {}
-    import hermes_cli.config as cfg
+    import agentic_os_cli.config as cfg
 
     monkeypatch.setattr(cfg, "save_env_value",
                         lambda k, v: called.__setitem__(k, v))
@@ -148,7 +148,7 @@ def test_approval_no_allowlist_leaves_gateway_open(store, monkeypatch):
 def test_approval_idempotent_when_already_in_allowlist(store, monkeypatch):
     monkeypatch.setenv("TELEGRAM_ALLOWED_USERS", "owner1,newuser99")
     called = {}
-    import hermes_cli.config as cfg
+    import agentic_os_cli.config as cfg
 
     monkeypatch.setattr(cfg, "save_env_value",
                         lambda k, v: called.__setitem__(k, v))
@@ -162,7 +162,7 @@ def test_approval_idempotent_when_already_in_allowlist(store, monkeypatch):
 def test_approval_skips_wildcard_allowlist(store, monkeypatch):
     monkeypatch.setenv("TELEGRAM_ALLOWED_USERS", "*")
     called = {}
-    import hermes_cli.config as cfg
+    import agentic_os_cli.config as cfg
 
     monkeypatch.setattr(cfg, "save_env_value",
                         lambda k, v: called.__setitem__(k, v))
@@ -176,7 +176,7 @@ def test_revoke_removes_from_allowlist(store, monkeypatch):
     monkeypatch.setenv("TELEGRAM_ALLOWED_USERS", "owner1,newuser99")
     saved = {}
     removed = []
-    import hermes_cli.config as cfg
+    import agentic_os_cli.config as cfg
 
     monkeypatch.setattr(cfg, "save_env_value",
                         lambda k, v: (saved.__setitem__(k, v),
@@ -192,7 +192,7 @@ def test_revoke_removes_from_allowlist(store, monkeypatch):
 def test_revoke_removes_env_var_when_list_empties(store, monkeypatch):
     monkeypatch.setenv("TELEGRAM_ALLOWED_USERS", "newuser99")
     removed = []
-    import hermes_cli.config as cfg
+    import agentic_os_cli.config as cfg
 
     monkeypatch.setattr(cfg, "save_env_value",
                         lambda k, v: os.environ.__setitem__(k, v))

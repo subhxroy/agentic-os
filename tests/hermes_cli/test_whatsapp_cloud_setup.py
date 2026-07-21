@@ -21,7 +21,7 @@ from pathlib import Path
 
 import pytest
 
-from hermes_cli.setup_whatsapp_cloud import (
+from agentic_os_cli.setup_whatsapp_cloud import (
     _validate_phone_number_id,
     _validate_waba_id,
     _validate_app_id,

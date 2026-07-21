@@ -24,7 +24,7 @@ from unittest.mock import patch, MagicMock
 
 
 # Path to the source files under test
-_SRC_ROOT = Path(__file__).parent.parent.parent / "hermes_cli"
+_SRC_ROOT = Path(__file__).parent.parent.parent / "agentic_os_cli"
 
 
 class TestInitPairClampingBehavior:

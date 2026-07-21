@@ -1,7 +1,7 @@
 import pytest
 
 from agent.errors import MoAPresetNotFoundError
-from hermes_cli.moa_config import (
+from agentic_os_cli.moa_config import (
     DEFAULT_MOA_AGGREGATOR,
     DEFAULT_MOA_PRESET_NAME,
     DEFAULT_MOA_REFERENCE_MODELS,
@@ -367,20 +367,20 @@ def _valid_preset_payload():
 
 
 def test_validate_moa_payload_accepts_complete_presets():
-    from hermes_cli.moa_config import validate_moa_payload
+    from agentic_os_cli.moa_config import validate_moa_payload
 
     assert validate_moa_payload({"presets": {"default": _valid_preset_payload()}}) == []
 
 
 def test_validate_moa_payload_accepts_legacy_flat_payload():
-    from hermes_cli.moa_config import validate_moa_payload
+    from agentic_os_cli.moa_config import validate_moa_payload
 
     assert validate_moa_payload(_valid_preset_payload()) == []
 
 
 def test_validate_moa_payload_flags_half_filled_reference_slot():
     """The #64156 shape: provider picked, model still empty (mid-edit autosave)."""
-    from hermes_cli.moa_config import validate_moa_payload
+    from agentic_os_cli.moa_config import validate_moa_payload
 
     preset = _valid_preset_payload()
     preset["reference_models"].append({"provider": "kilo", "model": ""})
@@ -391,7 +391,7 @@ def test_validate_moa_payload_flags_half_filled_reference_slot():
 
 
 def test_validate_moa_payload_flags_half_filled_aggregator():
-    from hermes_cli.moa_config import validate_moa_payload
+    from agentic_os_cli.moa_config import validate_moa_payload
 
     preset = _valid_preset_payload()
     preset["aggregator"] = {"provider": "openrouter", "model": ""}
@@ -401,7 +401,7 @@ def test_validate_moa_payload_flags_half_filled_aggregator():
 
 
 def test_validate_moa_payload_flags_empty_references():
-    from hermes_cli.moa_config import validate_moa_payload
+    from agentic_os_cli.moa_config import validate_moa_payload
 
     preset = _valid_preset_payload()
     preset["reference_models"] = []
@@ -411,7 +411,7 @@ def test_validate_moa_payload_flags_empty_references():
 
 
 def test_validate_moa_payload_flags_recursive_moa_slot():
-    from hermes_cli.moa_config import validate_moa_payload
+    from agentic_os_cli.moa_config import validate_moa_payload
 
     preset = _valid_preset_payload()
     preset["aggregator"] = {"provider": "MoA", "model": "default"}
@@ -422,7 +422,7 @@ def test_validate_moa_payload_flags_recursive_moa_slot():
 
 def test_validate_moa_payload_names_the_broken_preset():
     """Multi-preset payloads must say WHICH preset is broken."""
-    from hermes_cli.moa_config import validate_moa_payload
+    from agentic_os_cli.moa_config import validate_moa_payload
 
     problems = validate_moa_payload(
         {
@@ -445,7 +445,7 @@ def test_validate_moa_payload_agrees_with_clean_slot():
     """Contract: a payload validate accepts must survive normalize UNCHANGED in
     its slots — validate and _clean_slot can never disagree (else a payload
     could pass validation and still be swapped for defaults)."""
-    from hermes_cli.moa_config import validate_moa_payload
+    from agentic_os_cli.moa_config import validate_moa_payload
 
     payload = {"presets": {"p": _valid_preset_payload()}}
     assert validate_moa_payload(payload) == []
@@ -456,7 +456,7 @@ def test_validate_moa_payload_agrees_with_clean_slot():
 
 
 def test_validate_moa_payload_rejects_non_dict():
-    from hermes_cli.moa_config import validate_moa_payload
+    from agentic_os_cli.moa_config import validate_moa_payload
 
     assert validate_moa_payload(None)
     assert validate_moa_payload([1, 2])

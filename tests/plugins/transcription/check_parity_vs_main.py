@@ -90,7 +90,7 @@ for name in list(sys.modules):
     if (name.startswith("tools.")
             or name.startswith("agent.")
             or name.startswith("plugins.")
-            or name.startswith("hermes_cli.")):
+            or name.startswith("agentic_os_cli.")):
         sys.modules.pop(name, None)
 
 # Try importing transcription_registry — only exists on PR side.

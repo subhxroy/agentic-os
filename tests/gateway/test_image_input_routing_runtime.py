@@ -61,7 +61,7 @@ async def test_prepare_image_routing_uses_session_vision_model_override(monkeypa
     cfg = _auto_config()
 
     monkeypatch.setattr("gateway.run._load_gateway_config", lambda: cfg)
-    monkeypatch.setattr("hermes_cli.config.load_config", lambda: cfg)
+    monkeypatch.setattr("agentic_os_cli.config.load_config", lambda: cfg)
     monkeypatch.setattr("agent.auxiliary_client._read_main_provider", lambda: "xiaomi")
     monkeypatch.setattr("agent.auxiliary_client._read_main_model", lambda: "mimo-v2.5-pro")
     monkeypatch.setattr(
@@ -108,7 +108,7 @@ async def test_prepare_image_routing_falls_back_to_text_for_text_only_session_ov
     cfg["model"] = {"provider": "openai-codex", "default": "gpt-5.5"}
 
     monkeypatch.setattr("gateway.run._load_gateway_config", lambda: cfg)
-    monkeypatch.setattr("hermes_cli.config.load_config", lambda: cfg)
+    monkeypatch.setattr("agentic_os_cli.config.load_config", lambda: cfg)
     monkeypatch.setattr("agent.auxiliary_client._read_main_provider", lambda: "openai-codex")
     monkeypatch.setattr("agent.auxiliary_client._read_main_model", lambda: "gpt-5.5")
     monkeypatch.setattr(
@@ -161,7 +161,7 @@ async def test_prepare_image_routing_runs_off_the_event_loop(monkeypatch):
     cfg = _auto_config()
 
     monkeypatch.setattr("gateway.run._load_gateway_config", lambda: cfg)
-    monkeypatch.setattr("hermes_cli.config.load_config", lambda: cfg)
+    monkeypatch.setattr("agentic_os_cli.config.load_config", lambda: cfg)
     monkeypatch.setattr("agent.auxiliary_client._read_main_provider", lambda: "xiaomi")
     monkeypatch.setattr("agent.auxiliary_client._read_main_model", lambda: "mimo-v2.5-pro")
     monkeypatch.setattr(

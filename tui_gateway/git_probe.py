@@ -31,7 +31,7 @@ import time
 from collections.abc import Iterable
 from concurrent.futures import ThreadPoolExecutor
 
-from hermes_cli._subprocess_compat import IS_WINDOWS, windows_hide_flags
+from agentic_os_cli._subprocess_compat import IS_WINDOWS, windows_hide_flags
 
 _GIT_TIMEOUT = 1.5
 _WARM_WORKERS = 8

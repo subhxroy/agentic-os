@@ -3,7 +3,7 @@ import importlib
 import os
 import sys
 
-from hermes_cli.env_loader import load_hermes_dotenv
+from agentic_os_cli.env_loader import load_hermes_dotenv
 
 
 def test_user_env_overrides_stale_shell_values(tmp_path, monkeypatch):
@@ -99,8 +99,8 @@ def test_main_import_applies_user_env_over_shell_values(tmp_path, monkeypatch):
     monkeypatch.setenv("OPENAI_BASE_URL", "https://old.example/v1")
     monkeypatch.setenv("HERMES_INFERENCE_PROVIDER", "openrouter")
 
-    sys.modules.pop("hermes_cli.main", None)
-    importlib.import_module("hermes_cli.main")
+    sys.modules.pop("agentic_os_cli.main", None)
+    importlib.import_module("agentic_os_cli.main")
 
     assert os.getenv("OPENAI_BASE_URL") == "https://new.example/v1"
     assert os.getenv("HERMES_INFERENCE_PROVIDER") == "custom"
@@ -244,14 +244,14 @@ def test_utf32_le_bom_leaves_file_untouched(tmp_path, caplog):
     """
     import logging
 
-    from hermes_cli.env_loader import _sanitize_env_file_if_needed
+    from agentic_os_cli.env_loader import _sanitize_env_file_if_needed
 
     env_file = tmp_path / ".env"
     content = "HERMES_TEST_KEY=hello_utf32\nSECOND_KEY=world\n"
     raw = codecs.BOM_UTF32_LE + content.encode("utf-32-le")
     env_file.write_bytes(raw)
 
-    with caplog.at_level(logging.WARNING, logger="hermes_cli.env_loader"):
+    with caplog.at_level(logging.WARNING, logger="agentic_os_cli.env_loader"):
         _sanitize_env_file_if_needed(env_file)
 
     assert env_file.read_bytes() == raw  # untouched
@@ -262,14 +262,14 @@ def test_utf32_be_bom_leaves_file_untouched(tmp_path, caplog):
     """UTF-32-BE BOM: same refuse-to-mangle path as LE (ordering independence)."""
     import logging
 
-    from hermes_cli.env_loader import _sanitize_env_file_if_needed
+    from agentic_os_cli.env_loader import _sanitize_env_file_if_needed
 
     env_file = tmp_path / ".env"
     content = "HERMES_TEST_KEY=hello_utf32\nSECOND_KEY=world\n"
     raw = codecs.BOM_UTF32_BE + content.encode("utf-32-be")
     env_file.write_bytes(raw)
 
-    with caplog.at_level(logging.WARNING, logger="hermes_cli.env_loader"):
+    with caplog.at_level(logging.WARNING, logger="agentic_os_cli.env_loader"):
         _sanitize_env_file_if_needed(env_file)
 
     assert env_file.read_bytes() == raw
@@ -284,8 +284,8 @@ def test_utf32_warning_fires_once_per_path(tmp_path, caplog, monkeypatch):
     """
     import logging
 
-    import hermes_cli.env_loader as env_loader
-    from hermes_cli.env_loader import _sanitize_env_file_if_needed
+    import agentic_os_cli.env_loader as env_loader
+    from agentic_os_cli.env_loader import _sanitize_env_file_if_needed
 
     # Isolate process-level seen-set so other tests' paths don't leak in.
     monkeypatch.setattr(env_loader, "_WARNED_UTF32_PATHS", set())
@@ -295,7 +295,7 @@ def test_utf32_warning_fires_once_per_path(tmp_path, caplog, monkeypatch):
     raw = codecs.BOM_UTF32_LE + content.encode("utf-32-le")
     env_file.write_bytes(raw)
 
-    with caplog.at_level(logging.WARNING, logger="hermes_cli.env_loader"):
+    with caplog.at_level(logging.WARNING, logger="agentic_os_cli.env_loader"):
         _sanitize_env_file_if_needed(env_file)
         _sanitize_env_file_if_needed(env_file)
         _sanitize_env_file_if_needed(env_file)
@@ -312,7 +312,7 @@ def test_leading_replacement_char_does_not_rewrite(tmp_path):
     is undecodable as UTF-8, so the replace path would glue U+FFFD onto the
     key. The guard must leave the on-disk bytes untouched.
     """
-    from hermes_cli.env_loader import _sanitize_env_file_if_needed
+    from agentic_os_cli.env_loader import _sanitize_env_file_if_needed
 
     env_file = tmp_path / ".env"
     raw = b"\xffHERMES_TEST_KEY=should-not-rewrite\nSECOND_KEY=ok\n"

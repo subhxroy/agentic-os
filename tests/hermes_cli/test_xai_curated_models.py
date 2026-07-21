@@ -1,6 +1,6 @@
 """Regression tests for xAI curated model list (OAuth picker)."""
 
-from hermes_cli.models import _PROVIDER_MODELS, provider_model_ids
+from agentic_os_cli.models import _PROVIDER_MODELS, provider_model_ids
 
 
 def test_xai_oauth_includes_grok_composer_2_5_fast():

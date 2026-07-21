@@ -1,12 +1,12 @@
 import time
 
-import hermes_state
-from hermes_state import SessionDB
+import agentic_os_state
+from agentic_os_state import SessionDB
 
 
 def test_export_candidates_via_prune_filters_ended_old_sessions(tmp_path, monkeypatch):
     db = SessionDB(db_path=tmp_path / "state.db")
-    monkeypatch.setattr(hermes_state.time, "time", lambda: 2_000_000.0)
+    monkeypatch.setattr(agentic_os_state.time, "time", lambda: 2_000_000.0)
     try:
         db.create_session("old_cli", source="cli")
         db.end_session("old_cli", "done")
@@ -31,7 +31,7 @@ def test_export_candidates_via_prune_filters_ended_old_sessions(tmp_path, monkey
 
 def test_export_candidates_via_prune_ands_source_filter(tmp_path, monkeypatch):
     db = SessionDB(db_path=tmp_path / "state.db")
-    monkeypatch.setattr(hermes_state.time, "time", lambda: 2_000_000.0)
+    monkeypatch.setattr(agentic_os_state.time, "time", lambda: 2_000_000.0)
     try:
         for sid, source in [("old_cli", "cli"), ("old_telegram", "telegram")]:
             db.create_session(sid, source=source)

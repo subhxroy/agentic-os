@@ -473,7 +473,7 @@ def _resolve_relay_identity_token() -> str:
 
     if not token_url:
         # Mode 2 — Nous Portal (default, unchanged behaviour).
-        from hermes_cli.auth import resolve_nous_access_token
+        from agentic_os_cli.auth import resolve_nous_access_token
 
         return resolve_nous_access_token()
 

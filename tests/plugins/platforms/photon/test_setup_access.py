@@ -11,7 +11,7 @@ import argparse
 
 import pytest
 
-from hermes_cli.config import get_env_value, save_env_value
+from agentic_os_cli.config import get_env_value, save_env_value
 from plugins.platforms.photon.adapter import _env_enablement
 from plugins.platforms.photon import cli
 

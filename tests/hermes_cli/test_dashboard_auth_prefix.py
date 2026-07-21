@@ -36,10 +36,10 @@ import pytest
 
 from fastapi.testclient import TestClient
 
-from hermes_cli import web_server
-from hermes_cli.dashboard_auth import clear_providers, register_provider
-from hermes_cli.dashboard_auth import prefix as prefix_mod
-from tests.hermes_cli.conftest_dashboard_auth import StubAuthProvider
+from agentic_os_cli import web_server
+from agentic_os_cli.dashboard_auth import clear_providers, register_provider
+from agentic_os_cli.dashboard_auth import prefix as prefix_mod
+from tests.agentic_os_cli.conftest_dashboard_auth import StubAuthProvider
 
 
 HA_INGRESS_DASHBOARD_PREFIX = (
@@ -294,7 +294,7 @@ class TestPublicUrlOverride:
 
     @pytest.fixture
     def patch_config(self, monkeypatch):
-        """Replace ``hermes_cli.config.load_config`` with a stub
+        """Replace ``agentic_os_cli.config.load_config`` with a stub
         returning the given ``public_url``. Pass ``None`` to set no
         config-side value."""
 
@@ -303,7 +303,7 @@ class TestPublicUrlOverride:
             if public_url is not None:
                 cfg = {"dashboard": {"public_url": public_url}}
             monkeypatch.setattr(
-                "hermes_cli.config.load_config", lambda: cfg
+                "agentic_os_cli.config.load_config", lambda: cfg
             )
 
         return _set
@@ -456,7 +456,7 @@ class TestPublicUrlOverride:
         silently discarded. Regression for #42780."""
         import logging
 
-        from hermes_cli.dashboard_auth import prefix as prefix_mod
+        from agentic_os_cli.dashboard_auth import prefix as prefix_mod
 
         # Reset the per-value dedup cache so the warning fires in-test
         # regardless of test ordering.
@@ -488,7 +488,7 @@ class TestPublicUrlOverride:
         misconfigured deploy doesn't flood the logs."""
         import logging
 
-        from hermes_cli.dashboard_auth import prefix as prefix_mod
+        from agentic_os_cli.dashboard_auth import prefix as prefix_mod
 
         prefix_mod._warned_malformed_public_urls.clear()
         patch_config(None)
@@ -515,7 +515,7 @@ class TestPublicUrlOverride:
         """A correctly-formed value must not produce a spurious warning."""
         import logging
 
-        from hermes_cli.dashboard_auth import prefix as prefix_mod
+        from agentic_os_cli.dashboard_auth import prefix as prefix_mod
 
         prefix_mod._warned_malformed_public_urls.clear()
         patch_config(None)
@@ -620,7 +620,7 @@ class TestCookiePathRespectsPrefix:
         spec-compatible without Secure."""
         from fastapi import FastAPI
         from fastapi.responses import Response
-        from hermes_cli.dashboard_auth.cookies import set_pkce_cookie
+        from agentic_os_cli.dashboard_auth.cookies import set_pkce_cookie
 
         app = FastAPI()
 

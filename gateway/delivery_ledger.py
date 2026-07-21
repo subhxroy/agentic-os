@@ -48,7 +48,7 @@ import threading
 import time
 from typing import Any, Dict, List, Optional
 
-from hermes_constants import get_hermes_home
+from agentic_os_constants import get_hermes_home
 
 logger = logging.getLogger(__name__)
 
@@ -307,7 +307,7 @@ def ledger_enabled(config: Optional[Dict[str, Any]] = None) -> bool:
     """Read the ``gateway.delivery_ledger`` config gate (default on)."""
     try:
         if config is None:
-            from hermes_cli.config import load_config
+            from agentic_os_cli.config import load_config
 
             config = load_config()
         gw = config.get("gateway") or {}

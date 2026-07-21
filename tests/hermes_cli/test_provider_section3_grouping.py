@@ -8,8 +8,8 @@ tests — grouping identity, header-routed separation, list-of-dict model
 declarations, and display-only RID stripping.
 """
 
-import hermes_cli.providers as providers_mod
-from hermes_cli.model_switch import (
+import agentic_os_cli.providers as providers_mod
+from agentic_os_cli.model_switch import (
     format_model_for_display,
     list_authenticated_providers,
 )
@@ -18,7 +18,7 @@ from hermes_cli.model_switch import (
 def _providers(monkeypatch, user_providers):
     monkeypatch.setattr("agent.models_dev.fetch_models_dev", lambda: {})
     monkeypatch.setattr(providers_mod, "HERMES_OVERLAYS", {})
-    monkeypatch.setattr("hermes_cli.models.fetch_api_models", lambda *a, **k: [])
+    monkeypatch.setattr("agentic_os_cli.models.fetch_api_models", lambda *a, **k: [])
     return list_authenticated_providers(
         user_providers=user_providers,
         custom_providers=[],

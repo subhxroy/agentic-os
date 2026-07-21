@@ -153,7 +153,7 @@ def test_verify_on_stop_default_path_through_load_config(tmp_path, clear_verify_
     # cannot exercise.
     clear_verify_env.setenv("HERMES_HOME", str(tmp_path / ".hermes"))
 
-    from hermes_cli.config import load_config
+    from agentic_os_cli.config import load_config
 
     merged = load_config()
     assert merged["agent"]["verify_on_stop"] == "auto"

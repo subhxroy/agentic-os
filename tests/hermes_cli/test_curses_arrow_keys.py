@@ -16,7 +16,7 @@ if sys.platform == "win32":
     pytest.skip("curses is not available on Windows", allow_module_level=True)
 import curses
 
-from hermes_cli.curses_ui import (
+from agentic_os_cli.curses_ui import (
     NAV_CANCEL,
     NAV_DOWN,
     NAV_NONE,

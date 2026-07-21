@@ -9,7 +9,7 @@ from __future__ import annotations
 import json
 import pytest
 
-from hermes_cli.dashboard_auth.audit import audit_log, AuditEvent
+from agentic_os_cli.dashboard_auth.audit import audit_log, AuditEvent
 
 
 @pytest.fixture

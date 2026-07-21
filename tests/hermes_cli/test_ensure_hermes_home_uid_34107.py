@@ -30,7 +30,7 @@ class TestResolveHermesUidGid:
     def test_returns_parsed_values_when_both_set(self, monkeypatch):
         monkeypatch.setenv("HERMES_UID", "1000")
         monkeypatch.setenv("HERMES_GID", "911")
-        from hermes_cli.config import _resolve_hermes_uid_gid
+        from agentic_os_cli.config import _resolve_hermes_uid_gid
         uid, gid = _resolve_hermes_uid_gid()
         assert uid == 1000
         assert gid == 911
@@ -38,7 +38,7 @@ class TestResolveHermesUidGid:
     def test_returns_none_when_unset(self, monkeypatch):
         monkeypatch.delenv("HERMES_UID", raising=False)
         monkeypatch.delenv("HERMES_GID", raising=False)
-        from hermes_cli.config import _resolve_hermes_uid_gid
+        from agentic_os_cli.config import _resolve_hermes_uid_gid
         uid, gid = _resolve_hermes_uid_gid()
         assert uid is None
         assert gid is None
@@ -46,7 +46,7 @@ class TestResolveHermesUidGid:
     def test_uid_only_returns_gid_none(self, monkeypatch):
         monkeypatch.setenv("HERMES_UID", "1000")
         monkeypatch.delenv("HERMES_GID", raising=False)
-        from hermes_cli.config import _resolve_hermes_uid_gid
+        from agentic_os_cli.config import _resolve_hermes_uid_gid
         uid, gid = _resolve_hermes_uid_gid()
         assert uid == 1000
         assert gid is None
@@ -54,7 +54,7 @@ class TestResolveHermesUidGid:
     def test_invalid_uid_returns_none_for_that_field(self, monkeypatch):
         monkeypatch.setenv("HERMES_UID", "not-a-number")
         monkeypatch.setenv("HERMES_GID", "911")
-        from hermes_cli.config import _resolve_hermes_uid_gid
+        from agentic_os_cli.config import _resolve_hermes_uid_gid
         uid, gid = _resolve_hermes_uid_gid()
         assert uid is None
         assert gid == 911
@@ -62,7 +62,7 @@ class TestResolveHermesUidGid:
     def test_empty_string_treated_as_unset(self, monkeypatch):
         monkeypatch.setenv("HERMES_UID", "")
         monkeypatch.setenv("HERMES_GID", "")
-        from hermes_cli.config import _resolve_hermes_uid_gid
+        from agentic_os_cli.config import _resolve_hermes_uid_gid
         uid, gid = _resolve_hermes_uid_gid()
         assert uid is None
         assert gid is None
@@ -70,7 +70,7 @@ class TestResolveHermesUidGid:
     def test_whitespace_padded_values(self, monkeypatch):
         monkeypatch.setenv("HERMES_UID", " 1000 ")
         monkeypatch.setenv("HERMES_GID", "  911")
-        from hermes_cli.config import _resolve_hermes_uid_gid
+        from agentic_os_cli.config import _resolve_hermes_uid_gid
         uid, gid = _resolve_hermes_uid_gid()
         assert uid == 1000
         assert gid == 911
@@ -79,7 +79,7 @@ class TestResolveHermesUidGid:
     def test_windows_returns_none_none(self, monkeypatch):
         monkeypatch.setenv("HERMES_UID", "1000")
         monkeypatch.setenv("HERMES_GID", "911")
-        from hermes_cli.config import _resolve_hermes_uid_gid
+        from agentic_os_cli.config import _resolve_hermes_uid_gid
         uid, gid = _resolve_hermes_uid_gid()
         assert uid is None
         assert gid is None
@@ -94,7 +94,7 @@ class TestChownToHermesUid:
     def test_calls_os_chown_when_both_set(self, tmp_path, monkeypatch):
         monkeypatch.setenv("HERMES_UID", "1000")
         monkeypatch.setenv("HERMES_GID", "911")
-        from hermes_cli import config as cfg
+        from agentic_os_cli import config as cfg
 
         d = tmp_path / "subdir"
         d.mkdir()
@@ -108,7 +108,7 @@ class TestChownToHermesUid:
         os.chown which means 'do not change' on POSIX."""
         monkeypatch.setenv("HERMES_UID", "1000")
         monkeypatch.delenv("HERMES_GID", raising=False)
-        from hermes_cli import config as cfg
+        from agentic_os_cli import config as cfg
 
         d = tmp_path / "subdir"
         d.mkdir()
@@ -120,7 +120,7 @@ class TestChownToHermesUid:
     def test_no_op_when_neither_set(self, tmp_path, monkeypatch):
         monkeypatch.delenv("HERMES_UID", raising=False)
         monkeypatch.delenv("HERMES_GID", raising=False)
-        from hermes_cli import config as cfg
+        from agentic_os_cli import config as cfg
 
         d = tmp_path / "subdir"
         d.mkdir()
@@ -136,7 +136,7 @@ class TestChownToHermesUid:
         user anyway."""
         monkeypatch.setenv("HERMES_UID", "1000")
         monkeypatch.setenv("HERMES_GID", "911")
-        from hermes_cli import config as cfg
+        from agentic_os_cli import config as cfg
 
         d = tmp_path / "subdir"
         d.mkdir()
@@ -153,7 +153,7 @@ class TestChownToHermesUid:
         the helper portable."""
         monkeypatch.setenv("HERMES_UID", "1000")
         monkeypatch.setenv("HERMES_GID", "911")
-        from hermes_cli import config as cfg
+        from agentic_os_cli import config as cfg
 
         d = tmp_path / "subdir"
         d.mkdir()
@@ -172,7 +172,7 @@ class TestSecureDirChown:
     def test_secure_dir_invokes_chown_when_env_set(self, tmp_path, monkeypatch):
         monkeypatch.setenv("HERMES_UID", "1000")
         monkeypatch.setenv("HERMES_GID", "911")
-        from hermes_cli import config as cfg
+        from agentic_os_cli import config as cfg
 
         d = tmp_path / "subdir"
         d.mkdir()
@@ -185,7 +185,7 @@ class TestSecureDirChown:
     def test_secure_dir_no_chown_when_env_unset(self, tmp_path, monkeypatch):
         monkeypatch.delenv("HERMES_UID", raising=False)
         monkeypatch.delenv("HERMES_GID", raising=False)
-        from hermes_cli import config as cfg
+        from agentic_os_cli import config as cfg
 
         d = tmp_path / "subdir"
         d.mkdir()

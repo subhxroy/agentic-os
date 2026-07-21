@@ -10,7 +10,7 @@ from unittest.mock import patch
 
 import pytest
 
-from hermes_cli import main as cli_main
+from agentic_os_cli import main as cli_main
 
 
 def _ns(**kw):
@@ -60,12 +60,12 @@ def test_gui_installs_packages_and_launches_desktop_app(tmp_path, monkeypatch):
     pack_ok = subprocess.CompletedProcess(["npm", "run", "pack"], 0)
     launch_ok = subprocess.CompletedProcess([str(packaged_exe)], 0)
 
-    with patch("hermes_cli.main.shutil.which", return_value="/usr/bin/npm"), \
-         patch("hermes_cli.main._run_npm_install_deterministic", return_value=install_ok) as mock_install, \
-         patch("hermes_cli.main._desktop_build_needed", return_value=True), \
-         patch("hermes_cli.main._write_desktop_build_stamp"), \
-         patch("hermes_cli.main._desktop_macos_relaunchable_fixup"), \
-         patch("hermes_cli.main.subprocess.run", side_effect=[pack_ok, launch_ok]) as mock_run, \
+    with patch("agentic_os_cli.main.shutil.which", return_value="/usr/bin/npm"), \
+         patch("agentic_os_cli.main._run_npm_install_deterministic", return_value=install_ok) as mock_install, \
+         patch("agentic_os_cli.main._desktop_build_needed", return_value=True), \
+         patch("agentic_os_cli.main._write_desktop_build_stamp"), \
+         patch("agentic_os_cli.main._desktop_macos_relaunchable_fixup"), \
+         patch("agentic_os_cli.main.subprocess.run", side_effect=[pack_ok, launch_ok]) as mock_run, \
          pytest.raises(SystemExit) as exc:
         cli_main.cmd_gui(_ns())
 
@@ -91,7 +91,7 @@ def test_gui_install_env_prepends_managed_node_on_bare_path(tmp_path, monkeypatc
     """
     import os
 
-    from hermes_constants import iter_hermes_node_dirs
+    from agentic_os_constants import iter_hermes_node_dirs
 
     root = _make_desktop_tree(tmp_path)
     monkeypatch.setattr(cli_main, "PROJECT_ROOT", root)
@@ -107,11 +107,11 @@ def test_gui_install_env_prepends_managed_node_on_bare_path(tmp_path, monkeypatc
     install_ok = subprocess.CompletedProcess(["npm", "ci"], 0)
     launch_ok = subprocess.CompletedProcess(["hermes"], 0)
 
-    with patch("hermes_cli.main._resolve_node_runtime_npm", return_value="/usr/bin/npm"), \
-         patch("hermes_cli.main._run_npm_install_deterministic", return_value=install_ok) as mock_install, \
-         patch("hermes_cli.main._desktop_build_needed", return_value=True), \
-         patch("hermes_cli.main._write_desktop_build_stamp"), \
-         patch("hermes_cli.main.subprocess.run", side_effect=[subprocess.CompletedProcess([], 0), launch_ok]), \
+    with patch("agentic_os_cli.main._resolve_node_runtime_npm", return_value="/usr/bin/npm"), \
+         patch("agentic_os_cli.main._run_npm_install_deterministic", return_value=install_ok) as mock_install, \
+         patch("agentic_os_cli.main._desktop_build_needed", return_value=True), \
+         patch("agentic_os_cli.main._write_desktop_build_stamp"), \
+         patch("agentic_os_cli.main.subprocess.run", side_effect=[subprocess.CompletedProcess([], 0), launch_ok]), \
          pytest.raises(SystemExit):
         cli_main.cmd_gui(_ns(skip_build=False))
 
@@ -134,12 +134,12 @@ def test_gui_forwards_desktop_environment_overrides(tmp_path, monkeypatch):
 
     ok = subprocess.CompletedProcess([], 0)
 
-    with patch("hermes_cli.main.shutil.which", return_value="/usr/bin/npm"), \
-         patch("hermes_cli.main._run_npm_install_deterministic", return_value=ok), \
-         patch("hermes_cli.main._desktop_build_needed", return_value=True), \
-         patch("hermes_cli.main._write_desktop_build_stamp"), \
-         patch("hermes_cli.main._desktop_macos_relaunchable_fixup"), \
-         patch("hermes_cli.main.subprocess.run", side_effect=[ok, ok]) as mock_run, \
+    with patch("agentic_os_cli.main.shutil.which", return_value="/usr/bin/npm"), \
+         patch("agentic_os_cli.main._run_npm_install_deterministic", return_value=ok), \
+         patch("agentic_os_cli.main._desktop_build_needed", return_value=True), \
+         patch("agentic_os_cli.main._write_desktop_build_stamp"), \
+         patch("agentic_os_cli.main._desktop_macos_relaunchable_fixup"), \
+         patch("agentic_os_cli.main.subprocess.run", side_effect=[ok, ok]) as mock_run, \
          pytest.raises(SystemExit):
         cli_main.cmd_gui(_ns(
             fake_boot=True,
@@ -159,7 +159,7 @@ def test_gui_exits_when_npm_missing(tmp_path, monkeypatch, capsys):
     root = _make_desktop_tree(tmp_path)
     monkeypatch.setattr(cli_main, "PROJECT_ROOT", root)
 
-    with patch("hermes_cli.main.shutil.which", return_value=None), \
+    with patch("agentic_os_cli.main.shutil.which", return_value=None), \
          pytest.raises(SystemExit) as exc:
         cli_main.cmd_gui(_ns())
 
@@ -187,9 +187,9 @@ def test_gui_skip_build_launches_existing_packaged_app_without_npm(tmp_path, mon
 
     launch_ok = subprocess.CompletedProcess([str(packaged_exe)], 0)
 
-    with patch("hermes_cli.main.shutil.which", return_value=None), \
-         patch("hermes_cli.main._run_npm_install_deterministic") as mock_install, \
-         patch("hermes_cli.main.subprocess.run", return_value=launch_ok) as mock_run, \
+    with patch("agentic_os_cli.main.shutil.which", return_value=None), \
+         patch("agentic_os_cli.main._run_npm_install_deterministic") as mock_install, \
+         patch("agentic_os_cli.main.subprocess.run", return_value=launch_ok) as mock_run, \
          pytest.raises(SystemExit) as exc:
         cli_main.cmd_gui(_ns(skip_build=True))
 
@@ -208,8 +208,8 @@ def test_gui_linux_configures_sandbox_before_launch(tmp_path, monkeypatch):
     sandbox.chmod(0o755)
     ok = subprocess.CompletedProcess([], 0)
 
-    with patch("hermes_cli.main.shutil.which", return_value="/usr/bin/sudo"), \
-         patch("hermes_cli.main.subprocess.run", return_value=ok) as mock_run, \
+    with patch("agentic_os_cli.main.shutil.which", return_value="/usr/bin/sudo"), \
+         patch("agentic_os_cli.main.subprocess.run", return_value=ok) as mock_run, \
          pytest.raises(SystemExit) as exc:
         cli_main.cmd_gui(_ns(skip_build=True))
 
@@ -229,8 +229,8 @@ def test_gui_linux_rejects_symlink_sandbox(tmp_path, monkeypatch):
     sandbox = packaged_exe.parent / "chrome-sandbox"
     sandbox.symlink_to(target)
 
-    with patch("hermes_cli.main.shutil.which", return_value="/usr/bin/sudo"), \
-         patch("hermes_cli.main.subprocess.run") as mock_run, \
+    with patch("agentic_os_cli.main.shutil.which", return_value="/usr/bin/sudo"), \
+         patch("agentic_os_cli.main.subprocess.run") as mock_run, \
          pytest.raises(SystemExit) as exc:
         cli_main.cmd_gui(_ns(skip_build=True))
 
@@ -257,8 +257,8 @@ def test_gui_linux_skips_fixup_when_already_configured(tmp_path, monkeypatch):
 
     launch_ok = subprocess.CompletedProcess([str(packaged_exe)], 0)
 
-    with patch("hermes_cli.main.shutil.which", return_value="/usr/bin/sudo"), \
-         patch("hermes_cli.main.subprocess.run", return_value=launch_ok) as mock_run, \
+    with patch("agentic_os_cli.main.shutil.which", return_value="/usr/bin/sudo"), \
+         patch("agentic_os_cli.main.subprocess.run", return_value=launch_ok) as mock_run, \
          pytest.raises(SystemExit) as exc:
         cli_main.cmd_gui(_ns(skip_build=True))
 
@@ -277,9 +277,9 @@ def test_gui_linux_falls_back_to_no_sandbox_when_userns_is_restricted(tmp_path, 
 
     launch_ok = subprocess.CompletedProcess([str(packaged_exe), "--no-sandbox"], 0)
 
-    with patch("hermes_cli.main._desktop_linux_sandbox_fixup", return_value=False), \
-         patch("hermes_cli.main._desktop_linux_needs_no_sandbox", return_value=True), \
-         patch("hermes_cli.main.subprocess.run", return_value=launch_ok) as mock_run, \
+    with patch("agentic_os_cli.main._desktop_linux_sandbox_fixup", return_value=False), \
+         patch("agentic_os_cli.main._desktop_linux_needs_no_sandbox", return_value=True), \
+         patch("agentic_os_cli.main.subprocess.run", return_value=launch_ok) as mock_run, \
          pytest.raises(SystemExit) as exc:
         cli_main.cmd_gui(_ns(skip_build=True))
 
@@ -293,9 +293,9 @@ def test_gui_linux_exits_when_sandbox_fixup_fails_without_safe_fallback(tmp_path
     monkeypatch.setattr(cli_main, "PROJECT_ROOT", root)
     _make_packaged_executable(root, monkeypatch, platform="linux")
 
-    with patch("hermes_cli.main._desktop_linux_sandbox_fixup", return_value=False), \
-         patch("hermes_cli.main._desktop_linux_needs_no_sandbox", return_value=False), \
-         patch("hermes_cli.main.subprocess.run") as mock_run, \
+    with patch("agentic_os_cli.main._desktop_linux_sandbox_fixup", return_value=False), \
+         patch("agentic_os_cli.main._desktop_linux_needs_no_sandbox", return_value=False), \
+         patch("agentic_os_cli.main.subprocess.run") as mock_run, \
          pytest.raises(SystemExit) as exc:
         cli_main.cmd_gui(_ns(skip_build=True))
 
@@ -312,11 +312,11 @@ def test_gui_source_mode_uses_renderer_build_and_electron(tmp_path, monkeypatch)
     build_ok = subprocess.CompletedProcess(["npm", "run", "build"], 0)
     launch_ok = subprocess.CompletedProcess(["npm", "exec", "--", "electron", "."], 0)
 
-    with patch("hermes_cli.main.shutil.which", return_value="/usr/bin/npm"), \
-         patch("hermes_cli.main._run_npm_install_deterministic", return_value=install_ok), \
-         patch("hermes_cli.main._desktop_build_needed", return_value=True), \
-         patch("hermes_cli.main._write_desktop_build_stamp"), \
-         patch("hermes_cli.main.subprocess.run", side_effect=[build_ok, launch_ok]) as mock_run, \
+    with patch("agentic_os_cli.main.shutil.which", return_value="/usr/bin/npm"), \
+         patch("agentic_os_cli.main._run_npm_install_deterministic", return_value=install_ok), \
+         patch("agentic_os_cli.main._desktop_build_needed", return_value=True), \
+         patch("agentic_os_cli.main._write_desktop_build_stamp"), \
+         patch("agentic_os_cli.main.subprocess.run", side_effect=[build_ok, launch_ok]) as mock_run, \
          pytest.raises(SystemExit) as exc:
         cli_main.cmd_gui(_ns(source=True))
 
@@ -351,10 +351,10 @@ def test_desktop_build_stamp_skips_build_when_up_to_date(tmp_path, monkeypatch):
 
     launch_ok = subprocess.CompletedProcess([], 0)
 
-    with patch("hermes_cli.main._desktop_build_needed", return_value=False), \
-         patch("hermes_cli.main._run_npm_install_deterministic") as mock_install, \
-         patch("hermes_cli.main.subprocess.run", return_value=launch_ok) as mock_run, \
-         patch("hermes_cli.main._desktop_macos_relaunchable_fixup"), \
+    with patch("agentic_os_cli.main._desktop_build_needed", return_value=False), \
+         patch("agentic_os_cli.main._run_npm_install_deterministic") as mock_install, \
+         patch("agentic_os_cli.main.subprocess.run", return_value=launch_ok) as mock_run, \
+         patch("agentic_os_cli.main._desktop_macos_relaunchable_fixup"), \
          pytest.raises(SystemExit) as exc:
         cli_main.cmd_gui(_ns())
 
@@ -374,12 +374,12 @@ def test_desktop_force_build_overrides_stamp(tmp_path, monkeypatch):
     pack_ok = subprocess.CompletedProcess(["npm", "run", "pack"], 0)
     launch_ok = subprocess.CompletedProcess([], 0)
 
-    with patch("hermes_cli.main.shutil.which", return_value="/usr/bin/npm"), \
-         patch("hermes_cli.main._run_npm_install_deterministic", return_value=install_ok) as mock_install, \
-         patch("hermes_cli.main._desktop_build_needed", return_value=False), \
-         patch("hermes_cli.main._write_desktop_build_stamp") as mock_stamp, \
-         patch("hermes_cli.main._desktop_macos_relaunchable_fixup"), \
-         patch("hermes_cli.main.subprocess.run", side_effect=[pack_ok, launch_ok]) as mock_run, \
+    with patch("agentic_os_cli.main.shutil.which", return_value="/usr/bin/npm"), \
+         patch("agentic_os_cli.main._run_npm_install_deterministic", return_value=install_ok) as mock_install, \
+         patch("agentic_os_cli.main._desktop_build_needed", return_value=False), \
+         patch("agentic_os_cli.main._write_desktop_build_stamp") as mock_stamp, \
+         patch("agentic_os_cli.main._desktop_macos_relaunchable_fixup"), \
+         patch("agentic_os_cli.main.subprocess.run", side_effect=[pack_ok, launch_ok]) as mock_run, \
          pytest.raises(SystemExit) as exc:
         cli_main.cmd_gui(_ns(force_build=True))
 
@@ -578,15 +578,15 @@ def test_gui_retries_pack_once_after_purging_build_cache(tmp_path, monkeypatch):
             return pack_ok
         return launch_ok
 
-    with patch("hermes_cli.main.shutil.which", return_value="/usr/bin/npm"), \
-         patch("hermes_cli.main._run_npm_install_deterministic", return_value=install_ok), \
-         patch("hermes_cli.main._desktop_macos_relaunchable_fixup"), \
-         patch("hermes_cli.main._desktop_linux_sandbox_fixup", return_value=True), \
-         patch("hermes_cli.main._write_desktop_build_stamp"), \
-         patch("hermes_cli.main._purge_electron_build_cache", return_value=[Path("/c/electron.zip")]) as mock_purge, \
-         patch("hermes_cli.main._electron_dist_ok", return_value=False), \
-         patch("hermes_cli.main._redownload_electron_dist", return_value=True), \
-         patch("hermes_cli.main.subprocess.run", side_effect=run_side_effect) as mock_run, \
+    with patch("agentic_os_cli.main.shutil.which", return_value="/usr/bin/npm"), \
+         patch("agentic_os_cli.main._run_npm_install_deterministic", return_value=install_ok), \
+         patch("agentic_os_cli.main._desktop_macos_relaunchable_fixup"), \
+         patch("agentic_os_cli.main._desktop_linux_sandbox_fixup", return_value=True), \
+         patch("agentic_os_cli.main._write_desktop_build_stamp"), \
+         patch("agentic_os_cli.main._purge_electron_build_cache", return_value=[Path("/c/electron.zip")]) as mock_purge, \
+         patch("agentic_os_cli.main._electron_dist_ok", return_value=False), \
+         patch("agentic_os_cli.main._redownload_electron_dist", return_value=True), \
+         patch("agentic_os_cli.main.subprocess.run", side_effect=run_side_effect) as mock_run, \
          pytest.raises(SystemExit) as exc:
         cli_main.cmd_gui(_ns())
 
@@ -612,13 +612,13 @@ def test_gui_redownloads_electron_via_mirror_then_repacks(tmp_path, monkeypatch,
     install_ok = subprocess.CompletedProcess(["npm", "ci"], 0)
     pack_fail = subprocess.CompletedProcess(["npm", "run", "pack"], 1)
 
-    with patch("hermes_cli.main.shutil.which", return_value="/usr/bin/npm"), \
-         patch("hermes_cli.main._run_npm_install_deterministic", return_value=install_ok), \
-         patch("hermes_cli.main._desktop_macos_relaunchable_fixup"), \
-         patch("hermes_cli.main._purge_electron_build_cache", return_value=[]), \
-         patch("hermes_cli.main._electron_dist_ok", return_value=False), \
-         patch("hermes_cli.main._redownload_electron_dist", side_effect=[False, True]) as mock_dl, \
-         patch("hermes_cli.main.subprocess.run", side_effect=[pack_fail, pack_fail]) as mock_run, \
+    with patch("agentic_os_cli.main.shutil.which", return_value="/usr/bin/npm"), \
+         patch("agentic_os_cli.main._run_npm_install_deterministic", return_value=install_ok), \
+         patch("agentic_os_cli.main._desktop_macos_relaunchable_fixup"), \
+         patch("agentic_os_cli.main._purge_electron_build_cache", return_value=[]), \
+         patch("agentic_os_cli.main._electron_dist_ok", return_value=False), \
+         patch("agentic_os_cli.main._redownload_electron_dist", side_effect=[False, True]) as mock_dl, \
+         patch("agentic_os_cli.main.subprocess.run", side_effect=[pack_fail, pack_fail]) as mock_run, \
          pytest.raises(SystemExit) as exc:
         cli_main.cmd_gui(_ns())
 
@@ -652,13 +652,13 @@ def test_gui_retries_pack_under_mirror_even_when_prefetch_blocked(tmp_path, monk
     install_ok = subprocess.CompletedProcess(["npm", "ci"], 0)
     pack_fail = subprocess.CompletedProcess(["npm", "run", "pack"], 1)
 
-    with patch("hermes_cli.main.shutil.which", return_value="/usr/bin/npm"), \
-         patch("hermes_cli.main._run_npm_install_deterministic", return_value=install_ok), \
-         patch("hermes_cli.main._desktop_macos_relaunchable_fixup"), \
-         patch("hermes_cli.main._purge_electron_build_cache", return_value=[]), \
-         patch("hermes_cli.main._electron_dist_ok", return_value=False), \
-         patch("hermes_cli.main._redownload_electron_dist", return_value=False), \
-         patch("hermes_cli.main.subprocess.run", side_effect=[pack_fail, pack_fail]) as mock_run, \
+    with patch("agentic_os_cli.main.shutil.which", return_value="/usr/bin/npm"), \
+         patch("agentic_os_cli.main._run_npm_install_deterministic", return_value=install_ok), \
+         patch("agentic_os_cli.main._desktop_macos_relaunchable_fixup"), \
+         patch("agentic_os_cli.main._purge_electron_build_cache", return_value=[]), \
+         patch("agentic_os_cli.main._electron_dist_ok", return_value=False), \
+         patch("agentic_os_cli.main._redownload_electron_dist", return_value=False), \
+         patch("agentic_os_cli.main.subprocess.run", side_effect=[pack_fail, pack_fail]) as mock_run, \
          pytest.raises(SystemExit) as exc:
         cli_main.cmd_gui(_ns())
 
@@ -687,13 +687,13 @@ def test_gui_install_failure_self_heals_electron_and_continues(tmp_path, monkeyp
     pack_ok = subprocess.CompletedProcess(["npm", "run", "pack"], 0)
     launch_ok = subprocess.CompletedProcess([str(packaged_exe)], 0)
 
-    with patch("hermes_cli.main.shutil.which", return_value="/usr/bin/npm"), \
-         patch("hermes_cli.main._run_npm_install_deterministic", return_value=install_fail), \
-         patch("hermes_cli.main._desktop_linux_sandbox_fixup", return_value=True), \
-         patch("hermes_cli.main._write_desktop_build_stamp"), \
-         patch("hermes_cli.main._electron_dist_ok", return_value=False), \
-         patch("hermes_cli.main._try_redownload_electron_dist", return_value=True) as mock_dl, \
-         patch("hermes_cli.main.subprocess.run", side_effect=[pack_ok, launch_ok]) as mock_run, \
+    with patch("agentic_os_cli.main.shutil.which", return_value="/usr/bin/npm"), \
+         patch("agentic_os_cli.main._run_npm_install_deterministic", return_value=install_fail), \
+         patch("agentic_os_cli.main._desktop_linux_sandbox_fixup", return_value=True), \
+         patch("agentic_os_cli.main._write_desktop_build_stamp"), \
+         patch("agentic_os_cli.main._electron_dist_ok", return_value=False), \
+         patch("agentic_os_cli.main._try_redownload_electron_dist", return_value=True) as mock_dl, \
+         patch("agentic_os_cli.main.subprocess.run", side_effect=[pack_ok, launch_ok]) as mock_run, \
          pytest.raises(SystemExit) as exc:
         cli_main.cmd_gui(_ns())
 
@@ -714,9 +714,9 @@ def test_gui_install_failure_hard_fails_when_electron_not_staged(tmp_path, monke
 
     install_fail = subprocess.CompletedProcess(["npm", "ci"], 1)
 
-    with patch("hermes_cli.main.shutil.which", return_value="/usr/bin/npm"), \
-         patch("hermes_cli.main._run_npm_install_deterministic", return_value=install_fail), \
-         patch("hermes_cli.main.subprocess.run") as mock_run, \
+    with patch("agentic_os_cli.main.shutil.which", return_value="/usr/bin/npm"), \
+         patch("agentic_os_cli.main._run_npm_install_deterministic", return_value=install_fail), \
+         patch("agentic_os_cli.main.subprocess.run") as mock_run, \
          pytest.raises(SystemExit) as exc:
         cli_main.cmd_gui(_ns())
 
@@ -738,10 +738,10 @@ def test_gui_install_failure_hard_fails_when_electron_dist_exists(tmp_path, monk
 
     install_fail = subprocess.CompletedProcess(["npm", "ci"], 1)
 
-    with patch("hermes_cli.main.shutil.which", return_value="/usr/bin/npm"), \
-         patch("hermes_cli.main._run_npm_install_deterministic", return_value=install_fail), \
-         patch("hermes_cli.main._electron_dist_ok", return_value=True), \
-         patch("hermes_cli.main.subprocess.run") as mock_run, \
+    with patch("agentic_os_cli.main.shutil.which", return_value="/usr/bin/npm"), \
+         patch("agentic_os_cli.main._run_npm_install_deterministic", return_value=install_fail), \
+         patch("agentic_os_cli.main._electron_dist_ok", return_value=True), \
+         patch("agentic_os_cli.main.subprocess.run") as mock_run, \
          pytest.raises(SystemExit) as exc:
         cli_main.cmd_gui(_ns())
 
@@ -768,12 +768,12 @@ def test_gui_does_not_retry_after_packaged_executable_exists(tmp_path, monkeypat
     install_ok = subprocess.CompletedProcess(["npm", "ci"], 0)
     pack_fail = subprocess.CompletedProcess(["npm", "run", "pack"], 1)
 
-    with patch("hermes_cli.main.shutil.which", return_value="/usr/bin/npm"), \
-         patch("hermes_cli.main._run_npm_install_deterministic", return_value=install_ok), \
-         patch("hermes_cli.main._desktop_macos_relaunchable_fixup"), \
-         patch("hermes_cli.main._purge_electron_build_cache", return_value=[Path("/c/electron.zip")]) as mock_purge, \
-         patch("hermes_cli.main._redownload_electron_dist", return_value=True) as mock_dl, \
-         patch("hermes_cli.main.subprocess.run", return_value=pack_fail) as mock_run, \
+    with patch("agentic_os_cli.main.shutil.which", return_value="/usr/bin/npm"), \
+         patch("agentic_os_cli.main._run_npm_install_deterministic", return_value=install_ok), \
+         patch("agentic_os_cli.main._desktop_macos_relaunchable_fixup"), \
+         patch("agentic_os_cli.main._purge_electron_build_cache", return_value=[Path("/c/electron.zip")]) as mock_purge, \
+         patch("agentic_os_cli.main._redownload_electron_dist", return_value=True) as mock_dl, \
+         patch("agentic_os_cli.main.subprocess.run", return_value=pack_fail) as mock_run, \
          pytest.raises(SystemExit) as exc:
         cli_main.cmd_gui(_ns())
 
@@ -798,11 +798,11 @@ def test_gui_does_not_override_user_electron_mirror(tmp_path, monkeypatch, capsy
     install_ok = subprocess.CompletedProcess(["npm", "ci"], 0)
     pack_fail = subprocess.CompletedProcess(["npm", "run", "pack"], 1)
 
-    with patch("hermes_cli.main.shutil.which", return_value="/usr/bin/npm"), \
-         patch("hermes_cli.main._run_npm_install_deterministic", return_value=install_ok), \
-         patch("hermes_cli.main._desktop_macos_relaunchable_fixup"), \
-         patch("hermes_cli.main._purge_electron_build_cache", return_value=[]) as mock_purge, \
-         patch("hermes_cli.main.subprocess.run", side_effect=[pack_fail]) as mock_run, \
+    with patch("agentic_os_cli.main.shutil.which", return_value="/usr/bin/npm"), \
+         patch("agentic_os_cli.main._run_npm_install_deterministic", return_value=install_ok), \
+         patch("agentic_os_cli.main._desktop_macos_relaunchable_fixup"), \
+         patch("agentic_os_cli.main._purge_electron_build_cache", return_value=[]) as mock_purge, \
+         patch("agentic_os_cli.main.subprocess.run", side_effect=[pack_fail]) as mock_run, \
          pytest.raises(SystemExit) as exc:
         cli_main.cmd_gui(_ns())
 
@@ -872,7 +872,7 @@ def test_redownload_electron_dist_noop_when_present(tmp_path, monkeypatch):
     binp.parent.mkdir(parents=True)
     binp.write_text("", encoding="utf-8")
 
-    with patch("hermes_cli.main.subprocess.run") as mock_run:
+    with patch("agentic_os_cli.main.subprocess.run") as mock_run:
         assert cli_main._redownload_electron_dist(tmp_path, {}) is True
     mock_run.assert_not_called()
 
@@ -882,8 +882,8 @@ def test_redownload_electron_dist_missing_installer(tmp_path, monkeypatch):
     monkeypatch.setattr(cli_main.sys, "platform", "linux")
     (tmp_path / "node_modules" / "electron").mkdir(parents=True)
 
-    with patch("hermes_cli.main.shutil.which", return_value="/usr/bin/node"), \
-         patch("hermes_cli.main.subprocess.run") as mock_run:
+    with patch("agentic_os_cli.main.shutil.which", return_value="/usr/bin/node"), \
+         patch("agentic_os_cli.main.subprocess.run") as mock_run:
         assert cli_main._redownload_electron_dist(tmp_path, {}) is False
     mock_run.assert_not_called()
 
@@ -913,8 +913,8 @@ def test_redownload_electron_dist_runs_installer_with_mirror(tmp_path, monkeypat
         binp.write_text("", encoding="utf-8")
         return subprocess.CompletedProcess(cmd, 0)
 
-    with patch("hermes_cli.main.shutil.which", return_value="/usr/bin/node"), \
-         patch("hermes_cli.main.subprocess.run", side_effect=fake_run):
+    with patch("agentic_os_cli.main.shutil.which", return_value="/usr/bin/node"), \
+         patch("agentic_os_cli.main.subprocess.run", side_effect=fake_run):
         ok = cli_main._redownload_electron_dist(
             tmp_path, {"PATH": "/x"}, mirror="https://mirror.example/electron/"
         )
@@ -936,8 +936,8 @@ def test_redownload_electron_dist_returns_false_when_download_fails(tmp_path, mo
     electron.mkdir(parents=True)
     (electron / "install.js").write_text("// stub", encoding="utf-8")
 
-    with patch("hermes_cli.main.shutil.which", return_value="/usr/bin/node"), \
-         patch("hermes_cli.main.subprocess.run",
+    with patch("agentic_os_cli.main.shutil.which", return_value="/usr/bin/node"), \
+         patch("agentic_os_cli.main.subprocess.run",
                return_value=subprocess.CompletedProcess(["node"], 1)):
         assert cli_main._redownload_electron_dist(tmp_path, {}) is False
 
@@ -1058,7 +1058,7 @@ def test_force_adhoc_signing_respects_explicit_caller_flag(monkeypatch):
 
 
 def test_desktop_launch_options_defaults_when_no_config():
-    with patch("hermes_cli.config.load_config", return_value={}):
+    with patch("agentic_os_cli.config.load_config", return_value={}):
         flags, gpu = cli_main._desktop_launch_options()
     assert flags == []
     assert gpu == "auto"
@@ -1066,7 +1066,7 @@ def test_desktop_launch_options_defaults_when_no_config():
 
 def test_desktop_launch_options_reads_flags_list():
     cfg = {"desktop": {"electron_flags": ["--ozone-platform=x11", "--disable-gpu"]}}
-    with patch("hermes_cli.config.load_config", return_value=cfg):
+    with patch("agentic_os_cli.config.load_config", return_value=cfg):
         flags, gpu = cli_main._desktop_launch_options()
     assert flags == ["--ozone-platform=x11", "--disable-gpu"]
     assert gpu == "auto"
@@ -1074,7 +1074,7 @@ def test_desktop_launch_options_reads_flags_list():
 
 def test_desktop_launch_options_splits_flag_string():
     cfg = {"desktop": {"electron_flags": "--ozone-platform=x11 --disable-gpu"}}
-    with patch("hermes_cli.config.load_config", return_value=cfg):
+    with patch("agentic_os_cli.config.load_config", return_value=cfg):
         flags, _ = cli_main._desktop_launch_options()
     assert flags == ["--ozone-platform=x11", "--disable-gpu"]
 
@@ -1092,13 +1092,13 @@ def test_desktop_launch_options_splits_flag_string():
 )
 def test_desktop_launch_options_normalizes_disable_gpu(raw, expected):
     cfg = {"desktop": {"disable_gpu": raw}}
-    with patch("hermes_cli.config.load_config", return_value=cfg):
+    with patch("agentic_os_cli.config.load_config", return_value=cfg):
         _, gpu = cli_main._desktop_launch_options()
     assert gpu == expected
 
 
 def test_desktop_launch_options_survives_config_error():
-    with patch("hermes_cli.config.load_config", side_effect=RuntimeError("boom")):
+    with patch("agentic_os_cli.config.load_config", side_effect=RuntimeError("boom")):
         flags, gpu = cli_main._desktop_launch_options()
     assert flags == []
     assert gpu == "auto"

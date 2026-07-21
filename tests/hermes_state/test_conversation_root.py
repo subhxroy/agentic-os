@@ -6,7 +6,7 @@ session rotation and covering delegate subagent trees.
 """
 import pytest
 
-from hermes_state import SessionDB
+from agentic_os_state import SessionDB
 
 
 @pytest.fixture

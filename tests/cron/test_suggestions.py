@@ -20,8 +20,8 @@ def store(tmp_path, monkeypatch):
     home.mkdir()
     monkeypatch.setenv("HERMES_HOME", str(home))
     # Reload so module-level CRON_DIR/SUGGESTIONS_FILE pick up the temp home.
-    import hermes_constants
-    importlib.reload(hermes_constants)
+    import agentic_os_constants
+    importlib.reload(agentic_os_constants)
     import cron.suggestions as s
     importlib.reload(s)
     return s
@@ -178,7 +178,7 @@ class TestCommandHandler:
     def test_bare_lists_pending(self, store):
         _add(store, key="c1", title="Daily thing")
         with patch("cron.suggestions.list_pending", store.list_pending):
-            from hermes_cli.suggestions_cmd import handle_suggestions_command
+            from agentic_os_cli.suggestions_cmd import handle_suggestions_command
             # Patch the module the handler imports.
             with patch.dict("sys.modules"):
                 out = handle_suggestions_command("")
@@ -186,7 +186,7 @@ class TestCommandHandler:
 
     def test_accept_via_handler(self, store):
         _add(store, key="ha", title="Acceptable")
-        from hermes_cli.suggestions_cmd import handle_suggestions_command
+        from agentic_os_cli.suggestions_cmd import handle_suggestions_command
 
         with patch("cron.jobs.create_job", lambda **k: {"id": "j", "name": k.get("name"), "job_spec": k}):
             out = handle_suggestions_command("accept 1", origin={"platform": "cli", "chat_id": "1"})
@@ -195,20 +195,20 @@ class TestCommandHandler:
 
     def test_dismiss_via_handler(self, store):
         _add(store, key="hd", title="Dismissable")
-        from hermes_cli.suggestions_cmd import handle_suggestions_command
+        from agentic_os_cli.suggestions_cmd import handle_suggestions_command
 
         out = handle_suggestions_command("dismiss 1")
         assert "Dismissed" in out
         assert store.list_pending() == []
 
     def test_empty_list_message(self, store):
-        from hermes_cli.suggestions_cmd import handle_suggestions_command
+        from agentic_os_cli.suggestions_cmd import handle_suggestions_command
 
         out = handle_suggestions_command("")
         assert "No suggested automations" in out
 
     def test_aux_monitor_config_default(self):
-        from hermes_cli.config import DEFAULT_CONFIG
+        from agentic_os_cli.config import DEFAULT_CONFIG
 
         assert "monitor" in DEFAULT_CONFIG["auxiliary"]
         assert DEFAULT_CONFIG["auxiliary"]["monitor"]["provider"] == "auto"

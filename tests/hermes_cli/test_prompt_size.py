@@ -6,7 +6,7 @@ from types import SimpleNamespace
 
 import pytest
 
-from hermes_cli.prompt_size import (
+from agentic_os_cli.prompt_size import (
     _SKILLS_BLOCK_RE,
     _build_inspection_agent,
     compute_prompt_breakdown,
@@ -91,9 +91,9 @@ def test_inspection_agent_uses_resolved_platform_toolsets(monkeypatch):
         "run_agent",
         SimpleNamespace(AIAgent=FakeAIAgent),
     )
-    monkeypatch.setattr("hermes_cli.config.load_config", lambda: cfg)
+    monkeypatch.setattr("agentic_os_cli.config.load_config", lambda: cfg)
     monkeypatch.setattr(
-        "hermes_cli.tools_config._get_platform_tools",
+        "agentic_os_cli.tools_config._get_platform_tools",
         lambda passed_cfg, platform: {"terminal", "file"},
     )
 
@@ -107,8 +107,8 @@ def test_inspection_agent_uses_resolved_platform_toolsets(monkeypatch):
 
 def test_blank_slate_prompt_size_counts_only_minimal_tools(isolated_home):
     """Blank Slate prompt-size should report file + terminal schemas only."""
-    from hermes_cli.config import save_config
-    from hermes_cli.setup import (
+    from agentic_os_cli.config import save_config
+    from agentic_os_cli.setup import (
         _blank_slate_minimal_toolsets,
         _blank_slate_minimize_config,
     )

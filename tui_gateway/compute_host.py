@@ -436,8 +436,8 @@ class ComputeHost:
         home_token = None
         try:
             if profile_home:
-                from hermes_constants import set_hermes_home_override
-                from hermes_state import SessionDB
+                from agentic_os_constants import set_hermes_home_override
+                from agentic_os_state import SessionDB
 
                 home_token = set_hermes_home_override(profile_home)
                 session_db = SessionDB(db_path=Path(profile_home) / "state.db")
@@ -454,7 +454,7 @@ class ComputeHost:
         finally:
             if home_token is not None:
                 try:
-                    from hermes_constants import reset_hermes_home_override
+                    from agentic_os_constants import reset_hermes_home_override
 
                     reset_hermes_home_override(home_token)
                 except Exception:

@@ -69,7 +69,7 @@ def _load_plugin_config() -> Dict[str, Any]:
     early docs/issues, so accept it as a compatibility fallback.
     """
     try:
-        from hermes_cli.config import load_config
+        from agentic_os_cli.config import load_config
 
         config = load_config()
         memory_config = config.get("memory", {})
@@ -164,7 +164,7 @@ def _run_brv(args: List[str], timeout: int = _QUERY_TIMEOUT,
 
 def _get_brv_cwd() -> Path:
     """Profile-scoped working directory for the brv context tree."""
-    from hermes_constants import get_hermes_home
+    from agentic_os_constants import get_hermes_home
     return get_hermes_home() / "byterover"
 
 

@@ -21,14 +21,14 @@ from unittest.mock import patch
 
 import pytest
 
-from hermes_cli.main import _cmd_update_check, cmd_update
+from agentic_os_cli.main import _cmd_update_check, cmd_update
 
 
 # ---------- cmd_update (apply path) ----------
 
 
-@patch("hermes_cli.config.is_managed", return_value=False)
-@patch("hermes_cli.config.detect_install_method", return_value="docker")
+@patch("agentic_os_cli.config.is_managed", return_value=False)
+@patch("agentic_os_cli.config.detect_install_method", return_value="docker")
 @patch("subprocess.run")
 def test_cmd_update_in_docker_prints_guidance_and_exits(
     mock_run, _mock_method, _mock_managed, capsys
@@ -49,8 +49,8 @@ def test_cmd_update_in_docker_prints_guidance_and_exits(
     assert git_calls == [], f"expected no git calls, got: {git_calls}"
 
 
-@patch("hermes_cli.config.is_managed", return_value=False)
-@patch("hermes_cli.config.detect_install_method", return_value="docker")
+@patch("agentic_os_cli.config.is_managed", return_value=False)
+@patch("agentic_os_cli.config.detect_install_method", return_value="docker")
 @patch("subprocess.run")
 def test_cmd_update_check_in_docker_prints_guidance_and_exits(
     mock_run, _mock_method, _mock_managed, capsys
@@ -68,8 +68,8 @@ def test_cmd_update_check_in_docker_prints_guidance_and_exits(
     assert git_calls == [], f"expected no git calls, got: {git_calls}"
 
 
-@patch("hermes_cli.config.is_managed", return_value=False)
-@patch("hermes_cli.config.detect_install_method", return_value="docker")
+@patch("agentic_os_cli.config.is_managed", return_value=False)
+@patch("agentic_os_cli.config.detect_install_method", return_value="docker")
 @patch("subprocess.run")
 def test_cmd_update_in_docker_ignores_yes_and_force(
     mock_run, _mock_method, _mock_managed, capsys
@@ -91,7 +91,7 @@ def test_cmd_update_in_docker_ignores_yes_and_force(
 # ---------- _cmd_update_check (check path, direct entry) ----------
 
 
-@patch("hermes_cli.config.detect_install_method", return_value="docker")
+@patch("agentic_os_cli.config.detect_install_method", return_value="docker")
 @patch("subprocess.run")
 def test_cmd_update_check_direct_in_docker(mock_run, _mock_method, capsys):
     """Calling ``_cmd_update_check`` directly (no apply path) also bails."""
@@ -107,8 +107,8 @@ def test_cmd_update_check_direct_in_docker(mock_run, _mock_method, capsys):
 # ---------- Non-Docker installs unaffected ----------
 
 
-@patch("hermes_cli.config.is_managed", return_value=False)
-@patch("hermes_cli.config.detect_install_method", return_value="git")
+@patch("agentic_os_cli.config.is_managed", return_value=False)
+@patch("agentic_os_cli.config.detect_install_method", return_value="git")
 @patch(
     "subprocess.run",
     return_value=SimpleNamespace(returncode=0, stdout="0\n", stderr=""),
@@ -143,8 +143,8 @@ def test_cmd_update_on_git_install_does_not_print_docker_message(
     assert "doesn't apply inside the Docker container" not in capsys.readouterr().out
 
 
-@patch("hermes_cli.config.detect_install_method", return_value="pip")
-@patch("hermes_cli.banner.check_via_pypi", return_value=0)
+@patch("agentic_os_cli.config.detect_install_method", return_value="pip")
+@patch("agentic_os_cli.banner.check_via_pypi", return_value=0)
 def test_cmd_update_check_on_pip_install_still_uses_pypi(
     _mock_pypi, _mock_method, capsys
 ):
@@ -166,7 +166,7 @@ def test_format_docker_update_message_contents():
     disappear in a copy edit, the message has lost its value.  Specific
     wording around them is free to evolve (we don't assert full text).
     """
-    from hermes_cli.config import format_docker_update_message
+    from agentic_os_cli.config import format_docker_update_message
 
     msg = format_docker_update_message()
 

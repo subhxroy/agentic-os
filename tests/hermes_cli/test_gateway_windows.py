@@ -1,12 +1,12 @@
-"""Tests for hermes_cli.gateway_windows."""
+"""Tests for agentic_os_cli.gateway_windows."""
 
 from pathlib import Path
 
 import pytest
 
-import hermes_cli.gateway as gateway
-import hermes_cli.gateway_windows as gateway_windows
-import hermes_cli.setup as setup
+import agentic_os_cli.gateway as gateway
+import agentic_os_cli.gateway_windows as gateway_windows
+import agentic_os_cli.setup as setup
 
 
 @pytest.mark.parametrize(
@@ -95,17 +95,17 @@ def test_build_gateway_argv_uses_base_pythonw_for_uv_venv_launcher(monkeypatch, 
         encoding="utf-8",
     )
 
-    import hermes_cli.gateway as gateway
+    import agentic_os_cli.gateway as gateway
 
     monkeypatch.setattr(gateway_windows.sys, "platform", "win32")
     monkeypatch.setattr(gateway, "PROJECT_ROOT", project)
     monkeypatch.setattr(gateway, "get_python_path", lambda: str(venv_python))
     monkeypatch.setattr(gateway, "_profile_arg", lambda hermes_home: "")
-    monkeypatch.setattr("hermes_cli.config.get_hermes_home", lambda: str(hermes_home))
+    monkeypatch.setattr("agentic_os_cli.config.get_hermes_home", lambda: str(hermes_home))
 
     argv, cwd, env_overlay = gateway_windows._build_gateway_argv()
 
-    assert argv[:3] == [str(base_pythonw), "-m", "hermes_cli.main"]
+    assert argv[:3] == [str(base_pythonw), "-m", "agentic_os_cli.main"]
     assert cwd == str(hermes_home.resolve())
     assert env_overlay["VIRTUAL_ENV"] == str(project / "venv")
     assert str(project) in env_overlay["PYTHONPATH"].split(gateway_windows.os.pathsep)
@@ -116,13 +116,13 @@ class TestStableWindowsGatewayWorkingDir:
     def test_stable_gateway_working_dir_uses_hermes_home(self, tmp_path, monkeypatch):
         home = tmp_path / ".hermes"
         home.mkdir()
-        monkeypatch.setattr("hermes_cli.config.get_hermes_home", lambda: home)
+        monkeypatch.setattr("agentic_os_cli.config.get_hermes_home", lambda: home)
         assert gateway_windows._stable_gateway_working_dir(tmp_path / "checkout") == str(home.resolve())
 
     def test_stable_gateway_working_dir_falls_back_to_project_root(self, tmp_path, monkeypatch):
         missing = tmp_path / "missing" / ".hermes"
         project = tmp_path / "checkout"
-        monkeypatch.setattr("hermes_cli.config.get_hermes_home", lambda: missing)
+        monkeypatch.setattr("agentic_os_cli.config.get_hermes_home", lambda: missing)
         assert gateway_windows._stable_gateway_working_dir(project) == str(project)
 
 
@@ -139,7 +139,7 @@ def test_write_task_script_anchors_cmd_cd_at_hermes_home(monkeypatch, tmp_path):
     monkeypatch.setattr(gateway, "PROJECT_ROOT", project)
     monkeypatch.setattr(gateway, "get_python_path", lambda: str(python_exe))
     monkeypatch.setattr(gateway, "_profile_arg", lambda hermes_home: "")
-    monkeypatch.setattr("hermes_cli.config.get_hermes_home", lambda: str(hermes_home))
+    monkeypatch.setattr("agentic_os_cli.config.get_hermes_home", lambda: str(hermes_home))
     monkeypatch.setattr(gateway_windows, "get_task_script_path", lambda: script_path)
 
     written = gateway_windows._write_task_script()
@@ -335,7 +335,7 @@ def test_gateway_vbs_script_is_console_less(monkeypatch):
     assert "cmd.exe" not in content.lower()
     assert 'CreateObject("WScript.Shell")' in content
     assert "pythonw.exe" in content
-    assert "hermes_cli.main" in content
+    assert "agentic_os_cli.main" in content
     assert "gateway run" in content
     assert ", 0, False" in content  # hidden window, detached/async
     for var in ("HERMES_HOME", "PYTHONIOENCODING", "HERMES_GATEWAY_DETACHED", "VIRTUAL_ENV", "PYTHONPATH"):
@@ -733,8 +733,8 @@ def test_stop_writes_planned_stop_marker_before_killing(monkeypatch):
         events.append(("kill", kwargs.get("force", False)))
         return 0
 
-    monkeypatch.setattr("hermes_cli.gateway.kill_gateway_processes", fake_kill)
-    monkeypatch.setattr("hermes_cli.gateway._get_restart_drain_timeout", lambda: 5.0)
+    monkeypatch.setattr("agentic_os_cli.gateway.kill_gateway_processes", fake_kill)
+    monkeypatch.setattr("agentic_os_cli.gateway._get_restart_drain_timeout", lambda: 5.0)
 
     gateway_windows.stop()
 
@@ -784,7 +784,7 @@ def test_stop_waits_for_graceful_drain_before_force_kill(monkeypatch):
         events.append(("terminate", target_pid, force))
 
     monkeypatch.setattr(status_mod, "terminate_pid", fake_terminate_pid)
-    monkeypatch.setattr("hermes_cli.gateway._get_restart_drain_timeout", lambda: 5.0)
+    monkeypatch.setattr("agentic_os_cli.gateway._get_restart_drain_timeout", lambda: 5.0)
 
     gateway_windows.stop()
 
@@ -847,7 +847,7 @@ def test_stop_no_running_gateway_skips_drain(monkeypatch):
         events.append(("terminate", target_pid, force))
 
     monkeypatch.setattr(status_mod, "terminate_pid", fake_terminate_pid)
-    monkeypatch.setattr("hermes_cli.gateway._get_restart_drain_timeout", lambda: 5.0)
+    monkeypatch.setattr("agentic_os_cli.gateway._get_restart_drain_timeout", lambda: 5.0)
 
     gateway_windows.stop()
 

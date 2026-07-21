@@ -47,44 +47,44 @@ def nested_plugin_env(tmp_path):
 
 
 class TestResolvePluginKey:
-    @patch("hermes_cli.plugins.get_bundled_plugins_dir")
-    @patch("hermes_cli.plugins_cmd._plugins_dir")
+    @patch("agentic_os_cli.plugins.get_bundled_plugins_dir")
+    @patch("agentic_os_cli.plugins_cmd._plugins_dir")
     def test_full_key_resolves_to_itself(self, mock_user, mock_bundled, nested_plugin_env):
-        from hermes_cli.plugins_cmd import _resolve_plugin_key
+        from agentic_os_cli.plugins_cmd import _resolve_plugin_key
         mock_user.return_value = nested_plugin_env
         mock_bundled.return_value = nested_plugin_env / "nonexistent"
         assert _resolve_plugin_key("observability/nemo_relay") == "observability/nemo_relay"
 
-    @patch("hermes_cli.plugins.get_bundled_plugins_dir")
-    @patch("hermes_cli.plugins_cmd._plugins_dir")
+    @patch("agentic_os_cli.plugins.get_bundled_plugins_dir")
+    @patch("agentic_os_cli.plugins_cmd._plugins_dir")
     def test_bare_leaf_name_resolves_to_key(self, mock_user, mock_bundled, nested_plugin_env):
-        from hermes_cli.plugins_cmd import _resolve_plugin_key
+        from agentic_os_cli.plugins_cmd import _resolve_plugin_key
         mock_user.return_value = nested_plugin_env
         mock_bundled.return_value = nested_plugin_env / "nonexistent"
         # "nemo_relay" (bare) must normalize to the path-derived key.
         assert _resolve_plugin_key("nemo_relay") == "observability/nemo_relay"
 
-    @patch("hermes_cli.plugins.get_bundled_plugins_dir")
-    @patch("hermes_cli.plugins_cmd._plugins_dir")
+    @patch("agentic_os_cli.plugins.get_bundled_plugins_dir")
+    @patch("agentic_os_cli.plugins_cmd._plugins_dir")
     def test_flat_plugin_resolves_to_name(self, mock_user, mock_bundled, nested_plugin_env):
-        from hermes_cli.plugins_cmd import _resolve_plugin_key
+        from agentic_os_cli.plugins_cmd import _resolve_plugin_key
         mock_user.return_value = nested_plugin_env
         mock_bundled.return_value = nested_plugin_env / "nonexistent"
         assert _resolve_plugin_key("disk-cleanup") == "disk-cleanup"
 
-    @patch("hermes_cli.plugins.get_bundled_plugins_dir")
-    @patch("hermes_cli.plugins_cmd._plugins_dir")
+    @patch("agentic_os_cli.plugins.get_bundled_plugins_dir")
+    @patch("agentic_os_cli.plugins_cmd._plugins_dir")
     def test_unknown_returns_none(self, mock_user, mock_bundled, nested_plugin_env):
-        from hermes_cli.plugins_cmd import _resolve_plugin_key
+        from agentic_os_cli.plugins_cmd import _resolve_plugin_key
         mock_user.return_value = nested_plugin_env
         mock_bundled.return_value = nested_plugin_env / "nonexistent"
         assert _resolve_plugin_key("does-not-exist") is None
 
-    @patch("hermes_cli.plugins.get_bundled_plugins_dir")
-    @patch("hermes_cli.plugins_cmd._plugins_dir")
+    @patch("agentic_os_cli.plugins.get_bundled_plugins_dir")
+    @patch("agentic_os_cli.plugins_cmd._plugins_dir")
     def test_ambiguous_leaf_name_returns_none(self, mock_user, mock_bundled, tmp_path):
         """Same leaf name under two categories must NOT silently pick one."""
-        from hermes_cli.plugins_cmd import _resolve_plugin_key
+        from agentic_os_cli.plugins_cmd import _resolve_plugin_key
         _make_category_plugin(tmp_path, "image_gen", "openai", {"name": "image-gen-openai"})
         _make_category_plugin(tmp_path, "model-providers", "openai", {"name": "mp-openai"})
         mock_user.return_value = tmp_path
@@ -100,17 +100,17 @@ class TestResolvePluginKey:
 
 
 class TestEnableDisableNested:
-    @patch("hermes_cli.plugins.get_bundled_plugins_dir")
-    @patch("hermes_cli.plugins_cmd._plugins_dir")
-    @patch("hermes_cli.plugins_cmd._save_disabled_set")
-    @patch("hermes_cli.plugins_cmd._save_enabled_set")
-    @patch("hermes_cli.plugins_cmd._get_disabled_set", return_value=set())
-    @patch("hermes_cli.plugins_cmd._get_enabled_set", return_value=set())
+    @patch("agentic_os_cli.plugins.get_bundled_plugins_dir")
+    @patch("agentic_os_cli.plugins_cmd._plugins_dir")
+    @patch("agentic_os_cli.plugins_cmd._save_disabled_set")
+    @patch("agentic_os_cli.plugins_cmd._save_enabled_set")
+    @patch("agentic_os_cli.plugins_cmd._get_disabled_set", return_value=set())
+    @patch("agentic_os_cli.plugins_cmd._get_enabled_set", return_value=set())
     def test_enable_bare_name_writes_key(
         self, mock_en, mock_dis, mock_save_en, mock_save_dis,
         mock_user, mock_bundled, nested_plugin_env,
     ):
-        from hermes_cli.plugins_cmd import cmd_enable
+        from agentic_os_cli.plugins_cmd import cmd_enable
         mock_user.return_value = nested_plugin_env
         mock_bundled.return_value = nested_plugin_env / "nonexistent"
 
@@ -122,17 +122,17 @@ class TestEnableDisableNested:
         assert "observability/nemo_relay" in saved
         assert "nemo_relay" not in saved or "observability/nemo_relay" in saved
 
-    @patch("hermes_cli.plugins.get_bundled_plugins_dir")
-    @patch("hermes_cli.plugins_cmd._plugins_dir")
-    @patch("hermes_cli.plugins_cmd._save_disabled_set")
-    @patch("hermes_cli.plugins_cmd._save_enabled_set")
-    @patch("hermes_cli.plugins_cmd._get_disabled_set", return_value=set())
-    @patch("hermes_cli.plugins_cmd._get_enabled_set", return_value=set())
+    @patch("agentic_os_cli.plugins.get_bundled_plugins_dir")
+    @patch("agentic_os_cli.plugins_cmd._plugins_dir")
+    @patch("agentic_os_cli.plugins_cmd._save_disabled_set")
+    @patch("agentic_os_cli.plugins_cmd._save_enabled_set")
+    @patch("agentic_os_cli.plugins_cmd._get_disabled_set", return_value=set())
+    @patch("agentic_os_cli.plugins_cmd._get_enabled_set", return_value=set())
     def test_enable_full_key_writes_key(
         self, mock_en, mock_dis, mock_save_en, mock_save_dis,
         mock_user, mock_bundled, nested_plugin_env,
     ):
-        from hermes_cli.plugins_cmd import cmd_enable
+        from agentic_os_cli.plugins_cmd import cmd_enable
         mock_user.return_value = nested_plugin_env
         mock_bundled.return_value = nested_plugin_env / "nonexistent"
 
@@ -140,11 +140,11 @@ class TestEnableDisableNested:
         saved = mock_save_en.call_args[0][0]
         assert "observability/nemo_relay" in saved
 
-    @patch("hermes_cli.plugins.get_bundled_plugins_dir")
-    @patch("hermes_cli.plugins_cmd._plugins_dir")
-    @patch("hermes_cli.plugins_cmd._save_disabled_set")
-    @patch("hermes_cli.plugins_cmd._save_enabled_set")
-    @patch("hermes_cli.plugins_cmd._get_enabled_set", return_value=set())
+    @patch("agentic_os_cli.plugins.get_bundled_plugins_dir")
+    @patch("agentic_os_cli.plugins_cmd._plugins_dir")
+    @patch("agentic_os_cli.plugins_cmd._save_disabled_set")
+    @patch("agentic_os_cli.plugins_cmd._save_enabled_set")
+    @patch("agentic_os_cli.plugins_cmd._get_enabled_set", return_value=set())
     def test_enable_clears_manifest_name_alias_from_disabled(
         self, mock_en, mock_save_en, mock_save_dis,
         mock_user, mock_bundled, tmp_path,
@@ -159,7 +159,7 @@ class TestEnableDisableNested:
         the manifest name too, ``enable web/firecrawl`` must remove that
         entry or "explicit disable wins" keeps the plugin off.
         """
-        from hermes_cli.plugins_cmd import cmd_enable
+        from agentic_os_cli.plugins_cmd import cmd_enable
         _make_category_plugin(tmp_path, "web", "firecrawl", {
             "name": "web-firecrawl", "version": "1.0.0",
             "description": "firecrawl", "kind": "backend",
@@ -168,7 +168,7 @@ class TestEnableDisableNested:
         mock_bundled.return_value = tmp_path / "nonexistent"
         # Disabled under the manifest name (neither key nor bare leaf).
         with patch(
-            "hermes_cli.plugins_cmd._get_disabled_set",
+            "agentic_os_cli.plugins_cmd._get_disabled_set",
             return_value={"web-firecrawl"},
         ):
             cmd_enable("web/firecrawl", allow_tool_override=False)
@@ -178,17 +178,17 @@ class TestEnableDisableNested:
         assert "web/firecrawl" in saved_en
         assert "web-firecrawl" not in saved_dis  # manifest-name alias cleared
 
-    @patch("hermes_cli.plugins.get_bundled_plugins_dir")
-    @patch("hermes_cli.plugins_cmd._plugins_dir")
-    @patch("hermes_cli.plugins_cmd._save_disabled_set")
-    @patch("hermes_cli.plugins_cmd._save_enabled_set")
-    @patch("hermes_cli.plugins_cmd._get_disabled_set", return_value=set())
-    @patch("hermes_cli.plugins_cmd._get_enabled_set", return_value=set())
+    @patch("agentic_os_cli.plugins.get_bundled_plugins_dir")
+    @patch("agentic_os_cli.plugins_cmd._plugins_dir")
+    @patch("agentic_os_cli.plugins_cmd._save_disabled_set")
+    @patch("agentic_os_cli.plugins_cmd._save_enabled_set")
+    @patch("agentic_os_cli.plugins_cmd._get_disabled_set", return_value=set())
+    @patch("agentic_os_cli.plugins_cmd._get_enabled_set", return_value=set())
     def test_disable_bare_name_writes_key_and_clears_alias(
         self, mock_en, mock_dis, mock_save_en, mock_save_dis,
         mock_user, mock_bundled, nested_plugin_env,
     ):
-        from hermes_cli.plugins_cmd import cmd_disable
+        from agentic_os_cli.plugins_cmd import cmd_disable
         mock_user.return_value = nested_plugin_env
         mock_bundled.return_value = nested_plugin_env / "nonexistent"
         # Simulate an existing config where the plugin was enabled under the
@@ -202,27 +202,27 @@ class TestEnableDisableNested:
         assert "observability/nemo_relay" in saved_dis
         assert "nemo_relay" not in saved_en  # stale bare alias dropped
 
-    @patch("hermes_cli.plugins.get_bundled_plugins_dir")
-    @patch("hermes_cli.plugins_cmd._plugins_dir")
+    @patch("agentic_os_cli.plugins.get_bundled_plugins_dir")
+    @patch("agentic_os_cli.plugins_cmd._plugins_dir")
     def test_enable_unknown_plugin_exits(self, mock_user, mock_bundled, nested_plugin_env):
-        from hermes_cli.plugins_cmd import cmd_enable
+        from agentic_os_cli.plugins_cmd import cmd_enable
         mock_user.return_value = nested_plugin_env
         mock_bundled.return_value = nested_plugin_env / "nonexistent"
         with pytest.raises(SystemExit):
             cmd_enable("does-not-exist")
 
-    @patch("hermes_cli.plugins.get_bundled_plugins_dir")
-    @patch("hermes_cli.plugins_cmd._plugins_dir")
-    @patch("hermes_cli.plugins_cmd._save_disabled_set")
-    @patch("hermes_cli.plugins_cmd._save_enabled_set")
-    @patch("hermes_cli.plugins_cmd._get_disabled_set", return_value=set())
-    @patch("hermes_cli.plugins_cmd._get_enabled_set", return_value=set())
+    @patch("agentic_os_cli.plugins.get_bundled_plugins_dir")
+    @patch("agentic_os_cli.plugins_cmd._plugins_dir")
+    @patch("agentic_os_cli.plugins_cmd._save_disabled_set")
+    @patch("agentic_os_cli.plugins_cmd._save_enabled_set")
+    @patch("agentic_os_cli.plugins_cmd._get_disabled_set", return_value=set())
+    @patch("agentic_os_cli.plugins_cmd._get_enabled_set", return_value=set())
     def test_enable_flat_plugin_unchanged(
         self, mock_en, mock_dis, mock_save_en, mock_save_dis,
         mock_user, mock_bundled, nested_plugin_env,
     ):
         """Flat plugins keep writing their bare name (key == name) — no regression."""
-        from hermes_cli.plugins_cmd import cmd_enable
+        from agentic_os_cli.plugins_cmd import cmd_enable
         mock_user.return_value = nested_plugin_env
         mock_bundled.return_value = nested_plugin_env / "nonexistent"
 
@@ -241,18 +241,18 @@ class TestEnableToolOverrideConsent:
     privileged ``allow_tool_override`` capability, and persist the operator's
     choice under ``plugins.entries.<key>.allow_tool_override``."""
 
-    @patch("hermes_cli.plugins.get_bundled_plugins_dir")
-    @patch("hermes_cli.plugins_cmd._plugins_dir")
-    @patch("hermes_cli.plugins_cmd._set_plugin_entry_flag")
-    @patch("hermes_cli.plugins_cmd._save_disabled_set")
-    @patch("hermes_cli.plugins_cmd._save_enabled_set")
-    @patch("hermes_cli.plugins_cmd._get_disabled_set", return_value=set())
-    @patch("hermes_cli.plugins_cmd._get_enabled_set", return_value=set())
+    @patch("agentic_os_cli.plugins.get_bundled_plugins_dir")
+    @patch("agentic_os_cli.plugins_cmd._plugins_dir")
+    @patch("agentic_os_cli.plugins_cmd._set_plugin_entry_flag")
+    @patch("agentic_os_cli.plugins_cmd._save_disabled_set")
+    @patch("agentic_os_cli.plugins_cmd._save_enabled_set")
+    @patch("agentic_os_cli.plugins_cmd._get_disabled_set", return_value=set())
+    @patch("agentic_os_cli.plugins_cmd._get_enabled_set", return_value=set())
     def test_flag_true_grants_override_without_prompt(
         self, mock_en, mock_dis, mock_save_en, mock_save_dis, mock_set_flag,
         mock_user, mock_bundled, nested_plugin_env,
     ):
-        from hermes_cli.plugins_cmd import cmd_enable
+        from agentic_os_cli.plugins_cmd import cmd_enable
         mock_user.return_value = nested_plugin_env
         mock_bundled.return_value = nested_plugin_env / "nonexistent"
 
@@ -262,18 +262,18 @@ class TestEnableToolOverrideConsent:
             "disk-cleanup", "allow_tool_override", True
         )
 
-    @patch("hermes_cli.plugins.get_bundled_plugins_dir")
-    @patch("hermes_cli.plugins_cmd._plugins_dir")
-    @patch("hermes_cli.plugins_cmd._set_plugin_entry_flag")
-    @patch("hermes_cli.plugins_cmd._save_disabled_set")
-    @patch("hermes_cli.plugins_cmd._save_enabled_set")
-    @patch("hermes_cli.plugins_cmd._get_disabled_set", return_value=set())
-    @patch("hermes_cli.plugins_cmd._get_enabled_set", return_value=set())
+    @patch("agentic_os_cli.plugins.get_bundled_plugins_dir")
+    @patch("agentic_os_cli.plugins_cmd._plugins_dir")
+    @patch("agentic_os_cli.plugins_cmd._set_plugin_entry_flag")
+    @patch("agentic_os_cli.plugins_cmd._save_disabled_set")
+    @patch("agentic_os_cli.plugins_cmd._save_enabled_set")
+    @patch("agentic_os_cli.plugins_cmd._get_disabled_set", return_value=set())
+    @patch("agentic_os_cli.plugins_cmd._get_enabled_set", return_value=set())
     def test_flag_false_declines_override_without_prompt(
         self, mock_en, mock_dis, mock_save_en, mock_save_dis, mock_set_flag,
         mock_user, mock_bundled, nested_plugin_env,
     ):
-        from hermes_cli.plugins_cmd import cmd_enable
+        from agentic_os_cli.plugins_cmd import cmd_enable
         mock_user.return_value = nested_plugin_env
         mock_bundled.return_value = nested_plugin_env / "nonexistent"
 
@@ -283,18 +283,18 @@ class TestEnableToolOverrideConsent:
             "disk-cleanup", "allow_tool_override", False
         )
 
-    @patch("hermes_cli.plugins.get_bundled_plugins_dir")
-    @patch("hermes_cli.plugins_cmd._plugins_dir")
-    @patch("hermes_cli.plugins_cmd._set_plugin_entry_flag")
-    @patch("hermes_cli.plugins_cmd._save_disabled_set")
-    @patch("hermes_cli.plugins_cmd._save_enabled_set")
-    @patch("hermes_cli.plugins_cmd._get_disabled_set", return_value=set())
-    @patch("hermes_cli.plugins_cmd._get_enabled_set", return_value=set())
+    @patch("agentic_os_cli.plugins.get_bundled_plugins_dir")
+    @patch("agentic_os_cli.plugins_cmd._plugins_dir")
+    @patch("agentic_os_cli.plugins_cmd._set_plugin_entry_flag")
+    @patch("agentic_os_cli.plugins_cmd._save_disabled_set")
+    @patch("agentic_os_cli.plugins_cmd._save_enabled_set")
+    @patch("agentic_os_cli.plugins_cmd._get_disabled_set", return_value=set())
+    @patch("agentic_os_cli.plugins_cmd._get_enabled_set", return_value=set())
     def test_interactive_yes_grants_override(
         self, mock_en, mock_dis, mock_save_en, mock_save_dis, mock_set_flag,
         mock_user, mock_bundled, nested_plugin_env,
     ):
-        from hermes_cli.plugins_cmd import cmd_enable
+        from agentic_os_cli.plugins_cmd import cmd_enable
         mock_user.return_value = nested_plugin_env
         mock_bundled.return_value = nested_plugin_env / "nonexistent"
 
@@ -305,19 +305,19 @@ class TestEnableToolOverrideConsent:
             "disk-cleanup", "allow_tool_override", True
         )
 
-    @patch("hermes_cli.plugins.get_bundled_plugins_dir")
-    @patch("hermes_cli.plugins_cmd._plugins_dir")
-    @patch("hermes_cli.plugins_cmd._set_plugin_entry_flag")
-    @patch("hermes_cli.plugins_cmd._save_disabled_set")
-    @patch("hermes_cli.plugins_cmd._save_enabled_set")
-    @patch("hermes_cli.plugins_cmd._get_disabled_set", return_value=set())
-    @patch("hermes_cli.plugins_cmd._get_enabled_set", return_value=set())
+    @patch("agentic_os_cli.plugins.get_bundled_plugins_dir")
+    @patch("agentic_os_cli.plugins_cmd._plugins_dir")
+    @patch("agentic_os_cli.plugins_cmd._set_plugin_entry_flag")
+    @patch("agentic_os_cli.plugins_cmd._save_disabled_set")
+    @patch("agentic_os_cli.plugins_cmd._save_enabled_set")
+    @patch("agentic_os_cli.plugins_cmd._get_disabled_set", return_value=set())
+    @patch("agentic_os_cli.plugins_cmd._get_enabled_set", return_value=set())
     def test_interactive_blank_enter_defaults_to_deny(
         self, mock_en, mock_dis, mock_save_en, mock_save_dis, mock_set_flag,
         mock_user, mock_bundled, nested_plugin_env,
     ):
         """A blind Enter must NOT grant a privileged capability."""
-        from hermes_cli.plugins_cmd import cmd_enable
+        from agentic_os_cli.plugins_cmd import cmd_enable
         mock_user.return_value = nested_plugin_env
         mock_bundled.return_value = nested_plugin_env / "nonexistent"
 
@@ -328,19 +328,19 @@ class TestEnableToolOverrideConsent:
             "disk-cleanup", "allow_tool_override", False
         )
 
-    @patch("hermes_cli.plugins.get_bundled_plugins_dir")
-    @patch("hermes_cli.plugins_cmd._plugins_dir")
-    @patch("hermes_cli.plugins_cmd._set_plugin_entry_flag")
-    @patch("hermes_cli.plugins_cmd._save_disabled_set")
-    @patch("hermes_cli.plugins_cmd._save_enabled_set")
-    @patch("hermes_cli.plugins_cmd._get_disabled_set", return_value=set())
-    @patch("hermes_cli.plugins_cmd._get_enabled_set", return_value=set())
+    @patch("agentic_os_cli.plugins.get_bundled_plugins_dir")
+    @patch("agentic_os_cli.plugins_cmd._plugins_dir")
+    @patch("agentic_os_cli.plugins_cmd._set_plugin_entry_flag")
+    @patch("agentic_os_cli.plugins_cmd._save_disabled_set")
+    @patch("agentic_os_cli.plugins_cmd._save_enabled_set")
+    @patch("agentic_os_cli.plugins_cmd._get_disabled_set", return_value=set())
+    @patch("agentic_os_cli.plugins_cmd._get_enabled_set", return_value=set())
     def test_interactive_eof_defaults_to_deny(
         self, mock_en, mock_dis, mock_save_en, mock_save_dis, mock_set_flag,
         mock_user, mock_bundled, nested_plugin_env,
     ):
         """Non-interactive stdin (EOFError) must fail closed to deny."""
-        from hermes_cli.plugins_cmd import cmd_enable
+        from agentic_os_cli.plugins_cmd import cmd_enable
         mock_user.return_value = nested_plugin_env
         mock_bundled.return_value = nested_plugin_env / "nonexistent"
 
@@ -351,19 +351,19 @@ class TestEnableToolOverrideConsent:
             "disk-cleanup", "allow_tool_override", False
         )
 
-    @patch("hermes_cli.plugins.get_bundled_plugins_dir")
-    @patch("hermes_cli.plugins_cmd._plugins_dir")
-    @patch("hermes_cli.plugins_cmd._set_plugin_entry_flag")
-    @patch("hermes_cli.plugins_cmd._save_disabled_set")
-    @patch("hermes_cli.plugins_cmd._save_enabled_set")
-    @patch("hermes_cli.plugins_cmd._get_disabled_set", return_value=set())
-    @patch("hermes_cli.plugins_cmd._get_enabled_set", return_value=set())
+    @patch("agentic_os_cli.plugins.get_bundled_plugins_dir")
+    @patch("agentic_os_cli.plugins_cmd._plugins_dir")
+    @patch("agentic_os_cli.plugins_cmd._set_plugin_entry_flag")
+    @patch("agentic_os_cli.plugins_cmd._save_disabled_set")
+    @patch("agentic_os_cli.plugins_cmd._save_enabled_set")
+    @patch("agentic_os_cli.plugins_cmd._get_disabled_set", return_value=set())
+    @patch("agentic_os_cli.plugins_cmd._get_enabled_set", return_value=set())
     def test_bundled_plugin_never_prompts_or_writes_entry(
         self, mock_en, mock_dis, mock_save_en, mock_save_dis, mock_set_flag,
         mock_user, mock_bundled, tmp_path,
     ):
         """Bundled plugins are trusted — no consent prompt, no entry write."""
-        from hermes_cli.plugins_cmd import cmd_enable
+        from agentic_os_cli.plugins_cmd import cmd_enable
         # Bundled dir holds the plugin; user dir is empty.
         _make_plugin_dir(tmp_path / "bundled", "trusted_bundled", {
             "name": "trusted_bundled", "version": "1.0.0",
@@ -386,13 +386,13 @@ class TestCompositeMenuWritesCanonicalKey:
     name is what silently vetoed a bundled backend forever (pi314).
     """
 
-    @patch("hermes_cli.plugins_cmd._save_disabled_set")
-    @patch("hermes_cli.plugins_cmd._save_enabled_set")
-    @patch("hermes_cli.plugins_cmd._get_enabled_set", return_value=set())
+    @patch("agentic_os_cli.plugins_cmd._save_disabled_set")
+    @patch("agentic_os_cli.plugins_cmd._save_enabled_set")
+    @patch("agentic_os_cli.plugins_cmd._get_enabled_set", return_value=set())
     def test_fallback_unchecked_plugin_disables_by_key_not_name(
         self, mock_en, mock_save_en, mock_save_dis,
     ):
-        from hermes_cli.plugins_cmd import _run_composite_fallback
+        from agentic_os_cli.plugins_cmd import _run_composite_fallback
         from rich.console import Console
 
         # key differs from the manifest name, mirroring web/firecrawl.
@@ -412,13 +412,13 @@ class TestCompositeMenuWritesCanonicalKey:
         assert "web/firecrawl" in saved_dis      # canonical key persisted
         assert "web-firecrawl" not in saved_dis   # never the bare name
 
-    @patch("hermes_cli.plugins_cmd._save_disabled_set")
-    @patch("hermes_cli.plugins_cmd._save_enabled_set")
-    @patch("hermes_cli.plugins_cmd._get_enabled_set", return_value=set())
+    @patch("agentic_os_cli.plugins_cmd._save_disabled_set")
+    @patch("agentic_os_cli.plugins_cmd._save_enabled_set")
+    @patch("agentic_os_cli.plugins_cmd._get_enabled_set", return_value=set())
     def test_fallback_checked_plugin_enables_by_key_and_clears_aliases(
         self, mock_en, mock_save_en, mock_save_dis,
     ):
-        from hermes_cli.plugins_cmd import _run_composite_fallback
+        from agentic_os_cli.plugins_cmd import _run_composite_fallback
         from rich.console import Console
 
         plugin_keys = ["web/firecrawl"]

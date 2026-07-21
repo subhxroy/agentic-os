@@ -1,10 +1,10 @@
-"""Tests for the Phase 4 s6 hooks in hermes_cli.profiles.
+"""Tests for the Phase 4 s6 hooks in agentic_os_cli.profiles.
 
 Specifically: _maybe_register_gateway_service,
 _maybe_unregister_gateway_service. The integration with
 create_profile and delete_profile is covered indirectly by the
 existing TestCreateProfile and TestDeleteProfile classes in
-tests/hermes_cli/test_profiles.py; here we only exercise the new
+tests/agentic_os_cli/test_profiles.py; here we only exercise the new
 helper surface that doesn't touch the filesystem.
 """
 from __future__ import annotations
@@ -13,7 +13,7 @@ from typing import Any
 
 import pytest
 
-from hermes_cli.profiles import (
+from agentic_os_cli.profiles import (
     _maybe_register_gateway_service,
     _maybe_unregister_gateway_service,
 )
@@ -80,7 +80,7 @@ def _patch_detect_s6(monkeypatch: pytest.MonkeyPatch) -> None:
     exercise the early-return path.
     """
     monkeypatch.setattr(
-        "hermes_cli.service_manager.detect_service_manager",
+        "agentic_os_cli.service_manager.detect_service_manager",
         lambda: "s6",
     )
 
@@ -92,7 +92,7 @@ def test_register_noop_on_host(monkeypatch: pytest.MonkeyPatch) -> None:
     # defense-in-depth assertion that get_service_manager is never
     # reached on host.
     monkeypatch.setattr(
-        "hermes_cli.service_manager.get_service_manager",
+        "agentic_os_cli.service_manager.get_service_manager",
         lambda: _HostManager(),
     )
     # Should NOT raise the AssertionError from _HostManager.register
@@ -103,7 +103,7 @@ def test_register_calls_through_on_s6(monkeypatch: pytest.MonkeyPatch) -> None:
     _patch_detect_s6(monkeypatch)
     mgr = _S6Manager()
     monkeypatch.setattr(
-        "hermes_cli.service_manager.get_service_manager", lambda: mgr,
+        "agentic_os_cli.service_manager.get_service_manager", lambda: mgr,
     )
     _maybe_register_gateway_service("coder")
     assert mgr.registered == ["coder"]
@@ -116,7 +116,7 @@ def test_register_passes_start_now_false(monkeypatch: pytest.MonkeyPatch) -> Non
     _patch_detect_s6(monkeypatch)
     mgr = _S6Manager()
     monkeypatch.setattr(
-        "hermes_cli.service_manager.get_service_manager", lambda: mgr,
+        "agentic_os_cli.service_manager.get_service_manager", lambda: mgr,
     )
     _maybe_register_gateway_service("coder")
     assert mgr.last_start_now is False, (
@@ -133,7 +133,7 @@ def test_register_swallows_duplicate_value_error(
     mgr = _S6Manager()
     mgr.raise_on_register = ValueError("already registered")
     monkeypatch.setattr(
-        "hermes_cli.service_manager.get_service_manager", lambda: mgr,
+        "agentic_os_cli.service_manager.get_service_manager", lambda: mgr,
     )
     # Should NOT raise
     _maybe_register_gateway_service("coder")
@@ -148,7 +148,7 @@ def test_register_swallows_arbitrary_error(
     mgr = _S6Manager()
     mgr.raise_on_register = RuntimeError("svscanctl exploded")
     monkeypatch.setattr(
-        "hermes_cli.service_manager.get_service_manager", lambda: mgr,
+        "agentic_os_cli.service_manager.get_service_manager", lambda: mgr,
     )
     _maybe_register_gateway_service("coder")
     captured = capsys.readouterr()
@@ -164,7 +164,7 @@ def test_register_swallows_no_backend_runtime_error(
     def _no_backend() -> None:
         raise RuntimeError("no supported service manager detected")
     monkeypatch.setattr(
-        "hermes_cli.service_manager.get_service_manager", _no_backend,
+        "agentic_os_cli.service_manager.get_service_manager", _no_backend,
     )
     # Should NOT raise
     _maybe_register_gateway_service("anywhere")
@@ -180,12 +180,12 @@ def test_register_silent_when_detect_throws(
     def _broken_detect() -> str:
         raise RuntimeError("detection blew up")
     monkeypatch.setattr(
-        "hermes_cli.service_manager.detect_service_manager", _broken_detect,
+        "agentic_os_cli.service_manager.detect_service_manager", _broken_detect,
     )
     # If get_service_manager is reached, the test will assert via
     # _HostManager.register. It must NOT be reached.
     monkeypatch.setattr(
-        "hermes_cli.service_manager.get_service_manager",
+        "agentic_os_cli.service_manager.get_service_manager",
         lambda: _HostManager(),
     )
     _maybe_register_gateway_service("anywhere")
@@ -197,7 +197,7 @@ def test_register_silent_when_detect_throws(
 def test_unregister_noop_on_host(monkeypatch: pytest.MonkeyPatch) -> None:
     # Same as test_register_noop_on_host: rely on real host detection.
     monkeypatch.setattr(
-        "hermes_cli.service_manager.get_service_manager",
+        "agentic_os_cli.service_manager.get_service_manager",
         lambda: _HostManager(),
     )
     _maybe_unregister_gateway_service("hostprof")
@@ -207,7 +207,7 @@ def test_unregister_calls_through_on_s6(monkeypatch: pytest.MonkeyPatch) -> None
     _patch_detect_s6(monkeypatch)
     mgr = _S6Manager()
     monkeypatch.setattr(
-        "hermes_cli.service_manager.get_service_manager", lambda: mgr,
+        "agentic_os_cli.service_manager.get_service_manager", lambda: mgr,
     )
     _maybe_unregister_gateway_service("coder")
     assert mgr.unregistered == ["coder"]
@@ -220,7 +220,7 @@ def test_unregister_swallows_errors(
     mgr = _S6Manager()
     mgr.raise_on_unregister = RuntimeError("svc gone weird")
     monkeypatch.setattr(
-        "hermes_cli.service_manager.get_service_manager", lambda: mgr,
+        "agentic_os_cli.service_manager.get_service_manager", lambda: mgr,
     )
     _maybe_unregister_gateway_service("coder")
     captured = capsys.readouterr()

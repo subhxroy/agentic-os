@@ -28,14 +28,14 @@ def _run_main_and_capture_yolo_at_startup(monkeypatch, argv):
         yolo_at_startup["value"] = os.environ.get("HERMES_YOLO_MODE")
 
     monkeypatch.setattr(
-        "hermes_cli.main._prepare_agent_startup", spy_prepare_startup
+        "agentic_os_cli.main._prepare_agent_startup", spy_prepare_startup
     )
     # Stub cmd_chat so main() returns cleanly without entering chat.
-    monkeypatch.setattr("hermes_cli.main.cmd_chat", lambda args: None)
+    monkeypatch.setattr("agentic_os_cli.main.cmd_chat", lambda args: None)
     monkeypatch.delenv("HERMES_YOLO_MODE", raising=False)
     monkeypatch.setattr(sys, "argv", argv)
 
-    from hermes_cli.main import main as cli_main
+    from agentic_os_cli.main import main as cli_main
 
     cli_main()
 

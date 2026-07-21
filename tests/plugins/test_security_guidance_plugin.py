@@ -320,10 +320,10 @@ class TestPluginDiscovery:
 
         # Wipe any cached plugin state from earlier tests in this worker.
         for k in list(sys.modules):
-            if k.startswith(("hermes_plugins", "hermes_cli.plugins")):
+            if k.startswith(("hermes_plugins", "agentic_os_cli.plugins")):
                 del sys.modules[k]
 
-        from hermes_cli.plugins import _ensure_plugins_discovered
+        from agentic_os_cli.plugins import _ensure_plugins_discovered
 
         mgr = _ensure_plugins_discovered(force=True)
         loaded = set()

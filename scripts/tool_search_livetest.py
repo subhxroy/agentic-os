@@ -272,7 +272,7 @@ def setup_isolated_home(enabled: bool) -> Path:
         # hand — it never materializes the secret in a local variable in
         # this module, which both avoids a hand-rolled parser bug and keeps
         # static analysis from tainting the transcript records with the key.
-        from hermes_cli.env_loader import load_hermes_dotenv
+        from agentic_os_cli.env_loader import load_hermes_dotenv
         load_hermes_dotenv(hermes_home=str(Path.home() / ".hermes"))
 
     cfg = {
@@ -344,7 +344,7 @@ def reset_module_state():
     """Drop cached modules so the new HERMES_HOME takes effect."""
     keys = [k for k in sys.modules.keys()
             if k.startswith(("tools.", "model_tools", "toolsets",
-                             "hermes_cli", "agent.", "run_agent"))]
+                             "agentic_os_cli", "agent.", "run_agent"))]
     for k in keys:
         del sys.modules[k]
 

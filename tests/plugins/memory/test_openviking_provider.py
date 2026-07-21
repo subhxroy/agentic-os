@@ -314,7 +314,7 @@ def test_post_setup_existing_profile_picker_validates_and_links_saved_profile(tm
     monkeypatch.setenv("HERMES_HOME", str(hermes_home))
     monkeypatch.setattr(openviking_module.Path, "home", staticmethod(lambda: tmp_path))
 
-    from hermes_cli import memory_setup
+    from agentic_os_cli import memory_setup
 
     validate_calls = []
 
@@ -360,7 +360,7 @@ def test_post_setup_create_remote_user_profile_can_mirror_to_openviking_store(tm
     monkeypatch.setattr(openviking_module.Path, "home", staticmethod(lambda: tmp_path))
     _allow_setup_validation(monkeypatch)
 
-    from hermes_cli import memory_setup
+    from agentic_os_cli import memory_setup
 
     choices = iter([1, 0, 1])
     monkeypatch.setattr(memory_setup, "_curses_select", lambda *args, **kwargs: next(choices))
@@ -402,7 +402,7 @@ def test_post_setup_create_remote_user_can_keep_hermes_only(tmp_path, monkeypatc
     monkeypatch.setenv("HERMES_HOME", str(hermes_home))
     _allow_setup_validation(monkeypatch)
 
-    from hermes_cli import memory_setup
+    from agentic_os_cli import memory_setup
 
     choices = iter([1, 0, 0])
     monkeypatch.setattr(memory_setup, "_curses_select", lambda *args, **kwargs: next(choices))
@@ -434,7 +434,7 @@ def test_post_setup_create_openviking_service_validates_after_api_key(tmp_path, 
     hermes_home.mkdir()
     monkeypatch.setenv("HERMES_HOME", str(hermes_home))
 
-    from hermes_cli import memory_setup
+    from agentic_os_cli import memory_setup
 
     validation_calls = []
 
@@ -490,8 +490,8 @@ def test_post_setup_remote_blank_api_key_cancels_without_saving(tmp_path, monkey
     monkeypatch.setenv("HERMES_HOME", str(hermes_home))
     monkeypatch.setattr(openviking_module, "_validate_openviking_reachability", lambda endpoint: (True, ""))
 
-    from hermes_cli import config as hermes_config
-    from hermes_cli import memory_setup
+    from agentic_os_cli import config as hermes_config
+    from agentic_os_cli import memory_setup
 
     save_config = MagicMock()
     monkeypatch.setattr(hermes_config, "save_config", save_config)
@@ -520,7 +520,7 @@ def test_post_setup_user_key_path_can_route_detected_root_key_to_root_setup(tmp_
     hermes_home.mkdir()
     monkeypatch.setenv("HERMES_HOME", str(hermes_home))
 
-    from hermes_cli import memory_setup
+    from agentic_os_cli import memory_setup
 
     def validate_values(values, *, require_api_key=False):
         assert values["api_key"] == "root-secret"
@@ -564,7 +564,7 @@ def test_post_setup_root_key_path_can_route_detected_user_key_to_user_setup(tmp_
     hermes_home.mkdir()
     monkeypatch.setenv("HERMES_HOME", str(hermes_home))
 
-    from hermes_cli import memory_setup
+    from agentic_os_cli import memory_setup
 
     def validate_values(values, *, require_api_key=False):
         assert values["api_key"] == "user-secret"
@@ -1073,7 +1073,7 @@ def test_post_setup_local_server_down_can_offer_autostart(tmp_path, monkeypatch)
     monkeypatch.setenv("HERMES_HOME", str(hermes_home))
     monkeypatch.setattr(openviking_module, "_validate_openviking_setup_values", lambda values, *, require_api_key=False: (True, "", None))
 
-    from hermes_cli import memory_setup
+    from agentic_os_cli import memory_setup
 
     reachability_calls = []
 
@@ -1117,7 +1117,7 @@ def test_post_setup_invalid_env_profile_can_create_new_config(tmp_path, monkeypa
     monkeypatch.setenv("OPENVIKING_CLI_CONFIG_FILE", str(ovcli_path))
     _allow_setup_validation(monkeypatch)
 
-    from hermes_cli import memory_setup
+    from agentic_os_cli import memory_setup
 
     choices = iter([1, 0, 0])
     monkeypatch.setattr(memory_setup, "_curses_select", lambda *args, **kwargs: next(choices))

@@ -18,22 +18,22 @@ from plugins.memory.mem0._setup import (
 )
 
 
-def _inject_fake_hermes_cli(monkeypatch):
-    """Inject fake hermes_cli modules so yaml/curses aren't required."""
-    fake_config_mod = types.ModuleType("hermes_cli.config")
+def _inject_fake_agentic_os_cli(monkeypatch):
+    """Inject fake agentic_os_cli modules so yaml/curses aren't required."""
+    fake_config_mod = types.ModuleType("agentic_os_cli.config")
     fake_config_mod.save_config = lambda c: None
 
-    fake_setup_mod = types.ModuleType("hermes_cli.memory_setup")
+    fake_setup_mod = types.ModuleType("agentic_os_cli.memory_setup")
     fake_setup_mod._curses_select = lambda *a, **kw: 0
     fake_setup_mod._prompt = lambda label, default=None, secret=False: default or ""
 
-    fake_hermes_cli = types.ModuleType("hermes_cli")
-    fake_hermes_cli.config = fake_config_mod
-    fake_hermes_cli.memory_setup = fake_setup_mod
+    fake_agentic_os_cli = types.ModuleType("agentic_os_cli")
+    fake_agentic_os_cli.config = fake_config_mod
+    fake_agentic_os_cli.memory_setup = fake_setup_mod
 
-    monkeypatch.setitem(sys.modules, "hermes_cli", fake_hermes_cli)
-    monkeypatch.setitem(sys.modules, "hermes_cli.config", fake_config_mod)
-    monkeypatch.setitem(sys.modules, "hermes_cli.memory_setup", fake_setup_mod)
+    monkeypatch.setitem(sys.modules, "agentic_os_cli", fake_agentic_os_cli)
+    monkeypatch.setitem(sys.modules, "agentic_os_cli.config", fake_config_mod)
+    monkeypatch.setitem(sys.modules, "agentic_os_cli.memory_setup", fake_setup_mod)
 
     monkeypatch.setattr("plugins.memory.mem0._setup._curses_select", lambda *a, **kw: 0)
     monkeypatch.setattr("plugins.memory.mem0._setup._prompt", lambda label, default=None, secret=False: default or "")
@@ -187,7 +187,7 @@ class TestPostSetup:
     def test_platform_flag_mode(self, tmp_path, monkeypatch):
         monkeypatch.setattr("sys.argv", ["hermes", "--mode", "platform", "--api-key", "sk-test"])
         monkeypatch.setattr("plugins.memory.mem0._setup.get_hermes_home", lambda: tmp_path)
-        _inject_fake_hermes_cli(monkeypatch)
+        _inject_fake_agentic_os_cli(monkeypatch)
         config = {"memory": {}}
         post_setup(str(tmp_path), config)
         assert config["memory"]["provider"] == "mem0"
@@ -205,7 +205,7 @@ class TestPostSetup:
         )
         monkeypatch.setattr("sys.argv", ["hermes", "--mode", "platform", "--api-key", "sk-test"])
         monkeypatch.setattr("plugins.memory.mem0._setup.get_hermes_home", lambda: tmp_path)
-        _inject_fake_hermes_cli(monkeypatch)
+        _inject_fake_agentic_os_cli(monkeypatch)
         config = {"memory": {}}
         post_setup(str(tmp_path), config)
         mem0_json = json.loads((tmp_path / "mem0.json").read_text())
@@ -217,7 +217,7 @@ class TestPostSetup:
             "hermes", "--mode", "oss", "--oss-llm-key", "sk-oai",
         ])
         monkeypatch.setattr("plugins.memory.mem0._setup.get_hermes_home", lambda: tmp_path)
-        _inject_fake_hermes_cli(monkeypatch)
+        _inject_fake_agentic_os_cli(monkeypatch)
         monkeypatch.setattr("plugins.memory.mem0._setup._install_provider_deps", lambda l, e, v: None)
         config = {"memory": {}}
         post_setup(str(tmp_path), config)
@@ -232,7 +232,7 @@ class TestPostSetup:
             "--host", "http://localhost:8888/", "--api-key", "admin-key",
         ])
         monkeypatch.setattr("plugins.memory.mem0._setup.get_hermes_home", lambda: tmp_path)
-        _inject_fake_hermes_cli(monkeypatch)
+        _inject_fake_agentic_os_cli(monkeypatch)
         monkeypatch.setattr("plugins.memory.mem0._setup._check_selfhosted_server", lambda h: None)
         config = {"memory": {}}
         post_setup(str(tmp_path), config)
@@ -250,7 +250,7 @@ class TestPostSetup:
         ])
         monkeypatch.setattr("plugins.memory.mem0._setup.get_hermes_home", lambda: tmp_path)
         monkeypatch.delenv("MEM0_API_KEY", raising=False)
-        _inject_fake_hermes_cli(monkeypatch)
+        _inject_fake_agentic_os_cli(monkeypatch)
         monkeypatch.setattr("plugins.memory.mem0._setup._check_selfhosted_server", lambda h: None)
         config = {"memory": {}}
         post_setup(str(tmp_path), config)
@@ -264,7 +264,7 @@ class TestPostSetup:
             "--host", "http://localhost:8888", "--api-key", "k", "--dry-run",
         ])
         monkeypatch.setattr("plugins.memory.mem0._setup.get_hermes_home", lambda: tmp_path)
-        _inject_fake_hermes_cli(monkeypatch)
+        _inject_fake_agentic_os_cli(monkeypatch)
         monkeypatch.setattr("plugins.memory.mem0._setup._check_selfhosted_server", lambda h: None)
         config = {"memory": {}}
         post_setup(str(tmp_path), config)
@@ -286,7 +286,7 @@ class TestDryRun:
     def test_dry_run_platform_no_files(self, tmp_path, monkeypatch):
         monkeypatch.setattr("sys.argv", ["hermes", "--mode", "platform", "--api-key", "sk-test", "--dry-run"])
         monkeypatch.setattr("plugins.memory.mem0._setup.get_hermes_home", lambda: tmp_path)
-        _inject_fake_hermes_cli(monkeypatch)
+        _inject_fake_agentic_os_cli(monkeypatch)
         config = {"memory": {}}
         post_setup(str(tmp_path), config)
         assert not (tmp_path / ".env").exists()
@@ -298,7 +298,7 @@ class TestDryRun:
             "hermes", "--mode", "oss", "--oss-llm-key", "sk-oai", "--dry-run",
         ])
         monkeypatch.setattr("plugins.memory.mem0._setup.get_hermes_home", lambda: tmp_path)
-        _inject_fake_hermes_cli(monkeypatch)
+        _inject_fake_agentic_os_cli(monkeypatch)
         monkeypatch.setattr("plugins.memory.mem0._setup._install_provider_deps", lambda l, e, v: None)
         config = {"memory": {}}
         post_setup(str(tmp_path), config)

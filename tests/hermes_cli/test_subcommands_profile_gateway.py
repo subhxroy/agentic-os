@@ -8,8 +8,8 @@ from __future__ import annotations
 
 import argparse
 
-from hermes_cli.subcommands.gateway import build_gateway_parser
-from hermes_cli.subcommands.profile import build_profile_parser
+from agentic_os_cli.subcommands.gateway import build_gateway_parser
+from agentic_os_cli.subcommands.profile import build_profile_parser
 
 
 def _h_gateway(args):  # pragma: no cover - identity only

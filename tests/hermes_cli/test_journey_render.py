@@ -13,7 +13,7 @@ import io
 
 
 def _capture(argv: list[str], *, force: bool) -> str:
-    from hermes_cli.journey import register_cli
+    from agentic_os_cli.journey import register_cli
 
     parser = argparse.ArgumentParser(add_help=False)
     register_cli(parser)

@@ -22,8 +22,8 @@ def _clean_env(monkeypatch):
 
 
 def test_cmd_chat_safe_mode_sets_env_before_startup(monkeypatch):
-    import hermes_cli.main as main_mod
-    from hermes_cli._parser import build_top_level_parser
+    import agentic_os_cli.main as main_mod
+    from agentic_os_cli._parser import build_top_level_parser
 
     parser, _subparsers, chat_parser = build_top_level_parser()
     chat_parser.set_defaults(func=main_mod.cmd_chat)
@@ -54,10 +54,10 @@ def test_cmd_chat_safe_mode_sets_env_before_startup(monkeypatch):
 
 
 def test_prepare_agent_startup_applies_safe_mode_before_plugin_discovery(monkeypatch):
-    import hermes_cli.main as main_mod
+    import agentic_os_cli.main as main_mod
 
     args = types.SimpleNamespace(command="chat", safe_mode=True, tui=False)
-    plugins = types.ModuleType("hermes_cli.plugins")
+    plugins = types.ModuleType("agentic_os_cli.plugins")
 
     def discover_plugins() -> None:
         assert os.environ["HERMES_SAFE_MODE"] == "1"
@@ -65,7 +65,7 @@ def test_prepare_agent_startup_applies_safe_mode_before_plugin_discovery(monkeyp
         assert os.environ["HERMES_IGNORE_RULES"] == "1"
 
     setattr(plugins, "discover_plugins", discover_plugins)
-    monkeypatch.setitem(sys.modules, "hermes_cli.plugins", plugins)
+    monkeypatch.setitem(sys.modules, "agentic_os_cli.plugins", plugins)
     monkeypatch.setattr(main_mod, "_should_background_mcp_startup", lambda _args: False)
     monkeypatch.setattr(main_mod, "_command_has_dedicated_mcp_startup", lambda _args: True)
 
@@ -74,7 +74,7 @@ def test_prepare_agent_startup_applies_safe_mode_before_plugin_discovery(monkeyp
 
 def test_plugin_discovery_skipped(monkeypatch):
     monkeypatch.setenv("HERMES_SAFE_MODE", "1")
-    from hermes_cli.plugins import PluginManager
+    from agentic_os_cli.plugins import PluginManager
 
     mgr = PluginManager()
     called = []
@@ -88,7 +88,7 @@ def test_plugin_discovery_skipped(monkeypatch):
 
 
 def test_plugin_discovery_runs_without_safe_mode(monkeypatch):
-    from hermes_cli.plugins import PluginManager
+    from agentic_os_cli.plugins import PluginManager
 
     mgr = PluginManager()
     called = []
@@ -104,7 +104,7 @@ def test_mcp_servers_empty(monkeypatch):
     from tools.mcp_tool import _load_mcp_config
 
     monkeypatch.setattr(
-        "hermes_cli.config.load_config",
+        "agentic_os_cli.config.load_config",
         lambda: {"mcp_servers": {"github": {"url": "https://example.com/mcp"}}},
     )
 
@@ -115,7 +115,7 @@ def test_mcp_servers_load_without_safe_mode(monkeypatch):
     from tools.mcp_tool import _load_mcp_config
 
     monkeypatch.setattr(
-        "hermes_cli.config.load_config",
+        "agentic_os_cli.config.load_config",
         lambda: {"mcp_servers": {"github": {"url": "https://example.com/mcp"}}},
     )
 
@@ -123,7 +123,7 @@ def test_mcp_servers_load_without_safe_mode(monkeypatch):
 
 
 def test_parser_accepts_safe_mode_on_root_and_chat():
-    from hermes_cli._parser import build_top_level_parser
+    from agentic_os_cli._parser import build_top_level_parser
 
     parser, _subparsers, _chat = build_top_level_parser()
 
@@ -157,10 +157,10 @@ def test_shell_hooks_register_without_safe_mode(monkeypatch):
     }
 
     manager = types.SimpleNamespace(_hooks={})
-    plugins = types.ModuleType("hermes_cli.plugins")
+    plugins = types.ModuleType("agentic_os_cli.plugins")
     setattr(plugins, "get_plugin_manager", lambda: manager)
     setattr(plugins, "VALID_HOOKS", {"pre_tool_call"})
-    monkeypatch.setitem(sys.modules, "hermes_cli.plugins", plugins)
+    monkeypatch.setitem(sys.modules, "agentic_os_cli.plugins", plugins)
     monkeypatch.setattr(sh, "_registered", set())
 
     registered = sh.register_from_config(cfg, accept_hooks=True)

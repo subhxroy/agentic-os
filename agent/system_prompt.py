@@ -46,7 +46,7 @@ from agent.prompt_builder import (
     drain_truncation_warnings,
 )
 from agent.runtime_cwd import resolve_context_cwd
-from hermes_constants import get_hermes_home
+from agentic_os_constants import get_hermes_home
 from utils import is_truthy_value
 
 
@@ -437,7 +437,7 @@ def build_system_prompt_parts(agent: Any, system_message: Optional[str] = None) 
     # 10.1 guidance (tables, task lists, math, collapsible details, etc.).
     if platform_key == "telegram" and _default_hint:
         try:
-            from hermes_cli.config import load_config_readonly
+            from agentic_os_cli.config import load_config_readonly
             _cfg = load_config_readonly()
             _tg_extra = ((_cfg.get("platforms") or {}).get("telegram") or {}).get("extra") or {}
             if _tg_extra.get("rich_messages"):
@@ -500,7 +500,7 @@ def build_system_prompt_parts(agent: Any, system_message: Optional[str] = None) 
         except Exception:
             pass
 
-    from hermes_time import now as _hermes_now
+    from agentic_os_time import now as _hermes_now
     now = _hermes_now()
     # Date-only (not minute-precision) so the system prompt is byte-stable
     # for the full day.  Minute-precision changes invalidate prefix-cache KV

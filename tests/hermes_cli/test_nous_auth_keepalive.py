@@ -1,4 +1,4 @@
-from hermes_cli import nous_auth_keepalive as keepalive
+from agentic_os_cli import nous_auth_keepalive as keepalive
 
 
 def test_keepalive_refreshes_stale_pool_entry(monkeypatch):

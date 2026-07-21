@@ -58,9 +58,9 @@ from plugins.platforms.discord.adapter import (  # noqa: E402
 
 
 def _patch_config(monkeypatch, cfg):
-    """Stub ``hermes_cli.config.read_raw_config`` to return ``cfg``."""
-    import hermes_cli.config
-    monkeypatch.setattr(hermes_cli.config, "read_raw_config", lambda: cfg)
+    """Stub ``agentic_os_cli.config.read_raw_config`` to return ``cfg``."""
+    import agentic_os_cli.config
+    monkeypatch.setattr(agentic_os_cli.config, "read_raw_config", lambda: cfg)
 
 
 def test_default_when_config_absent(monkeypatch):
@@ -128,10 +128,10 @@ def test_config_read_exception_falls_back_to_default(monkeypatch):
     """A crashing read_raw_config must not bring down view construction —
     falling back to the historical 300s default preserves existing behavior.
     """
-    import hermes_cli.config
+    import agentic_os_cli.config
     def _boom():
         raise RuntimeError("config file corrupt")
-    monkeypatch.setattr(hermes_cli.config, "read_raw_config", _boom)
+    monkeypatch.setattr(agentic_os_cli.config, "read_raw_config", _boom)
     assert _read_discord_prompt_timeout() == _DISCORD_PROMPT_TIMEOUT_DEFAULT
 
 

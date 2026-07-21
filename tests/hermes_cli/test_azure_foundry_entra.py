@@ -71,7 +71,7 @@ def fake_azure_identity(monkeypatch):
 
 class TestResolveAzureFoundryRuntimeEntra:
     def test_returns_callable_api_key_for_entra(self, fake_azure_identity):
-        from hermes_cli.runtime_provider import _resolve_azure_foundry_runtime
+        from agentic_os_cli.runtime_provider import _resolve_azure_foundry_runtime
         runtime = _resolve_azure_foundry_runtime(
             requested_provider="azure-foundry",
             model_cfg={
@@ -92,8 +92,8 @@ class TestResolveAzureFoundryRuntimeEntra:
         """GPT-5.x / o-series / codex models on Azure are Responses-API-only.
         The runtime auto-upgrades api_mode regardless of auth mode — this is
         the same behaviour as the static-key path (see
-        ``hermes_cli/models.py::azure_foundry_model_api_mode``)."""
-        from hermes_cli.runtime_provider import _resolve_azure_foundry_runtime
+        ``agentic_os_cli/models.py::azure_foundry_model_api_mode``)."""
+        from agentic_os_cli.runtime_provider import _resolve_azure_foundry_runtime
         runtime = _resolve_azure_foundry_runtime(
             requested_provider="azure-foundry",
             model_cfg={
@@ -116,7 +116,7 @@ class TestResolveAzureFoundryRuntimeEntra:
         standard ``AZURE_*`` env vars read by azure-identity directly.
         Legacy ``model.entra.client_id`` / ``tenant_id`` / ``authority``
         keys in config.yaml are silently ignored."""
-        from hermes_cli.runtime_provider import _resolve_azure_foundry_runtime
+        from agentic_os_cli.runtime_provider import _resolve_azure_foundry_runtime
         _resolve_azure_foundry_runtime(
             requested_provider="azure-foundry",
             model_cfg={
@@ -149,7 +149,7 @@ class TestResolveAzureFoundryRuntimeEntra:
         Both shapes use the SAME scope per Microsoft's docs; the
         ``cognitiveservices.azure.com`` scope is the control-plane
         audience and is rejected for inference by newer resources."""
-        from hermes_cli.runtime_provider import _resolve_azure_foundry_runtime
+        from agentic_os_cli.runtime_provider import _resolve_azure_foundry_runtime
         from agent.azure_identity_adapter import SCOPE_AI_AZURE_DEFAULT
         _resolve_azure_foundry_runtime(
             requested_provider="azure-foundry",
@@ -165,7 +165,7 @@ class TestResolveAzureFoundryRuntimeEntra:
     def test_entra_scope_override_wins(self, fake_azure_identity):
         """Users on sovereign clouds / unusual tenants can set
         ``model.entra.scope`` to override the default."""
-        from hermes_cli.runtime_provider import _resolve_azure_foundry_runtime
+        from agentic_os_cli.runtime_provider import _resolve_azure_foundry_runtime
         _resolve_azure_foundry_runtime(
             requested_provider="azure-foundry",
             model_cfg={
@@ -191,7 +191,7 @@ class TestResolveAzureFoundryRuntimeEntra:
         the callable and installs an httpx event hook that mints a
         fresh bearer JWT per request (the Anthropic SDK does not
         accept callable auth_token natively)."""
-        from hermes_cli.runtime_provider import _resolve_azure_foundry_runtime
+        from agentic_os_cli.runtime_provider import _resolve_azure_foundry_runtime
         runtime = _resolve_azure_foundry_runtime(
             requested_provider="azure-foundry",
             model_cfg={
@@ -214,7 +214,7 @@ class TestResolveAzureFoundryRuntimeEntra:
         """Passing --api-key on the CLI overrides the entra path so a
         user can debug a single request with a static key without
         editing config.yaml."""
-        from hermes_cli.runtime_provider import _resolve_azure_foundry_runtime
+        from agentic_os_cli.runtime_provider import _resolve_azure_foundry_runtime
         runtime = _resolve_azure_foundry_runtime(
             requested_provider="azure-foundry",
             model_cfg={
@@ -230,7 +230,7 @@ class TestResolveAzureFoundryRuntimeEntra:
         assert runtime["source"] == "explicit"
 
     def test_entra_runtime_dict_keeps_only_scope_override(self, fake_azure_identity):
-        from hermes_cli.runtime_provider import _resolve_azure_foundry_runtime
+        from agentic_os_cli.runtime_provider import _resolve_azure_foundry_runtime
         runtime = _resolve_azure_foundry_runtime(
             requested_provider="azure-foundry",
             model_cfg={
@@ -254,7 +254,7 @@ class TestResolveAzureFoundryRuntimeEntra:
 
 class TestResolveAzureFoundryRuntimeApiKey:
     def test_default_auth_mode_uses_static_key(self, monkeypatch):
-        from hermes_cli.runtime_provider import _resolve_azure_foundry_runtime
+        from agentic_os_cli.runtime_provider import _resolve_azure_foundry_runtime
         monkeypatch.setenv("AZURE_FOUNDRY_API_KEY", "sk-azure-static-key")
         runtime = _resolve_azure_foundry_runtime(
             requested_provider="azure-foundry",
@@ -269,7 +269,7 @@ class TestResolveAzureFoundryRuntimeApiKey:
         assert "entra" not in runtime  # only present in entra mode
 
     def test_explicit_auth_mode_api_key(self, monkeypatch):
-        from hermes_cli.runtime_provider import _resolve_azure_foundry_runtime
+        from agentic_os_cli.runtime_provider import _resolve_azure_foundry_runtime
         monkeypatch.setenv("AZURE_FOUNDRY_API_KEY", "sk-static")
         runtime = _resolve_azure_foundry_runtime(
             requested_provider="azure-foundry",
@@ -284,7 +284,7 @@ class TestResolveAzureFoundryRuntimeApiKey:
         assert runtime["auth_mode"] == "api_key"
 
     def test_anthropic_messages_strips_v1_suffix(self, monkeypatch):
-        from hermes_cli.runtime_provider import _resolve_azure_foundry_runtime
+        from agentic_os_cli.runtime_provider import _resolve_azure_foundry_runtime
         monkeypatch.setenv("AZURE_FOUNDRY_API_KEY", "k")
         runtime = _resolve_azure_foundry_runtime(
             requested_provider="azure-foundry",
@@ -297,8 +297,8 @@ class TestResolveAzureFoundryRuntimeApiKey:
         assert runtime["base_url"] == "https://r.services.ai.azure.com/anthropic"
 
     def test_missing_api_key_raises_with_entra_hint(self, monkeypatch):
-        from hermes_cli.auth import AuthError
-        from hermes_cli.runtime_provider import _resolve_azure_foundry_runtime
+        from agentic_os_cli.auth import AuthError
+        from agentic_os_cli.runtime_provider import _resolve_azure_foundry_runtime
         monkeypatch.delenv("AZURE_FOUNDRY_API_KEY", raising=False)
         with pytest.raises(AuthError) as exc_info:
             _resolve_azure_foundry_runtime(
@@ -324,10 +324,10 @@ class TestAzureFoundryAuthStatus:
     def test_entra_status_does_not_mint_token(self, monkeypatch, tmp_path):
         """Structural check — must return logged_in=True based on
         importable + config, never call get_bearer_token_provider."""
-        from hermes_cli import auth as _auth
+        from agentic_os_cli import auth as _auth
         # Force load_config to return our entra config.
         monkeypatch.setattr(
-            "hermes_cli.config.load_config",
+            "agentic_os_cli.config.load_config",
             lambda: {
                 "model": {
                     "provider": "azure-foundry",
@@ -350,9 +350,9 @@ class TestAzureFoundryAuthStatus:
         assert info["scope"].endswith("/.default")
 
     def test_entra_status_reports_missing_package(self, monkeypatch):
-        from hermes_cli import auth as _auth
+        from agentic_os_cli import auth as _auth
         monkeypatch.setattr(
-            "hermes_cli.config.load_config",
+            "agentic_os_cli.config.load_config",
             lambda: {
                 "model": {
                     "provider": "azure-foundry",
@@ -371,9 +371,9 @@ class TestAzureFoundryAuthStatus:
         assert "azure-identity" in info["hint"]
 
     def test_api_key_status_uses_env_var(self, monkeypatch):
-        from hermes_cli import auth as _auth
+        from agentic_os_cli import auth as _auth
         monkeypatch.setattr(
-            "hermes_cli.config.load_config",
+            "agentic_os_cli.config.load_config",
             lambda: {
                 "model": {
                     "provider": "azure-foundry",
@@ -388,9 +388,9 @@ class TestAzureFoundryAuthStatus:
         assert info["logged_in"] is True
 
     def test_api_key_status_false_when_missing(self, monkeypatch):
-        from hermes_cli import auth as _auth
+        from agentic_os_cli import auth as _auth
         monkeypatch.setattr(
-            "hermes_cli.config.load_config",
+            "agentic_os_cli.config.load_config",
             lambda: {
                 "model": {
                     "provider": "azure-foundry",

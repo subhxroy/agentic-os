@@ -1,4 +1,4 @@
-"""Tests for hermes_cli.gateway."""
+"""Tests for agentic_os_cli.gateway."""
 
 import argparse
 import os
@@ -11,7 +11,7 @@ from types import ModuleType, SimpleNamespace
 
 import pytest
 
-import hermes_cli.gateway as gateway
+import agentic_os_cli.gateway as gateway
 
 
 def _install_fake_gateway_run(monkeypatch, start_gateway):
@@ -108,7 +108,7 @@ def test_gateway_run_subprocess_preserves_daemon_exit_codes(
         import sys
         import types
 
-        import hermes_cli.gateway as gateway_cli
+        import agentic_os_cli.gateway as gateway_cli
 
         outcome = os.environ["HERMES_TEST_GATEWAY_OUTCOME"]
 
@@ -350,9 +350,9 @@ def test_s6_runtime_snapshot_reports_supervised_service(monkeypatch, tmp_path):
             return True
 
     monkeypatch.setattr(gateway, "is_linux", lambda: True)
-    monkeypatch.setattr("hermes_constants.is_container", lambda: True)
-    monkeypatch.setattr("hermes_cli.service_manager.detect_service_manager", lambda: "s6")
-    monkeypatch.setattr("hermes_cli.service_manager.get_service_manager", lambda: FakeS6Manager())
+    monkeypatch.setattr("agentic_os_constants.is_container", lambda: True)
+    monkeypatch.setattr("agentic_os_cli.service_manager.detect_service_manager", lambda: "s6")
+    monkeypatch.setattr("agentic_os_cli.service_manager.get_service_manager", lambda: FakeS6Manager())
     monkeypatch.setattr(gateway, "find_gateway_pids", lambda: [123])
     monkeypatch.setattr(gateway, "_profile_suffix", lambda: "")
 
@@ -382,7 +382,7 @@ def test_running_under_gateway_supervisor_markers(monkeypatch):
 
 
 def test_gateway_run_force_flag_survives_parser_extraction():
-    from hermes_cli.subcommands.gateway import build_gateway_parser
+    from agentic_os_cli.subcommands.gateway import build_gateway_parser
 
     parser = argparse.ArgumentParser()
     subparsers = parser.add_subparsers(dest="command")
@@ -594,7 +594,7 @@ def test_gateway_restart_on_windows_without_service_uses_detached_backend(monkey
     down. The Windows backend restarts via detached pythonw.exe even when no
     Scheduled Task / Startup item is installed.
     """
-    import hermes_cli.gateway_windows as gateway_windows
+    import agentic_os_cli.gateway_windows as gateway_windows
 
     calls = []
 
@@ -622,7 +622,7 @@ def test_gateway_restart_on_windows_without_service_uses_detached_backend(monkey
 
 def test_gateway_restart_on_windows_preserves_failure_fallback(monkeypatch):
     """If the Windows backend cannot launch, keep the existing fallback."""
-    import hermes_cli.gateway_windows as gateway_windows
+    import agentic_os_cli.gateway_windows as gateway_windows
 
     calls = []
 
@@ -1253,4 +1253,4 @@ class TestStopProfileGateway:
 def test_module_has_logger():
     """Verify module has a logger instance (regression guard for #27154)."""
     assert hasattr(gateway, "logger")
-    assert gateway.logger.name == "hermes_cli.gateway"
+    assert gateway.logger.name == "agentic_os_cli.gateway"

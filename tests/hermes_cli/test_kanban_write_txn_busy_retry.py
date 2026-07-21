@@ -11,7 +11,7 @@ import sqlite3
 
 import pytest
 
-from hermes_cli import kanban_db as kb
+from agentic_os_cli import kanban_db as kb
 
 
 class _FakeConn:

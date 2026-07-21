@@ -58,7 +58,7 @@ def _write(path: Path, payload: dict) -> None:
 
 def test_profile_with_zero_entries_falls_back_to_global(profile_env):
     """Empty profile pool inherits the global-root entries for that provider."""
-    from hermes_cli.auth import read_credential_pool
+    from agentic_os_cli.auth import read_credential_pool
 
     _write(profile_env["global"] / "auth.json", _make_auth_store(pool={
         "openrouter": [{
@@ -81,7 +81,7 @@ def test_profile_with_zero_entries_falls_back_to_global(profile_env):
 
 def test_profile_with_entries_fully_shadows_global(profile_env):
     """Once the profile has any entries for a provider, global is ignored."""
-    from hermes_cli.auth import read_credential_pool
+    from agentic_os_cli.auth import read_credential_pool
 
     _write(profile_env["global"] / "auth.json", _make_auth_store(pool={
         "openrouter": [{
@@ -112,7 +112,7 @@ def test_profile_with_entries_fully_shadows_global(profile_env):
 
 def test_per_provider_shadowing_is_independent(profile_env):
     """Profile can override one provider while inheriting another from global."""
-    from hermes_cli.auth import read_credential_pool
+    from agentic_os_cli.auth import read_credential_pool
 
     _write(profile_env["global"] / "auth.json", _make_auth_store(pool={
         "openrouter": [{
@@ -152,7 +152,7 @@ def test_per_provider_shadowing_is_independent(profile_env):
 
 def test_missing_global_auth_file_is_safe(profile_env):
     """Profile processes that never had a global auth.json still work."""
-    from hermes_cli.auth import read_credential_pool
+    from agentic_os_cli.auth import read_credential_pool
 
     # No global auth.json written at all.
     _write(profile_env["profile"] / "auth.json", _make_auth_store(pool={
@@ -183,7 +183,7 @@ def test_malformed_global_auth_file_does_not_break_profile_read(profile_env):
         }],
     }))
 
-    from hermes_cli.auth import read_credential_pool
+    from agentic_os_cli.auth import read_credential_pool
 
     # Profile reads still work; malformed global is silently ignored.
     assert read_credential_pool("openrouter")[0]["id"] == "prof-1"
@@ -197,7 +197,7 @@ def test_malformed_global_auth_file_does_not_break_profile_read(profile_env):
 
 
 def test_whole_pool_merges_global_providers_when_missing_locally(profile_env):
-    from hermes_cli.auth import read_credential_pool
+    from agentic_os_cli.auth import read_credential_pool
 
     _write(profile_env["global"] / "auth.json", _make_auth_store(pool={
         "openrouter": [{
@@ -240,7 +240,7 @@ def test_whole_pool_merges_global_providers_when_missing_locally(profile_env):
 
 
 def test_provider_auth_state_falls_back_to_global_when_profile_has_none(profile_env):
-    from hermes_cli.auth import get_provider_auth_state
+    from agentic_os_cli.auth import get_provider_auth_state
 
     _write(profile_env["global"] / "auth.json", _make_auth_store(providers={
         "nous": {"access_token": "nous-global", "refresh_token": "rt-global"},
@@ -253,7 +253,7 @@ def test_provider_auth_state_falls_back_to_global_when_profile_has_none(profile_
 
 
 def test_provider_auth_state_profile_wins_when_present(profile_env):
-    from hermes_cli.auth import get_provider_auth_state
+    from agentic_os_cli.auth import get_provider_auth_state
 
     _write(profile_env["global"] / "auth.json", _make_auth_store(providers={
         "nous": {"access_token": "nous-global"},
@@ -268,7 +268,7 @@ def test_provider_auth_state_profile_wins_when_present(profile_env):
 
 
 def test_provider_auth_state_returns_none_when_neither_has_it(profile_env):
-    from hermes_cli.auth import get_provider_auth_state
+    from agentic_os_cli.auth import get_provider_auth_state
 
     _write(profile_env["global"] / "auth.json", _make_auth_store(providers={}))
     _write(profile_env["profile"] / "auth.json", _make_auth_store(providers={}))
@@ -291,7 +291,7 @@ def test_provider_auth_state_returns_none_when_neither_has_it(profile_env):
 
 def test_load_provider_state_falls_back_to_global(profile_env):
     """When the loaded profile store has no provider entry, fall back to global."""
-    from hermes_cli.auth import _load_auth_store, _load_provider_state
+    from agentic_os_cli.auth import _load_auth_store, _load_provider_state
 
     _write(profile_env["global"] / "auth.json", _make_auth_store(providers={
         "nous": {"access_token": "global-nous-token", "refresh_token": "rt"},
@@ -305,7 +305,7 @@ def test_load_provider_state_falls_back_to_global(profile_env):
 
 
 def test_load_provider_state_profile_wins_over_global(profile_env):
-    from hermes_cli.auth import _load_auth_store, _load_provider_state
+    from agentic_os_cli.auth import _load_auth_store, _load_provider_state
 
     _write(profile_env["global"] / "auth.json", _make_auth_store(providers={
         "nous": {"access_token": "global-token"},
@@ -321,7 +321,7 @@ def test_load_provider_state_profile_wins_over_global(profile_env):
 
 
 def test_load_provider_state_returns_none_when_neither_has_it(profile_env):
-    from hermes_cli.auth import _load_auth_store, _load_provider_state
+    from agentic_os_cli.auth import _load_auth_store, _load_provider_state
 
     _write(profile_env["global"] / "auth.json", _make_auth_store(providers={}))
     _write(profile_env["profile"] / "auth.json", _make_auth_store(providers={}))
@@ -343,7 +343,7 @@ def test_load_provider_state_classic_mode_no_fallback(tmp_path, monkeypatch):
         "nous": {"access_token": "classic-token"},
     }))
 
-    from hermes_cli.auth import _load_auth_store, _load_provider_state
+    from agentic_os_cli.auth import _load_auth_store, _load_provider_state
 
     auth_store = _load_auth_store()
     state = _load_provider_state(auth_store, "nous")
@@ -360,7 +360,7 @@ def test_load_provider_state_malformed_global_does_not_break_profile(profile_env
         "nous": {"access_token": "profile-token"},
     }))
 
-    from hermes_cli.auth import _load_auth_store, _load_provider_state
+    from agentic_os_cli.auth import _load_auth_store, _load_provider_state
 
     auth_store = _load_auth_store()
     state = _load_provider_state(auth_store, "nous")
@@ -400,7 +400,7 @@ def test_classic_mode_does_not_double_read_same_file(tmp_path, monkeypatch):
         }],
     }))
 
-    from hermes_cli.auth import read_credential_pool, _global_auth_file_path
+    from agentic_os_cli.auth import read_credential_pool, _global_auth_file_path
 
     # Classic mode: HERMES_HOME is set to a custom path that is NOT under
     # ~/.hermes/profiles/ — get_default_hermes_root() returns HERMES_HOME
@@ -419,7 +419,7 @@ def test_classic_mode_does_not_double_read_same_file(tmp_path, monkeypatch):
 
 
 def test_write_credential_pool_targets_profile_not_global(profile_env):
-    from hermes_cli.auth import read_credential_pool, write_credential_pool
+    from agentic_os_cli.auth import read_credential_pool, write_credential_pool
 
     _write(profile_env["global"] / "auth.json", _make_auth_store(pool={
         "openrouter": [{
@@ -458,7 +458,7 @@ def test_provider_state_transaction_locks_global_fallback_before_use(
     monkeypatch,
 ):
     """Profile refreshes lock the root source before provider-specific locks."""
-    import hermes_cli.auth as auth
+    import agentic_os_cli.auth as auth
 
     _write(
         profile_env["global"] / "auth.json",
@@ -494,8 +494,8 @@ def test_provider_state_transaction_locks_global_fallback_before_use(
 
 def test_auth_lock_reentrancy_is_scoped_after_profile_context_switch(profile_env):
     """Changing profile context cannot inherit another store's lock depth."""
-    import hermes_cli.auth as auth
-    from hermes_constants import reset_hermes_home_override, set_hermes_home_override
+    import agentic_os_cli.auth as auth
+    from agentic_os_constants import reset_hermes_home_override, set_hermes_home_override
 
     profile_b = profile_env["global"] / "profiles" / "reviewer"
     profile_b.mkdir(parents=True)

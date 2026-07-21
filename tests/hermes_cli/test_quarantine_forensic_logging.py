@@ -13,7 +13,7 @@ load-bearing assertion — that the raw refresh token never appears in that outp
 import hashlib
 import logging
 
-from hermes_cli.auth import AuthError, _quarantine_nous_oauth_state
+from agentic_os_cli.auth import AuthError, _quarantine_nous_oauth_state
 
 
 # A distinctive, obviously-fake refresh token so the redaction assertion is
@@ -48,7 +48,7 @@ def _error():
 
 def test_quarantine_emits_warning(caplog):
     state = _make_state()
-    with caplog.at_level(logging.WARNING, logger="hermes_cli.auth"):
+    with caplog.at_level(logging.WARNING, logger="agentic_os_cli.auth"):
         _quarantine_nous_oauth_state(state, _error(), reason="unit_test_quarantine")
 
     warnings = [r for r in caplog.records if r.levelno >= logging.WARNING]
@@ -58,7 +58,7 @@ def test_quarantine_emits_warning(caplog):
 
 def test_warning_contains_hash_prefix_and_error_code(caplog):
     state = _make_state()
-    with caplog.at_level(logging.WARNING, logger="hermes_cli.auth"):
+    with caplog.at_level(logging.WARNING, logger="agentic_os_cli.auth"):
         _quarantine_nous_oauth_state(state, _error(), reason="unit_test_quarantine")
 
     text = caplog.text
@@ -72,7 +72,7 @@ def test_warning_contains_hash_prefix_and_error_code(caplog):
 def test_raw_refresh_token_never_logged(caplog):
     """Load-bearing redaction-safety test: the raw secret must never appear."""
     state = _make_state()
-    with caplog.at_level(logging.DEBUG, logger="hermes_cli.auth"):
+    with caplog.at_level(logging.DEBUG, logger="agentic_os_cli.auth"):
         _quarantine_nous_oauth_state(state, _error(), reason="unit_test_quarantine")
 
     text = caplog.text
@@ -85,7 +85,7 @@ def test_raw_refresh_token_never_logged(caplog):
 def test_quarantine_no_refresh_token_does_not_throw(caplog):
     state = _make_state()
     state.pop("refresh_token", None)
-    with caplog.at_level(logging.WARNING, logger="hermes_cli.auth"):
+    with caplog.at_level(logging.WARNING, logger="agentic_os_cli.auth"):
         # Must not raise even when there is no refresh token to fingerprint.
         _quarantine_nous_oauth_state(state, _error(), reason="unit_test_no_rt")
 

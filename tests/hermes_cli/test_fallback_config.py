@@ -1,6 +1,6 @@
-"""Tests for hermes_cli/fallback_config.py — fallback entry API-key resolution."""
+"""Tests for agentic_os_cli/fallback_config.py — fallback entry API-key resolution."""
 
-from hermes_cli.fallback_config import resolve_entry_api_key
+from agentic_os_cli.fallback_config import resolve_entry_api_key
 
 
 class TestResolveEntryApiKey:

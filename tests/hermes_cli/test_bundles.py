@@ -1,10 +1,10 @@
-"""Tests for hermes_cli/bundles.py — the `hermes bundles` CLI subcommand."""
+"""Tests for agentic_os_cli/bundles.py — the `hermes bundles` CLI subcommand."""
 
 import argparse
 
 import pytest
 
-from hermes_cli.bundles import (
+from agentic_os_cli.bundles import (
     bundles_command,
     register_cli,
 )

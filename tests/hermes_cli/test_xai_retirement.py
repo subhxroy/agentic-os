@@ -1,8 +1,8 @@
-"""Unit tests for hermes_cli.xai_retirement (May 15, 2026 model retirement)."""
+"""Unit tests for agentic_os_cli.xai_retirement (May 15, 2026 model retirement)."""
 from __future__ import annotations
 
 
-from hermes_cli.xai_retirement import (
+from agentic_os_cli.xai_retirement import (
     MIGRATION_GUIDE_URL,
     RETIREMENT_DATE,
     RetirementIssue,

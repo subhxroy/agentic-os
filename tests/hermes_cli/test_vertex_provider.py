@@ -29,14 +29,14 @@ def test_vertex_aliases_resolve(alias):
 
 @pytest.mark.parametrize("alias", ["google-vertex", "vertex-ai", "gcp-vertex", "vertexai"])
 def test_alias_canonicalizes_to_vertex(alias):
-    from hermes_cli.models import _PROVIDER_ALIASES
+    from agentic_os_cli.models import _PROVIDER_ALIASES
 
     assert _PROVIDER_ALIASES[alias] == "vertex"
 
 
 def test_google_vertex_not_confused_with_gemini():
     """`google-vertex` must map to vertex, not the AI-Studio `gemini` provider."""
-    from hermes_cli.models import _PROVIDER_ALIASES
+    from agentic_os_cli.models import _PROVIDER_ALIASES
 
     assert _PROVIDER_ALIASES["google-vertex"] == "vertex"
     assert _PROVIDER_ALIASES["google-gemini"] == "gemini"
@@ -44,7 +44,7 @@ def test_google_vertex_not_confused_with_gemini():
 
 def test_resolve_runtime_provider_mints_token(monkeypatch):
     import agent.vertex_adapter as va
-    from hermes_cli import runtime_provider as rp
+    from agentic_os_cli import runtime_provider as rp
 
     monkeypatch.setattr(
         va, "get_vertex_config",
@@ -60,7 +60,7 @@ def test_resolve_runtime_provider_mints_token(monkeypatch):
 
 def test_resolve_runtime_provider_alias(monkeypatch):
     import agent.vertex_adapter as va
-    from hermes_cli import runtime_provider as rp
+    from agentic_os_cli import runtime_provider as rp
 
     monkeypatch.setattr(va, "get_vertex_config", lambda: ("t", "https://aiplatform.googleapis.com/v1beta1/projects/p/locations/global/endpoints/openapi"))
     rt = rp.resolve_runtime_provider(requested="google-vertex")
@@ -69,8 +69,8 @@ def test_resolve_runtime_provider_alias(monkeypatch):
 
 def test_resolve_runtime_provider_raises_autherror_when_unresolved(monkeypatch):
     import agent.vertex_adapter as va
-    from hermes_cli import runtime_provider as rp
-    from hermes_cli.auth import AuthError
+    from agentic_os_cli import runtime_provider as rp
+    from agentic_os_cli.auth import AuthError
 
     monkeypatch.setattr(va, "get_vertex_config", lambda: (None, None))
     with pytest.raises(AuthError) as exc:

@@ -8,7 +8,7 @@ import logging
 
 import pytest
 
-from hermes_cli.config import (
+from agentic_os_cli.config import (
     _PROVIDER_NORMALIZE_WARNED,
     _normalize_custom_provider_entry,
 )

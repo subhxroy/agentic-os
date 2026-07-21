@@ -23,8 +23,8 @@ from unittest.mock import patch
 
 import pytest
 
-from hermes_cli import models as M
-from hermes_cli.providers import HERMES_OVERLAYS
+from agentic_os_cli import models as M
+from agentic_os_cli.providers import HERMES_OVERLAYS
 
 
 # --- Bug 2: overlay no longer lists OPENAI_API_KEY --------------------------

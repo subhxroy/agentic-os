@@ -40,8 +40,8 @@ class TestCustomProviderModelSwitch:
         credential selectable from the previous endpoint's pool."""
         import yaml
         from agent.credential_pool import load_pool
-        from hermes_cli.auth import read_credential_pool, write_credential_pool
-        from hermes_cli.main import _model_flow_custom
+        from agentic_os_cli.auth import read_credential_pool, write_credential_pool
+        from agentic_os_cli.main import _model_flow_custom
 
         config_path = config_home / "config.yaml"
         config_path.write_text(
@@ -79,15 +79,15 @@ class TestCustomProviderModelSwitch:
         )
 
         with patch(
-            "hermes_cli.models.probe_api_models",
+            "agentic_os_cli.models.probe_api_models",
             return_value={
                 "models": ["new-model"],
                 "used_fallback": False,
                 "probed_url": "https://new.example.test/v1/models",
             },
         ), \
-             patch("hermes_cli.secret_prompt.masked_secret_prompt", return_value="sk-new"), \
-             patch("hermes_cli.main._prompt_custom_api_mode_selection", return_value=""), \
+             patch("agentic_os_cli.secret_prompt.masked_secret_prompt", return_value="sk-new"), \
+             patch("agentic_os_cli.main._prompt_custom_api_mode_selection", return_value=""), \
              patch(
                  "builtins.input",
                  side_effect=[
@@ -119,7 +119,7 @@ class TestCustomProviderModelSwitch:
     def test_saved_model_still_probes_endpoint(self, config_home):
         """When a model is already saved, the function must still call
         fetch_api_models to probe the endpoint — not skip with early return."""
-        from hermes_cli.main import _model_flow_named_custom
+        from agentic_os_cli.main import _model_flow_named_custom
 
         provider_info = {
             "name": "My vLLM",
@@ -128,8 +128,8 @@ class TestCustomProviderModelSwitch:
             "model": "model-A",  # already saved
         }
 
-        with patch("hermes_cli.models.fetch_api_models", return_value=["model-A", "model-B"]) as mock_fetch, \
-             patch("hermes_cli.curses_ui.curses_radiolist", side_effect=ImportError), \
+        with patch("agentic_os_cli.models.fetch_api_models", return_value=["model-A", "model-B"]) as mock_fetch, \
+             patch("agentic_os_cli.curses_ui.curses_radiolist", side_effect=ImportError), \
              patch("builtins.input", return_value="2"), \
              patch("builtins.print"):
             _model_flow_named_custom({}, provider_info)
@@ -144,7 +144,7 @@ class TestCustomProviderModelSwitch:
     def test_can_switch_to_different_model(self, config_home):
         """User selects a different model than the saved one."""
         import yaml
-        from hermes_cli.main import _model_flow_named_custom
+        from agentic_os_cli.main import _model_flow_named_custom
 
         provider_info = {
             "name": "My vLLM",
@@ -153,8 +153,8 @@ class TestCustomProviderModelSwitch:
             "model": "model-A",
         }
 
-        with patch("hermes_cli.models.fetch_api_models", return_value=["model-A", "model-B"]), \
-             patch("hermes_cli.curses_ui.curses_radiolist", side_effect=ImportError), \
+        with patch("agentic_os_cli.models.fetch_api_models", return_value=["model-A", "model-B"]), \
+             patch("agentic_os_cli.curses_ui.curses_radiolist", side_effect=ImportError), \
              patch("builtins.input", return_value="2"), \
              patch("builtins.print"):
             _model_flow_named_custom({}, provider_info)
@@ -167,7 +167,7 @@ class TestCustomProviderModelSwitch:
     def test_probe_failure_falls_back_to_saved(self, config_home):
         """When endpoint probe fails and user presses Enter, saved model is used."""
         import yaml
-        from hermes_cli.main import _model_flow_named_custom
+        from agentic_os_cli.main import _model_flow_named_custom
 
         provider_info = {
             "name": "My vLLM",
@@ -177,7 +177,7 @@ class TestCustomProviderModelSwitch:
         }
 
         # fetch returns empty list (probe failed), user presses Enter (empty input)
-        with patch("hermes_cli.models.fetch_api_models", return_value=[]), \
+        with patch("agentic_os_cli.models.fetch_api_models", return_value=[]), \
              patch("builtins.input", return_value=""), \
              patch("builtins.print"):
             _model_flow_named_custom({}, provider_info)
@@ -190,7 +190,7 @@ class TestCustomProviderModelSwitch:
     def test_no_saved_model_still_works(self, config_home):
         """First-time flow (no saved model) still works as before."""
         import yaml
-        from hermes_cli.main import _model_flow_named_custom
+        from agentic_os_cli.main import _model_flow_named_custom
 
         provider_info = {
             "name": "My vLLM",
@@ -199,8 +199,8 @@ class TestCustomProviderModelSwitch:
             # no "model" key
         }
 
-        with patch("hermes_cli.models.fetch_api_models", return_value=["model-X"]), \
-             patch("hermes_cli.curses_ui.curses_radiolist", side_effect=ImportError), \
+        with patch("agentic_os_cli.models.fetch_api_models", return_value=["model-X"]), \
+             patch("agentic_os_cli.curses_ui.curses_radiolist", side_effect=ImportError), \
              patch("builtins.input", return_value="1"), \
              patch("builtins.print"):
             _model_flow_named_custom({}, provider_info)
@@ -213,7 +213,7 @@ class TestCustomProviderModelSwitch:
     def test_api_mode_set_from_provider_info(self, config_home):
         """When custom_providers entry has api_mode, it should be applied."""
         import yaml
-        from hermes_cli.main import _model_flow_named_custom
+        from agentic_os_cli.main import _model_flow_named_custom
 
         provider_info = {
             "name": "Anthropic Proxy",
@@ -223,8 +223,8 @@ class TestCustomProviderModelSwitch:
             "api_mode": "anthropic_messages",
         }
 
-        with patch("hermes_cli.models.fetch_api_models", return_value=["claude-3"]) as mock_fetch, \
-             patch("hermes_cli.curses_ui.curses_radiolist", side_effect=ImportError), \
+        with patch("agentic_os_cli.models.fetch_api_models", return_value=["claude-3"]) as mock_fetch, \
+             patch("agentic_os_cli.curses_ui.curses_radiolist", side_effect=ImportError), \
              patch("builtins.input", return_value="1"), \
              patch("builtins.print"):
             _model_flow_named_custom({}, provider_info)
@@ -243,7 +243,7 @@ class TestCustomProviderModelSwitch:
     def test_api_mode_cleared_when_not_specified(self, config_home):
         """When custom_providers entry has no api_mode, stale api_mode is removed."""
         import yaml
-        from hermes_cli.main import _model_flow_named_custom
+        from agentic_os_cli.main import _model_flow_named_custom
 
         # Pre-seed a stale api_mode in config
         config_path = config_home / "config.yaml"
@@ -256,8 +256,8 @@ class TestCustomProviderModelSwitch:
             "model": "llama-3",
         }
 
-        with patch("hermes_cli.models.fetch_api_models", return_value=["llama-3"]), \
-             patch("hermes_cli.curses_ui.curses_radiolist", side_effect=ImportError), \
+        with patch("agentic_os_cli.models.fetch_api_models", return_value=["llama-3"]), \
+             patch("agentic_os_cli.curses_ui.curses_radiolist", side_effect=ImportError), \
              patch("builtins.input", return_value="1"), \
              patch("builtins.print"):
             _model_flow_named_custom({}, provider_info)
@@ -270,7 +270,7 @@ class TestCustomProviderModelSwitch:
     def test_env_template_api_key_is_preserved_in_model_config(self, config_home, monkeypatch):
         """Selecting an env-backed custom provider must not inline the secret."""
         import yaml
-        from hermes_cli.main import _model_flow_named_custom
+        from agentic_os_cli.main import _model_flow_named_custom
 
         config_path = config_home / "config.yaml"
         config_path.write_text(
@@ -293,8 +293,8 @@ class TestCustomProviderModelSwitch:
             "model": "qwen3.6-35b-fast",
         }
 
-        with patch("hermes_cli.models.fetch_api_models", return_value=["qwen3.6-35b-fast"]) as mock_fetch, \
-             patch("hermes_cli.curses_ui.curses_radiolist", side_effect=ImportError), \
+        with patch("agentic_os_cli.models.fetch_api_models", return_value=["qwen3.6-35b-fast"]) as mock_fetch, \
+             patch("agentic_os_cli.curses_ui.curses_radiolist", side_effect=ImportError), \
              patch("builtins.input", return_value="1"), \
              patch("builtins.print"):
             _model_flow_named_custom({}, provider_info)
@@ -312,7 +312,7 @@ class TestCustomProviderModelSwitch:
     def test_key_env_custom_provider_persists_reference_not_secret(self, config_home, monkeypatch):
         """key_env custom providers should also avoid writing plaintext keys."""
         import yaml
-        from hermes_cli.main import _model_flow_named_custom
+        from agentic_os_cli.main import _model_flow_named_custom
 
         config_path = config_home / "config.yaml"
         config_path.write_text(
@@ -334,8 +334,8 @@ class TestCustomProviderModelSwitch:
             "model": "qwen3.6-35b-fast",
         }
 
-        with patch("hermes_cli.models.fetch_api_models", return_value=["qwen3.6-35b-fast"]), \
-             patch("hermes_cli.curses_ui.curses_radiolist", side_effect=ImportError), \
+        with patch("agentic_os_cli.models.fetch_api_models", return_value=["qwen3.6-35b-fast"]), \
+             patch("agentic_os_cli.curses_ui.curses_radiolist", side_effect=ImportError), \
              patch("builtins.input", return_value="1"), \
              patch("builtins.print"):
             _model_flow_named_custom({}, provider_info)
@@ -359,7 +359,7 @@ class TestCustomProviderModelSwitch:
         ``config.yaml``. This test drives the real picker-callsite code path.
         """
         import yaml
-        from hermes_cli.main import select_provider_and_model
+        from agentic_os_cli.main import select_provider_and_model
 
         config_path = config_home / "config.yaml"
         config_path.write_text(
@@ -389,11 +389,11 @@ class TestCustomProviderModelSwitch:
                 f"NeuralWatt entry missing from provider menu: {labels}"
             )
 
-        with patch("hermes_cli.main._prompt_provider_choice",
+        with patch("agentic_os_cli.main._prompt_provider_choice",
                    side_effect=_pick_neuralwatt), \
-             patch("hermes_cli.models.fetch_api_models",
+             patch("agentic_os_cli.models.fetch_api_models",
                    return_value=["qwen3.6-35b-fast"]) as mock_fetch, \
-             patch("hermes_cli.curses_ui.curses_radiolist", side_effect=ImportError), \
+             patch("agentic_os_cli.curses_ui.curses_radiolist", side_effect=ImportError), \
              patch("builtins.input", return_value="1"), \
              patch("builtins.print"):
             select_provider_and_model()
@@ -422,7 +422,7 @@ class TestCustomProviderModelSwitch:
         first entry. A config with Cerebras first and NeuralWatt active then
         showed Cerebras as current.
         """
-        from hermes_cli.main import select_provider_and_model
+        from agentic_os_cli.main import select_provider_and_model
 
         config_path = config_home / "config.yaml"
         config_path.write_text(
@@ -456,7 +456,7 @@ class TestCustomProviderModelSwitch:
             captured["default"] = default
             return len(labels) - 1  # Leave unchanged
 
-        with patch("hermes_cli.main._prompt_provider_choice",
+        with patch("agentic_os_cli.main._prompt_provider_choice",
                    side_effect=_capture_and_cancel), \
              patch("builtins.print"):
             select_provider_and_model()
@@ -477,7 +477,7 @@ class TestCustomProviderModelSwitch:
         """Selecting an env-backed custom provider should not expand its
         ``base_url`` template into ``model.base_url`` on disk."""
         import yaml
-        from hermes_cli.main import select_provider_and_model
+        from agentic_os_cli.main import select_provider_and_model
 
         config_path = config_home / "config.yaml"
         config_path.write_text(
@@ -502,11 +502,11 @@ class TestCustomProviderModelSwitch:
                 f"NeuralWatt entry missing from provider menu: {labels}"
             )
 
-        with patch("hermes_cli.main._prompt_provider_choice",
+        with patch("agentic_os_cli.main._prompt_provider_choice",
                    side_effect=_pick_neuralwatt), \
-             patch("hermes_cli.models.fetch_api_models",
+             patch("agentic_os_cli.models.fetch_api_models",
                    return_value=["qwen3.6-35b-fast"]) as mock_fetch, \
-             patch("hermes_cli.curses_ui.curses_radiolist", side_effect=ImportError), \
+             patch("agentic_os_cli.curses_ui.curses_radiolist", side_effect=ImportError), \
              patch("builtins.input", return_value="1"), \
              patch("builtins.print"):
             select_provider_and_model()
@@ -537,7 +537,7 @@ class TestCustomProviderModelSwitch:
         ``api_key`` belongs on disk.
         """
         import yaml
-        from hermes_cli.main import _model_flow_named_custom
+        from agentic_os_cli.main import _model_flow_named_custom
 
         config_path = config_home / "config.yaml"
         config_path.write_text(
@@ -567,10 +567,10 @@ class TestCustomProviderModelSwitch:
         }
 
         with patch(
-            "hermes_cli.models.fetch_api_models",
+            "agentic_os_cli.models.fetch_api_models",
             return_value=["claude-opus-4-7"],
         ) as mock_fetch, \
-             patch("hermes_cli.curses_ui.curses_radiolist", side_effect=ImportError), \
+             patch("agentic_os_cli.curses_ui.curses_radiolist", side_effect=ImportError), \
              patch("builtins.input", return_value="1"), \
              patch("builtins.print"):
             _model_flow_named_custom({}, provider_info)
@@ -603,7 +603,7 @@ class TestCustomProviderModelSwitch:
         template must keep it untouched. Only entries that never declared
         an ``api_key`` should skip the write."""
         import yaml
-        from hermes_cli.main import _model_flow_named_custom
+        from agentic_os_cli.main import _model_flow_named_custom
 
         config_path = config_home / "config.yaml"
         config_path.write_text(
@@ -632,10 +632,10 @@ class TestCustomProviderModelSwitch:
         }
 
         with patch(
-            "hermes_cli.models.fetch_api_models",
+            "agentic_os_cli.models.fetch_api_models",
             return_value=["claude-opus-4-7"],
         ), \
-             patch("hermes_cli.curses_ui.curses_radiolist", side_effect=ImportError), \
+             patch("agentic_os_cli.curses_ui.curses_radiolist", side_effect=ImportError), \
              patch("builtins.input", return_value="1"), \
              patch("builtins.print"):
             _model_flow_named_custom({}, provider_info)
@@ -657,7 +657,7 @@ class TestCustomProviderDiscoverModels:
     def test_discover_false_uses_configured_list_and_skips_probe(self, config_home):
         """discover_models: false + configured models → no live probe, the
         configured list is used verbatim."""
-        from hermes_cli.main import _model_flow_named_custom
+        from agentic_os_cli.main import _model_flow_named_custom
 
         provider_info = {
             "name": "Baidu Coding",
@@ -668,8 +668,8 @@ class TestCustomProviderDiscoverModels:
             "model": "kimi-k2.5",
         }
 
-        with patch("hermes_cli.models.fetch_api_models") as mock_fetch, \
-             patch("hermes_cli.curses_ui.curses_radiolist", side_effect=ImportError), \
+        with patch("agentic_os_cli.models.fetch_api_models") as mock_fetch, \
+             patch("agentic_os_cli.curses_ui.curses_radiolist", side_effect=ImportError), \
              patch("builtins.input", return_value="2"), \
              patch("builtins.print"):
             _model_flow_named_custom({}, provider_info)
@@ -680,7 +680,7 @@ class TestCustomProviderDiscoverModels:
     def test_discover_false_saves_choice_from_configured_list(self, config_home):
         """User picks the 2nd configured model; it persists, list-driven."""
         import yaml
-        from hermes_cli.main import _model_flow_named_custom
+        from agentic_os_cli.main import _model_flow_named_custom
 
         provider_info = {
             "name": "Baidu Coding",
@@ -691,8 +691,8 @@ class TestCustomProviderDiscoverModels:
             "model": "kimi-k2.5",
         }
 
-        with patch("hermes_cli.models.fetch_api_models") as mock_fetch, \
-             patch("hermes_cli.curses_ui.curses_radiolist", side_effect=ImportError), \
+        with patch("agentic_os_cli.models.fetch_api_models") as mock_fetch, \
+             patch("agentic_os_cli.curses_ui.curses_radiolist", side_effect=ImportError), \
              patch("builtins.input", return_value="2"), \
              patch("builtins.print"):
             _model_flow_named_custom({}, provider_info)
@@ -706,7 +706,7 @@ class TestCustomProviderDiscoverModels:
     def test_default_still_probes_when_discover_unset(self, config_home):
         """Default (discover_models unset → True) keeps live-probe behaviour
         even when a models: list is configured — Option B opt-out semantics."""
-        from hermes_cli.main import _model_flow_named_custom
+        from agentic_os_cli.main import _model_flow_named_custom
 
         provider_info = {
             "name": "My Gateway",
@@ -717,10 +717,10 @@ class TestCustomProviderDiscoverModels:
         }
 
         with patch(
-            "hermes_cli.models.fetch_api_models",
+            "agentic_os_cli.models.fetch_api_models",
             return_value=["live-a", "live-b", "live-c"],
         ) as mock_fetch, \
-             patch("hermes_cli.curses_ui.curses_radiolist", side_effect=ImportError), \
+             patch("agentic_os_cli.curses_ui.curses_radiolist", side_effect=ImportError), \
              patch("builtins.input", return_value="1"), \
              patch("builtins.print"):
             _model_flow_named_custom({}, provider_info)
@@ -736,7 +736,7 @@ class TestCustomProviderDiscoverModels:
         """When discovery is on but the probe returns nothing, fall back to the
         configured models: list instead of forcing manual entry."""
         import yaml
-        from hermes_cli.main import _model_flow_named_custom
+        from agentic_os_cli.main import _model_flow_named_custom
 
         provider_info = {
             "name": "My Gateway",
@@ -746,8 +746,8 @@ class TestCustomProviderDiscoverModels:
             "model": "fallback-a",
         }
 
-        with patch("hermes_cli.models.fetch_api_models", return_value=[]), \
-             patch("hermes_cli.curses_ui.curses_radiolist", side_effect=ImportError), \
+        with patch("agentic_os_cli.models.fetch_api_models", return_value=[]), \
+             patch("agentic_os_cli.curses_ui.curses_radiolist", side_effect=ImportError), \
              patch("builtins.input", return_value="2"), \
              patch("builtins.print"):
             _model_flow_named_custom({}, provider_info)
@@ -759,7 +759,7 @@ class TestCustomProviderDiscoverModels:
 
     def test_discover_false_string_is_normalised(self, config_home):
         """String 'false' (hand-edited configs) disables discovery too."""
-        from hermes_cli.main import _model_flow_named_custom
+        from agentic_os_cli.main import _model_flow_named_custom
 
         provider_info = {
             "name": "Baidu Coding",
@@ -770,8 +770,8 @@ class TestCustomProviderDiscoverModels:
             "model": "kimi-k2.5",
         }
 
-        with patch("hermes_cli.models.fetch_api_models") as mock_fetch, \
-             patch("hermes_cli.curses_ui.curses_radiolist", side_effect=ImportError), \
+        with patch("agentic_os_cli.models.fetch_api_models") as mock_fetch, \
+             patch("agentic_os_cli.curses_ui.curses_radiolist", side_effect=ImportError), \
              patch("builtins.input", return_value="1"), \
              patch("builtins.print"):
             _model_flow_named_custom({}, provider_info)

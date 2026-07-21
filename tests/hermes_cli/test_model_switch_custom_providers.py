@@ -5,10 +5,10 @@ shared slash-command pipeline (`/model` in CLI/gateway/Telegram) historically
 only looked at `providers:`.
 """
 
-import hermes_cli.providers as providers_mod
+import agentic_os_cli.providers as providers_mod
 import pytest
-from hermes_cli.model_switch import list_authenticated_providers, switch_model
-from hermes_cli.providers import resolve_provider_full
+from agentic_os_cli.model_switch import list_authenticated_providers, switch_model
+from agentic_os_cli.providers import resolve_provider_full
 
 
 _MOCK_VALIDATION = {
@@ -22,14 +22,14 @@ _MOCK_VALIDATION = {
 @pytest.fixture(autouse=True)
 def _disable_live_custom_provider_model_probe(monkeypatch):
     """Keep custom-provider picker fixtures independent of local model servers."""
-    monkeypatch.setattr("hermes_cli.models.fetch_api_models", lambda *_a, **_kw: None)
+    monkeypatch.setattr("agentic_os_cli.models.fetch_api_models", lambda *_a, **_kw: None)
 
 
 def test_list_authenticated_providers_includes_custom_providers(monkeypatch):
     """No-args /model menus should include saved custom_providers entries."""
     monkeypatch.setattr("agent.models_dev.fetch_models_dev", lambda: {})
     monkeypatch.setattr(providers_mod, "HERMES_OVERLAYS", {})
-    monkeypatch.setattr("hermes_cli.models.fetch_api_models", lambda *a, **k: [])
+    monkeypatch.setattr("agentic_os_cli.models.fetch_api_models", lambda *a, **k: [])
 
     providers = list_authenticated_providers(
         current_provider="openai-codex",
@@ -57,7 +57,7 @@ def test_list_authenticated_providers_can_skip_custom_provider_live_probe(monkey
     monkeypatch.setattr("agent.models_dev.fetch_models_dev", lambda: {})
     monkeypatch.setattr(providers_mod, "HERMES_OVERLAYS", {})
     fetch = lambda *a, **k: (_ for _ in ()).throw(AssertionError("unexpected probe"))
-    monkeypatch.setattr("hermes_cli.models.fetch_api_models", fetch)
+    monkeypatch.setattr("agentic_os_cli.models.fetch_api_models", fetch)
 
     providers = list_authenticated_providers(
         user_providers={},
@@ -89,7 +89,7 @@ def test_list_authenticated_providers_can_probe_only_current_custom_provider(mon
             return ["active-a", "active-b"]
         raise AssertionError(f"unexpected probe for {api_url}")
 
-    monkeypatch.setattr("hermes_cli.models.fetch_api_models", fetch)
+    monkeypatch.setattr("agentic_os_cli.models.fetch_api_models", fetch)
 
     providers = list_authenticated_providers(
         current_provider="custom:active-proxy",
@@ -174,7 +174,7 @@ def test_list_authenticated_providers_can_probe_active_bare_custom_endpoint(monk
     monkeypatch.setattr("agent.models_dev.fetch_models_dev", lambda: {})
     monkeypatch.setattr(providers_mod, "HERMES_OVERLAYS", {})
     monkeypatch.setattr(
-        "hermes_cli.models.fetch_api_models",
+        "agentic_os_cli.models.fetch_api_models",
         lambda api_key, api_url, **kwargs: ["gpt-4o", "gpt-4o-mini"],
     )
 
@@ -195,9 +195,9 @@ def test_list_authenticated_providers_can_probe_active_bare_custom_endpoint(monk
 
 def test_switch_model_accepts_explicit_bare_custom_current_endpoint(monkeypatch):
     """Picker selections for bare custom endpoints should route to current base_url."""
-    monkeypatch.setattr("hermes_cli.models.validate_requested_model", lambda *a, **k: _MOCK_VALIDATION)
-    monkeypatch.setattr("hermes_cli.model_switch.get_model_info", lambda *a, **k: None)
-    monkeypatch.setattr("hermes_cli.model_switch.get_model_capabilities", lambda *a, **k: None)
+    monkeypatch.setattr("agentic_os_cli.models.validate_requested_model", lambda *a, **k: _MOCK_VALIDATION)
+    monkeypatch.setattr("agentic_os_cli.model_switch.get_model_info", lambda *a, **k: None)
+    monkeypatch.setattr("agentic_os_cli.model_switch.get_model_capabilities", lambda *a, **k: None)
 
     result = switch_model(
         raw_input="gpt-4o-mini",
@@ -247,16 +247,16 @@ def test_is_routing_aggregator_excludes_flat_namespace_resellers():
 def test_switch_model_accepts_explicit_named_custom_provider(monkeypatch):
     """Shared /model switch pipeline should accept --provider for custom_providers."""
     monkeypatch.setattr(
-        "hermes_cli.runtime_provider.resolve_runtime_provider",
+        "agentic_os_cli.runtime_provider.resolve_runtime_provider",
         lambda **kwargs: {
             "api_key": "no-key-required",
             "base_url": "http://127.0.0.1:4141/v1",
             "api_mode": "chat_completions",
         },
     )
-    monkeypatch.setattr("hermes_cli.models.validate_requested_model", lambda *a, **k: _MOCK_VALIDATION)
-    monkeypatch.setattr("hermes_cli.model_switch.get_model_info", lambda *a, **k: None)
-    monkeypatch.setattr("hermes_cli.model_switch.get_model_capabilities", lambda *a, **k: None)
+    monkeypatch.setattr("agentic_os_cli.models.validate_requested_model", lambda *a, **k: _MOCK_VALIDATION)
+    monkeypatch.setattr("agentic_os_cli.model_switch.get_model_info", lambda *a, **k: None)
+    monkeypatch.setattr("agentic_os_cli.model_switch.get_model_capabilities", lambda *a, **k: None)
 
     result = switch_model(
         raw_input="rotator-openrouter-coding",
@@ -289,7 +289,7 @@ def test_list_groups_same_name_custom_providers_into_one_row(monkeypatch):
     monkeypatch.setattr("agent.models_dev.fetch_models_dev", lambda: {})
     monkeypatch.setattr(providers_mod, "HERMES_OVERLAYS", {})
     fetch = lambda *a, **k: (_ for _ in ()).throw(AssertionError("unexpected probe"))
-    monkeypatch.setattr("hermes_cli.models.fetch_api_models", fetch)
+    monkeypatch.setattr("agentic_os_cli.models.fetch_api_models", fetch)
 
     providers = list_authenticated_providers(
         current_provider="openrouter",
@@ -321,7 +321,7 @@ def test_list_deduplicates_same_model_in_group(monkeypatch):
     duplicate entries in the models list."""
     monkeypatch.setattr("agent.models_dev.fetch_models_dev", lambda: {})
     monkeypatch.setattr(providers_mod, "HERMES_OVERLAYS", {})
-    monkeypatch.setattr("hermes_cli.models.fetch_api_models", lambda *a, **k: [])
+    monkeypatch.setattr("agentic_os_cli.models.fetch_api_models", lambda *a, **k: [])
 
     providers = list_authenticated_providers(
         current_provider="openrouter",
@@ -355,7 +355,7 @@ def test_custom_provider_no_key_singular_model_still_probes_live_models(monkeypa
         calls.append((api_key, base_url, kwargs))
         return ["llama3", "mistral", "qwen3-coder"]
 
-    monkeypatch.setattr("hermes_cli.models.fetch_api_models", fake_fetch_api_models)
+    monkeypatch.setattr("agentic_os_cli.models.fetch_api_models", fake_fetch_api_models)
 
     providers = list_authenticated_providers(
         current_provider="openai-codex",
@@ -386,7 +386,7 @@ def test_custom_provider_explicit_model_matching_default_skips_probe(monkeypatch
         calls.append((args, kwargs))
         return ["unexpected-live-model"]
 
-    monkeypatch.setattr("hermes_cli.models.fetch_api_models", fetch)
+    monkeypatch.setattr("agentic_os_cli.models.fetch_api_models", fetch)
 
     providers = list_authenticated_providers(
         current_provider="custom:local-ollama",
@@ -416,7 +416,7 @@ def test_custom_provider_group_explicit_duplicate_skips_probe(monkeypatch):
         calls.append((args, kwargs))
         return ["unexpected-live-model"]
 
-    monkeypatch.setattr("hermes_cli.models.fetch_api_models", fetch)
+    monkeypatch.setattr("agentic_os_cli.models.fetch_api_models", fetch)
 
     providers = list_authenticated_providers(
         current_provider="custom:local-ollama",
@@ -450,7 +450,7 @@ def test_custom_provider_current_only_probe_respects_explicit_catalog(monkeypatc
         calls.append((api_key, base_url, kwargs))
         return ["live-a", "live-b"]
 
-    monkeypatch.setattr("hermes_cli.models.fetch_api_models", fetch)
+    monkeypatch.setattr("agentic_os_cli.models.fetch_api_models", fetch)
 
     providers = list_authenticated_providers(
         current_provider="custom:active",
@@ -495,7 +495,7 @@ def test_custom_provider_current_explicit_catalog_skips_probe(monkeypatch):
         calls.append((args, kwargs))
         return ["unexpected-live-model"]
 
-    monkeypatch.setattr("hermes_cli.models.fetch_api_models", fetch)
+    monkeypatch.setattr("agentic_os_cli.models.fetch_api_models", fetch)
 
     providers = list_authenticated_providers(
         current_provider="custom:static",
@@ -529,7 +529,7 @@ def test_custom_provider_empty_explicit_list_allows_probe(monkeypatch):
         calls.append((api_key, base_url, kwargs))
         return ["live-a", "live-b"]
 
-    monkeypatch.setattr("hermes_cli.models.fetch_api_models", fetch)
+    monkeypatch.setattr("agentic_os_cli.models.fetch_api_models", fetch)
 
     providers = list_authenticated_providers(
         current_provider="custom:local",
@@ -879,7 +879,7 @@ def test_lmstudio_picker_probes_active_config_base_url(monkeypatch):
         captured["api_key"] = api_key
         return ["qwen/qwen3-coder-30b"]
 
-    monkeypatch.setattr("hermes_cli.models.fetch_lmstudio_models", _fake_fetch)
+    monkeypatch.setattr("agentic_os_cli.models.fetch_lmstudio_models", _fake_fetch)
 
     list_authenticated_providers(
         current_provider="lmstudio",
@@ -906,7 +906,7 @@ def test_lmstudio_picker_lm_base_url_env_wins_over_active_config(monkeypatch):
         captured["base_url"] = base_url
         return []
 
-    monkeypatch.setattr("hermes_cli.models.fetch_lmstudio_models", _fake_fetch)
+    monkeypatch.setattr("agentic_os_cli.models.fetch_lmstudio_models", _fake_fetch)
 
     list_authenticated_providers(
         current_provider="lmstudio",
@@ -932,7 +932,7 @@ def test_lmstudio_picker_skips_probe_when_not_configured(monkeypatch):
         captured["base_url"] = base_url
         return []
 
-    monkeypatch.setattr("hermes_cli.models.fetch_lmstudio_models", _fake_fetch)
+    monkeypatch.setattr("agentic_os_cli.models.fetch_lmstudio_models", _fake_fetch)
 
     list_authenticated_providers(
         current_provider="openrouter",
@@ -952,7 +952,7 @@ def test_custom_providers_uses_live_models_for_multi_model_endpoint(monkeypatch)
     models from the endpoint.
     """
     monkeypatch.setattr("agent.models_dev.fetch_models_dev", lambda: {})
-    monkeypatch.setattr("hermes_cli.providers.HERMES_OVERLAYS", {})
+    monkeypatch.setattr("agentic_os_cli.providers.HERMES_OVERLAYS", {})
 
     calls = []
 
@@ -960,7 +960,7 @@ def test_custom_providers_uses_live_models_for_multi_model_endpoint(monkeypatch)
         calls.append((api_key, base_url, kwargs))
         return ["gateway-model-a", "gateway-model-b", "gateway-model-c"]
 
-    monkeypatch.setattr("hermes_cli.models.fetch_api_models", fake_fetch_api_models)
+    monkeypatch.setattr("agentic_os_cli.models.fetch_api_models", fake_fetch_api_models)
 
     custom_providers = [
         {
@@ -1006,7 +1006,7 @@ def test_custom_providers_uses_live_models_for_multi_model_endpoint(monkeypatch)
 def test_custom_provider_live_model_probe_uses_extra_headers(monkeypatch):
     """custom_providers[].extra_headers must apply to live /models probes."""
     monkeypatch.setattr("agent.models_dev.fetch_models_dev", lambda: {})
-    monkeypatch.setattr("hermes_cli.providers.HERMES_OVERLAYS", {})
+    monkeypatch.setattr("agentic_os_cli.providers.HERMES_OVERLAYS", {})
 
     calls = []
 
@@ -1014,7 +1014,7 @@ def test_custom_provider_live_model_probe_uses_extra_headers(monkeypatch):
         calls.append((api_key, base_url, kwargs))
         return ["gateway-model"]
 
-    monkeypatch.setattr("hermes_cli.models.fetch_api_models", fake_fetch_api_models)
+    monkeypatch.setattr("agentic_os_cli.models.fetch_api_models", fake_fetch_api_models)
 
     providers = list_authenticated_providers(
         current_provider="openrouter",
@@ -1064,7 +1064,7 @@ def test_same_endpoint_different_extra_headers_not_collapsed(monkeypatch):
     header-authenticated endpoint (e.g. per-tenant routing behind one proxy)
     and must probe /models with its own headers."""
     monkeypatch.setattr("agent.models_dev.fetch_models_dev", lambda: {})
-    monkeypatch.setattr("hermes_cli.providers.HERMES_OVERLAYS", {})
+    monkeypatch.setattr("agentic_os_cli.providers.HERMES_OVERLAYS", {})
 
     calls = []
 
@@ -1075,7 +1075,7 @@ def test_same_endpoint_different_extra_headers_not_collapsed(monkeypatch):
         tenant = (kwargs.get("headers") or {}).get("X-Tenant", "none")
         return [f"model-{tenant}"]
 
-    monkeypatch.setattr("hermes_cli.models.fetch_api_models", fake_fetch_api_models)
+    monkeypatch.setattr("agentic_os_cli.models.fetch_api_models", fake_fetch_api_models)
 
     providers = list_authenticated_providers(
         current_provider="openrouter",
@@ -1122,7 +1122,7 @@ def test_custom_providers_discover_models_false_keeps_explicit_subset(monkeypatc
     serve a configured subset.
     """
     monkeypatch.setattr("agent.models_dev.fetch_models_dev", lambda: {})
-    monkeypatch.setattr("hermes_cli.providers.HERMES_OVERLAYS", {})
+    monkeypatch.setattr("agentic_os_cli.providers.HERMES_OVERLAYS", {})
 
     calls = []
 
@@ -1130,7 +1130,7 @@ def test_custom_providers_discover_models_false_keeps_explicit_subset(monkeypatc
         calls.append((api_key, base_url, kwargs))
         return ["gateway-model-a", "gateway-model-b", "gateway-model-c"]
 
-    monkeypatch.setattr("hermes_cli.models.fetch_api_models", fake_fetch_api_models)
+    monkeypatch.setattr("agentic_os_cli.models.fetch_api_models", fake_fetch_api_models)
 
     custom_providers = [
         {
@@ -1178,7 +1178,7 @@ def test_custom_providers_discover_models_false_string_is_normalised(monkeypatch
     must be treated as a disable, same as the boolean ``False`` and section 3.
     """
     monkeypatch.setattr("agent.models_dev.fetch_models_dev", lambda: {})
-    monkeypatch.setattr("hermes_cli.providers.HERMES_OVERLAYS", {})
+    monkeypatch.setattr("agentic_os_cli.providers.HERMES_OVERLAYS", {})
 
     calls = []
 
@@ -1186,7 +1186,7 @@ def test_custom_providers_discover_models_false_string_is_normalised(monkeypatch
         calls.append((api_key, base_url, kwargs))
         return ["live-a", "live-b"]
 
-    monkeypatch.setattr("hermes_cli.models.fetch_api_models", fake_fetch_api_models)
+    monkeypatch.setattr("agentic_os_cli.models.fetch_api_models", fake_fetch_api_models)
 
     custom_providers = [
         {
@@ -1220,7 +1220,7 @@ def test_custom_providers_discover_models_false_list_of_dict_ids(monkeypatch):
     """List-of-dicts ``models: [{id: ...}]`` must be preserved as configured
     model IDs when discovery is disabled."""
     monkeypatch.setattr("agent.models_dev.fetch_models_dev", lambda: {})
-    monkeypatch.setattr("hermes_cli.providers.HERMES_OVERLAYS", {})
+    monkeypatch.setattr("agentic_os_cli.providers.HERMES_OVERLAYS", {})
 
     calls = []
 
@@ -1228,7 +1228,7 @@ def test_custom_providers_discover_models_false_list_of_dict_ids(monkeypatch):
         calls.append((api_key, base_url, kwargs))
         return ["live-a", "live-b"]
 
-    monkeypatch.setattr("hermes_cli.models.fetch_api_models", fake_fetch_api_models)
+    monkeypatch.setattr("agentic_os_cli.models.fetch_api_models", fake_fetch_api_models)
 
     custom_providers = [
         {
@@ -1264,7 +1264,7 @@ def test_custom_providers_discover_models_false_list_of_dict_ids(monkeypatch):
 
 def test_list_of_dict_models_prefers_id_over_label(monkeypatch):
     monkeypatch.setattr("agent.models_dev.fetch_models_dev", lambda: {})
-    monkeypatch.setattr("hermes_cli.providers.HERMES_OVERLAYS", {})
+    monkeypatch.setattr("agentic_os_cli.providers.HERMES_OVERLAYS", {})
 
     providers = list_authenticated_providers(
         current_provider="openrouter",
@@ -1295,7 +1295,7 @@ def test_resolve_custom_provider_passes_key_env():
     Regression: previously api_key_env_vars was always (), silently dropping
     the configured env var and causing 401s on every request.
     """
-    from hermes_cli.providers import resolve_custom_provider
+    from agentic_os_cli.providers import resolve_custom_provider
 
     resolved = resolve_custom_provider(
         "custom:token-plan",
@@ -1321,7 +1321,7 @@ def test_resolve_custom_provider_bare_custom_self_heal_passes_key_env():
     first valid entry; that fallback previously hardcoded api_key_env_vars=(),
     dropping the env var just like the named-match path did.
     """
-    from hermes_cli.providers import resolve_custom_provider
+    from agentic_os_cli.providers import resolve_custom_provider
 
     resolved = resolve_custom_provider(
         "custom",
@@ -1346,16 +1346,16 @@ def test_discovered_models_auto_saved_to_cache(monkeypatch):
     must be called with the provider's base_url and the discovered model list.
     """
     monkeypatch.setattr("agent.models_dev.fetch_models_dev", lambda: {})
-    monkeypatch.setattr("hermes_cli.providers.HERMES_OVERLAYS", {})
+    monkeypatch.setattr("agentic_os_cli.providers.HERMES_OVERLAYS", {})
 
     save_calls = []
 
     def fake_fetch_api_models(api_key, base_url, **kwargs):
         return ["discovered-a", "discovered-b", "discovered-c"]
 
-    monkeypatch.setattr("hermes_cli.models.fetch_api_models", fake_fetch_api_models)
+    monkeypatch.setattr("agentic_os_cli.models.fetch_api_models", fake_fetch_api_models)
     monkeypatch.setattr(
-        "hermes_cli.model_switch._save_discovered_models_to_config",
+        "agentic_os_cli.model_switch._save_discovered_models_to_config",
         lambda api_url, model_ids: save_calls.append((api_url, model_ids)),
     )
 
@@ -1395,16 +1395,16 @@ def test_discovered_models_auto_saved_to_cache(monkeypatch):
 def test_discovered_models_not_saved_on_empty_probe(monkeypatch):
     """When a probe returns an empty list, no auto-save must happen (#65652)."""
     monkeypatch.setattr("agent.models_dev.fetch_models_dev", lambda: {})
-    monkeypatch.setattr("hermes_cli.providers.HERMES_OVERLAYS", {})
+    monkeypatch.setattr("agentic_os_cli.providers.HERMES_OVERLAYS", {})
 
     save_calls = []
 
     def fake_fetch_api_models(api_key, base_url, **kwargs):
         return []
 
-    monkeypatch.setattr("hermes_cli.models.fetch_api_models", fake_fetch_api_models)
+    monkeypatch.setattr("agentic_os_cli.models.fetch_api_models", fake_fetch_api_models)
     monkeypatch.setattr(
-        "hermes_cli.model_switch._save_discovered_models_to_config",
+        "agentic_os_cli.model_switch._save_discovered_models_to_config",
         lambda api_url, model_ids: save_calls.append((api_url, model_ids)),
     )
 
@@ -1432,16 +1432,16 @@ def test_discovered_models_not_saved_on_empty_probe(monkeypatch):
 def test_save_discovered_models_skips_unchanged(monkeypatch):
     """``_save_discovered_models_to_config`` must not write config when the
     model list hasn't changed (#65652)."""
-    from hermes_cli.model_switch import _save_discovered_models_to_config
+    from agentic_os_cli.model_switch import _save_discovered_models_to_config
 
     save_calls = []
 
     def fake_save(config):
         save_calls.append(dict(config))
 
-    monkeypatch.setattr("hermes_cli.config.save_config", fake_save)
+    monkeypatch.setattr("agentic_os_cli.config.save_config", fake_save)
     monkeypatch.setattr(
-        "hermes_cli.config.load_config",
+        "agentic_os_cli.config.load_config",
         lambda: {
             "custom_providers": [
                 {
@@ -1473,7 +1473,7 @@ def test_save_discovered_models_skips_unchanged(monkeypatch):
 def test_save_discovered_models_noop_on_empty_args(monkeypatch):
     """``_save_discovered_models_to_config`` is a no-op when api_url or
     model_ids are blank (#65652)."""
-    from hermes_cli.model_switch import _save_discovered_models_to_config
+    from agentic_os_cli.model_switch import _save_discovered_models_to_config
 
     load_calls = 0
 
@@ -1482,7 +1482,7 @@ def test_save_discovered_models_noop_on_empty_args(monkeypatch):
         load_calls += 1
         return {"custom_providers": []}
 
-    monkeypatch.setattr("hermes_cli.config.load_config", fake_load)
+    monkeypatch.setattr("agentic_os_cli.config.load_config", fake_load)
 
     _save_discovered_models_to_config("", ["a"])
     _save_discovered_models_to_config("https://x.com", [])
@@ -1495,16 +1495,16 @@ def test_save_discovered_models_preserves_dict_form(monkeypatch):
     """``_save_discovered_models_to_config`` must not replace a dict-form
     ``models`` mapping (per-model metadata like ``context_length``) with
     a flat list of strings (#67841)."""
-    from hermes_cli.model_switch import _save_discovered_models_to_config
+    from agentic_os_cli.model_switch import _save_discovered_models_to_config
 
     save_calls = []
 
     def fake_save(config):
         save_calls.append(dict(config))
 
-    monkeypatch.setattr("hermes_cli.config.save_config", fake_save)
+    monkeypatch.setattr("agentic_os_cli.config.save_config", fake_save)
     monkeypatch.setattr(
-        "hermes_cli.config.load_config",
+        "agentic_os_cli.config.load_config",
         lambda: {
             "custom_providers": [
                 {
@@ -1532,16 +1532,16 @@ def test_save_discovered_models_preserves_list_of_dicts_form(monkeypatch):
     """``_save_discovered_models_to_config`` must not replace a list-of-dicts
     ``models`` form (per-model metadata via ``[{id: ...}]``) with a flat list
     of strings (#67841 sibling site)."""
-    from hermes_cli.model_switch import _save_discovered_models_to_config
+    from agentic_os_cli.model_switch import _save_discovered_models_to_config
 
     save_calls = []
 
     def fake_save(config):
         save_calls.append(dict(config))
 
-    monkeypatch.setattr("hermes_cli.config.save_config", fake_save)
+    monkeypatch.setattr("agentic_os_cli.config.save_config", fake_save)
     monkeypatch.setattr(
-        "hermes_cli.config.load_config",
+        "agentic_os_cli.config.load_config",
         lambda: {
             "custom_providers": [
                 {
@@ -1575,7 +1575,7 @@ def test_shared_url_different_display_names_are_separate_rows(monkeypatch):
     monkeypatch.setattr(providers_mod, "HERMES_OVERLAYS", {})
     # Stub live discovery so the test is deterministic regardless of network.
     monkeypatch.setattr(
-        "hermes_cli.models.fetch_api_models",
+        "agentic_os_cli.models.fetch_api_models",
         lambda api_key, base_url, **kwargs: [],
     )
 
@@ -1615,7 +1615,7 @@ def test_shared_url_per_model_suffix_still_collapses(monkeypatch):
     # Stub live discovery so a locally-running Ollama cannot override the
     # static configured models and make the assertion flaky.
     monkeypatch.setattr(
-        "hermes_cli.models.fetch_api_models",
+        "agentic_os_cli.models.fetch_api_models",
         lambda api_key, base_url, **kwargs: [],
     )
 

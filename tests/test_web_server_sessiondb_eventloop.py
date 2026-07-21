@@ -3,7 +3,7 @@ import asyncio
 import threading
 from pathlib import Path
 
-from hermes_cli import web_server
+from agentic_os_cli import web_server
 
 
 TARGET_HANDLERS = {

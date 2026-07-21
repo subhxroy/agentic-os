@@ -257,7 +257,7 @@ def run_doctor(
             pass
     if driver_cmd is None:
         try:
-            from hermes_cli.tools_config import _cua_driver_cmd
+            from agentic_os_cli.tools_config import _cua_driver_cmd
             driver_cmd = _cua_driver_cmd()
         except Exception:
             driver_cmd = os.environ.get("HERMES_CUA_DRIVER_CMD") or "cua-driver"

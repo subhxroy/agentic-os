@@ -62,7 +62,7 @@ def _arm(monkeypatch, *, url="wss://connector.example/relay", token="nas-token")
     monkeypatches resolve_nous_access_token to raise instead.
     """
     monkeypatch.setattr(relay, "relay_url", lambda: url)
-    monkeypatch.setattr("hermes_cli.auth.resolve_nous_access_token", lambda: token)
+    monkeypatch.setattr("agentic_os_cli.auth.resolve_nous_access_token", lambda: token)
 
 
 # ─────────────────────────── config readers ───────────────────────────
@@ -117,7 +117,7 @@ def test_provisions_on_nas_host_that_is_NOT_is_managed(monkeypatch):
     the old is_managed() gate silently no-oped exactly this case in staging.
     """
     # Force is_managed() False to model a real hosted agent; it must be irrelevant.
-    monkeypatch.setattr("hermes_cli.config.is_managed", lambda: False)
+    monkeypatch.setattr("agentic_os_cli.config.is_managed", lambda: False)
     _arm(monkeypatch)
     captured: dict = {}
     monkeypatch.setattr(relay, "_post_provision", _stub_post(captured))
@@ -360,7 +360,7 @@ def test_no_nas_token_is_non_fatal(monkeypatch):
     def _boom():
         raise RuntimeError("no token")
 
-    monkeypatch.setattr("hermes_cli.auth.resolve_nous_access_token", _boom)
+    monkeypatch.setattr("agentic_os_cli.auth.resolve_nous_access_token", _boom)
     # Must not raise; returns False; no creds set.
     assert relay.self_provision_relay() is False
     assert relay.relay_connection_auth() == (None, None)

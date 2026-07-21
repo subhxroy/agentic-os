@@ -12,15 +12,15 @@ import argparse
 
 import pytest
 
-from hermes_cli.subcommands.acp import build_acp_parser
-from hermes_cli.subcommands.claw import build_claw_parser
-from hermes_cli.subcommands.insights import build_insights_parser
-from hermes_cli.subcommands.mcp import build_mcp_parser
-from hermes_cli.subcommands.memory import build_memory_parser
-from hermes_cli.subcommands.pairing import build_pairing_parser
-from hermes_cli.subcommands.plugins import build_plugins_parser
-from hermes_cli.subcommands.skills import build_skills_parser
-from hermes_cli.subcommands.tools import build_tools_parser
+from agentic_os_cli.subcommands.acp import build_acp_parser
+from agentic_os_cli.subcommands.claw import build_claw_parser
+from agentic_os_cli.subcommands.insights import build_insights_parser
+from agentic_os_cli.subcommands.mcp import build_mcp_parser
+from agentic_os_cli.subcommands.memory import build_memory_parser
+from agentic_os_cli.subcommands.pairing import build_pairing_parser
+from agentic_os_cli.subcommands.plugins import build_plugins_parser
+from agentic_os_cli.subcommands.skills import build_skills_parser
+from agentic_os_cli.subcommands.tools import build_tools_parser
 
 
 def _h(name):

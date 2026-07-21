@@ -17,8 +17,8 @@ from pathlib import Path
 
 import pytest
 
-from hermes_cli import kanban_db as kb
-from hermes_cli import goals
+from agentic_os_cli import kanban_db as kb
+from agentic_os_cli import goals
 
 
 @pytest.fixture
@@ -315,7 +315,7 @@ class TestCLIJudgeGate:
         import argparse
         import types
         from unittest.mock import MagicMock
-        from hermes_cli.kanban import _cmd_complete
+        from agentic_os_cli.kanban import _cmd_complete
 
         fake_task = types.SimpleNamespace(
             goal_mode=goal_mode,
@@ -336,10 +336,10 @@ class TestCLIJudgeGate:
             complete_calls.append(tid)
             return complete_ok
 
-        monkeypatch.setattr("hermes_cli.kanban.kb.get_task", lambda conn, tid: fake_task)
-        monkeypatch.setattr("hermes_cli.kanban.kb.complete_task", fake_complete_task)
-        monkeypatch.setattr("hermes_cli.kanban.kb.connect_closing", fake_connect_closing)
-        monkeypatch.setattr("hermes_cli.kanban._worker_run_id_for", lambda _: None)
+        monkeypatch.setattr("agentic_os_cli.kanban.kb.get_task", lambda conn, tid: fake_task)
+        monkeypatch.setattr("agentic_os_cli.kanban.kb.complete_task", fake_complete_task)
+        monkeypatch.setattr("agentic_os_cli.kanban.kb.connect_closing", fake_connect_closing)
+        monkeypatch.setattr("agentic_os_cli.kanban._worker_run_id_for", lambda _: None)
 
         _aux_client = (object(), "judge-model") if judge_available else (None, None)
         monkeypatch.setattr(
@@ -349,7 +349,7 @@ class TestCLIJudgeGate:
         # Match the real judge_goal contract:
         # (verdict, reason, parse_failed, wait_directive, transport_failed)
         monkeypatch.setattr(
-            "hermes_cli.goals.judge_goal",
+            "agentic_os_cli.goals.judge_goal",
             lambda **kw: (verdict, reason, False, None, False),
         )
 

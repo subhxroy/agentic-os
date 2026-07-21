@@ -719,7 +719,7 @@ class GoogleChatAdapter(BasePlatformAdapter):
         # made the in-memory version of this heuristic flaky for
         # multi-restart sessions).
         try:
-            from hermes_constants import get_hermes_home as _get_hermes_home
+            from agentic_os_constants import get_hermes_home as _get_hermes_home
             _hermes_home = _get_hermes_home()
         except (ModuleNotFoundError, ImportError):
             _hermes_home = _Path.home() / ".hermes"
@@ -3423,20 +3423,20 @@ def _env_enablement() -> Optional[Dict[str, Any]]:
 def interactive_setup() -> None:
     """Walk the user through Google Chat configuration via ``hermes setup``.
 
-    The setup wizard at ``hermes_cli/gateway.py`` calls this for plugin
+    The setup wizard at ``agentic_os_cli/gateway.py`` calls this for plugin
     platforms instead of using the in-tree ``_PLATFORMS`` data block. The
     flow mirrors the in-tree built-ins: print the GCP setup instructions,
     prompt for env vars, persist them to ``~/.hermes/.env`` so the next
     gateway restart picks them up.
     """
-    from hermes_cli.cli_output import (
+    from agentic_os_cli.cli_output import (
         print_info,
         print_success,
         print_warning,
         prompt,
         prompt_yes_no,
     )
-    from hermes_cli.config import get_env_value, save_env_value
+    from agentic_os_cli.config import get_env_value, save_env_value
 
     existing_sub = get_env_value("GOOGLE_CHAT_SUBSCRIPTION_NAME")
     if existing_sub:

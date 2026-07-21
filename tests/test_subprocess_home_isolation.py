@@ -14,7 +14,7 @@ import os
 import threading
 from pathlib import Path
 
-import hermes_constants
+import agentic_os_constants
 
 
 
@@ -23,21 +23,21 @@ import hermes_constants
 # ---------------------------------------------------------------------------
 
 class TestGetSubprocessHome:
-    """Unit tests for hermes_constants.get_subprocess_home()."""
+    """Unit tests for agentic_os_constants.get_subprocess_home()."""
 
     def _host_mode(self, monkeypatch):
-        monkeypatch.setattr(hermes_constants, "is_container", lambda: False)
+        monkeypatch.setattr(agentic_os_constants, "is_container", lambda: False)
         monkeypatch.delenv("TERMINAL_HOME_MODE", raising=False)
         monkeypatch.delenv("HERMES_REAL_HOME", raising=False)
 
     def _container_mode(self, monkeypatch):
-        monkeypatch.setattr(hermes_constants, "is_container", lambda: True)
+        monkeypatch.setattr(agentic_os_constants, "is_container", lambda: True)
         monkeypatch.delenv("TERMINAL_HOME_MODE", raising=False)
         monkeypatch.delenv("HERMES_REAL_HOME", raising=False)
 
     def test_returns_none_when_hermes_home_unset(self, monkeypatch):
         monkeypatch.delenv("HERMES_HOME", raising=False)
-        from hermes_constants import get_subprocess_home
+        from agentic_os_constants import get_subprocess_home
         assert get_subprocess_home() is None
 
     def test_returns_none_when_home_dir_missing(self, tmp_path, monkeypatch):
@@ -45,7 +45,7 @@ class TestGetSubprocessHome:
         hermes_home.mkdir()
         monkeypatch.setenv("HERMES_HOME", str(hermes_home))
         # No home/ subdirectory created
-        from hermes_constants import get_subprocess_home
+        from agentic_os_constants import get_subprocess_home
         assert get_subprocess_home() is None
 
     def test_host_auto_keeps_real_home_when_profile_home_exists(self, tmp_path, monkeypatch):
@@ -57,7 +57,7 @@ class TestGetSubprocessHome:
         profile_home.mkdir(parents=True)
         monkeypatch.setenv("HOME", str(real_home))
         monkeypatch.setenv("HERMES_HOME", str(hermes_home))
-        from hermes_constants import get_subprocess_home
+        from agentic_os_constants import get_subprocess_home
         assert get_subprocess_home() is None
 
     def test_container_auto_uses_profile_home_when_home_dir_exists(self, tmp_path, monkeypatch):
@@ -66,7 +66,7 @@ class TestGetSubprocessHome:
         profile_home = hermes_home / "home"
         profile_home.mkdir(parents=True)
         monkeypatch.setenv("HERMES_HOME", str(hermes_home))
-        from hermes_constants import get_subprocess_home
+        from agentic_os_constants import get_subprocess_home
         assert get_subprocess_home() == str(profile_home)
 
     def test_returns_profile_specific_path(self, tmp_path, monkeypatch):
@@ -78,7 +78,7 @@ class TestGetSubprocessHome:
         profile_home.mkdir()
         monkeypatch.setenv("TERMINAL_HOME_MODE", "profile")
         monkeypatch.setenv("HERMES_HOME", str(profile_dir))
-        from hermes_constants import get_subprocess_home
+        from agentic_os_constants import get_subprocess_home
         assert get_subprocess_home() == str(profile_home)
 
     def test_real_mode_repairs_parent_home_already_pointing_at_profile(self, tmp_path, monkeypatch):
@@ -93,7 +93,7 @@ class TestGetSubprocessHome:
         monkeypatch.setenv("HOME", str(profile_home))
         monkeypatch.setenv("HERMES_REAL_HOME", str(real_home))
 
-        from hermes_constants import get_subprocess_home, get_real_home
+        from agentic_os_constants import get_subprocess_home, get_real_home
 
         assert get_real_home() == str(real_home)
         assert get_subprocess_home() == str(real_home)
@@ -106,7 +106,7 @@ class TestGetSubprocessHome:
         monkeypatch.setenv("HERMES_HOME", str(profile_dir))
         monkeypatch.setenv("HOME", str(profile_home))
 
-        from hermes_constants import get_real_home
+        from agentic_os_constants import get_real_home
 
         assert get_real_home() != str(profile_home)
 
@@ -118,7 +118,7 @@ class TestGetSubprocessHome:
             p.mkdir(parents=True)
             (p / "home").mkdir()
 
-        from hermes_constants import get_subprocess_home
+        from agentic_os_constants import get_subprocess_home
 
         monkeypatch.setenv("HERMES_HOME", str(base / "alpha"))
         home_a = get_subprocess_home()
@@ -139,7 +139,7 @@ class TestGetSubprocessHome:
         profile.mkdir()
         monkeypatch.setenv("HERMES_HOME", str(root))
 
-        from hermes_constants import (
+        from agentic_os_constants import (
             get_hermes_home,
             reset_hermes_home_override,
             set_hermes_home_override,
@@ -184,7 +184,7 @@ class TestMakeRunEnvHomeInjection:
         (hermes_home / "home").mkdir()
         real_home = tmp_path / "real-home"
         real_home.mkdir()
-        monkeypatch.setattr(hermes_constants, "is_container", lambda: False)
+        monkeypatch.setattr(agentic_os_constants, "is_container", lambda: False)
         monkeypatch.setenv("HERMES_HOME", str(hermes_home))
         monkeypatch.setenv("HOME", str(real_home))
         monkeypatch.setenv("PATH", "/usr/bin:/bin")
@@ -201,7 +201,7 @@ class TestMakeRunEnvHomeInjection:
         (hermes_home / "home").mkdir()
         real_home = tmp_path / "real-home"
         real_home.mkdir()
-        monkeypatch.setattr(hermes_constants, "is_container", lambda: False)
+        monkeypatch.setattr(agentic_os_constants, "is_container", lambda: False)
         monkeypatch.setenv("TERMINAL_HOME_MODE", "profile")
         monkeypatch.setenv("HERMES_HOME", str(hermes_home))
         monkeypatch.setenv("HOME", str(real_home))
@@ -237,7 +237,7 @@ class TestMakeRunEnvHomeInjection:
         assert result["HOME"] == "/home/user"
 
     def test_context_override_bridges_to_subprocess_env(self, tmp_path, monkeypatch):
-        monkeypatch.setattr(hermes_constants, "is_container", lambda: True)
+        monkeypatch.setattr(agentic_os_constants, "is_container", lambda: True)
         root = tmp_path / "root"
         profile = tmp_path / "profile"
         root.mkdir()
@@ -247,7 +247,7 @@ class TestMakeRunEnvHomeInjection:
         monkeypatch.setenv("HOME", "/root")
         monkeypatch.setenv("PATH", "/usr/bin:/bin")
 
-        from hermes_constants import reset_hermes_home_override, set_hermes_home_override
+        from agentic_os_constants import reset_hermes_home_override, set_hermes_home_override
         from tools.environments.local import _make_run_env
 
         token = set_hermes_home_override(profile)
@@ -273,7 +273,7 @@ class TestSanitizeSubprocessEnvHomeInjection:
         (hermes_home / "home").mkdir()
         real_home = tmp_path / "real-home"
         real_home.mkdir()
-        monkeypatch.setattr(hermes_constants, "is_container", lambda: False)
+        monkeypatch.setattr(agentic_os_constants, "is_container", lambda: False)
         monkeypatch.setenv("HERMES_HOME", str(hermes_home))
 
         base_env = {"HOME": str(real_home), "PATH": "/usr/bin", "USER": "root"}
@@ -289,7 +289,7 @@ class TestSanitizeSubprocessEnvHomeInjection:
         (hermes_home / "home").mkdir()
         real_home = tmp_path / "real-home"
         real_home.mkdir()
-        monkeypatch.setattr(hermes_constants, "is_container", lambda: False)
+        monkeypatch.setattr(agentic_os_constants, "is_container", lambda: False)
         monkeypatch.setenv("TERMINAL_HOME_MODE", "profile")
         monkeypatch.setenv("HERMES_HOME", str(hermes_home))
 
@@ -312,7 +312,7 @@ class TestSanitizeSubprocessEnvHomeInjection:
         assert result["HOME"] == "/root"
 
     def test_context_override_bridges_to_background_env(self, tmp_path, monkeypatch):
-        monkeypatch.setattr(hermes_constants, "is_container", lambda: True)
+        monkeypatch.setattr(agentic_os_constants, "is_container", lambda: True)
         root = tmp_path / "root"
         profile = tmp_path / "profile"
         root.mkdir()
@@ -321,7 +321,7 @@ class TestSanitizeSubprocessEnvHomeInjection:
         monkeypatch.setenv("HERMES_HOME", str(root))
 
         base_env = {"HOME": "/root", "PATH": "/usr/bin"}
-        from hermes_constants import reset_hermes_home_override, set_hermes_home_override
+        from agentic_os_constants import reset_hermes_home_override, set_hermes_home_override
         from tools.environments.local import _sanitize_subprocess_env
 
         token = set_hermes_home_override(profile)
@@ -342,7 +342,7 @@ class TestProfileBootstrap:
     """Verify new profiles get a home/ subdirectory."""
 
     def test_profile_dirs_includes_home(self):
-        from hermes_cli.profiles import _PROFILE_DIRS
+        from agentic_os_cli.profiles import _PROFILE_DIRS
         assert "home" in _PROFILE_DIRS
 
     def test_create_profile_bootstraps_home_dir(self, tmp_path, monkeypatch):
@@ -352,7 +352,7 @@ class TestProfileBootstrap:
         monkeypatch.setattr(Path, "home", lambda: tmp_path)
         monkeypatch.setenv("HERMES_HOME", str(home))
 
-        from hermes_cli.profiles import create_profile
+        from agentic_os_cli.profiles import create_profile
         profile_dir = create_profile("testbot", no_alias=True)
         assert (profile_dir / "home").is_dir()
 
@@ -375,7 +375,7 @@ class TestPythonProcessUnchanged:
         original_home = os.environ.get("HOME")
         original_path_home = str(Path.home())
 
-        from hermes_constants import get_subprocess_home
+        from agentic_os_constants import get_subprocess_home
         sub_home = get_subprocess_home()
 
         # Resolving subprocess HOME must not mutate the Python process env.

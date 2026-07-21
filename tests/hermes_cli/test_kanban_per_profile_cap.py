@@ -22,9 +22,9 @@ def isolated_kanban_home_with_profiles(monkeypatch):
         os.makedirs(os.path.join(test_home, "profiles", prof), exist_ok=True)
     monkeypatch.setenv("HERMES_HOME", test_home)
     for mod in list(sys.modules.keys()):
-        if mod.startswith("hermes_cli") or mod.startswith("hermes_state") or mod == "hermes_constants":
+        if mod.startswith("agentic_os_cli") or mod.startswith("agentic_os_state") or mod == "agentic_os_constants":
             del sys.modules[mod]
-    from hermes_cli import kanban_db
+    from agentic_os_cli import kanban_db
     yield kanban_db
 
 
@@ -161,7 +161,7 @@ def test_dispatch_result_has_skipped_per_profile_capped_field():
     """Schema-level invariant: DispatchResult exposes the
     skipped_per_profile_capped field as a list of
     (task_id, assignee, current_running) tuples."""
-    from hermes_cli.kanban_db import DispatchResult
+    from agentic_os_cli.kanban_db import DispatchResult
     r = DispatchResult()
     assert hasattr(r, "skipped_per_profile_capped")
     assert r.skipped_per_profile_capped == []

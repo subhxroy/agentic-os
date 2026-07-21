@@ -12,8 +12,8 @@ from pathlib import Path
 
 import pytest
 
-from hermes_cli import kanban_db as kb
-from hermes_cli.plugins import VALID_HOOKS, get_plugin_manager
+from agentic_os_cli import kanban_db as kb
+from agentic_os_cli.plugins import VALID_HOOKS, get_plugin_manager
 
 
 @pytest.fixture

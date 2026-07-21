@@ -12,7 +12,7 @@ import pytest
 # files that gate the app.
 from fastapi.testclient import TestClient
 
-from hermes_cli import web_server
+from agentic_os_cli import web_server
 
 
 @pytest.fixture
@@ -97,7 +97,7 @@ def test_loopback_host_header_validation_still_enforced(client_loopback):
     ("hermes-agent-prod-abc.fly.dev", False, True),
 ])
 def test_should_require_auth_truth_table(host, allow_public, expected):
-    from hermes_cli.web_server import should_require_auth
+    from agentic_os_cli.web_server import should_require_auth
     assert should_require_auth(host, allow_public) is expected
 
 
@@ -182,7 +182,7 @@ def test_start_server_insecure_public_no_longer_bypasses_gate(monkeypatch):
     June 2026 hardening: --insecure no longer disables auth. With no providers
     registered, the bind fails closed (SystemExit) and auth_required is True.
     """
-    from hermes_cli.dashboard_auth import clear_providers
+    from agentic_os_cli.dashboard_auth import clear_providers
     clear_providers()
     _stub_uvicorn_run(monkeypatch)
     web_server.app.state.auth_required = None
@@ -201,7 +201,7 @@ def test_start_server_public_without_insecure_records_auth_required(monkeypatch)
     flag-stashing happens BEFORE the exit so the rest of the system can
     branch on it. (See task 3.5 tests below for the with-provider path.)
     """
-    from hermes_cli.dashboard_auth import clear_providers
+    from agentic_os_cli.dashboard_auth import clear_providers
     clear_providers()
     _stub_uvicorn_run(monkeypatch)
     web_server.app.state.auth_required = None
@@ -226,8 +226,8 @@ def test_start_server_gate_with_provider_proceeds_and_sets_proxy_headers(monkeyp
     succeeds.  uvicorn is called with proxy_headers=True so X-Forwarded-Proto
     from Fly's TLS terminator is honoured for cookie Secure-flag decisions.
     """
-    from hermes_cli.dashboard_auth import clear_providers, register_provider
-    from tests.hermes_cli.conftest_dashboard_auth import StubAuthProvider
+    from agentic_os_cli.dashboard_auth import clear_providers, register_provider
+    from tests.agentic_os_cli.conftest_dashboard_auth import StubAuthProvider
 
     clear_providers()
     register_provider(StubAuthProvider())
@@ -247,7 +247,7 @@ def test_start_server_gate_with_provider_proceeds_and_sets_proxy_headers(monkeyp
 
 def test_start_server_gate_without_provider_fails_closed(monkeypatch):
     """No providers + gate would activate → SystemExit with a clear message."""
-    from hermes_cli.dashboard_auth import clear_providers
+    from agentic_os_cli.dashboard_auth import clear_providers
 
     clear_providers()
     _stub_uvicorn_run(monkeypatch)
@@ -264,7 +264,7 @@ def test_start_server_surfaces_nous_skip_reason_when_unconfigured(monkeypatch):
     env vars set), the gate's fail-closed message should surface the
     plugin's LAST_SKIP_REASON so the operator knows the config fix is
     'set HERMES_DASHBOARD_OAUTH_CLIENT_ID', not 'install a plugin'."""
-    from hermes_cli.dashboard_auth import clear_providers
+    from agentic_os_cli.dashboard_auth import clear_providers
     from plugins.dashboard_auth import nous as nous_plugin
 
     # Simulate the plugin running and skipping for "no client_id".
@@ -306,7 +306,7 @@ def test_start_server_insecure_public_engages_gate_and_fails_closed(monkeypatch)
     auth as of the June 2026 hardening, so a public bind with no provider
     refuses to start.
     """
-    from hermes_cli.dashboard_auth import clear_providers
+    from agentic_os_cli.dashboard_auth import clear_providers
 
     clear_providers()
     _stub_uvicorn_run(monkeypatch)

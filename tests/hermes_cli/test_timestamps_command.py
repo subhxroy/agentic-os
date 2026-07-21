@@ -14,7 +14,7 @@ from datetime import datetime
 
 import yaml
 
-from hermes_cli.cli_commands_mixin import CLICommandsMixin
+from agentic_os_cli.cli_commands_mixin import CLICommandsMixin
 
 
 class _Stub(CLICommandsMixin):

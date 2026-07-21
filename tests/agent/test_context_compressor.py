@@ -13,7 +13,7 @@ from agent.context_compressor import (
     _summarize_tool_result,
     _is_summary_access_or_quota_error,
 )
-from hermes_state import SessionDB
+from agentic_os_state import SessionDB
 
 
 class StubProviderError(Exception):

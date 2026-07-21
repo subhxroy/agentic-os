@@ -1,4 +1,4 @@
-from hermes_cli.model_switch import parse_model_flags, parse_model_flags_detailed
+from agentic_os_cli.model_switch import parse_model_flags, parse_model_flags_detailed
 
 
 def test_parse_model_flags_detailed_supports_once():

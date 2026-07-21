@@ -7,7 +7,7 @@ from pathlib import Path
 
 import pytest
 
-from hermes_cli import kanban_db as kb
+from agentic_os_cli import kanban_db as kb
 
 
 @pytest.fixture
