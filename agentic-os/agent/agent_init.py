@@ -1014,8 +1014,10 @@ def init_agent(
         else:
             # No explicit creds — use the centralized provider router
             from agent.auxiliary_client import resolve_provider_client
-            _routed_client, _ = resolve_provider_client(
+            _routed_client, _routed_model = resolve_provider_client(
                 agent.provider or "auto", model=agent.model, raw_codex=True)
+            if _routed_model and not agent.model:
+                agent.model = _routed_model
             if _routed_client is not None:
                 client_kwargs = {
                     "api_key": _routed_client.api_key,
@@ -1039,7 +1041,7 @@ def init_agent(
                 # but no credentials were found, fail fast with a clear
                 # message instead of silently routing through OpenRouter.
                 _explicit = (agent.provider or "").strip().lower()
-                if _explicit and _explicit not in {"auto", "openrouter", "custom"}:
+                if _explicit and _explicit not in {"auto", "openrouter", "custom", "ollama", "lmstudio", "vllm", "llamacpp", "ollama-local"}:
                     # Look up the actual env var name from the provider
                     # config — some providers use non-standard names
                     # (e.g. alibaba → DASHSCOPE_API_KEY, not ALIBABA_API_KEY).
