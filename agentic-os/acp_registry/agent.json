@@ -1,0 +1,16 @@
+{
+  "id": "agentic-os",
+  "name": "Agentic OS",
+  "version": "0.19.0",
+  "description": "Self-improving open-source AI agent by Nous Research with ACP editor integration, persistent memory, skills, and rich tool support.",
+  "repository": "https://github.com/subhxroy/agentic-os",
+  "website": "https://agentic-os.nousresearch.com/docs/user-guide/features/acp",
+  "authors": ["Nous Research"],
+  "license": "MIT",
+  "distribution": {
+    "uvx": {
+      "package": "agentic-os[acp]==0.19.0",
+      "args": ["hermes-acp"]
+    }
+  }
+}
