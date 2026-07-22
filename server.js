@@ -107,6 +107,18 @@ function launchElectron() {
         console.error('\x1b[31mDesktop App directory not found at apps/desktop.\x1b[0m');
         process.exit(1);
     }
+
+    const nodeModulesPath = path.join(desktopDir, 'node_modules');
+    if (!fs.existsSync(nodeModulesPath)) {
+        console.log('\x1b[33m%s\x1b[0m', '  Installing Desktop App dependencies (first-time setup)...');
+        try {
+            execSync('npm install', { cwd: desktopDir, stdio: 'inherit', shell: true });
+        } catch (err) {
+            console.error('\x1b[31mFailed to install dependencies for Desktop App.\x1b[0m');
+            process.exit(1);
+        }
+    }
+
     console.log('\x1b[36m%s\x1b[0m', '  Launching Agentic OS Electron Desktop App...');
     console.log('\x1b[90m%s\x1b[0m', `  Directory: ${desktopDir}`);
     console.log('');
