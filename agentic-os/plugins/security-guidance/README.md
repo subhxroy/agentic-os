@@ -43,7 +43,7 @@ Plugins are opt-in. Add it to your allow-list:
 
 ```bash
 hermes plugins enable security-guidance
-# or edit ~/.hermes/config.yaml manually:
+# or edit ~/.agentic-os/config.yaml manually:
 plugins:
   enabled:
     - security-guidance
@@ -85,4 +85,4 @@ not a substitute for code review, SAST, dependency scanning, or pen testing.
   [Apache License 2.0](./LICENSE). See [NOTICE](./NOTICE) for the full
   attribution.
 * `__init__.py`, `plugin.yaml`, `README.md`, and tests are original work by
-  NousResearch, MIT-licensed alongside the rest of hermes-agent.
+  NousResearch, MIT-licensed alongside the rest of agentic-os.

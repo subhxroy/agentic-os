@@ -22,7 +22,7 @@ Set `GOOGLE_API_KEY` or `GEMINI_API_KEY`. Hermes checks both names for the `gemi
 
 ```bash
 # Add your Gemini API key
-echo "GOOGLE_API_KEY=..." >> ~/.hermes/.env
+echo "GOOGLE_API_KEY=..." >> ~/.agentic-os/.env
 
 # Select Gemini as your provider
 hermes model
@@ -45,7 +45,7 @@ model:
 
 ## Configuration
 
-After running `hermes model`, your `~/.hermes/config.yaml` will contain:
+After running `hermes model`, your `~/.agentic-os/config.yaml` will contain:
 
 ```yaml
 model:
@@ -54,7 +54,7 @@ model:
   base_url: https://generativelanguage.googleapis.com/v1beta
 ```
 
-And in `~/.hermes/.env`:
+And in `~/.agentic-os/.env`:
 
 ```bash
 GOOGLE_API_KEY=...
@@ -196,7 +196,7 @@ The gateway reads `config.yaml` and uses the same Gemini provider configuration.
 
 ### "Gemini native client requires an API key"
 
-Hermes could not find a usable API key. Add one of these to `~/.hermes/.env`:
+Hermes could not find a usable API key. Add one of these to `~/.agentic-os/.env`:
 
 ```bash
 GOOGLE_API_KEY=...
@@ -222,7 +222,7 @@ The selected model is not available for your account, region, or key. Run `herme
 
 ### Gemma model is not shown in `hermes model`
 
-Hermes may hide low-throughput Gemma models from the picker by default. If you intentionally want to evaluate one, set the model ID directly in `~/.hermes/config.yaml`.
+Hermes may hide low-throughput Gemma models from the picker by default. If you intentionally want to evaluate one, set the model ID directly in `~/.agentic-os/config.yaml`.
 
 ### "429 quota exceeded" on Gemma
 
@@ -230,7 +230,7 @@ Gemma models exposed through the Gemini API are useful for evaluation, but their
 
 ### OpenAI-compatible endpoint is configured
 
-Check `~/.hermes/.env` for:
+Check `~/.agentic-os/.env` for:
 
 ```bash
 GEMINI_BASE_URL=https://generativelanguage.googleapis.com/v1beta/openai/

@@ -25,7 +25,7 @@ def _jwt_with_claims(claims: dict) -> str:
 
 
 def test_fill_first_selection_skips_recently_exhausted_entry(tmp_path, monkeypatch):
-    monkeypatch.setenv("HERMES_HOME", str(tmp_path / "hermes"))
+    monkeypatch.setenv("AGENTIC_OS_HOME", str(tmp_path / "hermes"))
     _write_auth_store(
         tmp_path,
         {
@@ -70,7 +70,7 @@ def test_fill_first_selection_skips_recently_exhausted_entry(tmp_path, monkeypat
 
 
 def test_select_clears_expired_exhaustion(tmp_path, monkeypatch):
-    monkeypatch.setenv("HERMES_HOME", str(tmp_path / "hermes"))
+    monkeypatch.setenv("AGENTIC_OS_HOME", str(tmp_path / "hermes"))
     _write_auth_store(
         tmp_path,
         {
@@ -103,7 +103,7 @@ def test_select_clears_expired_exhaustion(tmp_path, monkeypatch):
 
 
 def test_round_robin_strategy_rotates_priorities(tmp_path, monkeypatch):
-    monkeypatch.setenv("HERMES_HOME", str(tmp_path / "hermes"))
+    monkeypatch.setenv("AGENTIC_OS_HOME", str(tmp_path / "hermes"))
     _write_auth_store(
         tmp_path,
         {
@@ -147,7 +147,7 @@ def test_round_robin_strategy_rotates_priorities(tmp_path, monkeypatch):
 
 
 def test_random_strategy_uses_random_choice(tmp_path, monkeypatch):
-    monkeypatch.setenv("HERMES_HOME", str(tmp_path / "hermes"))
+    monkeypatch.setenv("AGENTIC_OS_HOME", str(tmp_path / "hermes"))
     monkeypatch.delenv("OPENROUTER_API_KEY", raising=False)
     _write_auth_store(
         tmp_path,
@@ -190,7 +190,7 @@ def test_random_strategy_uses_random_choice(tmp_path, monkeypatch):
 
 
 def test_exhausted_entry_resets_after_ttl(tmp_path, monkeypatch):
-    monkeypatch.setenv("HERMES_HOME", str(tmp_path / "hermes"))
+    monkeypatch.setenv("AGENTIC_OS_HOME", str(tmp_path / "hermes"))
     _write_auth_store(
         tmp_path,
         {
@@ -226,7 +226,7 @@ def test_exhausted_entry_resets_after_ttl(tmp_path, monkeypatch):
 
 def test_exhausted_402_entry_resets_after_one_hour(tmp_path, monkeypatch):
     """402-exhausted credentials recover after 1 hour, not 24."""
-    monkeypatch.setenv("HERMES_HOME", str(tmp_path / "hermes"))
+    monkeypatch.setenv("AGENTIC_OS_HOME", str(tmp_path / "hermes"))
     _write_auth_store(
         tmp_path,
         {
@@ -262,7 +262,7 @@ def test_exhausted_402_entry_resets_after_one_hour(tmp_path, monkeypatch):
 
 def test_exhausted_401_entry_resets_after_five_minutes(tmp_path, monkeypatch):
     """Transient auth failures should not strand single-key setups for an hour."""
-    monkeypatch.setenv("HERMES_HOME", str(tmp_path / "hermes"))
+    monkeypatch.setenv("AGENTIC_OS_HOME", str(tmp_path / "hermes"))
     _write_auth_store(
         tmp_path,
         {
@@ -297,7 +297,7 @@ def test_exhausted_401_entry_resets_after_five_minutes(tmp_path, monkeypatch):
 
 
 def test_explicit_reset_timestamp_overrides_default_429_ttl(tmp_path, monkeypatch):
-    monkeypatch.setenv("HERMES_HOME", str(tmp_path / "hermes"))
+    monkeypatch.setenv("AGENTIC_OS_HOME", str(tmp_path / "hermes"))
     # Prevent auto-seeding from Codex CLI tokens on the host
     monkeypatch.setattr(
         "agentic_os_cli.auth._import_codex_cli_tokens",
@@ -335,7 +335,7 @@ def test_explicit_reset_timestamp_overrides_default_429_ttl(tmp_path, monkeypatc
 
 
 def test_mark_exhausted_and_rotate_persists_status(tmp_path, monkeypatch):
-    monkeypatch.setenv("HERMES_HOME", str(tmp_path / "hermes"))
+    monkeypatch.setenv("AGENTIC_OS_HOME", str(tmp_path / "hermes"))
     _write_auth_store(
         tmp_path,
         {
@@ -388,7 +388,7 @@ def test_token_invalidated_marks_credential_dead(tmp_path, monkeypatch):
     summary" on context compression.  Terminal OAuth failures should never
     auto-recover.
     """
-    monkeypatch.setenv("HERMES_HOME", str(tmp_path / "hermes"))
+    monkeypatch.setenv("AGENTIC_OS_HOME", str(tmp_path / "hermes"))
     _write_auth_store(
         tmp_path,
         {
@@ -453,7 +453,7 @@ def test_dead_credential_never_re_enters_rotation_after_ttl(tmp_path, monkeypatc
     (b) the manual-prune TTL elapses (covered by separate tests below).
     This test verifies the core invariant in the recent-entry window.
     """
-    monkeypatch.setenv("HERMES_HOME", str(tmp_path / "hermes"))
+    monkeypatch.setenv("AGENTIC_OS_HOME", str(tmp_path / "hermes"))
     # DEAD entry from 2 hours ago — well past the exhausted TTLs (5min/1h)
     # but well within the 24h manual-prune window.
     two_hours_ago = time.time() - (2 * 3600)
@@ -513,7 +513,7 @@ def test_429_rate_limit_still_uses_exhausted_not_dead(tmp_path, monkeypatch):
     They should keep the existing 1-hour TTL cooldown semantics so the
     credential re-enters rotation once the rate window resets.
     """
-    monkeypatch.setenv("HERMES_HOME", str(tmp_path / "hermes"))
+    monkeypatch.setenv("AGENTIC_OS_HOME", str(tmp_path / "hermes"))
     _write_auth_store(
         tmp_path,
         {
@@ -569,7 +569,7 @@ def test_generic_401_without_terminal_reason_still_uses_exhausted(tmp_path, monk
     transition to DEAD.  A generic 401 might be a transient server-side
     issue worth retrying after the 5-min TTL.
     """
-    monkeypatch.setenv("HERMES_HOME", str(tmp_path / "hermes"))
+    monkeypatch.setenv("AGENTIC_OS_HOME", str(tmp_path / "hermes"))
     _write_auth_store(
         tmp_path,
         {
@@ -624,7 +624,7 @@ def test_dead_manual_entry_pruned_after_24h(tmp_path, monkeypatch):
     window without losing recoverability — the user can always re-add
     via ``hermes auth add``.
     """
-    monkeypatch.setenv("HERMES_HOME", str(tmp_path / "hermes"))
+    monkeypatch.setenv("AGENTIC_OS_HOME", str(tmp_path / "hermes"))
     # DEAD entry from > 24h ago
     long_ago = time.time() - (25 * 3600)
     _write_auth_store(
@@ -682,7 +682,7 @@ def test_dead_manual_entry_kept_within_24h(tmp_path, monkeypatch):
     timestamps) remains visible while the user investigates.  They simply
     don't participate in rotation (covered by the DEAD-skip test above).
     """
-    monkeypatch.setenv("HERMES_HOME", str(tmp_path / "hermes"))
+    monkeypatch.setenv("AGENTIC_OS_HOME", str(tmp_path / "hermes"))
     # DEAD entry from only an hour ago — well within the 24h window
     recent = time.time() - 3600
     _write_auth_store(
@@ -741,7 +741,7 @@ def test_dead_singleton_seeded_entry_not_pruned(tmp_path, monkeypatch):
     immediately with the same stale singleton tokens.  Keep them visible
     with the DEAD marker so the user knows what's broken.
     """
-    monkeypatch.setenv("HERMES_HOME", str(tmp_path / "hermes"))
+    monkeypatch.setenv("AGENTIC_OS_HOME", str(tmp_path / "hermes"))
     long_ago = time.time() - (48 * 3600)
     _write_auth_store(
         tmp_path,
@@ -789,7 +789,7 @@ def test_dead_singleton_seeded_entry_not_pruned(tmp_path, monkeypatch):
 
 
 def test_load_pool_seeds_env_api_key(tmp_path, monkeypatch):
-    monkeypatch.setenv("HERMES_HOME", str(tmp_path / "hermes"))
+    monkeypatch.setenv("AGENTIC_OS_HOME", str(tmp_path / "hermes"))
     monkeypatch.setenv("OPENROUTER_API_KEY", "sk-or-seeded")
     _write_auth_store(tmp_path, {"version": 1, "providers": {}})
 
@@ -807,7 +807,7 @@ def test_load_pool_seeds_env_api_key(tmp_path, monkeypatch):
 def test_load_pool_does_not_persist_env_seeded_secret_value(tmp_path, monkeypatch):
     """Runtime env keys may be used in memory but must not land in auth.json."""
     sentinel = "S3NTINEL_DO_NOT_PERSIST_OPENROUTER"
-    monkeypatch.setenv("HERMES_HOME", str(tmp_path / "hermes"))
+    monkeypatch.setenv("AGENTIC_OS_HOME", str(tmp_path / "hermes"))
     monkeypatch.setenv("OPENROUTER_API_KEY", sentinel)
     _write_auth_store(tmp_path, {"version": 1, "providers": {}})
 
@@ -834,7 +834,7 @@ def test_load_pool_does_not_persist_env_seeded_secret_value(tmp_path, monkeypatc
 def test_load_pool_collapses_duplicate_env_rows_to_active_key(tmp_path, monkeypatch):
     """One env source is one credential, even if auth.json contains stale duplicates."""
     key = "sk-or-active-main-key"
-    monkeypatch.setenv("HERMES_HOME", str(tmp_path / "hermes"))
+    monkeypatch.setenv("AGENTIC_OS_HOME", str(tmp_path / "hermes"))
     monkeypatch.setenv("OPENROUTER_API_KEY", key)
     _write_auth_store(
         tmp_path,
@@ -899,7 +899,7 @@ def test_credential_pool_never_selects_empty_borrowed_entry():
 def test_load_pool_persists_bitwarden_origin_metadata_without_secret(tmp_path, monkeypatch):
     """Bitwarden-injected env vars retain source metadata but not raw values."""
     sentinel = "S3NTINEL_DO_NOT_PERSIST_BITWARDEN"
-    monkeypatch.setenv("HERMES_HOME", str(tmp_path / "hermes"))
+    monkeypatch.setenv("AGENTIC_OS_HOME", str(tmp_path / "hermes"))
     monkeypatch.setenv("OPENROUTER_API_KEY", sentinel)
     monkeypatch.setattr(
         "agentic_os_cli.env_loader.get_secret_source",
@@ -928,7 +928,7 @@ def test_load_pool_persists_bitwarden_origin_metadata_without_secret(tmp_path, m
 def test_load_pool_sanitizes_legacy_raw_borrowed_entry_when_value_unchanged(tmp_path, monkeypatch):
     """Existing raw env-seeded pool entries are rewritten even if the env value matches."""
     sentinel = "S3NTINEL_DO_NOT_PERSIST_LEGACY_RAW"
-    monkeypatch.setenv("HERMES_HOME", str(tmp_path / "hermes"))
+    monkeypatch.setenv("AGENTIC_OS_HOME", str(tmp_path / "hermes"))
     monkeypatch.setenv("OPENROUTER_API_KEY", sentinel)
     _write_auth_store(
         tmp_path,
@@ -1055,7 +1055,7 @@ def test_borrowed_source_variants_strip_secret_fields(source):
 
 def test_load_pool_prunes_stale_borrowed_custom_config_entry(tmp_path, monkeypatch):
     sentinel = "S3NTINEL_DO_NOT_PERSIST_STALE_CUSTOM"
-    monkeypatch.setenv("HERMES_HOME", str(tmp_path / "hermes"))
+    monkeypatch.setenv("AGENTIC_OS_HOME", str(tmp_path / "hermes"))
     _write_auth_store(
         tmp_path,
         {
@@ -1091,7 +1091,7 @@ def test_write_credential_pool_sanitizes_borrowed_payload_at_disk_boundary(tmp_p
     """Direct dictionary callers cannot bypass the borrowed-secret guard."""
     sentinel = "S3NTINEL_DO_NOT_PERSIST_DIRECT_WRITE"
     manual_secret = "MANUAL_SECRET_STAYS_PERSISTABLE"
-    monkeypatch.setenv("HERMES_HOME", str(tmp_path / "hermes"))
+    monkeypatch.setenv("AGENTIC_OS_HOME", str(tmp_path / "hermes"))
 
     from agentic_os_cli.auth import write_credential_pool
 
@@ -1134,7 +1134,7 @@ def test_write_credential_pool_sanitizes_borrowed_payload_at_disk_boundary(tmp_p
 
 def test_write_credential_pool_treats_unowned_oauth_source_as_borrowed(tmp_path, monkeypatch):
     sentinel = "S3NTINEL_DO_NOT_PERSIST_UNOWNED_OAUTH"
-    monkeypatch.setenv("HERMES_HOME", str(tmp_path / "hermes"))
+    monkeypatch.setenv("AGENTIC_OS_HOME", str(tmp_path / "hermes"))
 
     from agentic_os_cli.auth import write_credential_pool
 
@@ -1162,7 +1162,7 @@ def test_write_credential_pool_treats_unowned_oauth_source_as_borrowed(tmp_path,
 
 def test_write_credential_pool_preserves_known_provider_owned_oauth_state(tmp_path, monkeypatch):
     sentinel = "PROVIDER_OWNED_DEVICE_CODE_STAYS_PERSISTABLE"
-    monkeypatch.setenv("HERMES_HOME", str(tmp_path / "hermes"))
+    monkeypatch.setenv("AGENTIC_OS_HOME", str(tmp_path / "hermes"))
 
     from agentic_os_cli.auth import write_credential_pool
 
@@ -1188,19 +1188,19 @@ def test_write_credential_pool_preserves_known_provider_owned_oauth_state(tmp_pa
 
 def test_load_pool_prefers_dotenv_over_stale_os_environ(tmp_path, monkeypatch):
     """Regression for #18254: stale OPENROUTER_API_KEY in os.environ (inherited
-    from a parent shell) must NOT shadow the fresh key in ~/.hermes/.env when
+    from a parent shell) must NOT shadow the fresh key in ~/.agentic-os/.env when
     seeding the credential pool. Before the fix, `get_env_value()` preferred
     os.environ and silently wrote the stale value into auth.json, causing
     persistent 401 errors after key rotation.
     """
     hermes_home = tmp_path / "hermes"
     hermes_home.mkdir()
-    monkeypatch.setenv("HERMES_HOME", str(hermes_home))
+    monkeypatch.setenv("AGENTIC_OS_HOME", str(hermes_home))
 
     # Simulate the bug: parent shell exported a stale test key
     monkeypatch.setenv("OPENROUTER_API_KEY", "sk-or-STALE-from-shell")
 
-    # User edited ~/.hermes/.env with the fresh key
+    # User edited ~/.agentic-os/.env with the fresh key
     (hermes_home / ".env").write_text(
         "OPENROUTER_API_KEY=sk-or-FRESH-from-dotenv\n"
     )
@@ -1220,14 +1220,14 @@ def test_load_pool_prefers_dotenv_over_stale_os_environ(tmp_path, monkeypatch):
 
 
 def test_load_pool_falls_back_to_os_environ_when_dotenv_empty(tmp_path, monkeypatch):
-    """When ~/.hermes/.env does not define OPENROUTER_API_KEY (typical Docker /
+    """When ~/.agentic-os/.env does not define OPENROUTER_API_KEY (typical Docker /
     K8s / systemd deployment), seeding must still pick up the key from
     os.environ. Guards against regressions that would break production
     deployments relying on runtime-injected env vars.
     """
     hermes_home = tmp_path / "hermes"
     hermes_home.mkdir()
-    monkeypatch.setenv("HERMES_HOME", str(hermes_home))
+    monkeypatch.setenv("AGENTIC_OS_HOME", str(hermes_home))
     monkeypatch.setenv("OPENROUTER_API_KEY", "sk-or-from-runtime-env")
 
     # .env exists but does not define OPENROUTER_API_KEY
@@ -1247,7 +1247,7 @@ def test_load_pool_preserves_env_seeded_entry_when_env_is_missing(tmp_path, monk
     # Regression for #9331: load_pool() is a non-destructive read. A process
     # that lacks the seeding env var must NOT delete the persisted pool entry
     # that another process correctly seeded.
-    monkeypatch.setenv("HERMES_HOME", str(tmp_path / "hermes"))
+    monkeypatch.setenv("AGENTIC_OS_HOME", str(tmp_path / "hermes"))
     monkeypatch.delenv("OPENROUTER_API_KEY", raising=False)
     _write_auth_store(
         tmp_path,
@@ -1287,7 +1287,7 @@ def test_load_pool_missing_env_does_not_overwrite_other_process_seed(tmp_path, m
     # The exact cross-process oscillation described in #9331: a process without
     # MINIMAX_API_KEY must leave the on-disk entry intact for processes that
     # do have it.
-    monkeypatch.setenv("HERMES_HOME", str(tmp_path / "hermes"))
+    monkeypatch.setenv("AGENTIC_OS_HOME", str(tmp_path / "hermes"))
     monkeypatch.delenv("MINIMAX_API_KEY", raising=False)
     _write_auth_store(
         tmp_path,
@@ -1324,7 +1324,7 @@ def test_load_pool_missing_env_does_not_overwrite_other_process_seed(tmp_path, m
 
 
 def test_load_pool_migrates_nous_provider_state(tmp_path, monkeypatch):
-    monkeypatch.setenv("HERMES_HOME", str(tmp_path / "hermes"))
+    monkeypatch.setenv("AGENTIC_OS_HOME", str(tmp_path / "hermes"))
     _write_auth_store(
         tmp_path,
         {
@@ -1359,7 +1359,7 @@ def test_load_pool_migrates_nous_provider_state(tmp_path, monkeypatch):
 
 
 def test_load_pool_mirrors_nous_invoke_jwt_agent_key_runtime_api_key(tmp_path, monkeypatch):
-    monkeypatch.setenv("HERMES_HOME", str(tmp_path / "hermes"))
+    monkeypatch.setenv("AGENTIC_OS_HOME", str(tmp_path / "hermes"))
     expires_at = datetime.fromtimestamp(time.time() + 3600, tz=timezone.utc).isoformat()
     token = _jwt_with_claims({
         "sub": "test-user",
@@ -1428,7 +1428,7 @@ def test_nous_runtime_api_key_rejects_opaque_agent_key():
 
 
 def test_nous_pool_terminal_refresh_removes_device_code_entry(tmp_path, monkeypatch):
-    monkeypatch.setenv("HERMES_HOME", str(tmp_path / "hermes"))
+    monkeypatch.setenv("AGENTIC_OS_HOME", str(tmp_path / "hermes"))
     monkeypatch.setenv("HERMES_SHARED_AUTH_DIR", str(tmp_path / "shared"))
     _write_auth_store(
         tmp_path,
@@ -1505,7 +1505,7 @@ def test_nous_pool_terminal_refresh_removes_device_code_entry(tmp_path, monkeypa
 
 
 def test_load_pool_removes_nous_device_code_when_singleton_quarantined(tmp_path, monkeypatch):
-    monkeypatch.setenv("HERMES_HOME", str(tmp_path / "hermes"))
+    monkeypatch.setenv("AGENTIC_OS_HOME", str(tmp_path / "hermes"))
     _write_auth_store(
         tmp_path,
         {
@@ -1556,7 +1556,7 @@ def test_load_pool_removes_nous_device_code_when_singleton_quarantined(tmp_path,
 
 
 def test_load_pool_removes_stale_file_backed_singleton_entry(tmp_path, monkeypatch):
-    monkeypatch.setenv("HERMES_HOME", str(tmp_path / "hermes"))
+    monkeypatch.setenv("AGENTIC_OS_HOME", str(tmp_path / "hermes"))
     monkeypatch.delenv("ANTHROPIC_API_KEY", raising=False)
     monkeypatch.delenv("ANTHROPIC_TOKEN", raising=False)
     monkeypatch.delenv("CLAUDE_CODE_OAUTH_TOKEN", raising=False)
@@ -1601,7 +1601,7 @@ def test_load_pool_removes_stale_file_backed_singleton_entry(tmp_path, monkeypat
 
 
 def test_load_pool_migrates_nous_provider_state_preserves_tls(tmp_path, monkeypatch):
-    monkeypatch.setenv("HERMES_HOME", str(tmp_path / "hermes"))
+    monkeypatch.setenv("AGENTIC_OS_HOME", str(tmp_path / "hermes"))
     _write_auth_store(
         tmp_path,
         {
@@ -1647,7 +1647,7 @@ def test_load_pool_migrates_nous_provider_state_preserves_tls(tmp_path, monkeypa
 
 
 def test_singleton_seed_does_not_clobber_manual_oauth_entry(tmp_path, monkeypatch):
-    monkeypatch.setenv("HERMES_HOME", str(tmp_path / "hermes"))
+    monkeypatch.setenv("AGENTIC_OS_HOME", str(tmp_path / "hermes"))
     monkeypatch.delenv("ANTHROPIC_API_KEY", raising=False)
     monkeypatch.delenv("ANTHROPIC_TOKEN", raising=False)
     monkeypatch.delenv("CLAUDE_CODE_OAUTH_TOKEN", raising=False)
@@ -1696,7 +1696,7 @@ def test_singleton_seed_does_not_clobber_manual_oauth_entry(tmp_path, monkeypatc
 
 
 def test_load_pool_prefers_anthropic_env_token_over_file_backed_oauth(tmp_path, monkeypatch):
-    monkeypatch.setenv("HERMES_HOME", str(tmp_path / "hermes"))
+    monkeypatch.setenv("AGENTIC_OS_HOME", str(tmp_path / "hermes"))
     monkeypatch.delenv("ANTHROPIC_API_KEY", raising=False)
     monkeypatch.setenv("ANTHROPIC_TOKEN", "env-override-token")
     monkeypatch.delenv("CLAUDE_CODE_OAUTH_TOKEN", raising=False)
@@ -1738,7 +1738,7 @@ def test_load_pool_api_key_path_skips_oauth_autodiscovery(tmp_path, monkeypatch)
     into the anthropic pool — otherwise rotation on a 401/429 could flip
     the session onto OAuth credentials mid-conversation.
     """
-    monkeypatch.setenv("HERMES_HOME", str(tmp_path / "hermes"))
+    monkeypatch.setenv("AGENTIC_OS_HOME", str(tmp_path / "hermes"))
     monkeypatch.setenv("ANTHROPIC_API_KEY", "sk-ant-api03-explicit-user-key")
     monkeypatch.delenv("ANTHROPIC_TOKEN", raising=False)
     monkeypatch.delenv("CLAUDE_CODE_OAUTH_TOKEN", raising=False)
@@ -1788,7 +1788,7 @@ def test_load_pool_api_key_path_prunes_stale_oauth_entries(tmp_path, monkeypatch
     Pool rotation on a transient 401 could revive them and flip the
     session onto the OAuth masquerade.
     """
-    monkeypatch.setenv("HERMES_HOME", str(tmp_path / "hermes"))
+    monkeypatch.setenv("AGENTIC_OS_HOME", str(tmp_path / "hermes"))
     monkeypatch.setenv("ANTHROPIC_API_KEY", "sk-ant-api03-explicit-user-key")
     monkeypatch.delenv("ANTHROPIC_TOKEN", raising=False)
     monkeypatch.delenv("CLAUDE_CODE_OAUTH_TOKEN", raising=False)
@@ -1839,7 +1839,7 @@ def test_load_pool_oauth_path_still_autodiscovers(tmp_path, monkeypatch):
     ANTHROPIC_API_KEY is empty), autodiscovered Claude Code creds should
     still be seeded into the pool as before.
     """
-    monkeypatch.setenv("HERMES_HOME", str(tmp_path / "hermes"))
+    monkeypatch.setenv("AGENTIC_OS_HOME", str(tmp_path / "hermes"))
     monkeypatch.delenv("ANTHROPIC_API_KEY", raising=False)
     monkeypatch.setenv("ANTHROPIC_TOKEN", "sk-ant-oat01-explicit-oauth-token")
     monkeypatch.delenv("CLAUDE_CODE_OAUTH_TOKEN", raising=False)
@@ -1871,7 +1871,7 @@ def test_load_pool_oauth_path_still_autodiscovers(tmp_path, monkeypatch):
 
 def test_least_used_strategy_selects_lowest_count(tmp_path, monkeypatch):
     """least_used strategy should select the credential with the lowest request_count."""
-    monkeypatch.setenv("HERMES_HOME", str(tmp_path / "hermes"))
+    monkeypatch.setenv("AGENTIC_OS_HOME", str(tmp_path / "hermes"))
     monkeypatch.setattr(
         "agent.credential_pool.get_pool_strategy",
         lambda _provider: "least_used",
@@ -1935,7 +1935,7 @@ def test_thread_safety_concurrent_select(tmp_path, monkeypatch):
     """Concurrent select() calls should not corrupt pool state."""
     import threading as _threading
 
-    monkeypatch.setenv("HERMES_HOME", str(tmp_path / "hermes"))
+    monkeypatch.setenv("AGENTIC_OS_HOME", str(tmp_path / "hermes"))
     monkeypatch.setattr(
         "agent.credential_pool.get_pool_strategy",
         lambda _provider: "round_robin",
@@ -1995,7 +1995,7 @@ def test_thread_safety_concurrent_select(tmp_path, monkeypatch):
 
 def test_custom_endpoint_pool_keyed_by_name(tmp_path, monkeypatch):
     """Verify load_pool('custom:together.ai') works and returns entries from auth.json."""
-    monkeypatch.setenv("HERMES_HOME", str(tmp_path / "hermes"))
+    monkeypatch.setenv("AGENTIC_OS_HOME", str(tmp_path / "hermes"))
     # Disable seeding so we only test stored entries
     monkeypatch.setattr(
         "agent.credential_pool._seed_custom_pool",
@@ -2047,7 +2047,7 @@ def test_custom_endpoint_pool_keyed_by_name(tmp_path, monkeypatch):
 
 def test_custom_endpoint_pool_seeds_from_config(tmp_path, monkeypatch):
     """Verify seeding from custom_providers api_key in config.yaml."""
-    monkeypatch.setenv("HERMES_HOME", str(tmp_path / "hermes"))
+    monkeypatch.setenv("AGENTIC_OS_HOME", str(tmp_path / "hermes"))
     _write_auth_store(tmp_path, {"version": 1})
 
     # Write config.yaml with a custom_providers entry
@@ -2075,7 +2075,7 @@ def test_custom_endpoint_pool_seeds_from_config(tmp_path, monkeypatch):
 
 def test_custom_endpoint_pool_seeds_from_model_config(tmp_path, monkeypatch):
     """Verify seeding from model.api_key when model.provider=='custom' and base_url matches."""
-    monkeypatch.setenv("HERMES_HOME", str(tmp_path / "hermes"))
+    monkeypatch.setenv("AGENTIC_OS_HOME", str(tmp_path / "hermes"))
     _write_auth_store(tmp_path, {"version": 1})
 
     import yaml
@@ -2107,7 +2107,7 @@ def test_custom_endpoint_pool_seeds_from_model_config(tmp_path, monkeypatch):
 
 def test_custom_pool_does_not_break_existing_providers(tmp_path, monkeypatch):
     """Existing registry providers work exactly as before with custom pool support."""
-    monkeypatch.setenv("HERMES_HOME", str(tmp_path / "hermes"))
+    monkeypatch.setenv("AGENTIC_OS_HOME", str(tmp_path / "hermes"))
     monkeypatch.setenv("OPENROUTER_API_KEY", "sk-or-test")
     _write_auth_store(tmp_path, {"version": 1, "providers": {}})
 
@@ -2122,7 +2122,7 @@ def test_custom_pool_does_not_break_existing_providers(tmp_path, monkeypatch):
 
 def test_get_custom_provider_pool_key(tmp_path, monkeypatch):
     """get_custom_provider_pool_key maps base_url to custom:<name> pool key."""
-    monkeypatch.setenv("HERMES_HOME", str(tmp_path / "hermes"))
+    monkeypatch.setenv("AGENTIC_OS_HOME", str(tmp_path / "hermes"))
     (tmp_path / "hermes").mkdir(parents=True, exist_ok=True)
     import yaml
     config_path = tmp_path / "hermes" / "config.yaml"
@@ -2151,7 +2151,7 @@ def test_get_custom_provider_pool_key(tmp_path, monkeypatch):
 
 def test_get_custom_provider_pool_key_prefers_name_over_base_url(tmp_path, monkeypatch):
     """When two custom providers share the same base_url, provider_name resolves to the correct one."""
-    monkeypatch.setenv("HERMES_HOME", str(tmp_path / "hermes"))
+    monkeypatch.setenv("AGENTIC_OS_HOME", str(tmp_path / "hermes"))
     (tmp_path / "hermes").mkdir(parents=True, exist_ok=True)
     import yaml
     config_path = tmp_path / "hermes" / "config.yaml"
@@ -2188,7 +2188,7 @@ def test_get_custom_provider_pool_key_prefers_name_over_base_url(tmp_path, monke
 
 def test_list_custom_pool_providers(tmp_path, monkeypatch):
     """list_custom_pool_providers returns custom: pool keys from auth.json."""
-    monkeypatch.setenv("HERMES_HOME", str(tmp_path / "hermes"))
+    monkeypatch.setenv("AGENTIC_OS_HOME", str(tmp_path / "hermes"))
     _write_auth_store(
         tmp_path,
         {
@@ -2238,7 +2238,7 @@ def test_list_custom_pool_providers(tmp_path, monkeypatch):
 
 
 def test_acquire_lease_prefers_unleased_entry(tmp_path, monkeypatch):
-    monkeypatch.setenv("HERMES_HOME", str(tmp_path / "hermes"))
+    monkeypatch.setenv("AGENTIC_OS_HOME", str(tmp_path / "hermes"))
     _write_auth_store(
         tmp_path,
         {
@@ -2280,7 +2280,7 @@ def test_acquire_lease_prefers_unleased_entry(tmp_path, monkeypatch):
 
 
 def test_release_lease_decrements_counter(tmp_path, monkeypatch):
-    monkeypatch.setenv("HERMES_HOME", str(tmp_path / "hermes"))
+    monkeypatch.setenv("AGENTIC_OS_HOME", str(tmp_path / "hermes"))
     _write_auth_store(
         tmp_path,
         {
@@ -2313,7 +2313,7 @@ def test_release_lease_decrements_counter(tmp_path, monkeypatch):
 
 def test_load_pool_does_not_seed_claude_code_when_anthropic_not_configured(tmp_path, monkeypatch):
     """Claude Code credentials must not be auto-seeded when the user never selected anthropic."""
-    monkeypatch.setenv("HERMES_HOME", str(tmp_path / "hermes"))
+    monkeypatch.setenv("AGENTIC_OS_HOME", str(tmp_path / "hermes"))
     _write_auth_store(tmp_path, {"version": 1, "credential_pool": {}})
 
     # Claude Code credentials exist on disk
@@ -2340,7 +2340,7 @@ def test_load_pool_does_not_seed_claude_code_when_anthropic_not_configured(tmp_p
 
 def test_load_pool_seeds_copilot_via_gh_auth_token(tmp_path, monkeypatch):
     """Copilot credentials from `gh auth token` should be seeded into the pool."""
-    monkeypatch.setenv("HERMES_HOME", str(tmp_path / "hermes"))
+    monkeypatch.setenv("AGENTIC_OS_HOME", str(tmp_path / "hermes"))
     _write_auth_store(tmp_path, {"version": 1, "credential_pool": {}})
 
     monkeypatch.setattr(
@@ -2361,7 +2361,7 @@ def test_load_pool_seeds_copilot_via_gh_auth_token(tmp_path, monkeypatch):
 
 def test_load_pool_does_not_seed_copilot_when_no_token(tmp_path, monkeypatch):
     """Copilot pool should be empty when resolve_copilot_token() returns nothing."""
-    monkeypatch.setenv("HERMES_HOME", str(tmp_path / "hermes"))
+    monkeypatch.setenv("AGENTIC_OS_HOME", str(tmp_path / "hermes"))
     _write_auth_store(tmp_path, {"version": 1, "credential_pool": {}})
 
     monkeypatch.setattr(
@@ -2378,7 +2378,7 @@ def test_load_pool_does_not_seed_copilot_when_no_token(tmp_path, monkeypatch):
 
 def test_load_pool_seeds_qwen_oauth_via_cli_tokens(tmp_path, monkeypatch):
     """Qwen OAuth credentials from ~/.qwen/oauth_creds.json should be seeded into the pool."""
-    monkeypatch.setenv("HERMES_HOME", str(tmp_path / "hermes"))
+    monkeypatch.setenv("AGENTIC_OS_HOME", str(tmp_path / "hermes"))
     _write_auth_store(tmp_path, {"version": 1, "credential_pool": {}})
 
     monkeypatch.setattr(
@@ -2405,7 +2405,7 @@ def test_load_pool_seeds_qwen_oauth_via_cli_tokens(tmp_path, monkeypatch):
 
 def test_load_pool_does_not_seed_qwen_oauth_when_no_token(tmp_path, monkeypatch):
     """Qwen OAuth pool should be empty when no CLI credentials exist."""
-    monkeypatch.setenv("HERMES_HOME", str(tmp_path / "hermes"))
+    monkeypatch.setenv("AGENTIC_OS_HOME", str(tmp_path / "hermes"))
     _write_auth_store(tmp_path, {"version": 1, "credential_pool": {}})
 
     from agentic_os_cli.auth import AuthError
@@ -2434,7 +2434,7 @@ def test_nous_seed_from_singletons_preserves_obtained_at_timestamps(tmp_path, mo
     (self-heal hooks, pool pruning by age) treat just-minted credentials as
     older than they actually are and evict them.
     """
-    monkeypatch.setenv("HERMES_HOME", str(tmp_path / "hermes"))
+    monkeypatch.setenv("AGENTIC_OS_HOME", str(tmp_path / "hermes"))
     _write_auth_store(
         tmp_path,
         {
@@ -2527,7 +2527,7 @@ class TestLeastUsedStrategy:
 
 def test_sync_nous_entry_from_auth_store_adopts_newer_tokens(tmp_path, monkeypatch):
     """When auth.json has a newer refresh token, the pool entry should adopt it."""
-    monkeypatch.setenv("HERMES_HOME", str(tmp_path / "hermes"))
+    monkeypatch.setenv("AGENTIC_OS_HOME", str(tmp_path / "hermes"))
     _write_auth_store(
         tmp_path,
         {
@@ -2589,7 +2589,7 @@ def test_sync_nous_entry_from_auth_store_adopts_newer_tokens(tmp_path, monkeypat
 
 def test_sync_nous_entry_noop_when_tokens_match(tmp_path, monkeypatch):
     """When auth.json has the same refresh token, sync should be a no-op."""
-    monkeypatch.setenv("HERMES_HOME", str(tmp_path / "hermes"))
+    monkeypatch.setenv("AGENTIC_OS_HOME", str(tmp_path / "hermes"))
     _write_auth_store(
         tmp_path,
         {
@@ -2623,7 +2623,7 @@ def test_sync_nous_entry_noop_when_tokens_match(tmp_path, monkeypatch):
 
 def test_nous_exhausted_entry_recovers_via_auth_store_sync(tmp_path, monkeypatch):
     """An exhausted Nous entry should recover when auth.json has newer tokens."""
-    monkeypatch.setenv("HERMES_HOME", str(tmp_path / "hermes"))
+    monkeypatch.setenv("AGENTIC_OS_HOME", str(tmp_path / "hermes"))
     from agent.credential_pool import load_pool, STATUS_EXHAUSTED
     from dataclasses import replace as dc_replace
 
@@ -2714,7 +2714,7 @@ def _codex_auth_store(access: str, refresh: str) -> dict:
 
 def test_sync_codex_entry_from_auth_store_adopts_newer_tokens(tmp_path, monkeypatch):
     """When auth.json has newer Codex tokens, the pool entry should adopt them."""
-    monkeypatch.setenv("HERMES_HOME", str(tmp_path / "hermes"))
+    monkeypatch.setenv("AGENTIC_OS_HOME", str(tmp_path / "hermes"))
     _write_auth_store(tmp_path, _codex_auth_store("access-OLD", "refresh-OLD"))
 
     from agent.credential_pool import load_pool
@@ -2739,7 +2739,7 @@ def test_sync_codex_entry_from_auth_store_adopts_newer_tokens(tmp_path, monkeypa
 
 def test_sync_codex_entry_noop_when_tokens_match(tmp_path, monkeypatch):
     """When auth.json has the same tokens, sync should be a no-op."""
-    monkeypatch.setenv("HERMES_HOME", str(tmp_path / "hermes"))
+    monkeypatch.setenv("AGENTIC_OS_HOME", str(tmp_path / "hermes"))
     _write_auth_store(tmp_path, _codex_auth_store("access-same", "refresh-same"))
 
     from agent.credential_pool import load_pool
@@ -2761,7 +2761,7 @@ def test_codex_exhausted_entry_recovers_via_auth_store_sync(tmp_path, monkeypatc
     the future — so `_available_entries` kept returning empty and every
     request failed with "no available entries (all exhausted or empty)".
     """
-    monkeypatch.setenv("HERMES_HOME", str(tmp_path / "hermes"))
+    monkeypatch.setenv("AGENTIC_OS_HOME", str(tmp_path / "hermes"))
     from agent.credential_pool import load_pool, STATUS_EXHAUSTED
     from dataclasses import replace as dc_replace
 
@@ -2805,7 +2805,7 @@ def test_codex_exhausted_entry_stays_stuck_without_auth_store_update(tmp_path, m
     """Regression guard: if auth.json tokens haven't changed, the exhausted
     entry must stay stuck behind its reset window — sync must not spuriously
     clear status just because the entry is STATUS_EXHAUSTED."""
-    monkeypatch.setenv("HERMES_HOME", str(tmp_path / "hermes"))
+    monkeypatch.setenv("AGENTIC_OS_HOME", str(tmp_path / "hermes"))
     from agent.credential_pool import load_pool, STATUS_EXHAUSTED
     from dataclasses import replace as dc_replace
 
@@ -2878,7 +2878,7 @@ def test_is_terminal_xai_oauth_refresh_error():
 def test_xai_oauth_terminal_refresh_clears_auth_json_and_removes_pool_entries(
     tmp_path, monkeypatch
 ):
-    monkeypatch.setenv("HERMES_HOME", str(tmp_path / "hermes"))
+    monkeypatch.setenv("AGENTIC_OS_HOME", str(tmp_path / "hermes"))
     monkeypatch.delenv("XAI_API_KEY", raising=False)
     monkeypatch.delenv("XAI_OAUTH_ACCESS_TOKEN", raising=False)
 
@@ -2938,7 +2938,7 @@ def test_xai_oauth_terminal_refresh_clears_auth_json_and_removes_pool_entries(
 
 
 def test_xai_oauth_nonterminal_refresh_does_not_quarantine(tmp_path, monkeypatch):
-    monkeypatch.setenv("HERMES_HOME", str(tmp_path / "hermes"))
+    monkeypatch.setenv("AGENTIC_OS_HOME", str(tmp_path / "hermes"))
     monkeypatch.delenv("XAI_API_KEY", raising=False)
     monkeypatch.delenv("XAI_OAUTH_ACCESS_TOKEN", raising=False)
 
@@ -2976,7 +2976,7 @@ def test_xai_oauth_concurrent_pool_instances_refresh_single_use_token_once(
     import threading
     import time
 
-    monkeypatch.setenv("HERMES_HOME", str(tmp_path / "hermes"))
+    monkeypatch.setenv("AGENTIC_OS_HOME", str(tmp_path / "hermes"))
     monkeypatch.delenv("XAI_API_KEY", raising=False)
     monkeypatch.delenv("XAI_OAUTH_ACCESS_TOKEN", raising=False)
 
@@ -3092,7 +3092,7 @@ def test_is_terminal_codex_oauth_refresh_error():
 def test_codex_oauth_terminal_refresh_clears_auth_json_and_removes_pool_entries(
     tmp_path, monkeypatch
 ):
-    monkeypatch.setenv("HERMES_HOME", str(tmp_path / "hermes"))
+    monkeypatch.setenv("AGENTIC_OS_HOME", str(tmp_path / "hermes"))
     monkeypatch.delenv("OPENAI_API_KEY", raising=False)
     monkeypatch.delenv("CODEX_OAUTH_ACCESS_TOKEN", raising=False)
 
@@ -3151,7 +3151,7 @@ def test_codex_oauth_terminal_refresh_clears_auth_json_and_removes_pool_entries(
 
 
 def test_codex_oauth_nonterminal_refresh_does_not_quarantine(tmp_path, monkeypatch):
-    monkeypatch.setenv("HERMES_HOME", str(tmp_path / "hermes"))
+    monkeypatch.setenv("AGENTIC_OS_HOME", str(tmp_path / "hermes"))
     monkeypatch.delenv("OPENAI_API_KEY", raising=False)
     monkeypatch.delenv("CODEX_OAUTH_ACCESS_TOKEN", raising=False)
 
@@ -3185,7 +3185,7 @@ def test_codex_oauth_nonterminal_refresh_does_not_quarantine(tmp_path, monkeypat
 
 def test_persist_preserves_concurrent_disk_only_entry(tmp_path, monkeypatch):
     """Regression for #19566: stale rotation writes keep concurrent entries."""
-    monkeypatch.setenv("HERMES_HOME", str(tmp_path / "hermes"))
+    monkeypatch.setenv("AGENTIC_OS_HOME", str(tmp_path / "hermes"))
     # Block external-credential autodiscovery: a real ~/.claude/.credentials.json
     # on a dev machine would seed an extra claude_code entry and break the
     # exact-id assertions below (passes on CI where no such file exists).
@@ -3251,7 +3251,7 @@ def test_persist_preserves_concurrent_disk_only_entry(tmp_path, monkeypatch):
 
 
 def test_remove_index_does_not_resurrect_via_disk_merge(tmp_path, monkeypatch):
-    monkeypatch.setenv("HERMES_HOME", str(tmp_path / "hermes"))
+    monkeypatch.setenv("AGENTIC_OS_HOME", str(tmp_path / "hermes"))
     # Block external-credential autodiscovery (see note in the test above).
     monkeypatch.setattr("agent.anthropic_adapter.read_hermes_oauth_credentials", lambda: None)
     monkeypatch.setattr("agent.anthropic_adapter.read_claude_code_credentials", lambda: None)
@@ -3298,7 +3298,7 @@ def test_remove_index_does_not_resurrect_via_disk_merge(tmp_path, monkeypatch):
 
 def _make_anthropic_claude_code_pool(tmp_path, monkeypatch, *, access_token, refresh_token, expires_at_ms=9_999_999_999_000):
     """Helper: load an Anthropic pool seeded with a single claude_code entry."""
-    monkeypatch.setenv("HERMES_HOME", str(tmp_path / "hermes"))
+    monkeypatch.setenv("AGENTIC_OS_HOME", str(tmp_path / "hermes"))
     monkeypatch.delenv("ANTHROPIC_API_KEY", raising=False)
     monkeypatch.delenv("ANTHROPIC_TOKEN", raising=False)
     monkeypatch.delenv("CLAUDE_CODE_OAUTH_TOKEN", raising=False)

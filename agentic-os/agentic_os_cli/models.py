@@ -114,7 +114,7 @@ def _codex_curated_models() -> list[str]:
 
 # Static fallback for xAI when the models.dev disk cache is empty (fresh
 # install, offline first run, etc.). Mirrors the xAI-direct model IDs from
-# $HERMES_HOME/models_dev_cache.json as of 2026-04-28. Whenever xAI renames
+# $AGENTIC_OS_HOME/models_dev_cache.json as of 2026-04-28. Whenever xAI renames
 # or retires a model, the disk cache picks it up on the next refresh and the
 # fallback here only matters until that refresh lands.
 #
@@ -163,7 +163,7 @@ def _xai_merge_curated_extras(ids: list[str]) -> list[str]:
 def _xai_curated_models() -> list[str]:
     """Derive the xAI-direct curated list from models.dev disk cache.
 
-    Reads $HERMES_HOME/models_dev_cache.json directly (no network) so this
+    Reads $AGENTIC_OS_HOME/models_dev_cache.json directly (no network) so this
     runs at import time without blocking. Falls back to ``_XAI_STATIC_FALLBACK``
     when the cache is empty or unreadable. Hermes refreshes the cache from
     https://models.dev/api.json on normal use, so this list self-heals as
@@ -915,7 +915,7 @@ def fetch_nous_recommended_models(
     ``force_refresh=True`` to bypass the in-process cache.
 
     A successful live fetch is also persisted to a per-base disk cache
-    (``$HERMES_HOME/cache/nous_recommended_cache.json``) as last-known-good.
+    (``$AGENTIC_OS_HOME/cache/nous_recommended_cache.json``) as last-known-good.
     When the live fetch fails (network, parse, non-2xx) and the in-process
     cache is empty, the disk copy is returned instead of ``{}`` — so a
     transient Portal hiccup no longer silently drops the free/paid model
@@ -1421,7 +1421,7 @@ def _openrouter_model_is_free(pricing: Any) -> bool:
 def _openrouter_model_supports_tools(item: Any) -> bool:
     """Return True when the model's ``supported_parameters`` advertise tool calling.
 
-    hermes-agent is tool-calling-first — every provider path assumes the model
+    agentic-os is tool-calling-first — every provider path assumes the model
     can invoke tools. Models that don't advertise ``tools`` in their
     ``supported_parameters`` (e.g. image-only or completion-only models) cannot
     be driven by the agent loop and would fail at the first tool call.
@@ -1495,7 +1495,7 @@ def fetch_openrouter_models(
         live_item = live_by_id.get(preferred_id)
         if live_item is None:
             continue
-        # Hide models that don't advertise tool-calling support — hermes-agent
+        # Hide models that don't advertise tool-calling support — agentic-os
         # requires it and surfacing them leads to immediate runtime failures
         # when the user selects them. Ported from Kilo-Org/kilocode#9068.
         if not _openrouter_model_supports_tools(live_item):
@@ -2305,7 +2305,7 @@ def _resolve_copilot_catalog_api_key() -> str:
          ``gho_*`` from device-code login, or a fine-grained PAT) stored in
          ``auth.json`` under ``credential_pool.copilot[]``. The pool is
          populated by ``hermes auth add copilot`` and by ``_seed_from_env``
-         when the env var is set in ``~/.hermes/.env``.
+         when the env var is set in ``~/.agentic-os/.env``.
 
     Without (2), users whose only Copilot credential is in the pool see
     the ``/model`` picker fall back to a stale hardcoded list because the
@@ -2679,7 +2679,7 @@ def provider_model_ids(provider: Optional[str], *, force_refresh: bool = False) 
 # HTTP roundtrips just to render the provider list.
 #
 # Cache strategy:
-#   - One JSON file at $HERMES_HOME/provider_models_cache.json
+#   - One JSON file at $AGENTIC_OS_HOME/provider_models_cache.json
 #   - Per-provider entries keyed by (provider, credential fingerprint)
 #   - Credential fingerprint = sha256 of env-var values that the provider
 #     normally reads. Swap your OPENAI_API_KEY and the entry invalidates.
@@ -2706,7 +2706,7 @@ def _credential_fingerprint(provider: str) -> str:
     for that provider. We hash AT LEAST the api-key + base-url env vars
     declared in ``PROVIDER_REGISTRY``. For OAuth-backed providers
     (codex, copilot, anthropic-via-claude-code, nous portal), the
-    relevant tokens live in ``$HERMES_HOME/auth.json`` and external
+    relevant tokens live in ``$AGENTIC_OS_HOME/auth.json`` and external
     credential files. Rather than parse every shape, we additionally
     fold the mtime of those files into the fingerprint so refreshes
     after re-auth bust the cache.
@@ -3779,7 +3779,7 @@ def probe_api_models(
     tried: list[str] = []
     headers: dict[str, str] = {"User-Agent": _HERMES_USER_AGENT}
     if urllib.parse.urlparse(normalized).hostname == "generativelanguage.googleapis.com":
-        headers["X-Goog-Api-Client"] = f"hermes-agent/{_HERMES_VERSION}"
+        headers["X-Goog-Api-Client"] = f"agentic-os/{_HERMES_VERSION}"
     if api_key and api_mode == "anthropic_messages":
         headers["x-api-key"] = api_key
         headers["anthropic-version"] = "2023-06-01"

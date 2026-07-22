@@ -23,7 +23,7 @@ import sys
 from pathlib import Path
 
 from agentic_os_constants import agent_browser_runnable
-from tools.environments.local import hermes_subprocess_env
+from tools.environments.local import agentic_os_subprocess_env
 
 _IS_WINDOWS = platform.system() == "Windows"
 
@@ -63,7 +63,7 @@ def _has_hermes_agent_browser() -> bool:
     if _IS_WINDOWS:
         # npm -g --prefix puts .cmd shims directly in the prefix dir on Windows
         return (home / "node" / "agent-browser.cmd").is_file()
-    # install.sh installs globally into $HERMES_HOME/node/bin/ via npm -g --prefix
+    # install.sh installs globally into $AGENTIC_OS_HOME/node/bin/ via npm -g --prefix
     # Also check legacy node_modules/.bin/ path for git-clone installs.
     return (
         (home / "node" / "bin" / "agent-browser").is_file()
@@ -149,7 +149,7 @@ def ensure_dependency(
     else:
         cmd = ["bash", str(script), "--ensure", dep]
 
-    run_env = hermes_subprocess_env(inherit_credentials=False)
+    run_env = agentic_os_subprocess_env(inherit_credentials=False)
     run_env["IS_INTERACTIVE"] = "false"
     result = subprocess.run(
         cmd,

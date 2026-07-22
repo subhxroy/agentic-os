@@ -504,7 +504,7 @@ _DB_CACHE: Dict[str, Any] = {}
 
 
 def _get_session_db() -> Optional[Any]:
-    """Return a SessionDB instance for the current HERMES_HOME.
+    """Return a SessionDB instance for the current AGENTIC_OS_HOME.
 
     SessionDB has no built-in singleton, but opening a new connection per
     /goal call would thrash the file. We cache one instance per
@@ -1529,7 +1529,7 @@ class GoalManager:
                 "message": (
                     f"⏸ Goal paused — judge API returned errors "
                     f"({state.consecutive_transport_failures} turns). "
-                    "Check the goal_judge provider/key in ~/.hermes/config.yaml:\n"
+                    "Check the goal_judge provider/key in ~/.agentic-os/config.yaml:\n"
                     "  auxiliary:\n"
                     "    goal_judge:\n"
                     "      provider: deepseek\n"
@@ -1559,7 +1559,7 @@ class GoalManager:
                 "message": (
                     f"⏸ Goal paused — the judge model ({state.consecutive_parse_failures} turns) "
                     "isn't returning the required JSON verdict. Route the judge to a stricter "
-                    "model in ~/.hermes/config.yaml:\n"
+                    "model in ~/.agentic-os/config.yaml:\n"
                     "  auxiliary:\n"
                     "    goal_judge:\n"
                     "      provider: openrouter\n"

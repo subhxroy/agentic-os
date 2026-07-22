@@ -51,7 +51,7 @@ const lane = (over: Partial<SidebarSessionGroup> & Pick<SidebarSessionGroup, 'id
 
 describe('baseName', () => {
   it('returns the final path segment, ignoring trailing slashes and separators', () => {
-    expect(baseName('/www/hermes-agent/')).toBe('hermes-agent')
+    expect(baseName('/www/agentic-os/')).toBe('agentic-os')
     expect(baseName('C:\\repos\\app')).toBe('app')
     expect(baseName('')).toBeUndefined()
   })
@@ -203,7 +203,7 @@ describe('mergeRepoWorktreeGroups (visual enhancer)', () => {
   })
 
   it('relabels a dir-named linked worktree lane to its live checked-out branch', () => {
-    // Backend labels the lane by the worktree dir (`hermes-agent-ci`); the live
+    // Backend labels the lane by the worktree dir (`agentic-os-ci`); the live
     // `git worktree list` says HEAD there is `bb/ci-affected-only` → branch wins.
     const repo = {
       id: '/repo',
@@ -218,7 +218,7 @@ describe('mergeRepoWorktreeGroups (visual enhancer)', () => {
         }),
         lane({
           id: '/repo-ci',
-          label: 'hermes-agent-ci',
+          label: 'agentic-os-ci',
           isMain: false,
           path: '/repo-ci',
           sessions: [makeSession('/repo-ci')]
@@ -686,7 +686,7 @@ describe('overlayLiveLanes', () => {
   })
 
   it('places a session into an out-of-tree (sibling) worktree lane by its path', () => {
-    // `hermes-agent-ci` is a linked worktree living BESIDE the repo, not under
+    // `agentic-os-ci` is a linked worktree living BESIDE the repo, not under
     // it — repo-root nesting fails, but the existing lane carries its real path.
     const existing = makeSession('/www/app-ci', { id: 'old' })
 

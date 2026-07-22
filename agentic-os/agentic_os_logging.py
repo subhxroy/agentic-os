@@ -2,7 +2,7 @@
 
 Provides a single ``setup_logging()`` entry point that both the CLI and
 gateway call early in their startup path.  All log files live under
-``~/.hermes/logs/`` (profile-aware via ``get_agentic_os_home()``).
+``~/.agentic-os/logs/`` (profile-aware via ``get_agentic_os_home()``).
 
 Log files produced:
     agent.log   — INFO+, all agent/tool/session activity (the main log)

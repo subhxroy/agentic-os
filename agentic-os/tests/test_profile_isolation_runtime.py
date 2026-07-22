@@ -9,7 +9,7 @@ silently reverts to the launch/default profile and leaks one profile's data
 into another.
 
 These tests drive each previously-leaking site under override A then override B
-with real temp HERMES_HOME directories (no mocks) and assert the *active*
+with real temp AGENTIC_OS_HOME directories (no mocks) and assert the *active*
 profile's path is used.  They are the productionized form of the manual smoke
 probes used to confirm the bug class.
 """
@@ -28,7 +28,7 @@ from agentic_os_constants import (
 
 @pytest.fixture
 def two_profiles(tmp_path):
-    """Two distinct profile HERMES_HOME dirs with the dir skeleton created."""
+    """Two distinct profile AGENTIC_OS_HOME dirs with the dir skeleton created."""
     prof_a = tmp_path / "profA"
     prof_b = tmp_path / "profB"
     for p in (prof_a, prof_b):
@@ -134,8 +134,8 @@ class TestRichSentStorePathResolution:
 
     def test_store_path_follows_override(self, two_profiles, monkeypatch):
         prof_a, prof_b = two_profiles
-        # Ensure no ambient HERMES_HOME env masks the test.
-        monkeypatch.delenv("HERMES_HOME", raising=False)
+        # Ensure no ambient AGENTIC_OS_HOME env masks the test.
+        monkeypatch.delenv("AGENTIC_OS_HOME", raising=False)
         import gateway.rich_sent_store as rss
 
         b_seen = _under_override(prof_b, lambda: rss._store_path())

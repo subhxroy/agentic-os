@@ -53,7 +53,7 @@ def _notify_provider_jobs_changed_safe() -> None:
 #
 #   1. User-supplied cron prompt (small, written as a directive).
 #      Strict scanning is appropriate — a legit cron prompt has no business
-#      saying "cat ~/.hermes/.env" or "rm -rf /". `_scan_cron_prompt()` runs
+#      saying "cat ~/.agentic-os/.env" or "rm -rf /". `_scan_cron_prompt()` runs
 #      against this at create/update time and as a runtime defense-in-depth.
 #
 #   2. Assembled prompt that includes loaded skill content (large markdown
@@ -61,7 +61,7 @@ def _notify_provider_jobs_changed_safe() -> None:
 #      patterns in PROSE). Reusing the strict patterns here false-positives
 #      every time a skill *describes* a command — see #3968 follow-up: the
 #      `agentic-os-dev` skill contains a security postmortem mentioning
-#      `cat ~/.hermes/.env`, which tripped `read_secrets` and silently
+#      `cat ~/.agentic-os/.env`, which tripped `read_secrets` and silently
 #      killed all PR-scout jobs.
 #
 #      Skill bodies are user-curated and scanned at install time by
@@ -528,7 +528,7 @@ def _validate_cron_base_url(
 def _validate_cron_script_path(script: Optional[str]) -> Optional[str]:
     """Validate a cron job script path at the API boundary.
 
-    Scripts must be relative paths that resolve within HERMES_HOME/scripts/.
+    Scripts must be relative paths that resolve within AGENTIC_OS_HOME/scripts/.
     Absolute paths and ~ expansion are rejected to prevent arbitrary script
     execution via prompt injection.
 
@@ -542,12 +542,12 @@ def _validate_cron_script_path(script: Optional[str]) -> Optional[str]:
     raw = script.strip()
 
     # Reject absolute paths and ~ expansion at the API boundary.
-    # Only relative paths within ~/.hermes/scripts/ are allowed.
+    # Only relative paths within ~/.agentic-os/scripts/ are allowed.
     if raw.startswith(("/", "~")) or (len(raw) >= 2 and raw[1] == ":"):
         return (
-            f"Script path must be relative to ~/.hermes/scripts/. "
+            f"Script path must be relative to ~/.agentic-os/scripts/. "
             f"Got absolute or home-relative path: {raw!r}. "
-            f"Place scripts in ~/.hermes/scripts/ and use just the filename."
+            f"Place scripts in ~/.agentic-os/scripts/ and use just the filename."
         )
 
     # Validate containment after resolution
@@ -1107,9 +1107,9 @@ def check_cronjob_requirements() -> bool:
     from utils import env_var_enabled
 
     return (
-        env_var_enabled("HERMES_INTERACTIVE")
-        or env_var_enabled("HERMES_GATEWAY_SESSION")
-        or env_var_enabled("HERMES_EXEC_ASK")
+        env_var_enabled("AGENTIC_OS_INTERACTIVE")
+        or env_var_enabled("AGENTIC_OS_GATEWAY_SESSION")
+        or env_var_enabled("AGENTIC_OS_EXEC_ASK")
     )
 
 

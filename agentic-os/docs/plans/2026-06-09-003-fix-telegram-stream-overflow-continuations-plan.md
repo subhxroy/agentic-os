@@ -3,7 +3,7 @@ title: "fix: Prevent Telegram streamed replies from ending after first overflow 
 status: active
 date: 2026-06-09
 type: fix
-target_repo: hermes-agent
+target_repo: agentic-os
 origin: user-reported Telegram topic screenshot
 ---
 

@@ -110,16 +110,16 @@ WORKDIR /opt/hermes
 # Copy only package manifests first so npm install + Playwright are cached
 # unless the lockfiles themselves change.
 #
-# ui-tui/packages/hermes-ink/ is copied IN FULL (not just its manifests)
+# ui-tui/packages/agentic-os-ink/ is copied IN FULL (not just its manifests)
 # because it is referenced as a `file:` workspace dependency from
 # ui-tui/package.json.  Copying the tree up front lets npm resolve the
 # workspace to real content instead of stopping at a bare package.json.
 COPY package.json package-lock.json ./
 COPY web/package.json web/
 COPY ui-tui/package.json ui-tui/
-COPY ui-tui/packages/hermes-ink/ ui-tui/packages/hermes-ink/
+COPY ui-tui/packages/agentic-os-ink/ ui-tui/packages/agentic-os-ink/
 # apps/shared/ is copied IN FULL because web/package.json references it as a
-# `file:` workspace dependency (same pattern as hermes-ink above).
+# `file:` workspace dependency (same pattern as agentic-os-ink above).
 COPY apps/shared/ apps/shared/
 
 # `npm_config_install_links=false` forces npm to install `file:` deps as
@@ -204,7 +204,7 @@ RUN cd web && npm run build && \
 COPY --link --chmod=a+rX,go-w . .
 
 # ---------- Permissions ----------
-# Link hermes-agent itself (editable). Deps are already installed in the
+# Link agentic-os itself (editable). Deps are already installed in the
 # cached layer above; `--no-deps` makes this a fast egg-link creation with no
 # resolution or downloads.
 RUN uv pip install --no-cache-dir --no-deps -e "."
@@ -215,11 +215,11 @@ RUN uv pip install --no-cache-dir --no-deps -e "."
 
 USER root
 RUN mkdir -p /opt/hermes/bin && \
-    cp /opt/hermes/docker/hermes-exec-shim.sh /opt/hermes/bin/hermes && \
+    cp /opt/hermes/docker/agentic-os-exec-shim.sh /opt/hermes/bin/hermes && \
     chmod 0755 /opt/hermes/bin/hermes && \
     printf 'docker\n' > /opt/hermes/.install_method
 # The ``.install_method`` stamp is baked next to the running code (the install
-# tree), NOT into $HERMES_HOME. $HERMES_HOME (/opt/data) is a shared data
+# tree), NOT into $AGENTIC_OS_HOME. $AGENTIC_OS_HOME (/opt/data) is a shared data
 # volume that is commonly bind-mounted from the host and even shared with a
 # host-side Desktop/CLI install; stamping it at boot used to clobber that
 # host install's marker and wrongly block its ``hermes update``. A code-scoped
@@ -265,7 +265,7 @@ COPY docker/s6-rc.d/ /etc/s6-overlay/s6-rc.d/
 # runs before user services start.
 #
 # 02-reconcile-profiles re-creates per-profile gateway s6 service
-# slots from $HERMES_HOME/profiles/<name>/ after a container restart
+# slots from $AGENTIC_OS_HOME/profiles/<name>/ after a container restart
 # (the /run/service/ scandir is tmpfs and wiped on restart). Phase 4.
 RUN mkdir -p /etc/cont-init.d && \
     printf '#!/command/with-contenv sh\nexec /opt/hermes/docker/stage2-hook.sh\n' \
@@ -292,8 +292,8 @@ ENV HERMES_WEB_DIST=/opt/hermes/hermes_cli/web_dist
 # embedded-chat (/api/pty) connections → ENOTEMPTY → the chat tab dies with a
 # 502 / "[session ended]". Pointing at the prebuilt bundle sidesteps the whole
 # check. (A separate launcher hardening is tracked independently.)
-ENV HERMES_TUI_DIR=/opt/hermes/ui-tui
-ENV HERMES_HOME=/opt/data
+ENV AGENTIC_OS_TUI_DIR=/opt/hermes/ui-tui
+ENV AGENTIC_OS_HOME=/opt/data
 ENV HERMES_WRITE_SAFE_ROOT=/opt/data
 ENV HERMES_DISABLE_LAZY_INSTALLS=1
 # The published image seals /opt/hermes (root-owned, read-only) so a runtime
@@ -312,7 +312,7 @@ ENV HERMES_LAZY_INSTALL_TARGET=/opt/data/lazy-packages
 
 # `docker exec` privilege-drop shim. When operators run
 # `docker exec <c> hermes ...` they default to root, and any file the
-# command writes under $HERMES_HOME (auth.json, .env, config.yaml) ends
+# command writes under $AGENTIC_OS_HOME (auth.json, .env, config.yaml) ends
 # up root-owned and unreadable to the supervised gateway (UID 10000).
 # The shim lives at /opt/hermes/bin/hermes, sits earliest on PATH, and
 # transparently re-exec's the real venv binary via `s6-setuidgid hermes`

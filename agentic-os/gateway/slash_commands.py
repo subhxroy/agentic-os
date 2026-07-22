@@ -7,7 +7,7 @@ lifting them into a mixin that ``GatewayRunner`` inherits keeps every
 ``self._handle_*_command`` dispatch + test reference working via the MRO, while
 removing the bulk from run.py.
 
-Module-level run.py helpers a handler needs (``_hermes_home``,
+Module-level run.py helpers a handler needs (``_agentic_os_home``,
 ``_load_gateway_config``, ``_resolve_gateway_model``, etc.) are imported lazily
 inside the handler body — a deferred ``from gateway.run import ...`` resolves at
 call time (run.py fully loaded by then), avoiding an import cycle.
@@ -1245,7 +1245,7 @@ class GatewaySlashCommandsMixin:
 
     async def _handle_restart_command(self, event: MessageEvent) -> Union[str, EphemeralReply]:
         """Handle /restart command - drain active work, then restart the gateway."""
-        from gateway.run import _hermes_home
+        from gateway.run import _agentic_os_home
         # Defensive idempotency check: if the previous gateway process
         # recorded this same /restart (same platform + update_id) and the new
         # process is seeing it *again*, this is a re-delivery caused by PTB's
@@ -1295,7 +1295,7 @@ class GatewaySlashCommandsMixin:
                 except Exception:
                     self._restart_command_source = event.source
             atomic_json_write(
-                _hermes_home / ".restart_notify.json",
+                _agentic_os_home / ".restart_notify.json",
                 notify_data,
                 indent=None,
             )
@@ -1315,7 +1315,7 @@ class GatewaySlashCommandsMixin:
             if event.platform_update_id is not None:
                 dedup_data["update_id"] = event.platform_update_id
             atomic_json_write(
-                _hermes_home / ".restart_last_processed.json",
+                _agentic_os_home / ".restart_last_processed.json",
                 dedup_data,
                 indent=None,
             )
@@ -1444,7 +1444,7 @@ class GatewaySlashCommandsMixin:
           /model <name> --provider <provider> — switch provider + model
           /model --provider <provider>        — switch to provider, auto-detect model
         """
-        from gateway.run import _hermes_home, _load_gateway_config
+        from gateway.run import _agentic_os_home, _load_gateway_config
         import yaml
         from agentic_os_cli.model_switch import (
             switch_model as _switch_model, parse_model_flags_detailed,
@@ -1497,7 +1497,7 @@ class GatewaySlashCommandsMixin:
         user_provs = None
         custom_provs = None
         excluded_provs = []
-        config_path = (_command_profile_home or _hermes_home) / "config.yaml"
+        config_path = (_command_profile_home or _agentic_os_home) / "config.yaml"
         try:
             cfg = _load_gateway_config()
             if cfg:
@@ -2203,11 +2203,11 @@ class GatewaySlashCommandsMixin:
 
     async def _handle_personality_command(self, event: MessageEvent) -> str:
         """Handle /personality command - list or set a personality."""
-        from gateway.run import _hermes_home, _load_gateway_config
+        from gateway.run import _agentic_os_home, _load_gateway_config
         from agentic_os_constants import display_agentic_os_home
 
         args = event.get_command_args().strip().lower()
-        config_path = _hermes_home / 'config.yaml'
+        config_path = _agentic_os_home / 'config.yaml'
 
         try:
             config = _load_gateway_config()
@@ -2755,8 +2755,8 @@ class GatewaySlashCommandsMixin:
         """Save a dot-separated key to config.yaml (shared by /reasoning, /fast
         and their interactive pickers)."""
         import yaml
-        from gateway.run import _hermes_home
-        config_path = _hermes_home / "config.yaml"
+        from gateway.run import _agentic_os_home
+        config_path = _agentic_os_home / "config.yaml"
         try:
             user_config = {}
             if config_path.exists():
@@ -2999,7 +2999,7 @@ class GatewaySlashCommandsMixin:
         Gate changes persist to config.yaml and evict the cached agent so the
         new setting takes effect on the next message.
         """
-        from gateway.run import _hermes_home
+        from gateway.run import _agentic_os_home
         from agentic_os_cli.write_approval_commands import handle_pending_subcommand
         from tools import write_approval as wa
         from tools.memory_tool import load_on_disk_store
@@ -3007,7 +3007,7 @@ class GatewaySlashCommandsMixin:
         raw_args = event.get_command_args().strip()
         args = raw_args.split() if raw_args else []
         session_key = self._session_key_for_source(event.source)
-        config_path = _hermes_home / "config.yaml"
+        config_path = _agentic_os_home / "config.yaml"
 
         def _set_approval(enabled: bool):
             import yaml
@@ -3045,18 +3045,18 @@ class GatewaySlashCommandsMixin:
         stranded).
 
         ``diff`` output is truncated for chat bubbles — the full diff lives in
-        the pending JSON file under ``~/.hermes/pending/skills/``. (Note this is
+        the pending JSON file under ``~/.agentic-os/pending/skills/``. (Note this is
         the write-approval ``diff <id>``; the CLI also has an unrelated
         ``hermes skills diff <name>`` that diffs a bundled skill vs stock.)
         """
-        from gateway.run import _hermes_home
+        from gateway.run import _agentic_os_home
         from agentic_os_cli.write_approval_commands import handle_pending_subcommand
         from tools import write_approval as wa
 
         raw_args = event.get_command_args().strip()
         args = raw_args.split() if raw_args else []
         session_key = self._session_key_for_source(event.source)
-        config_path = _hermes_home / "config.yaml"
+        config_path = _agentic_os_home / "config.yaml"
 
         gate_on = wa.write_approval_enabled(wa.SKILLS)
         wants_toggle = bool(args) and args[0].lower() in {"approval", "mode"}
@@ -3092,7 +3092,7 @@ class GatewaySlashCommandsMixin:
             pending_id = args[1] if len(args) > 1 else "<id>"
             out = (out[:3000]
                    + "\n… (truncated — full diff in "
-                     f"~/.hermes/pending/skills/{pending_id}.json)")
+                     f"~/.agentic-os/pending/skills/{pending_id}.json)")
         return out
 
     async def _handle_fast_command(self, event: MessageEvent) -> Optional[str]:
@@ -3206,9 +3206,9 @@ class GatewaySlashCommandsMixin:
         ``display.platforms.<platform>.tool_progress`` so each channel can
         have its own verbosity level independently.
         """
-        from gateway.run import _hermes_home, _load_gateway_config, _platform_config_key
+        from gateway.run import _agentic_os_home, _load_gateway_config, _platform_config_key
 
-        config_path = _hermes_home / "config.yaml"
+        config_path = _agentic_os_home / "config.yaml"
         platform_key = _platform_config_key(event.source.platform)
 
         # --- check config gate ------------------------------------------------
@@ -3275,10 +3275,10 @@ class GatewaySlashCommandsMixin:
         are respected but not modified here — edit config.yaml directly for
         per-platform control.
         """
-        from gateway.run import _hermes_home, _load_gateway_config, _platform_config_key, _resolve_gateway_model
+        from gateway.run import _agentic_os_home, _load_gateway_config, _platform_config_key, _resolve_gateway_model
         from gateway.runtime_footer import resolve_footer_config
 
-        config_path = _hermes_home / "config.yaml"
+        config_path = _agentic_os_home / "config.yaml"
         platform_key = _platform_config_key(event.source.platform)
 
         # --- parse argument -------------------------------------------------
@@ -4795,7 +4795,7 @@ class GatewaySlashCommandsMixin:
         files are written so either the current gateway process or the next one
         can notify the user when the update finishes.
         """
-        from gateway.run import _hermes_home, _resolve_hermes_bin
+        from gateway.run import _agentic_os_home, _resolve_hermes_bin
         import json
         import shutil
         import subprocess
@@ -4828,9 +4828,9 @@ class GatewaySlashCommandsMixin:
         if not hermes_cmd:
             return t("gateway.update.hermes_cmd_not_found")
 
-        pending_path = _hermes_home / ".update_pending.json"
-        output_path = _hermes_home / ".update_output.txt"
-        exit_code_path = _hermes_home / ".update_exit_code"
+        pending_path = _agentic_os_home / ".update_pending.json"
+        output_path = _agentic_os_home / ".update_output.txt"
+        exit_code_path = _agentic_os_home / ".update_exit_code"
         session_key = self._session_key_for_source(event.source)
         pending = {
             "platform": event.source.platform.value,

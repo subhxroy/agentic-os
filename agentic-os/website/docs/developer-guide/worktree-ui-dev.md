@@ -43,14 +43,14 @@ htui() {
   local root
   root="$(_hermes_root)" || { echo "htui: not in a Hermes checkout" >&2; return 1; }
   ( cd "$root" && PYTHONPATH="$root" \
-      "$HERMES_MAIN_CHECKOUT/.venv/bin/python" -m hermes_cli.main --tui --dev "$@" )
+      "$HERMES_MAIN_CHECKOUT/.venv/bin/python" -m agentic_os_cli.main --tui --dev "$@" )
 }
 ```
 
 `--dev` compiles from source, so it links `ui-tui/node_modules` from `HERMES_MAIN_CHECKOUT` when the root lockfile matches and installs locally otherwise (see [`_hermes_root` / linking helpers](#shared-helpers)).
 
-:::warning `--dev` and `HERMES_TUI_DIR` are mutually exclusive
-`HERMES_TUI_DIR` points Hermes at a *prebuilt* bundle (Nix, system packages), which has no source to hot-reload. If it's set in your shell, `hermes --tui --dev` exits with an error. Run `unset HERMES_TUI_DIR` before `htui`.
+:::warning `--dev` and `AGENTIC_OS_TUI_DIR` are mutually exclusive
+`AGENTIC_OS_TUI_DIR` points Hermes at a *prebuilt* bundle (Nix, system packages), which has no source to hot-reload. If it's set in your shell, `hermes --tui --dev` exits with an error. Run `unset AGENTIC_OS_TUI_DIR` before `htui`.
 :::
 
 ## `hgui` — desktop app from the worktree
@@ -80,7 +80,7 @@ hgui() {
 
   ( cd "$desktop"
     export PATH="$root/node_modules/.bin:$PATH"
-    HERMES_DESKTOP_HERMES_ROOT="$root" \
+    HERMES_DESKTOP_AGENTIC_ROOT="$root" \
     HERMES_DESKTOP_PYTHON="$HERMES_MAIN_CHECKOUT/.venv/bin/python" \
     HERMES_DESKTOP_IGNORE_EXISTING=1 \
     HERMES_DESKTOP_CWD="$root" \
@@ -92,7 +92,7 @@ The desktop env vars it sets are all real backend-resolution knobs:
 
 | Variable | Role in `hgui` |
 |----------|----------------|
-| `HERMES_DESKTOP_HERMES_ROOT` | Runs the backend from **this worktree**, not the packaged/PATH `hermes`. |
+| `HERMES_DESKTOP_AGENTIC_ROOT` | Runs the backend from **this worktree**, not the packaged/PATH `hermes`. |
 | `HERMES_DESKTOP_PYTHON` | Reuses the deps checkout's venv instead of re-resolving a Python. |
 | `HERMES_DESKTOP_IGNORE_EXISTING` | Ignores any `hermes` on `PATH` so it can't shadow the worktree. |
 | `HERMES_DESKTOP_CWD` | Opens the desktop chat rooted at the worktree. |
@@ -139,7 +139,7 @@ A symlink to a divergent `node_modules` is worse than no install — the worktre
 ## See also
 
 - [Git Worktrees](../user-guide/git-worktrees.md) — the isolation model these helpers build on
-- [TUI](../user-guide/tui.md) — `hermes --tui --dev` and the `HERMES_TUI_DIR` prebuild path
+- [TUI](../user-guide/tui.md) — `hermes --tui --dev` and the `AGENTIC_OS_TUI_DIR` prebuild path
 - [Desktop App](../user-guide/desktop.md) — building from source and the backend resolution ladder
 - [`apps/desktop/README.md`](https://github.com/subhxroy/agentic-os/blob/main/apps/desktop/README.md) — dev server, sandbox script, and packaging
 - [Environment Variables](../reference/environment-variables.md) — every `HERMES_*` variable Hermes reads

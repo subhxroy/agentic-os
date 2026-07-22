@@ -20,7 +20,7 @@ Use when a Hermes Kanban worker wants to run Codex CLI as an isolated implementa
 | Author | Agentic OS |
 | License | MIT |
 | Tags | `kanban`, `codex`, `worktrees`, `autonomous-agents`, `prediction-market-bot` |
-| Related skills | [`codex`](/docs/user-guide/skills/bundled/autonomous-ai-agents/autonomous-ai-agents-codex), [`hermes-agent`](/docs/user-guide/skills/bundled/autonomous-ai-agents/autonomous-ai-agents-hermes-agent) |
+| Related skills | [`codex`](/docs/user-guide/skills/bundled/autonomous-ai-agents/autonomous-ai-agents-codex), [`agentic-os`](/docs/user-guide/skills/bundled/autonomous-ai-agents/autonomous-ai-agents-agentic-os) |
 
 ## Reference: full SKILL.md
 

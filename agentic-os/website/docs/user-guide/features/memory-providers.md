@@ -18,7 +18,7 @@ hermes memory off        # disable external provider
 
 You can also select the active memory provider via `hermes plugins` → Provider Plugins → Memory Provider.
 
-Or set manually in `~/.hermes/config.yaml`:
+Or set manually in `~/.agentic-os/config.yaml`:
 
 ```yaml
 memory:
@@ -70,7 +70,7 @@ hermes memory setup        # select "honcho" — runs the Honcho-specific post-s
 
 The legacy `hermes honcho setup` command still works (it now redirects to `hermes memory setup`), but is only registered after Honcho is selected as the active memory provider.
 
-**Config:** `$HERMES_HOME/honcho.json` (profile-local) or `~/.honcho/config.json` (global). Resolution order: `$HERMES_HOME/honcho.json` > `~/.hermes/honcho.json` > `~/.honcho/config.json`. See the [config reference](https://github.com/subhxroy/agentic-os/blob/main/plugins/memory/honcho/README.md) and the [Honcho integration guide](https://docs.honcho.dev/v3/guides/integrations/hermes).
+**Config:** `$AGENTIC_OS_HOME/honcho.json` (profile-local) or `~/.honcho/config.json` (global). Resolution order: `$AGENTIC_OS_HOME/honcho.json` > `~/.agentic-os/honcho.json` > `~/.honcho/config.json`. See the [config reference](https://github.com/subhxroy/agentic-os/blob/main/plugins/memory/honcho/README.md) and the [Honcho integration guide](https://docs.honcho.dev/v3/guides/integrations/hermes).
 
 <details>
 <summary>Full config reference</summary>
@@ -300,9 +300,9 @@ openviking-server
 hermes memory setup    # select "openviking"
 # Or manually:
 hermes config set memory.provider openviking
-echo "OPENVIKING_ENDPOINT=http://localhost:1933" >> ~/.hermes/.env
+echo "OPENVIKING_ENDPOINT=http://localhost:1933" >> ~/.agentic-os/.env
 # Authenticated servers should use a user/admin API key:
-echo "OPENVIKING_API_KEY=..." >> ~/.hermes/.env
+echo "OPENVIKING_API_KEY=..." >> ~/.agentic-os/.env
 ```
 
 **Key features:**
@@ -333,7 +333,7 @@ Server-side LLM fact extraction with semantic search, reranking, and automatic d
 hermes memory setup    # select "mem0" → "Platform"
 # Or manually:
 hermes config set memory.provider mem0
-echo "MEM0_API_KEY=your-key" >> ~/.hermes/.env
+echo "MEM0_API_KEY=your-key" >> ~/.agentic-os/.env
 ```
 
 **Setup (OSS):**
@@ -359,8 +359,8 @@ hermes memory setup mem0 --mode selfhosted --host http://localhost:8888 --api-ke
 Or configure manually — either as env vars:
 
 ```bash
-echo "MEM0_HOST=http://localhost:8888" >> ~/.hermes/.env
-echo "MEM0_API_KEY=your-admin-api-key" >> ~/.hermes/.env
+echo "MEM0_HOST=http://localhost:8888" >> ~/.agentic-os/.env
+echo "MEM0_API_KEY=your-admin-api-key" >> ~/.agentic-os/.env
 ```
 
 or in `mem0.json`:
@@ -371,7 +371,7 @@ or in `mem0.json`:
 
 The plugin authenticates with `X-API-Key` and uses the server's `/search` / `/memories` routes. `api_key` is optional (omit only for `AUTH_DISABLED` servers). Don't set `mode: oss` — it takes precedence over `host`.
 
-**Config:** `$HERMES_HOME/mem0.json` (behavioral settings). Only the secret `MEM0_API_KEY` belongs in `~/.hermes/.env`.
+**Config:** `$AGENTIC_OS_HOME/mem0.json` (behavioral settings). Only the secret `MEM0_API_KEY` belongs in `~/.agentic-os/.env`.
 
 | Key | Default | Description |
 |-----|---------|-------------|
@@ -411,14 +411,14 @@ Long-term memory with knowledge graph, entity resolution, and multi-strategy ret
 hermes memory setup    # select "hindsight"
 # Or manually:
 hermes config set memory.provider hindsight
-echo "HINDSIGHT_API_KEY=your-key" >> ~/.hermes/.env
+echo "HINDSIGHT_API_KEY=your-key" >> ~/.agentic-os/.env
 ```
 
 The setup wizard installs dependencies automatically and only installs what's needed for the selected mode (`hindsight-client` for cloud, `hindsight-all` for local). Requires `hindsight-client >= 0.4.22` (auto-upgraded on session start if outdated).
 
 **Local mode UI:** `hindsight-embed -p hermes ui start`
 
-**Config:** `$HERMES_HOME/hindsight/config.json`
+**Config:** `$AGENTIC_OS_HOME/hindsight/config.json`
 
 | Key | Default | Description |
 |-----|---------|-------------|
@@ -464,7 +464,7 @@ hermes config set memory.provider holographic
 
 | Key | Default | Description |
 |-----|---------|-------------|
-| `db_path` | `$HERMES_HOME/memory_store.db` | SQLite database path |
+| `db_path` | `$AGENTIC_OS_HOME/memory_store.db` | SQLite database path |
 | `auto_extract` | `false` | Auto-extract facts at session end |
 | `default_trust` | `0.5` | Default trust score (0.0–1.0) |
 
@@ -494,7 +494,7 @@ Cloud memory API with hybrid search (Vector + BM25 + Reranking), 7 memory types,
 hermes memory setup    # select "retaindb"
 # Or manually:
 hermes config set memory.provider retaindb
-echo "RETAINDB_API_KEY=your-key" >> ~/.hermes/.env
+echo "RETAINDB_API_KEY=your-key" >> ~/.agentic-os/.env
 ```
 
 ---
@@ -525,7 +525,7 @@ hermes config set memory.provider byterover
 
 **Key features:**
 - Automatic pre-compression extraction (saves insights before context compression discards them)
-- Knowledge tree stored at `$HERMES_HOME/byterover/` (profile-scoped)
+- Knowledge tree stored at `$AGENTIC_OS_HOME/byterover/` (profile-scoped)
 - SOC2 Type II certified cloud sync (optional)
 
 ---
@@ -548,7 +548,7 @@ Semantic long-term memory with profile recall, semantic search, explicit memory 
 hermes memory setup    # select "supermemory"
 # Or manually:
 hermes config set memory.provider supermemory
-echo 'SUPERMEMORY_API_KEY=***' >> ~/.hermes/.env
+echo 'SUPERMEMORY_API_KEY=***' >> ~/.agentic-os/.env
 ```
 
 Self-hosted setup:
@@ -558,7 +558,7 @@ npx supermemory local
 ```
 
 Before running `hermes memory setup`, set `base_url` in
-`$HERMES_HOME/supermemory.json`:
+`$AGENTIC_OS_HOME/supermemory.json`:
 
 ```json
 {
@@ -570,7 +570,7 @@ Then run `hermes memory setup` and enter the API key printed by the local
 server. Configuring the endpoint first ensures the setup connection probe also
 stays local.
 
-**Config:** `$HERMES_HOME/supermemory.json`
+**Config:** `$AGENTIC_OS_HOME/supermemory.json`
 
 | Key | Default | Description |
 |-----|---------|-------------|
@@ -654,8 +654,8 @@ hermes memory setup
 
 Each provider's data is isolated per [profile](/user-guide/profiles):
 
-- **Local storage providers** (Holographic, ByteRover) use `$HERMES_HOME/` paths which differ per profile
-- **Config file providers** (Honcho, Mem0, Hindsight, Supermemory) store config in `$HERMES_HOME/` so each profile has its own credentials
+- **Local storage providers** (Holographic, ByteRover) use `$AGENTIC_OS_HOME/` paths which differ per profile
+- **Config file providers** (Honcho, Mem0, Hindsight, Supermemory) store config in `$AGENTIC_OS_HOME/` so each profile has its own credentials
 - **Cloud providers** (RetainDB) auto-derive profile-scoped project names
 - **Env var providers** (OpenViking) are configured via each profile's `.env` file
 

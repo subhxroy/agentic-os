@@ -154,7 +154,7 @@ const sidebars: SidebarsConfig = {
                   items: [
                     'user-guide/skills/bundled/autonomous-ai-agents/autonomous-ai-agents-claude-code',
                     'user-guide/skills/bundled/autonomous-ai-agents/autonomous-ai-agents-codex',
-                    'user-guide/skills/bundled/autonomous-ai-agents/autonomous-ai-agents-hermes-agent',
+                    'user-guide/skills/bundled/autonomous-ai-agents/autonomous-ai-agents-agentic-os',
                     'user-guide/skills/bundled/autonomous-ai-agents/autonomous-ai-agents-opencode',
                   ],
                 },
@@ -234,11 +234,11 @@ const sidebars: SidebarsConfig = {
                 },
                 {
                   type: 'category',
-                  label: 'hermes-desktop-plugins',
-                  key: 'skills-bundled-hermes-desktop-plugins',
+                  label: 'agentic-os-desktop-plugins',
+                  key: 'skills-bundled-agentic-os-desktop-plugins',
                   collapsed: true,
                   items: [
-                    'user-guide/skills/bundled/hermes-desktop-plugins/hermes-desktop-plugins-hermes-desktop-plugins',
+                    'user-guide/skills/bundled/agentic-os-desktop-plugins/agentic-os-desktop-plugins-agentic-os-desktop-plugins',
                   ],
                 },
                 {
@@ -334,7 +334,7 @@ const sidebars: SidebarsConfig = {
                   key: 'skills-bundled-software-development',
                   collapsed: true,
                   items: [
-                    'user-guide/skills/bundled/software-development/software-development-hermes-agent-skill-authoring',
+                    'user-guide/skills/bundled/software-development/software-development-agentic-os-skill-authoring',
                     'user-guide/skills/bundled/software-development/software-development-node-inspect-debugger',
                     'user-guide/skills/bundled/software-development/software-development-plan',
                     'user-guide/skills/bundled/software-development/software-development-python-debugpy',
@@ -420,7 +420,7 @@ const sidebars: SidebarsConfig = {
                   items: [
                     'user-guide/skills/optional/devops/devops-cli',
                     'user-guide/skills/optional/devops/devops-docker-management',
-                    'user-guide/skills/optional/devops/devops-hermes-s6-container-supervision',
+                    'user-guide/skills/optional/devops/devops-agentic-os-s6-container-supervision',
                     'user-guide/skills/optional/devops/devops-pinggy-tunnel',
                     'user-guide/skills/optional/devops/devops-watchers',
                   ],

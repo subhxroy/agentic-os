@@ -2,7 +2,7 @@
 """Telephony helper for the Hermes optional telephony skill.
 
 Capabilities:
-- Persist telephony provider credentials to the Hermes .env file ($HERMES_HOME/.env)
+- Persist telephony provider credentials to the Hermes .env file ($AGENTIC_OS_HOME/.env)
 - Search for, buy, and remember Twilio phone numbers
 - Make direct Twilio calls (TwiML <Say> or <Play>)
 - Send SMS / MMS via Twilio
@@ -68,20 +68,20 @@ class OwnedTwilioNumber:
     capabilities: dict[str, Any]
 
 
-def _hermes_home() -> Path:
-    return Path(os.environ.get("HERMES_HOME", "~/.hermes")).expanduser()
+def _agentic_os_home() -> Path:
+    return Path(os.environ.get("AGENTIC_OS_HOME", "~/.agentic-os")).expanduser()
 
 
 def _env_path() -> Path:
-    return _hermes_home() / ".env"
+    return _agentic_os_home() / ".env"
 
 
 def _config_path() -> Path:
-    return _hermes_home() / "config.yaml"
+    return _agentic_os_home() / "config.yaml"
 
 
 def _state_path() -> Path:
-    return _hermes_home() / "telephony_state.json"
+    return _agentic_os_home() / "telephony_state.json"
 
 
 def _load_root_config() -> dict[str, Any]:

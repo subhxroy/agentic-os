@@ -5002,7 +5002,7 @@ def interactive_setup() -> None:
     )
 
     def _write_slack_manifest_and_instruct() -> None:
-        """Generate the Slack manifest, write it under HERMES_HOME, and print
+        """Generate the Slack manifest, write it under AGENTIC_OS_HOME, and print
         paste-into-Slack instructions. Failures are non-fatal."""
         try:
             from agentic_os_cli.slack_cli import _build_full_manifest
@@ -5162,7 +5162,7 @@ def register(ctx) -> None:
         check_fn=check_slack_requirements,
         is_connected=_is_connected,
         required_env=["SLACK_BOT_TOKEN", "SLACK_APP_TOKEN"],
-        install_hint="pip install 'hermes-agent[slack]'",
+        install_hint="pip install 'agentic-os[slack]'",
         # Interactive setup wizard — replaces agentic_os_cli/setup.py::_setup_slack
         # and the static _PLATFORMS["slack"] dict in agentic_os_cli/gateway.py.
         setup_fn=interactive_setup,

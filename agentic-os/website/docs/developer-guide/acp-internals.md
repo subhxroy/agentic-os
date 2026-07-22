@@ -25,13 +25,13 @@ Key implementation files:
 hermes acp / hermes-acp / python -m acp_adapter
   -> acp_adapter.entry.main()
   -> parse --version / --check / --setup before server startup
-  -> load ~/.hermes/.env
+  -> load ~/.agentic-os/.env
   -> configure stderr logging
   -> construct HermesACPAgent
   -> acp.run_agent(agent, use_unstable_protocol=True)
 ```
 
-The Zed ACP Registry path launches the same adapter through `uvx --from 'agentic-os[acp]==<version>' hermes-acp`, pointed at the `hermes-agent` PyPI release.
+The Zed ACP Registry path launches the same adapter through `uvx --from 'agentic-os[acp]==<version>' hermes-acp`, pointed at the `agentic-os` PyPI release.
 
 Stdout is reserved for ACP JSON-RPC transport. Human-readable logs go to stderr.
 
@@ -172,7 +172,7 @@ ACP temporarily installs an approval callback on the terminal tool during prompt
 
 ## Current limitations
 
-- ACP sessions are persisted to the shared `~/.hermes/state.db` (SessionDB) and transparently restored across process restarts; they appear in `session_search`
+- ACP sessions are persisted to the shared `~/.agentic-os/state.db` (SessionDB) and transparently restored across process restarts; they appear in `session_search`
 - non-text prompt blocks are currently ignored for request text extraction
 - editor-specific UX varies by ACP client implementation
 

@@ -41,7 +41,7 @@ This page is the top-level map of Agentic OS internals. Use it to orient yoursel
 ┌───────────────────┐              ┌──────────────────────┐
 │ Session Storage   │              │ Tool Backends         │
 │ (SQLite + FTS5)   │              │ Terminal (6 backends) │
-│ hermes_state.py   │              │ Browser (5 backends)  │
+│ agentic_os_state.py   │              │ Browser (5 backends)  │
 │ gateway/session.py│              │ Web (4 backends)      │
 └───────────────────┘              │ MCP (dynamic)         │
                                    │ File, Vision, etc.    │
@@ -51,13 +51,13 @@ This page is the top-level map of Agentic OS internals. Use it to orient yoursel
 ## Directory Structure
 
 ```text
-hermes-agent/
+agentic-os/
 ├── run_agent.py              # AIAgent — core conversation loop (large file)
 ├── cli.py                    # HermesCLI — interactive terminal UI (large file)
 ├── model_tools.py            # Tool discovery, schema collection, dispatch
 ├── toolsets.py               # Tool groupings and platform presets
-├── hermes_state.py           # SQLite session/state database with FTS5
-├── hermes_constants.py       # HERMES_HOME, profile-aware paths
+├── agentic_os_state.py           # SQLite session/state database with FTS5
+├── agentic_os_constants.py       # AGENTIC_OS_HOME, profile-aware paths
 ├── batch_runner.py           # Batch trajectory generation
 │
 ├── agent/                    # Agent internals
@@ -229,7 +229,7 @@ Long-running process with 20 platform adapters, unified session routing, user au
 
 ### Plugin System
 
-Three discovery sources: `~/.hermes/plugins/` (user), `.hermes/plugins/` (project), and pip entry points. Plugins register tools, hooks, and CLI commands through a context API. Two specialized plugin types exist: memory providers (`plugins/memory/`) and context engines (`plugins/context_engine/`). Both are single-select — only one of each can be active at a time, configured via `hermes plugins` or `config.yaml`.
+Three discovery sources: `~/.agentic-os/plugins/` (user), `.hermes/plugins/` (project), and pip entry points. Plugins register tools, hooks, and CLI commands through a context API. Two specialized plugin types exist: memory providers (`plugins/memory/`) and context engines (`plugins/context_engine/`). Both are single-select — only one of each can be active at a time, configured via `hermes plugins` or `config.yaml`.
 
 → [Plugin Guide](/developer-guide/plugins), [Memory Provider Plugin](./memory-provider-plugin.md)
 
@@ -260,7 +260,7 @@ Generates ShareGPT-format trajectories from agent sessions for training data gen
 | **Interruptible** | API calls and tool execution can be cancelled mid-flight by user input or signals. |
 | **Platform-agnostic core** | One AIAgent class serves CLI, gateway, ACP, batch, and API server. Platform differences live in the entry point, not the agent. |
 | **Loose coupling** | Optional subsystems (MCP, plugins, memory providers, RL environments) use registry patterns and check_fn gating, not hard dependencies. |
-| **Profile isolation** | Each profile (`hermes -p <name>`) gets its own HERMES_HOME, config, memory, sessions, and gateway PID. Multiple profiles run concurrently. |
+| **Profile isolation** | Each profile (`hermes -p <name>`) gets its own AGENTIC_OS_HOME, config, memory, sessions, and gateway PID. Multiple profiles run concurrently. |
 
 ## File Dependency Chain
 

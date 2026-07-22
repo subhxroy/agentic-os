@@ -159,8 +159,8 @@ You can switch providers at any time with `hermes model` — no lock-in. For a f
 
 Hermes separates secrets from normal config:
 
-- **Secrets and tokens** → `~/.hermes/.env`
-- **Non-secret settings** → `~/.hermes/config.yaml`
+- **Secrets and tokens** → `~/.agentic-os/.env`
+- **Non-secret settings** → `~/.agentic-os/config.yaml`
 
 The easiest way to set values correctly is through the CLI:
 
@@ -278,8 +278,8 @@ hermes config set terminal.backend ssh       # Remote server
 
 ```bash
 # From the Hermes install directory (the curl installer placed it at
-# ~/.hermes/hermes-agent on Linux/macOS or %LOCALAPPDATA%\hermes\hermes-agent on Windows):
-cd ~/.hermes/hermes-agent
+# ~/.agentic-os/agentic-os on Linux/macOS or %LOCALAPPDATA%\agentic-os\agentic-os on Windows):
+cd ~/.agentic-os/agentic-os
 uv pip install -e ".[voice]"
 # Includes faster-whisper for free local speech-to-text
 ```
@@ -290,7 +290,7 @@ Then in the CLI: `/voice on`. Press `Ctrl+B` to record. See [Voice Mode](../user
 
 Skills are on-demand instruction documents that teach Hermes how to do a specific task — deploy to Kubernetes, open a GitHub PR, fine-tune a model, search for GIFs. Each is a `SKILL.md` file with a name, a description, and a step-by-step procedure. The agent reads the short descriptions for free and only loads a skill's full content when a task actually calls for it, so adding skills doesn't bloat every request.
 
-Hermes ships with a catalog of bundled skills already installed in `~/.hermes/skills/`. You can add more from the Skills Hub, or write your own.
+Hermes ships with a catalog of bundled skills already installed in `~/.agentic-os/skills/`. You can add more from the Skills Hub, or write your own.
 
 **Browse and install from the hub:**
 
@@ -316,7 +316,7 @@ See [Skills System](../user-guide/features/skills.md) for writing your own, exte
 ### MCP servers
 
 ```yaml
-# Add to ~/.hermes/config.yaml
+# Add to ~/.agentic-os/config.yaml
 mcp_servers:
   github:
     command: npx
@@ -333,7 +333,7 @@ ACP support ships with the standard `[all]` extras, so the curl installer alread
 hermes acp
 ```
 
-(If you installed without `[all]`, run `cd ~/.hermes/hermes-agent && uv pip install -e ".[acp]"` first.)
+(If you installed without `[all]`, run `cd ~/.agentic-os/agentic-os && uv pip install -e ".[acp]"` first.)
 
 See [ACP Editor Integration](../user-guide/features/acp.md).
 

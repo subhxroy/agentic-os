@@ -131,7 +131,7 @@ pub type CancelRx = mpsc::Receiver<()>;
 
 /// Spawns install.ps1 / install.sh with the given args and streams output.
 ///
-/// `hermes_home_override` propagates to the child as $HERMES_HOME so the
+/// `hermes_home_override` propagates to the child as $AGENTIC_OS_HOME so the
 /// install script writes to the same directory the installer is reading from.
 pub async fn run_script(
     script_path: &Path,
@@ -151,7 +151,7 @@ pub async fn run_script(
     }
 
     if let Some(home) = hermes_home_override {
-        cmd.env("HERMES_HOME", home);
+        cmd.env("AGENTIC_OS_HOME", home);
     }
 
     cmd.stdin(Stdio::null())
@@ -441,7 +441,7 @@ info line
     }
 
     #[test]
-    fn stable_script_cwd_prefers_existing_hermes_home() {
+    fn stable_script_cwd_prefers_existing_agentic_os_home() {
         let script = Path::new("/tmp/install.sh");
         let cwd = stable_script_cwd(script, Some("/"));
         assert_eq!(cwd, Some(Path::new("/")));

@@ -512,7 +512,7 @@ class RuntimeMode:
         messaging for build notifications, …) keeps it while coding.
 
         Callers apply this only when the user hasn't pinned an explicit
-        selection (``--toolsets``, ``HERMES_TUI_TOOLSETS``, …); they never
+        selection (``--toolsets``, ``AGENTIC_OS_TUI_TOOLSETS``, …); they never
         override a pin. Returns the profile's toolset plus enabled MCP servers.
         """
         if self.config_mode != "focus":

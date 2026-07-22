@@ -169,7 +169,7 @@ For long-lived processes: Hermes gateway, tui_gateway, a daemon, a process that'
 ### Setup
 
 ```bash
-source /home/bb/hermes-agent/.venv/bin/activate
+source /home/bb/agentic-os/.venv/bin/activate
 pip install debugpy
 ```
 
@@ -266,7 +266,7 @@ This is fine for one-off automation but painful as an interactive UX.
   "connect": { "host": "127.0.0.1", "port": 5678 },
   "justMyCode": false,
   "pathMappings": [
-    { "localRoot": "${workspaceFolder}", "remoteRoot": "/home/bb/hermes-agent" }
+    { "localRoot": "${workspaceFolder}", "remoteRoot": "/home/bb/agentic-os" }
   ]
 }
 ```

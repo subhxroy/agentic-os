@@ -4,7 +4,7 @@
 # Differences from docker-compose.yml:
 #   - Removes `network_mode: host` (not supported on Docker Desktop for Windows)
 #   - Uses explicit port mappings instead
-#   - Uses Windows-style volume path for ~/.hermes
+#   - Uses Windows-style volume path for ~/.agentic-os
 #
 # Usage:
 #   docker compose -f docker-compose.windows.yml up -d

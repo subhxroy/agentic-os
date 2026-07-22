@@ -157,11 +157,11 @@ def test_recovery_rejects_recycled_pid(monkeypatch, tmp_path):
 
 
 def test_restart_marks_interrupted_execution_unknown_without_requeue(tmp_path):
-    """Real temp-HERMES_HOME subprocess restart: in-flight is audit-only unknown."""
+    """Real temp-AGENTIC_OS_HOME subprocess restart: in-flight is audit-only unknown."""
     home = tmp_path / "home"
     repo = Path(__file__).resolve().parents[2]
     env = os.environ.copy()
-    env["HERMES_HOME"] = str(home)
+    env["AGENTIC_OS_HOME"] = str(home)
     env["PYTHONPATH"] = str(repo)
 
     create = subprocess.run(

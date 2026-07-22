@@ -41,7 +41,7 @@ def build_update_parser(subparsers, *, cmd_update: Callable) -> None:
         "--backup",
         action="store_true",
         default=False,
-        help="Force a FULL pre-update backup (quick state snapshot + HERMES_HOME zip) for this run, regardless of updates.pre_update_backup",
+        help="Force a FULL pre-update backup (quick state snapshot + AGENTIC_OS_HOME zip) for this run, regardless of updates.pre_update_backup",
     )
     update_parser.add_argument(
         "--yes",

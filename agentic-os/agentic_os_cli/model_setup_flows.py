@@ -1,7 +1,7 @@
 """Per-provider model-selection wizard flows for ``hermes setup`` / ``hermes model``.
 
 Extracted from ``agentic_os_cli/main.py`` as part of the god-file decomposition
-campaign (``~/.hermes/plans/god-file-decomposition.md``, Phase 2 — splitting
+campaign (``~/.agentic-os/plans/god-file-decomposition.md``, Phase 2 — splitting
 main.py handler/flow bodies out of the module). These 18 ``_model_flow_*``
 functions are the interactive provider-setup branches dispatched by
 ``select_provider_and_model`` (which stays in main.py).
@@ -179,7 +179,7 @@ def _model_flow_openrouter(config, current_model=""):
     from agentic_os_cli.config import get_env_value
 
     # Route through _prompt_api_key so users can replace a stale/broken key
-    # in-flow (K/R/C) instead of having to edit ~/.hermes/.env by hand. The
+    # in-flow (K/R/C) instead of having to edit ~/.agentic-os/.env by hand. The
     # previous bypass-when-key-exists branch left no way to recover from a
     # bad paste short of re-running `hermes setup` from scratch. OpenRouter
     # isn't in PROVIDER_REGISTRY so we synthesize a minimal pconfig.
@@ -2462,7 +2462,7 @@ def _model_flow_vertex(config, current_model=""):
         print("  Vertex credentials: Application Default Credentials (ADC)")
         print("    Vertex uses OAuth2, not a static API key. Either:")
         print("      • run 'gcloud auth application-default login', or")
-        print("      • set VERTEX_CREDENTIALS_PATH in ~/.hermes/.env to a service account JSON")
+        print("      • set VERTEX_CREDENTIALS_PATH in ~/.agentic-os/.env to a service account JSON")
     print()
 
     cfg = load_config()

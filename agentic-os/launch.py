@@ -24,22 +24,22 @@ from pathlib import Path
 
 ROOT = Path(__file__).parent
 if (ROOT / "pyproject.toml").exists() or (ROOT / "agentic_os_cli").exists():
-    HERMES_ROOT = ROOT
+    AGENTIC_ROOT = ROOT
 elif (ROOT / "agentic-os").exists():
-    HERMES_ROOT = ROOT / "agentic-os"
-elif (ROOT / "hermes-agent").exists():
-    HERMES_ROOT = ROOT / "hermes-agent"
+    AGENTIC_ROOT = ROOT / "agentic-os"
+elif (ROOT / "agentic-os").exists():
+    AGENTIC_ROOT = ROOT / "agentic-os"
 else:
-    HERMES_ROOT = ROOT
+    AGENTIC_ROOT = ROOT
 VAULT_PATH = ROOT / "obsidian-brain" if (ROOT / "obsidian-brain").exists() else ROOT.parent / "obsidian-brain"
 
 
 def setup_environment():
-    os.chdir(HERMES_ROOT)
-    if str(HERMES_ROOT) not in sys.path:
-        sys.path.insert(0, str(HERMES_ROOT))
+    os.chdir(AGENTIC_ROOT)
+    if str(AGENTIC_ROOT) not in sys.path:
+        sys.path.insert(0, str(AGENTIC_ROOT))
 
-    env_path = HERMES_ROOT / ".env"
+    env_path = AGENTIC_ROOT / ".env"
     if env_path.exists():
         try:
             from dotenv import load_dotenv
@@ -76,7 +76,7 @@ def cmd_cli(args):
 def cmd_tui(args):
     setup_environment()
     os.environ["AGENTIC_OS_TUI"] = "1"
-    os.environ["HERMES_TUI"] = "1"
+    os.environ["AGENTIC_OS_TUI"] = "1"
     from agentic_os_cli.main import main
     sys.argv = ["agentic-os", "--tui"]
     main()
@@ -91,7 +91,7 @@ def cmd_voice(args):
     try:
         from run_agent import AIAgent
     except ImportError:
-        sys.path.insert(0, str(HERMES_ROOT))
+        sys.path.insert(0, str(AGENTIC_ROOT))
         from run_agent import AIAgent
 
     agent = AIAgent(
@@ -192,7 +192,7 @@ def cmd_voice(args):
         return ""
 
     def speak(text: str):
-        tts_provider = os.environ.get("AGENTIC_OS_TTS_PROVIDER", os.environ.get("HERMES_TTS_PROVIDER", "edge"))
+        tts_provider = os.environ.get("AGENTIC_OS_TTS_PROVIDER", os.environ.get("AGENTIC_OS_TTS_PROVIDER", "edge"))
         try:
             import edge_tts
             import asyncio
@@ -257,7 +257,7 @@ def cmd_status(args):
     setup_environment()
     print("\n  Agentic OS — Status\n")
 
-    env_path = HERMES_ROOT / ".env"
+    env_path = AGENTIC_ROOT / ".env"
     if env_path.exists():
         env_text = env_path.read_text(encoding="utf-8")
         providers = {

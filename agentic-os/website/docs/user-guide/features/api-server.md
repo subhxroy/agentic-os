@@ -1,12 +1,12 @@
 ---
 sidebar_position: 14
 title: "API Server"
-description: "Expose hermes-agent as an OpenAI-compatible API for any frontend"
+description: "Expose agentic-os as an OpenAI-compatible API for any frontend"
 ---
 
 # API Server
 
-The API server exposes hermes-agent as an OpenAI-compatible HTTP endpoint. Any frontend that speaks the OpenAI format — Open WebUI, LobeChat, LibreChat, NextChat, ChatBox, and hundreds more — can connect to hermes-agent and use it as a backend.
+The API server exposes agentic-os as an OpenAI-compatible HTTP endpoint. Any frontend that speaks the OpenAI format — Open WebUI, LobeChat, LibreChat, NextChat, ChatBox, and hundreds more — can connect to agentic-os and use it as a backend.
 
 Your agent handles requests with its full toolset (terminal, file operations, web search, memory, skills) and returns the final response. When streaming, tool progress indicators appear inline so frontends can show what the agent is doing.
 
@@ -18,7 +18,7 @@ Hermes itself needs a configured provider and tool backends for the API server t
 
 ### 1. Enable the API server
 
-Add to `~/.hermes/.env`:
+Add to `~/.agentic-os/.env`:
 
 ```bash
 API_SERVER_ENABLED=true
@@ -196,7 +196,7 @@ Delete a stored response.
 
 ### GET /v1/models
 
-Lists the agent as an available model. The advertised model name defaults to the [profile](/user-guide/profiles) name (or `hermes-agent` for the default profile). Required by most frontends for model discovery.
+Lists the agent as an available model. The advertised model name defaults to the [profile](/user-guide/profiles) name (or `agentic-os` for the default profile). Required by most frontends for model discovery.
 
 ### GET /v1/capabilities
 
@@ -391,7 +391,7 @@ Rules: max 256 chars, control characters (`\r`, `\n`, `\x00`) are rejected, and 
 
 ## System Prompt Handling
 
-When a frontend sends a `system` message (Chat Completions) or `instructions` field (Responses API), hermes-agent **layers it on top** of its core system prompt. Your agent keeps all its tools, memory, and skills — the frontend's system prompt adds extra instructions.
+When a frontend sends a `system` message (Chat Completions) or `instructions` field (Responses API), agentic-os **layers it on top** of its core system prompt. Your agent keeps all its tools, memory, and skills — the frontend's system prompt adds extra instructions.
 
 This means you can customize behavior per-frontend without losing capabilities:
 - Open WebUI system prompt: "You are a Python expert. Always include type hints."
@@ -408,7 +408,7 @@ Authorization: Bearer ***
 Configure the key via `API_SERVER_KEY` env var. If you need a browser to call Hermes directly, also set `API_SERVER_CORS_ORIGINS` to an explicit allowlist.
 
 :::warning Security
-The API server gives full access to hermes-agent's toolset, **including terminal commands**. `API_SERVER_KEY` is **required for every deployment**, including the default loopback bind on `127.0.0.1`. Keep `API_SERVER_CORS_ORIGINS` narrow to control browser access when you explicitly allow browser callers.
+The API server gives full access to agentic-os's toolset, **including terminal commands**. `API_SERVER_KEY` is **required for every deployment**, including the default loopback bind on `127.0.0.1`. Keep `API_SERVER_CORS_ORIGINS` narrow to control browser access when you explicitly allow browser callers.
 :::
 
 ## Configuration
@@ -422,7 +422,7 @@ The API server gives full access to hermes-agent's toolset, **including terminal
 | `API_SERVER_HOST` | `127.0.0.1` | Bind address (localhost only by default) |
 | `API_SERVER_KEY` | _(required)_ | Bearer token for auth |
 | `API_SERVER_CORS_ORIGINS` | _(none)_ | Comma-separated allowed browser origins |
-| `API_SERVER_MODEL_NAME` | _(profile name)_ | Model name on `/v1/models`. Defaults to profile name, or `hermes-agent` for default profile. |
+| `API_SERVER_MODEL_NAME` | _(profile name)_ | Model name on `/v1/models`. Defaults to profile name, or `agentic-os` for default profile. |
 
 ### config.yaml
 
@@ -483,13 +483,13 @@ hermes profile create bob
 
 # Configure each profile's API server on a different port. API_SERVER_* are env
 # vars (not config.yaml keys), so write them to each profile's .env:
-cat >> ~/.hermes/profiles/alice/.env <<EOF
+cat >> ~/.agentic-os/profiles/alice/.env <<EOF
 API_SERVER_ENABLED=true
 API_SERVER_PORT=8643
 API_SERVER_KEY=alice-secret
 EOF
 
-cat >> ~/.hermes/profiles/bob/.env <<EOF
+cat >> ~/.agentic-os/profiles/bob/.env <<EOF
 API_SERVER_ENABLED=true
 API_SERVER_PORT=8644
 API_SERVER_KEY=bob-secret

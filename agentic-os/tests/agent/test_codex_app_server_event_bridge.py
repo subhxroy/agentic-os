@@ -79,7 +79,7 @@ class TestCodexItemToToolName:
             {"type": "dynamicToolCall", "tool": "web_search"}
         ) == "web_search"
 
-    def test_hermes_tools_mcp_server_emits_bare_tool_name(self):
+    def test_agentic_os_tools_mcp_server_emits_bare_tool_name(self):
         """The hermes-tools MCP server wraps Hermes' own tools for codex;
         the inner dispatch subprocess can't fire native progress events,
         so the codex-level event IS the display event — shown without the

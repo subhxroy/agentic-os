@@ -192,7 +192,7 @@ class TestInterruptedReplayFiltering:
                         "id": "call_1",
                         "function": {
                             "name": "terminal",
-                            "arguments": '{"command": "docker restart hermes-agent"}',
+                            "arguments": '{"command": "docker restart agentic-os"}',
                         },
                     },
                 ],

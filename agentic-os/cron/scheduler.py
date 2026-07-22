@@ -4,7 +4,7 @@ Cron job scheduler - executes due jobs.
 Provides tick() which checks for due jobs and runs them. The gateway
 calls this every 60 seconds from a background thread.
 
-Uses a file-based lock (~/.hermes/cron/.tick.lock) so only one tick
+Uses a file-based lock (~/.agentic-os/cron/.tick.lock) so only one tick
 runs at a time if multiple processes overlap.
 """
 
@@ -577,19 +577,19 @@ def _interpreter_shutting_down(exc: Optional[BaseException] = None) -> bool:
 
 
 # Backward-compatible module override used by tests and emergency monkeypatches.
-_hermes_home: Path | None = None
+_agentic_os_home: Path | None = None
 
 
 def _get_agentic_os_home() -> Path:
     """Resolve Hermes home dynamically while preserving test monkeypatch hooks.
 
     Cron is per-profile by design (#4707): the in-process ticker runs inside a
-    profile-scoped gateway, so resolving the active HERMES_HOME at call time
+    profile-scoped gateway, so resolving the active AGENTIC_OS_HOME at call time
     means a profile's jobs are stored AND executed under that profile's home
     (its .env, config.yaml, scripts, skills). Do not freeze this at import or
     anchor it at the shared default root — either re-breaks profile isolation.
     """
-    return _hermes_home or get_agentic_os_home()
+    return _agentic_os_home or get_agentic_os_home()
 
 
 def _get_lock_paths() -> tuple[Path, Path]:
@@ -2113,7 +2113,7 @@ def _windows_cron_python_invocation(python_exe: str) -> tuple[str, dict[str, str
 def _run_job_script(script_path: str) -> tuple[bool, str]:
     """Execute a cron job's data-collection script and capture its output.
 
-    Scripts must reside within HERMES_HOME/scripts/.  Both relative and
+    Scripts must reside within AGENTIC_OS_HOME/scripts/.  Both relative and
     absolute paths are resolved and validated against this directory to
     prevent arbitrary script execution via path traversal or absolute
     path injection.
@@ -2134,7 +2134,7 @@ def _run_job_script(script_path: str) -> tuple[bool, str]:
 
     Args:
         script_path: Path to the script.  Relative paths are resolved
-            against HERMES_HOME/scripts/.  Absolute and ~-prefixed paths
+            against AGENTIC_OS_HOME/scripts/.  Absolute and ~-prefixed paths
             are also validated to ensure they stay within the scripts dir.
 
     Returns:
@@ -2152,7 +2152,7 @@ def _run_job_script(script_path: str) -> tuple[bool, str]:
         path = (scripts_dir / raw).resolve()
 
     # Guard against path traversal, absolute path injection, and symlink
-    # escape — scripts MUST reside within HERMES_HOME/scripts/.
+    # escape — scripts MUST reside within AGENTIC_OS_HOME/scripts/.
     try:
         path.relative_to(scripts_dir_resolved)
     except ValueError:
@@ -2955,7 +2955,7 @@ def run_job(
         # metadata"). And by the time a child finishes, run_job has already shipped
         # the job's final response via _deliver_result; there is no turn left to
         # re-enter. (Worse, get_current_session_key() can fall back to the ambient
-        # os.environ HERMES_SESSION_KEY, which risks routing a cron subagent's output
+        # os.environ AGENTIC_OS_SESSION_KEY, which risks routing a cron subagent's output
         # into an unrelated user chat.)
         #
         # Declaring the channel stateless routes delegate_task to its existing
@@ -3023,7 +3023,7 @@ def run_job(
         # changes take effect without a gateway restart. Route through
         # load_hermes_dotenv (not a bare load_dotenv) and reset the secret-
         # source cache first: startup already applied external secrets and
-        # recorded this HERMES_HOME in _APPLIED_HOMES, so a naive reload would
+        # recorded this AGENTIC_OS_HOME in _APPLIED_HOMES, so a naive reload would
         # re-apply only the .env placeholder and never re-resolve a Bitwarden/
         # BSM-backed secret — leaving cron jobs 401'ing on the placeholder
         # (#33465). Clearing the cache forces the re-pull; the resolved secret
@@ -3359,7 +3359,7 @@ def run_job(
             disabled_toolsets=_resolve_cron_disabled_toolsets(_cfg),
             quiet_mode=True,
             # Cron jobs should always inherit the user's SOUL.md identity from
-            # HERMES_HOME. When a workdir is configured, also inject project
+            # AGENTIC_OS_HOME. When a workdir is configured, also inject project
             # context files (AGENTS.md / CLAUDE.md / .cursorrules) from there.
             # Without a workdir, keep cwd context discovery disabled.
             skip_context_files=not bool(_job_workdir),

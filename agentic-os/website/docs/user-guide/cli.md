@@ -150,11 +150,11 @@ Commands are case-insensitive — `/HELP` works the same as `/help`. Installed s
 You can define custom commands that run shell commands instantly without invoking the LLM. These work in both the CLI and messaging platforms (Telegram, Discord, etc.).
 
 ```yaml
-# ~/.hermes/config.yaml
+# ~/.agentic-os/config.yaml
 quick_commands:
   status:
     type: exec
-    command: systemctl status hermes-agent
+    command: systemctl status agentic-os
   gpu:
     type: exec
     command: nvidia-smi --query-gpu=utilization.gpu,memory.used --format=csv,noheader
@@ -178,7 +178,7 @@ Hermes loads each named skill into the session prompt before the first turn. The
 
 ## Skill Slash Commands
 
-Every installed skill in `~/.hermes/skills/` is automatically registered as a slash command. The skill name becomes the command:
+Every installed skill in `~/.agentic-os/skills/` is automatically registered as a slash command. The skill name becomes the command:
 
 ```
 /gif-search funny cats
@@ -201,7 +201,7 @@ Set a predefined personality to change the agent's tone:
 
 Built-in personalities include: `helpful`, `concise`, `technical`, `creative`, `teacher`, `kawaii`, `catgirl`, `pirate`, `shakespeare`, `surfer`, `noir`, `uwu`, `philosopher`, `hype`.
 
-You can also define custom personalities in `~/.hermes/config.yaml`:
+You can also define custom personalities in `~/.agentic-os/config.yaml`:
 
 ```yaml
 personalities:
@@ -261,7 +261,7 @@ The `display.busy_input_mode` config key controls what happens when you press En
 | `"steer"` | Your message is injected into the current run via `/steer`, arriving at the agent after the next tool call — no interrupt, no new turn |
 
 ```yaml
-# ~/.hermes/config.yaml
+# ~/.agentic-os/config.yaml
 display:
   busy_input_mode: "steer"   # or "queue" or "interrupt" (default)
 ```
@@ -318,7 +318,7 @@ Cycle through display modes with `/verbose`: `off → new → all → verbose`. 
 The `display.tool_preview_length` config key controls the maximum number of characters shown in tool call preview lines (e.g. file paths, terminal commands). The default is `0`, which means no limit — full paths and commands are shown.
 
 ```yaml
-# ~/.hermes/config.yaml
+# ~/.agentic-os/config.yaml
 display:
   tool_preview_length: 80   # Truncate tool previews to 80 chars (0 = no limit)
 ```
@@ -357,7 +357,7 @@ Use `/title My Session Name` inside a chat to name the current session, or `herm
 
 ### Session Storage
 
-CLI sessions are stored in Hermes's SQLite state database under `~/.hermes/state.db`. The database keeps:
+CLI sessions are stored in Hermes's SQLite state database under `~/.agentic-os/state.db`. The database keeps:
 
 - session metadata (ID, title, timestamps, token counters)
 - message history
@@ -371,7 +371,7 @@ Some messaging adapters also keep per-platform transcript files alongside the da
 Long conversations are automatically summarized when approaching context limits:
 
 ```yaml
-# In ~/.hermes/config.yaml
+# In ~/.agentic-os/config.yaml
 compression:
   enabled: true
   threshold: 0.50    # Compress at 50% of context limit by default

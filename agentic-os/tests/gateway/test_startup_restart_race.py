@@ -123,7 +123,7 @@ def make_startup_runner(tmp_path):
 
 
 def patch_startup_side_effects(monkeypatch, tmp_path):
-    monkeypatch.setattr(gateway_run, "_hermes_home", tmp_path)
+    monkeypatch.setattr(gateway_run, "_agentic_os_home", tmp_path)
     monkeypatch.setattr("agentic_os_cli.plugins.discover_plugins", lambda: None)
     monkeypatch.setattr("agent.shell_hooks.register_from_config", lambda *args, **kwargs: None)
     monkeypatch.setattr("tools.process_registry.process_registry.recover_from_checkpoint", lambda: 0)
@@ -248,7 +248,7 @@ async def test_startup_aborts_after_registered_adapter_restart(tmp_path, monkeyp
 
 @pytest.mark.asyncio
 async def test_start_gateway_does_not_start_cron_after_aborted_startup(tmp_path, monkeypatch):
-    monkeypatch.setenv("HERMES_HOME", str(tmp_path))
+    monkeypatch.setenv("AGENTIC_OS_HOME", str(tmp_path))
     cron_started = False
 
     class AbortedStartupRunner:

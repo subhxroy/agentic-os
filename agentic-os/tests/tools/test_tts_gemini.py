@@ -126,7 +126,7 @@ class TestGenerateGeminiTts:
             _generate_gemini_tts("Hi", str(tmp_path / "test.wav"), {})
 
         headers = mock_post.call_args[1]["headers"]
-        assert headers["X-Goog-Api-Client"] == f"hermes-agent/{__version__}"
+        assert headers["X-Goog-Api-Client"] == f"agentic-os/{__version__}"
 
     def test_default_voice_and_model(self, tmp_path, monkeypatch, mock_gemini_response):
         from tools.tts_tool import (

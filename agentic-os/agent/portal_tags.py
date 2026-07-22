@@ -8,7 +8,7 @@ Nous can attribute usage to Agentic OS and bucket it by client release.
 Tag shape (sent in OpenAI-compatible ``extra_body['tags']``):
 
     [
-        "product=hermes-agent",
+        "product=agentic-os",
         "client=hermes-client-v<__version__>",
     ]
 
@@ -108,7 +108,7 @@ def conversation_tag(session_id: str) -> str:
 
     Format: ``conversation=<session_id>``. ``session_id`` is the canonical
     Hermes conversation identifier (``AIAgent.session_id``) — the same value
-    used for ``~/.hermes/sessions/`` storage, session logs, and lineage.
+    used for ``~/.agentic-os/sessions/`` storage, session logs, and lineage.
 
     Unlike the product/client tags this is high-cardinality (one value per
     conversation), so it is only appended when a session id is actually
@@ -132,7 +132,7 @@ def nous_portal_tags(session_id: str | None = None) -> List[str]:
     per-call-site plumbing. Callers outside any conversation (e.g. the
     auxiliary client's import-time base tags) get the canonical two-tag set.
     """
-    tags = ["product=hermes-agent", agentic_os_client_tag()]
+    tags = ["product=agentic-os", agentic_os_client_tag()]
     # Ambient context first: the agent loop publishes the lineage ROOT id
     # (stable across context-compression rotation and delegate subagent
     # trees), which is the better conversation key than a per-segment

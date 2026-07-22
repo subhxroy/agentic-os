@@ -102,7 +102,7 @@ All you need is:
 1. A plugin directory under `plugins/model-providers/<your-provider>/` containing:
    - `__init__.py` — calls `register_provider(profile)` at module-level
    - `plugin.yaml` — manifest (name, kind: model-provider, version, description)
-2. That's it. Provider plugins auto-load the first time anything calls `get_provider_profile()` or `list_providers()` — bundled plugins (this repo) and user plugins at `$HERMES_HOME/plugins/model-providers/` both get picked up.
+2. That's it. Provider plugins auto-load the first time anything calls `get_provider_profile()` or `list_providers()` — bundled plugins (this repo) and user plugins at `$AGENTIC_OS_HOME/plugins/model-providers/` both get picked up.
 
 When you add a plugin and it calls `register_provider()`, the following wire up automatically:
 
@@ -119,7 +119,7 @@ When you add a plugin and it calls `register_provider()`, the following wire up 
 11. `--provider <name>` CLI flag accepts the provider id
 12. Fallback model activation can switch into the provider cleanly
 
-User plugins at `$HERMES_HOME/plugins/model-providers/<name>/` override bundled plugins of the same name (last-writer-wins in `register_provider()`) — so third parties can monkey-patch or replace any built-in profile without editing the repo.
+User plugins at `$AGENTIC_OS_HOME/plugins/model-providers/<name>/` override bundled plugins of the same name (last-writer-wins in `register_provider()`) — so third parties can monkey-patch or replace any built-in profile without editing the repo.
 
 See `plugins/model-providers/nvidia/` or `plugins/model-providers/gmi/` as a template, and the full [Model Provider Plugin guide](/developer-guide/model-provider-plugin) for field reference, hook idioms, and end-to-end examples.
 
@@ -358,15 +358,15 @@ After tests, run a real smoke test.
 
 ```bash
 source venv/bin/activate
-python -m hermes_cli.main chat -q "Say hello" --provider your-provider --model your-model
+python -m agentic_os_cli.main chat -q "Say hello" --provider your-provider --model your-model
 ```
 
 Also test the interactive flows if you changed menus:
 
 ```bash
 source venv/bin/activate
-python -m hermes_cli.main model
-python -m hermes_cli.main setup
+python -m agentic_os_cli.main model
+python -m agentic_os_cli.main setup
 ```
 
 For native providers, verify at least one tool call too, not just a plain text response.

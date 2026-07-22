@@ -1222,7 +1222,7 @@ def interactive_setup() -> None:
     """Minimal stdin wizard for ``hermes setup gateway`` → SimpleX.
 
     Prompts for the WebSocket URL and the optional allowlist / groups /
-    auto-accept / home channel. Writes to ``~/.hermes/.env`` via
+    auto-accept / home channel. Writes to ``~/.agentic-os/.env`` via
     ``agentic_os_cli.config``.
     """
     print()
@@ -1238,7 +1238,7 @@ def interactive_setup() -> None:
     except ImportError:
         print(
             "agentic_os_cli.config not available; set SIMPLEX_* vars manually in "
-            "~/.hermes/.env"
+            "~/.agentic-os/.env"
         )
         return
 

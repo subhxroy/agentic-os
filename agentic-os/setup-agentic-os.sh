@@ -396,14 +396,14 @@ else
 fi
 
 # ============================================================================
-# Seed bundled skills into ~/.hermes/skills/
+# Seed bundled skills into ~/.agentic-os/skills/
 # ============================================================================
 
-HERMES_SKILLS_DIR="${HERMES_HOME:-$HOME/.hermes}/skills"
+HERMES_SKILLS_DIR="${AGENTIC_OS_HOME:-$HOME/.hermes}/skills"
 mkdir -p "$HERMES_SKILLS_DIR"
 
 echo ""
-echo "Syncing bundled skills to ~/.hermes/skills/ ..."
+echo "Syncing bundled skills to ~/.agentic-os/skills/ ..."
 if "$SCRIPT_DIR/venv/bin/python" "$SCRIPT_DIR/tools/skills_sync.py" 2>/dev/null; then
     echo -e "${GREEN}✓${NC} Skills synced"
 else
@@ -458,5 +458,5 @@ echo
 if [[ $REPLY =~ ^[Yy]$ ]] || [[ -z $REPLY ]]; then
     echo ""
     # Run directly with venv Python (no activation needed)
-    "$SCRIPT_DIR/venv/bin/python" -m hermes_cli.main setup
+    "$SCRIPT_DIR/venv/bin/python" -m agentic_os_cli.main setup
 fi

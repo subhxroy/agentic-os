@@ -47,7 +47,7 @@ import { $activeGatewayProfile, normalizeProfileKey } from '@/store/profile'
 import { $activeSessionId } from '@/store/session'
 import type { HermesConfigRecord } from '@/types/hermes'
 
-import { setHermesConfigCache, useHermesConfigRecord } from '../hooks/use-config-record'
+import { setHermesConfigCache, useAgenticOSConfigRecord } from '../hooks/use-config-record'
 import { useOnProfileSwitch } from '../hooks/use-on-profile-switch'
 import { DetailPane, ICON_BUTTON, MASTER_DETAIL_WIDE_COLS } from '../master-detail'
 import { PanelAddButton, PanelEmpty } from '../overlays/panel'
@@ -357,7 +357,7 @@ export function McpTab({ gateway }: { gateway: HermesGateway | null }) {
     refetch: refetchConfig,
     dataUpdatedAt: configUpdatedAt,
     errorUpdatedAt: configErroredAt
-  } = useHermesConfigRecord()
+  } = useAgenticOSConfigRecord()
 
   const setConfig = setHermesConfigCache
 

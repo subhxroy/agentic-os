@@ -135,7 +135,7 @@ def _parse_branch_flag(value: Optional[str]) -> Optional[str]:
 def _check_dispatcher_presence() -> tuple[bool, str]:
     """Return ``(running, message)``.
 
-    - ``running=True``: a gateway is alive for this HERMES_HOME and its
+    - ``running=True``: a gateway is alive for this AGENTIC_OS_HOME and its
       config has ``kanban.dispatch_in_gateway`` on (default). Message
       is a short status line.
     - ``running=False``: either no gateway is running, or the gateway
@@ -786,7 +786,7 @@ def build_parser(parent_subparsers: argparse._SubParsersAction) -> argparse.Argu
     p_asg = sub.add_parser(
         "assignees",
         help="List known profiles + per-profile task counts "
-             "(union of ~/.hermes/profiles/ and current assignees on the board)",
+             "(union of ~/.agentic-os/profiles/ and current assignees on the board)",
     )
     p_asg.add_argument("--json", action="store_true")
 
@@ -946,7 +946,7 @@ def kanban_command(args: argparse.Namespace) -> int:
     # is idempotent, so running it every invocation is cheap (one
     # SELECT against sqlite_master when tables already exist) and
     # prevents "no such table: tasks" on first use from a fresh
-    # HERMES_HOME. Previously only `init` and `daemon` triggered
+    # AGENTIC_OS_HOME. Previously only `init` and `daemon` triggered
     # schema creation; `create` / `list` / every other command would
     # error out on a fresh install.
     with board_scope:
@@ -1037,7 +1037,7 @@ def _dispatch_boards(args: argparse.Namespace) -> int:
     Boards management is deliberately separate from the task-level
     commands: it operates on the filesystem (board directories,
     ``current`` pointer, ``board.json``), not on the per-board SQLite
-    DB, so a fresh HERMES_HOME that has never called ``kanban init``
+    DB, so a fresh AGENTIC_OS_HOME that has never called ``kanban init``
     can still run ``boards create`` / ``boards list``.
     """
     sub = getattr(args, "boards_action", None) or "list"
@@ -1278,7 +1278,7 @@ def _cmd_init(args: argparse.Namespace) -> int:
         for name in profiles:
             print(f"  {name}")
     else:
-        print("No profiles found under ~/.hermes/profiles/.")
+        print("No profiles found under ~/.agentic-os/profiles/.")
         print("Create one with `hermes -p <name> setup` before assigning tasks.")
     print()
     print("Next step: start the gateway so ready tasks actually get picked up.")

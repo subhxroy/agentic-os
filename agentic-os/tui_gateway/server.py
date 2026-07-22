@@ -25,7 +25,7 @@ from agentic_os_constants import (
 )
 from agentic_os_cli.env_loader import load_hermes_dotenv
 from utils import is_truthy_value
-from tools.environments.local import hermes_subprocess_env
+from tools.environments.local import agentic_os_subprocess_env
 from agent.replay_cleanup import sanitize_replay_history
 from tui_gateway import git_probe
 from tui_gateway.transport import (
@@ -38,9 +38,9 @@ from tui_gateway.transport import (
 
 logger = logging.getLogger(__name__)
 
-_hermes_home = get_agentic_os_home()
+_agentic_os_home = get_agentic_os_home()
 load_hermes_dotenv(
-    hermes_home=_hermes_home, project_env=Path(__file__).parent.parent / ".env"
+    hermes_home=_agentic_os_home, project_env=Path(__file__).parent.parent / ".env"
 )
 
 
@@ -49,11 +49,11 @@ load_hermes_dotenv(
 # JSON-RPC pipe (TUI side parses it, doesn't log raw), the root logger
 # only catches handled warnings, and the subprocess exits before stderr
 # flushes through the stderr->gateway.stderr event pump. This hook
-# appends every unhandled exception to ~/.hermes/logs/tui_gateway_crash.log
+# appends every unhandled exception to ~/.agentic-os/logs/tui_gateway_crash.log
 # AND re-emits a one-line summary to stderr so the TUI can surface it in
 # Activity — exactly what was missing when the voice-mode turns started
 # exiting the gateway mid-TTS.
-_CRASH_LOG = os.path.join(_hermes_home, "logs", "tui_gateway_crash.log")
+_CRASH_LOG = os.path.join(_agentic_os_home, "logs", "tui_gateway_crash.log")
 
 
 def _panic_hook(exc_type, exc_value, exc_tb):
@@ -141,7 +141,7 @@ _cfg_mtime: float | None = None
 _cfg_path = None
 _session_resume_lock = threading.Lock()
 try:
-    _slash_timeout = float(os.environ.get("HERMES_TUI_SLASH_TIMEOUT_S") or "45")
+    _slash_timeout = float(os.environ.get("AGENTIC_OS_TUI_SLASH_TIMEOUT_S") or "45")
 except (ValueError, TypeError):
     _slash_timeout = 45.0
 _SLASH_WORKER_TIMEOUT_S = max(5.0, _slash_timeout)
@@ -158,7 +158,7 @@ _SLASH_WORKER_TIMEOUT_S = max(5.0, _slash_timeout)
 # Set to 0 to disable (park forever, pre-fix behaviour).
 try:
     _ws_orphan_reap_grace = float(
-        os.environ.get("HERMES_TUI_WS_ORPHAN_REAP_GRACE_S") or "20"
+        os.environ.get("AGENTIC_OS_TUI_WS_ORPHAN_REAP_GRACE_S") or "20"
     )
 except (ValueError, TypeError):
     _ws_orphan_reap_grace = 20.0
@@ -260,7 +260,7 @@ _LONG_HANDLERS = frozenset(
 
 try:
     _rpc_pool_workers = max(
-        2, int(os.environ.get("HERMES_TUI_RPC_POOL_WORKERS") or "8")
+        2, int(os.environ.get("AGENTIC_OS_TUI_RPC_POOL_WORKERS") or "8")
     )
 except (ValueError, TypeError):
     _rpc_pool_workers = 8
@@ -322,12 +322,12 @@ class _SlashWorker:
 
         # slash_worker runs the Hermes agent → needs provider credentials.
         # Tier-1 secrets (gateway/GitHub/infra) are still stripped (#29157).
-        env = hermes_subprocess_env(inherit_credentials=True)
+        env = agentic_os_subprocess_env(inherit_credentials=True)
         if profile_home:
             # Global-remote / multi-profile sessions: the worker must resolve
             # config/skills/state against the session's profile home, not the
-            # gateway's launch HERMES_HOME (#40677).
-            env["HERMES_HOME"] = str(profile_home)
+            # gateway's launch AGENTIC_OS_HOME (#40677).
+            env["AGENTIC_OS_HOME"] = str(profile_home)
 
         # start_new_session=True detaches the slash worker into its own
         # process group / session. Without this, the worker inherits the
@@ -907,7 +907,7 @@ def _shutdown_sessions() -> None:
 # hours-scale because last_active freezes during a long turn and on passive
 # viewing — running/pending/starting/live-transport are hard exemptions instead.
 try:
-    _SESSION_TTL_S = float(os.environ.get("HERMES_TUI_SESSION_TTL_S") or 6 * 3600)
+    _SESSION_TTL_S = float(os.environ.get("AGENTIC_OS_TUI_SESSION_TTL_S") or 6 * 3600)
 except (TypeError, ValueError):
     _SESSION_TTL_S = float(6 * 3600)
 _SESSION_TTL_S = max(0.0, _SESSION_TTL_S)
@@ -1063,7 +1063,7 @@ def _db_unavailable_error(rid, *, code: int):
 # One dashboard normally serves its launch profile. But the desktop's app-global
 # remote mode points every profile at this single backend, so resume/prompt must
 # be able to act on ANOTHER local profile's state.db + home. The desktop passes
-# ``profile`` on those calls; we open that profile's db and bind its HERMES_HOME
+# ``profile`` on those calls; we open that profile's db and bind its AGENTIC_OS_HOME
 # (a ContextVar override) for the duration of the call so config/skills/model and
 # message persistence all resolve to the right profile. Omitted/own profile → the
 # launch profile (unchanged for single-profile and per-profile-remote setups).
@@ -1079,13 +1079,13 @@ def _profile_home(profile: str | None) -> Path | None:
     except Exception:
         return None
     # Already the launch profile? No override needed.
-    if home.resolve() == Path(_hermes_home).resolve():
+    if home.resolve() == Path(_agentic_os_home).resolve():
         return None
     return home if (home / "state.db").exists() or home.exists() else None
 
 
 def _profile_scoped(handler):
-    """Bind ``params['profile']``'s HERMES_HOME around a pet RPC handler.
+    """Bind ``params['profile']``'s AGENTIC_OS_HOME around a pet RPC handler.
 
     Pets are per-profile: ``display.pet.*`` lives in the profile's config.yaml and
     sprites install under its ``pets/`` dir (both resolve via ``get_agentic_os_home``).
@@ -1216,7 +1216,7 @@ _compute_host_supervisor_lock = threading.Lock()
 
 
 def _inside_compute_host_child() -> bool:
-    return os.environ.get("HERMES_COMPUTE_HOST_CHILD") == "1"
+    return os.environ.get("AGENTIC_OS_COMPUTE_HOST_CHILD") == "1"
 
 
 def _turn_isolation_enabled(cfg: dict | None = None) -> bool:
@@ -1590,7 +1590,7 @@ def _start_agent_build(sid: str, session: dict) -> None:
         try:
             tokens = _set_session_context(key)
             # Build against the session's profile (global-remote): bind its
-            # HERMES_HOME so config/skills/model resolve to it, and hand the
+            # AGENTIC_OS_HOME so config/skills/model resolve to it, and hand the
             # agent that profile's db so turns persist to the right state.db.
             session_db = None
             if profile_home:
@@ -2216,10 +2216,10 @@ def _load_cfg() -> dict:
 
         # Honor a per-session profile override (see session.resume) so a resumed
         # remote profile loads ITS config (model, skills, prompt); otherwise the
-        # launch profile's _hermes_home. Cache is keyed on the resolved path, so
+        # launch profile's _agentic_os_home. Cache is keyed on the resolved path, so
         # profiles don't clobber each other.
         override = get_agentic_os_home_override()
-        home = override if isinstance(override, str) and override else _hermes_home
+        home = override if isinstance(override, str) and override else _agentic_os_home
         p = Path(home) / "config.yaml"
         mtime = p.stat().st_mtime if p.exists() else None
         with _cfg_lock:
@@ -2265,7 +2265,7 @@ def _save_cfg(cfg: dict):
 
     from agentic_os_cli.config import atomic_config_write
 
-    path = _hermes_home / "config.yaml"
+    path = _agentic_os_home / "config.yaml"
     atomic_config_write(path, cfg)
     with _cfg_lock:
         _cfg_cache = copy.deepcopy(cfg)
@@ -2335,9 +2335,9 @@ def _clear_session_context(tokens: list) -> None:
 
 def _enable_gateway_prompts() -> None:
     """Route approvals through gateway callbacks instead of CLI input()."""
-    os.environ["HERMES_GATEWAY_SESSION"] = "1"
-    os.environ["HERMES_EXEC_ASK"] = "1"
-    os.environ["HERMES_INTERACTIVE"] = "1"
+    os.environ["AGENTIC_OS_GATEWAY_SESSION"] = "1"
+    os.environ["AGENTIC_OS_EXEC_ASK"] = "1"
+    os.environ["AGENTIC_OS_INTERACTIVE"] = "1"
 
 
 # ── Blocking prompt factory ──────────────────────────────────────────
@@ -2510,7 +2510,7 @@ def _config_model_target() -> tuple[str, str]:
 
 def _resolve_startup_runtime() -> tuple[str, str | None]:
     model = _resolve_model()
-    explicit_provider = os.environ.get("HERMES_TUI_PROVIDER", "").strip()
+    explicit_provider = os.environ.get("AGENTIC_OS_TUI_PROVIDER", "").strip()
     if explicit_provider:
         return model, explicit_provider
 
@@ -2948,7 +2948,7 @@ def _load_memory_notifications() -> str:
 
 
 def _load_tool_progress_mode() -> str:
-    env = os.environ.get("HERMES_TUI_TOOL_PROGRESS", "").strip().lower()
+    env = os.environ.get("AGENTIC_OS_TUI_TOOL_PROGRESS", "").strip().lower()
     if env in {"off", "new", "all", "verbose"}:
         return env
     raw = (_load_cfg().get("display") or {}).get("tool_progress", "all")
@@ -2963,7 +2963,7 @@ def _load_tool_progress_mode() -> str:
 def _load_enabled_toolsets() -> list[str] | None:
     explicit = [
         item.strip()
-        for item in os.environ.get("HERMES_TUI_TOOLSETS", "").split(",")
+        for item in os.environ.get("AGENTIC_OS_TUI_TOOLSETS", "").split(",")
         if item.strip()
     ]
     cfg = None
@@ -3015,7 +3015,7 @@ def _load_enabled_toolsets() -> list[str] | None:
             ignored = [name for name in explicit if name not in {"all", "*"}]
             if ignored:
                 print(
-                    "[tui] HERMES_TUI_TOOLSETS=all enables every toolset; "
+                    "[tui] AGENTIC_OS_TUI_TOOLSETS=all enables every toolset; "
                     f"ignoring additional entries: {', '.join(ignored)}",
                     file=sys.stderr,
                     flush=True,
@@ -3059,13 +3059,13 @@ def _load_enabled_toolsets() -> list[str] | None:
 
         if unknown:
             print(
-                f"[tui] ignoring unknown HERMES_TUI_TOOLSETS entries: {', '.join(unknown)}",
+                f"[tui] ignoring unknown AGENTIC_OS_TUI_TOOLSETS entries: {', '.join(unknown)}",
                 file=sys.stderr,
                 flush=True,
             )
         if disabled:
             print(
-                "[tui] ignoring disabled MCP servers in HERMES_TUI_TOOLSETS "
+                "[tui] ignoring disabled MCP servers in AGENTIC_OS_TUI_TOOLSETS "
                 "(set enabled: true in config.yaml to use): "
                 f"{', '.join(disabled)}",
                 file=sys.stderr,
@@ -3076,7 +3076,7 @@ def _load_enabled_toolsets() -> list[str] | None:
             return valid
 
         fallback_notice = (
-            "[tui] no valid HERMES_TUI_TOOLSETS entries; using configured CLI toolsets"
+            "[tui] no valid AGENTIC_OS_TUI_TOOLSETS entries; using configured CLI toolsets"
         )
 
     try:
@@ -3106,7 +3106,7 @@ def _load_enabled_toolsets() -> list[str] | None:
     except Exception:
         if fallback_notice is not None:
             print(
-                "[tui] no valid HERMES_TUI_TOOLSETS entries and configured CLI toolsets could not be loaded; enabling all toolsets",
+                "[tui] no valid AGENTIC_OS_TUI_TOOLSETS entries and configured CLI toolsets could not be loaded; enabling all toolsets",
                 file=sys.stderr,
                 flush=True,
             )
@@ -3387,7 +3387,7 @@ def _apply_model_switch(
     # user's chosen model/provider instead of falling back to global config.
     #
     # We deliberately do NOT write process-global env vars (HERMES_MODEL /
-    # HERMES_INFERENCE_MODEL / HERMES_TUI_PROVIDER / HERMES_INFERENCE_PROVIDER)
+    # HERMES_INFERENCE_MODEL / AGENTIC_OS_TUI_PROVIDER / HERMES_INFERENCE_PROVIDER)
     # here. The desktop backend hosts every same-profile session in ONE process,
     # so mutating os.environ on a /model switch leaked the new model/provider
     # into every OTHER live session's next agent rebuild — switching the model
@@ -4589,7 +4589,7 @@ def _apply_personality_to_session(
 
 def _cfg_max_turns(cfg: dict, default: int) -> int:
     try:
-        env_max = int(os.environ.get("HERMES_TUI_MAX_TURNS", "") or 0)
+        env_max = int(os.environ.get("AGENTIC_OS_TUI_MAX_TURNS", "") or 0)
         if env_max > 0:
             return env_max
     except (TypeError, ValueError):
@@ -4599,7 +4599,7 @@ def _cfg_max_turns(cfg: dict, default: int) -> int:
 
 
 def _parse_tui_skills_env() -> list[str]:
-    raw = os.environ.get("HERMES_TUI_SKILLS", "")
+    raw = os.environ.get("AGENTIC_OS_TUI_SKILLS", "")
     skills: list[str] = []
     seen: set[str] = set()
     for part in raw.replace("\n", ",").split(","):
@@ -5150,8 +5150,8 @@ def _make_agent(
         session_id=session_id or key,
         session_db=session_db if session_db is not None else _get_db(),
         ephemeral_system_prompt=system_prompt or None,
-        checkpoints_enabled=is_truthy_value(os.environ.get("HERMES_TUI_CHECKPOINTS")),
-        pass_session_id=is_truthy_value(os.environ.get("HERMES_TUI_PASS_SESSION_ID")),
+        checkpoints_enabled=is_truthy_value(os.environ.get("AGENTIC_OS_TUI_CHECKPOINTS")),
+        pass_session_id=is_truthy_value(os.environ.get("AGENTIC_OS_TUI_PASS_SESSION_ID")),
         skip_context_files=is_truthy_value(os.environ.get("HERMES_IGNORE_RULES")),
         skip_memory=is_truthy_value(os.environ.get("HERMES_IGNORE_RULES")),
         fallback_model=_load_fallback_model(),
@@ -5789,7 +5789,7 @@ def _(rid, params: dict) -> dict:
     # ``profile`` (app-global remote mode): a new chat started under a non-launch
     # profile must build its agent + persist against THAT profile's home/state.db,
     # not the dashboard's launch profile. Stored on the session so _start_agent_build
-    # and each turn re-bind HERMES_HOME. None/own profile → launch (unchanged).
+    # and each turn re-bind AGENTIC_OS_HOME. None/own profile → launch (unchanged).
     profile = (params.get("profile") or "").strip() or None
     profile_home = _profile_home(profile)
 
@@ -6499,7 +6499,7 @@ def _(rid, params: dict) -> dict:
                         "model_override"
                     ]
                 _sessions[sid]["display_history_prefix"] = display_history_prefix
-                # Remember the profile home so each turn re-binds HERMES_HOME (the
+                # Remember the profile home so each turn re-binds AGENTIC_OS_HOME (the
                 # agent persists to its own db, but mid-turn home reads — memory,
                 # skills — must resolve to the resumed profile too).
                 if profile_home is not None:
@@ -8917,7 +8917,7 @@ def _(rid, params: dict) -> dict:
 
     agent = session["agent"]
     # Mirror the classic CLI /save: snapshot under the Hermes profile home
-    # (~/.hermes/sessions/saved/) rather than the project/workspace CWD, and
+    # (~/.agentic-os/sessions/saved/) rather than the project/workspace CWD, and
     # include the system prompt so the export matches the dashboard save.
     saved_dir = get_agentic_os_home() / "sessions" / "saved"
     try:
@@ -9175,7 +9175,7 @@ def _(rid, params: dict) -> dict:
 # from the event stream).  On turn-complete it posts the final tree here;
 # /replay and /replay-diff fetch past snapshots by session_id + filename.
 #
-# Layout:  $HERMES_HOME/spawn-trees/<session_id>/<timestamp>.json
+# Layout:  $AGENTIC_OS_HOME/spawn-trees/<session_id>/<timestamp>.json
 # Each file contains { session_id, started_at, finished_at, subagents: [...] }.
 
 
@@ -9930,7 +9930,7 @@ def _run_prompt_submit(rid, sid: str, session: dict, text: Any) -> None:
     def run():
         approval_token = None
         session_tokens = []
-        home_token = None  # per-turn HERMES_HOME override for a resumed remote profile
+        home_token = None  # per-turn AGENTIC_OS_HOME override for a resumed remote profile
         goal_followup = None  # set by the post-turn goal hook below
         one_turn_restore = session.pop("one_turn_model_restore", None)
         try:
@@ -10494,7 +10494,7 @@ def _(rid, params: dict) -> dict:
         return _err(rid, 5027, f"clipboard unavailable: {e}")
 
     session["image_counter"] = session.get("image_counter", 0) + 1
-    img_dir = _hermes_home / "images"
+    img_dir = _agentic_os_home / "images"
     img_dir.mkdir(parents=True, exist_ok=True)
     img_path = (
         img_dir
@@ -10642,7 +10642,7 @@ def _queue_attached_image(session: dict, img_bytes: bytes, ext: str, *, prefix: 
     the existing native-image-attach pipeline. Returns the written path.
     """
     session["image_counter"] = session.get("image_counter", 0) + 1
-    img_dir = _hermes_home / "images"
+    img_dir = _agentic_os_home / "images"
     img_dir.mkdir(parents=True, exist_ok=True)
     ts = datetime.now().strftime("%Y%m%d_%H%M%S")
     img_path = img_dir / f"{prefix}_{ts}_{session['image_counter']}{ext}"
@@ -12052,7 +12052,7 @@ def _(rid, params, pdb, conn) -> dict:
 
 def _is_repo_junk(root: str) -> bool:
     """A git root we never auto-surface as a project: the bare home dir or
-    anything under HERMES_HOME (~/.hermes by default) — config/sessions/skills,
+    anything under AGENTIC_OS_HOME (~/.agentic-os by default) — config/sessions/skills,
     not a workspace. User-created projects pointing there are still honored."""
     if not root:
         return True
@@ -12070,7 +12070,7 @@ def _is_session_cwd_junk(cwd: str) -> bool:
     """A non-git cwd that should stay in flat Recents rather than auto-group.
 
     Unlike discovered git roots, an explicitly selected descendant of
-    HERMES_HOME may be an intentional prose/data workspace. The pre-Projects
+    AGENTIC_OS_HOME may be an intentional prose/data workspace. The pre-Projects
     desktop surfaced every such cwd, so exclude only the two broad defaults
     that would create catch-all projects.
     """
@@ -12508,7 +12508,7 @@ def _(rid, params: dict) -> dict:
     if key == "profile":
         from agentic_os_constants import display_agentic_os_home
 
-        return _ok(rid, {"home": str(_hermes_home), "display": display_agentic_os_home()})
+        return _ok(rid, {"home": str(_agentic_os_home), "display": display_agentic_os_home()})
     if key == "project":
         cfg_terminal = _load_cfg().get("terminal") or {}
         raw = str(params.get("cwd", "") or cfg_terminal.get("cwd", "") or "").strip()
@@ -12639,7 +12639,7 @@ def _(rid, params: dict) -> dict:
         display = _load_cfg().get("display")
         return _ok(rid, {"value": _display_mouse_tracking(display)})
     if key == "mtime":
-        cfg_path = _hermes_home / "config.yaml"
+        cfg_path = _agentic_os_home / "config.yaml"
         try:
             return _ok(
                 rid, {"mtime": cfg_path.stat().st_mtime if cfg_path.exists() else 0}
@@ -12895,7 +12895,7 @@ def _(rid, params: dict) -> dict:
 
 @method("reload.env")
 def _(rid, params: dict) -> dict:
-    """Re-read ``~/.hermes/.env`` into the gateway process via
+    """Re-read ``~/.agentic-os/.env`` into the gateway process via
     ``agentic_os_cli.config.reload_env``, matching classic CLI's ``/reload``
     handler.  Newly added API keys take effect on the next agent call
     without restarting the TUI.
@@ -13092,7 +13092,7 @@ def _(rid, params: dict) -> dict:
             cwd=os.getcwd(),
             # cli.exec runs `python -m agentic_os_cli.main` (can drive the agent) →
             # needs provider credentials. Tier-1 secrets still stripped (#29157).
-            env=hermes_subprocess_env(inherit_credentials=True),
+            env=agentic_os_subprocess_env(inherit_credentials=True),
             stdin=subprocess.DEVNULL,
         )
         parts = [r.stdout or "", r.stderr or ""]
@@ -13697,7 +13697,7 @@ def _(rid, params: dict) -> dict:
 
     _paste_counter += 1
     line_count = text.count("\n") + 1
-    paste_dir = _hermes_home / "pastes"
+    paste_dir = _agentic_os_home / "pastes"
     paste_dir.mkdir(parents=True, exist_ok=True)
 
     from datetime import datetime
@@ -14274,7 +14274,7 @@ def _(rid, params: dict) -> dict:
         if not pconfig.api_key_env_vars:
             return _err(rid, 4004, f"no env var defined for {pconfig.name}")
 
-        # Save the key to ~/.hermes/.env via the unified credential lifecycle
+        # Save the key to ~/.agentic-os/.env via the unified credential lifecycle
         # so any stale config.yaml mirror of the previous key (model.api_key,
         # custom_providers[*].api_key) is rotated in the same action (#62269).
         env_var = pconfig.api_key_env_vars[0]
@@ -15581,7 +15581,7 @@ def _(rid, params: dict) -> dict:
                 "title": "Environment",
                 "rows": [
                     ["Working Dir", os.getcwd()],
-                    ["Config File", str(_hermes_home / "config.yaml")],
+                    ["Config File", str(_agentic_os_home / "config.yaml")],
                 ],
             },
         ]

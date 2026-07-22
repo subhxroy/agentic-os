@@ -78,7 +78,7 @@ import { SessionSwitcher } from '../session-switcher'
 import { useBackgroundQueueDrain } from '../session/hooks/use-background-queue-drain'
 import { useContextSuggestions } from '../session/hooks/use-context-suggestions'
 import { useCwdActions } from '../session/hooks/use-cwd-actions'
-import { useHermesConfig } from '../session/hooks/use-hermes-config'
+import { useAgenticOSConfig } from '../session/hooks/use-agentic-os-config'
 import { useMessageStream } from '../session/hooks/use-message-stream'
 import { useModelControls } from '../session/hooks/use-model-controls'
 import { usePreviewRouting } from '../session/hooks/use-preview-routing'
@@ -232,7 +232,7 @@ export function ContribWiring({ children }: { children: ReactNode }) {
     requestGateway
   })
 
-  const { refreshHermesConfig, sttEnabled, voiceMaxRecordingSeconds } = useHermesConfig({
+  const { refreshHermesConfig, sttEnabled, voiceMaxRecordingSeconds } = useAgenticOSConfig({
     activeSessionIdRef,
     refreshProjectBranch
   })

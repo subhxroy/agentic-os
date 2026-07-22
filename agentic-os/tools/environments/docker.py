@@ -94,7 +94,7 @@ def _normalize_env_dict(env: dict | None) -> dict[str, str]:
 
 
 def _load_hermes_env_vars() -> dict[str, str]:
-    """Load ~/.hermes/.env values without failing Docker command execution."""
+    """Load ~/.agentic-os/.env values without failing Docker command execution."""
     try:
         from agentic_os_cli.config import load_env
 
@@ -148,7 +148,7 @@ def reap_orphan_containers(
 
     Targets containers that match all of:
 
-    * ``label=hermes-agent=1`` (created by this codebase)
+    * ``label=agentic-os=1`` (created by this codebase)
     * ``status=exited`` (running containers are NEVER reaped — they may
       belong to a sibling Hermes process whose reuse path will pick them
       up; killing them would crash the sibling mid-command)
@@ -172,7 +172,7 @@ def reap_orphan_containers(
     pair.
     """
     docker = docker_exe or find_docker() or "docker"
-    filters = ["--filter", "label=hermes-agent=1", "--filter", "status=exited"]
+    filters = ["--filter", "label=agentic-os=1", "--filter", "status=exited"]
     if profile_filter:
         filters.extend(["--filter", f"label=hermes-profile={_sanitize_label_value(profile_filter)}"])
 
@@ -383,7 +383,7 @@ def _image_uses_init_entrypoint(docker_exe: str, image: str) -> bool:
     """Return True if ``image``'s entrypoint is the s6-overlay ``/init``.
 
     Such images (e.g. anything built on ``s6-overlay``, including
-    ``hermes-agent:latest``) already provide their own PID-1 init and execute
+    ``agentic-os:latest``) already provide their own PID-1 init and execute
     ``/run/s6/basedir/bin/init`` during stage0 startup. They are incompatible
     with Docker's ``--init`` (two competing PID-1 inits) and with a ``noexec``
     ``/run`` mount. Detection is best-effort: on any inspection failure we
@@ -643,7 +643,7 @@ class DockerEnvironment(BaseEnvironment):
             resource_args.append("--network=none")
 
         # Persistent workspace via bind mounts from a configurable host directory
-        # (TERMINAL_SANDBOX_DIR, default ~/.hermes/sandboxes/). Non-persistent
+        # (TERMINAL_SANDBOX_DIR, default ~/.agentic-os/sandboxes/). Non-persistent
         # mode uses tmpfs (ephemeral, fast, gone on cleanup).
         from tools.environments.base import get_sandbox_dir
 
@@ -815,7 +815,7 @@ class DockerEnvironment(BaseEnvironment):
         # /usr/local/bin is not in PATH (common on macOS gateway/service).
         self._docker_exe = find_docker() or "docker"
 
-        # s6-overlay images (e.g. hermes-agent:latest) already use /init as PID 1
+        # s6-overlay images (e.g. agentic-os:latest) already use /init as PID 1
         # and exec /run/s6/basedir/bin/init during startup. For those images we
         # must (a) skip Docker's --init (two competing PID-1 inits) and (b) mount
         # /run with exec instead of noexec, or s6 stage0 dies with exit 126
@@ -857,16 +857,16 @@ class DockerEnvironment(BaseEnvironment):
         # Start the container directly via `docker run -d`.
         container_name = f"hermes-{uuid.uuid4().hex[:8]}"
         # Labels make hermes-created containers identifiable to:
-        #   * the orphan reaper (`hermes-agent=1` for the global sweep filter)
+        #   * the orphan reaper (`agentic-os=1` for the global sweep filter)
         #   * future cross-process reuse (`hermes-task-id`, `hermes-profile`)
-        #   * operators running `docker ps --filter label=hermes-agent=1`
+        #   * operators running `docker ps --filter label=agentic-os=1`
         # Values are limited to the safe character set defined by
         # _sanitize_label_value(); the active Hermes profile is captured at
         # container-start time and never changes for the container's lifetime.
         profile_name = _sanitize_label_value(_get_active_profile_name())
         task_label = _sanitize_label_value(task_id)
         label_args = [
-            "--label", "hermes-agent=1",
+            "--label", "agentic-os=1",
             "--label", f"hermes-task-id={task_label}",
             "--label", f"hermes-profile={profile_name}",
         ]
@@ -1284,7 +1284,7 @@ class DockerEnvironment(BaseEnvironment):
             result = subprocess.run(
                 [
                     self._docker_exe, "ps", "-a",
-                    "--filter", "label=hermes-agent=1",
+                    "--filter", "label=agentic-os=1",
                     "--filter", f"label=hermes-task-id={task_label}",
                     "--filter", f"label=hermes-profile={profile_label}",
                     "--format", "{{.ID}}\t{{.State}}",

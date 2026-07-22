@@ -40,7 +40,7 @@ class TestLoadGatewayConfigForRunner:
         home.mkdir()
         (home / ".env").write_text("TELEGRAM_BOT_TOKEN=from-default-env\n", encoding="utf-8")
         (home / "config.yaml").write_text("gateway:\n  multiplex_profiles: false\n", encoding="utf-8")
-        monkeypatch.setenv("HERMES_HOME", str(home))
+        monkeypatch.setenv("AGENTIC_OS_HOME", str(home))
         monkeypatch.delenv("TELEGRAM_BOT_TOKEN", raising=False)
 
         # Without multiplex, dotenv is still loaded into os.environ by the
@@ -62,14 +62,14 @@ class TestLoadGatewayConfigForRunner:
         (home / "config.yaml").write_text(
             "gateway:\n  multiplex_profiles: true\n", encoding="utf-8"
         )
-        monkeypatch.setenv("HERMES_HOME", str(home))
+        monkeypatch.setenv("AGENTIC_OS_HOME", str(home))
         # Simulate a clean process env where the token was NOT exported and
         # was not bulk-loaded into os.environ (multiplex isolation path).
         monkeypatch.delenv("TELEGRAM_BOT_TOKEN", raising=False)
         # Point both agentic_os_constants and gateway.run at our temp home.
         monkeypatch.setattr(hc, "get_agentic_os_home", lambda: home)
         monkeypatch.setattr(run_mod, "get_agentic_os_home", lambda: home)
-        monkeypatch.setattr(run_mod, "_hermes_home", home)
+        monkeypatch.setattr(run_mod, "_agentic_os_home", home)
 
         cfg = run_mod.load_gateway_config_for_runner()
         assert cfg.multiplex_profiles is True

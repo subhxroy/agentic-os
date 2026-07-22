@@ -15,7 +15,7 @@ import {
   setCurrentReasoningEffort
 } from '@/store/session'
 
-import { useHermesConfig } from './use-hermes-config'
+import { useAgenticOSConfig } from './use-agentic-os-config'
 
 vi.mock('@/hermes', () => ({
   getHermesConfig: vi.fn(),
@@ -37,7 +37,7 @@ function deferred<T>() {
 const mockConfig = (config: Record<string, unknown>) =>
   vi.mocked(getHermesConfig).mockResolvedValue(config as Awaited<ReturnType<typeof getHermesConfig>>)
 
-describe('useHermesConfig refreshHermesConfig', () => {
+describe('useAgenticOSConfig refreshHermesConfig', () => {
   beforeEach(() => {
     // Reset atoms and localStorage between tests
     setCurrentCwd('')
@@ -55,7 +55,7 @@ describe('useHermesConfig refreshHermesConfig', () => {
     mockConfig({ terminal: { cwd: '/Users/example/new-workspace' } })
 
     const { result } = renderHook(() =>
-      useHermesConfig({
+      useAgenticOSConfig({
         activeSessionIdRef: { current: null },
         refreshProjectBranch: vi.fn().mockResolvedValue(undefined)
       })
@@ -75,7 +75,7 @@ describe('useHermesConfig refreshHermesConfig', () => {
     mockConfig({ terminal: { cwd: '/Users/example/new-workspace' } })
 
     const { result } = renderHook(() =>
-      useHermesConfig({
+      useAgenticOSConfig({
         activeSessionIdRef: { current: 'session-1' },
         refreshProjectBranch: vi.fn().mockResolvedValue(undefined)
       })
@@ -94,7 +94,7 @@ describe('useHermesConfig refreshHermesConfig', () => {
     mockConfig({})
 
     const { result } = renderHook(() =>
-      useHermesConfig({
+      useAgenticOSConfig({
         activeSessionIdRef: { current: null },
         refreshProjectBranch: vi.fn().mockResolvedValue(undefined)
       })
@@ -111,7 +111,7 @@ describe('useHermesConfig refreshHermesConfig', () => {
     mockConfig({ terminal: { cwd: '.' } })
 
     const { result } = renderHook(() =>
-      useHermesConfig({
+      useAgenticOSConfig({
         activeSessionIdRef: { current: null },
         refreshProjectBranch: vi.fn().mockResolvedValue(undefined)
       })
@@ -131,7 +131,7 @@ describe('useHermesConfig refreshHermesConfig', () => {
     mockConfig({ terminal: { cwd: '/workspace/project-a' } })
 
     const { result } = renderHook(() =>
-      useHermesConfig({
+      useAgenticOSConfig({
         activeSessionIdRef: { current: null },
         refreshProjectBranch
       })
@@ -151,7 +151,7 @@ describe('useHermesConfig refreshHermesConfig', () => {
     mockConfig({ terminal: { cwd: '/Users/example/new-workspace' } })
 
     const { result } = renderHook(() =>
-      useHermesConfig({
+      useAgenticOSConfig({
         activeSessionIdRef: { current: 'session-1' },
         refreshProjectBranch
       })
@@ -169,7 +169,7 @@ describe('useHermesConfig refreshHermesConfig', () => {
     vi.mocked(getHermesConfig).mockReturnValueOnce(profileConfig.promise)
 
     const { result } = renderHook(() =>
-      useHermesConfig({
+      useAgenticOSConfig({
         activeSessionIdRef: { current: null },
         refreshProjectBranch: vi.fn().mockResolvedValue(undefined)
       })
@@ -204,7 +204,7 @@ describe('useHermesConfig refreshHermesConfig', () => {
     vi.mocked(getHermesConfig).mockReturnValueOnce(profileB.promise).mockReturnValueOnce(profileC.promise)
 
     const { result } = renderHook(() =>
-      useHermesConfig({
+      useAgenticOSConfig({
         activeSessionIdRef: { current: null },
         refreshProjectBranch: vi.fn().mockResolvedValue(undefined)
       })

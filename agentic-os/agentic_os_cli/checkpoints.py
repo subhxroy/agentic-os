@@ -1,7 +1,7 @@
 """`hermes checkpoints` CLI subcommand.
 
 Gives users direct visibility and control over the filesystem checkpoint
-store at ``~/.hermes/checkpoints/``.  Actions:
+store at ``~/.agentic-os/checkpoints/``.  Actions:
 
     hermes checkpoints               # same as `status`
     hermes checkpoints status        # total size, project count, breakdown

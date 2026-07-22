@@ -20,7 +20,7 @@ from agent.skill_utils import is_excluded_skill_path
 
 
 def _dotenv_key_names() -> set[str]:
-    """Return the set of env-var names assigned a non-empty value in ~/.hermes/.env.
+    """Return the set of env-var names assigned a non-empty value in ~/.agentic-os/.env.
 
     The managed backends (launchd / systemd / the desktop-spawned ``serve``
     process) load credentials from this file — NOT from an interactive shell's
@@ -397,7 +397,7 @@ def run_dump(args):
             display = _redact(val)
         else:
             display = "set" if val else "not set"
-        # Set in this (shell) process but absent from ~/.hermes/.env: a managed
+        # Set in this (shell) process but absent from ~/.agentic-os/.env: a managed
         # backend (launchd/systemd/desktop `serve`) loads .env, not the login
         # shell, so it likely can't see this key — even though the dump reads
         # "set". Flag it so support doesn't chase a phantom "key is configured"

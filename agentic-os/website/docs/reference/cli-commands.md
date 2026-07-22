@@ -27,9 +27,9 @@ hermes [global-options] <command> [subcommand/options]
 | `--worktree`, `-w` | Start in an isolated git worktree for parallel-agent workflows. |
 | `--yolo` | Bypass dangerous-command approval prompts. |
 | `--pass-session-id` | Include the session ID in the agent's system prompt. |
-| `--ignore-user-config` | Ignore `~/.hermes/config.yaml` and fall back to built-in defaults. Credentials in `.env` are still loaded. |
+| `--ignore-user-config` | Ignore `~/.agentic-os/config.yaml` and fall back to built-in defaults. Credentials in `.env` are still loaded. |
 | `--ignore-rules` | Skip auto-injection of `AGENTS.md`, `SOUL.md`, `.cursorrules`, memory, and preloaded skills. |
-| `--tui` | Launch the [TUI](../user-guide/tui.md) instead of the classic CLI. Equivalent to `HERMES_TUI=1`. Always wins over `display.interface`. |
+| `--tui` | Launch the [TUI](../user-guide/tui.md) instead of the classic CLI. Equivalent to `AGENTIC_OS_TUI=1`. Always wins over `display.interface`. |
 | `--cli` | Force the classic prompt_toolkit REPL. Use this to override `display.interface: tui` for a single invocation. |
 | `--dev` | With `--tui`: run the TypeScript sources directly via `tsx` instead of the prebuilt bundle (for TUI contributors). |
 
@@ -51,7 +51,7 @@ hermes [global-options] <command> [subcommand/options]
 | `hermes auth` | Manage credentials — add, list, remove, reset, status, logout. Handles OAuth flows for Codex/Nous/Anthropic. |
 | `hermes login` / `logout` | **Deprecated** — use `hermes auth` instead. |
 | `hermes send` | Send a one-shot message to a configured messaging platform (Telegram, Discord, Slack, Signal, SMS, …). Useful from shell scripts, cron jobs, CI hooks, and monitoring daemons — no agent loop, no LLM. |
-| `hermes secrets` | Manage external secret sources (currently Bitwarden Secrets Manager) for pulling API keys at process startup instead of from `~/.hermes/.env`. |
+| `hermes secrets` | Manage external secret sources (currently Bitwarden Secrets Manager) for pulling API keys at process startup instead of from `~/.agentic-os/.env`. |
 | `hermes migrate` | Diagnose and (optionally) rewrite `config.yaml` to replace references to retired models or deprecated settings (e.g. `migrate xai`). |
 | `hermes status` | Show agent, auth, and platform status. |
 | `hermes cron` | Inspect and tick the cron scheduler. |
@@ -65,7 +65,7 @@ hermes [global-options] <command> [subcommand/options]
 | `hermes prompt-size` | Show a byte breakdown of the system prompt + tool schemas (skills index, memory, profile). Runs offline. |
 | `hermes debug` | Debug tools — upload logs and system info for support. |
 | `hermes backup` | Back up Hermes home directory to a zip file. |
-| `hermes checkpoints` | Inspect / prune / clear `~/.hermes/checkpoints/` (the shadow store used by `/rollback`). Run with no args for a status overview. |
+| `hermes checkpoints` | Inspect / prune / clear `~/.agentic-os/checkpoints/` (the shadow store used by `/rollback`). Run with no args for a status overview. |
 | `hermes import` | Restore a Hermes backup from a zip file. |
 | `hermes logs` | View, tail, and filter agent/gateway/error log files. |
 | `hermes config` | Show, edit, migrate, and query configuration files. |
@@ -89,7 +89,7 @@ hermes [global-options] <command> [subcommand/options]
 | `hermes profile` | Manage profiles — multiple isolated Hermes instances. |
 | `hermes completion` | Print shell completion scripts (bash/zsh/fish). |
 | `hermes version` | Show version information. |
-| `hermes update` | Pull latest code and reinstall dependencies. `--check` previews without installing; `--backup` takes a pre-pull `HERMES_HOME` snapshot. |
+| `hermes update` | Pull latest code and reinstall dependencies. `--check` previews without installing; `--backup` takes a pre-pull `AGENTIC_OS_HOME` snapshot. |
 | `hermes uninstall` | Remove Hermes from the system. |
 
 ## `hermes chat`
@@ -115,7 +115,7 @@ Common options:
 | `--checkpoints` | Enable filesystem checkpoints before destructive file changes. |
 | `--yolo` | Skip approval prompts. |
 | `--pass-session-id` | Pass the session ID into the system prompt. |
-| `--ignore-user-config` | Ignore `~/.hermes/config.yaml` and use built-in defaults. Credentials in `.env` are still loaded. Useful for isolated CI runs, reproducible bug reports, and third-party integrations. |
+| `--ignore-user-config` | Ignore `~/.agentic-os/config.yaml` and use built-in defaults. Credentials in `.env` are still loaded. Useful for isolated CI runs, reproducible bug reports, and third-party integrations. |
 | `--ignore-rules` | Skip auto-injection of `AGENTS.md`, `SOUL.md`, `.cursorrules`, persistent memory, and preloaded skills. Combine with `--ignore-user-config` for a fully isolated run. |
 | `--safe-mode` | Troubleshooting mode: disable ALL customizations — user config, rules/memory injection, plugins, shell hooks, and MCP servers (implies `--ignore-user-config` and `--ignore-rules`). Use to isolate whether a problem comes from your setup or from Hermes itself. |
 | `--source <tag>` | Session source tag for filtering (default: `cli`). Use `tool` for third-party integrations that should not appear in user session lists. |
@@ -146,7 +146,7 @@ hermes -z "What's the capital of France?"
 answer=$(hermes -z "summarize this" < /path/to/file.txt)
 ```
 
-Per-run overrides (no mutation to `~/.hermes/config.yaml`):
+Per-run overrides (no mutation to `~/.agentic-os/config.yaml`):
 
 | Flag | Equivalent env var | Purpose |
 |---|---|---|
@@ -230,14 +230,14 @@ Subcommands:
 | `install` | Install as a systemd (Linux) or launchd (macOS) background service. |
 | `uninstall` | Remove the installed service. |
 | `setup` | Interactive messaging-platform setup. |
-| `migrate-legacy` | Remove legacy `hermes.service` units left over from pre-rename installs. Profile units (`hermes-gateway-<profile>.service`) and unrelated services are never touched. Flags: `--dry-run`, `-y`/`--yes`. |
+| `migrate-legacy` | Remove legacy `hermes.service` units left over from pre-rename installs. Profile units (`agentic-os-gateway-<profile>.service`) and unrelated services are never touched. Flags: `--dry-run`, `-y`/`--yes`. |
 | `enroll` | Experimental: enroll this gateway with a relay connector and save relay credentials for connector-backed platforms. |
 
 Options:
 
 | Option | Description |
 |--------|-------------|
-| `--all` | On `start` / `restart` / `stop`: act on **every profile's** gateway, not just the active `HERMES_HOME`. Useful if you run multiple profiles side-by-side and want to restart them all after `hermes update`. |
+| `--all` | On `start` / `restart` / `stop`: act on **every profile's** gateway, not just the active `AGENTIC_OS_HOME`. Useful if you run multiple profiles side-by-side and want to restart them all after `hermes update`. |
 | `--no-supervise` | On `run`: inside the s6-overlay Docker image, opt out of auto-supervision and use pre-s6 foreground semantics — gateway runs as the container's main process with no auto-restart. No-op outside the s6 image. Equivalent to setting `HERMES_GATEWAY_NO_SUPERVISE=1`. |
 | `--external-supervisor` | On `run`: declare that a wrapper-provided process manager owns the foreground gateway. Use this when `sudo`, `env -i`, or another wrapper strips launchd/systemd's native environment marker. In-chat restarts and updates exit back to that manager instead of spawning a detached replacement. |
 
@@ -252,7 +252,7 @@ stopped.
 `hermes gateway enroll` accepts `--token`, `--connector-url`, `--gateway-id`, and `--wake-url`. It exchanges the enrollment token with the connector and writes the resulting `GATEWAY_RELAY_ID`, `GATEWAY_RELAY_SECRET`, `GATEWAY_RELAY_DELIVERY_KEY`, optional `GATEWAY_RELAY_URL`, and (when `--wake-url` is given) `GATEWAY_RELAY_WAKE_URL` values to the active profile's `.env`.
 
 :::tip WSL users
-Use `hermes gateway run` instead of `hermes gateway start` — WSL's systemd support is unreliable. Wrap it in tmux for persistence: `tmux new -s hermes 'hermes gateway run'`. See [WSL FAQ](/reference/faq#wsl-gateway-keeps-disconnecting-or-hermes-gateway-start-fails) for details.
+Use `hermes gateway run` instead of `hermes gateway start` — WSL's systemd support is unreliable. Wrap it in tmux for persistence: `tmux new -s hermes 'hermes gateway run'`. See [WSL FAQ](/reference/faq#wsl-gateway-keeps-disconnecting-or-agentic-os-gateway-start-fails) for details.
 :::
 
 ## `hermes lsp`
@@ -342,7 +342,7 @@ Runs the WhatsApp pairing/setup flow, including mode selection and QR-code pairi
 
 ```bash
 hermes slack manifest              # print manifest to stdout
-hermes slack manifest --write      # write to ~/.hermes/slack-manifest.json
+hermes slack manifest --write      # write to ~/.agentic-os/slack-manifest.json
 hermes slack manifest --slashes-only  # just the features.slash_commands array
 ```
 
@@ -356,7 +356,7 @@ reinstall if scopes or slash commands changed.
 
 | Flag | Default | Purpose |
 |------|---------|---------|
-| `--write [PATH]` | stdout | Write to a file instead of stdout. Bare `--write` writes `$HERMES_HOME/slack-manifest.json`. |
+| `--write [PATH]` | stdout | Write to a file instead of stdout. Bare `--write` writes `$AGENTIC_OS_HOME/slack-manifest.json`. |
 | `--name NAME` | `Hermes` | Bot display name in Slack. |
 | `--description DESC` | default blurb | Bot description shown in the Slack app directory. |
 | `--slashes-only` | off | Emit only `features.slash_commands` for merging into a manually-maintained manifest. |
@@ -374,7 +374,7 @@ echo "message" | hermes send --to <target>
 hermes send --list [platform]
 ```
 
-Send a one-shot message to a configured messaging platform without spinning up an agent or gateway loop. Reuses the gateway's already-configured credentials (`~/.hermes/.env` + `~/.hermes/config.yaml`) so ops scripts, cron jobs, CI hooks, and monitoring daemons can post status updates without reimplementing each platform's REST client.
+Send a one-shot message to a configured messaging platform without spinning up an agent or gateway loop. Reuses the gateway's already-configured credentials (`~/.agentic-os/.env` + `~/.agentic-os/config.yaml`) so ops scripts, cron jobs, CI hooks, and monitoring daemons can post status updates without reimplementing each platform's REST client.
 
 For bot-token platforms (Telegram, Discord, Slack, Signal, SMS, WhatsApp-CloudAPI) no running gateway is required — `hermes send` talks directly to the platform's REST endpoint. Plugin platforms that need a persistent adapter still require a live gateway.
 
@@ -424,7 +424,7 @@ hermes secrets bitwarden <subcommand>
 hermes secrets bw <subcommand>          # short alias
 ```
 
-Pull API keys from an external secret manager at process startup instead of storing them in `~/.hermes/.env`. Currently supports **Bitwarden Secrets Manager**. See the full guide: [Bitwarden integration](../user-guide/secrets/bitwarden.md).
+Pull API keys from an external secret manager at process startup instead of storing them in `~/.agentic-os/.env`. Currently supports **Bitwarden Secrets Manager**. See the full guide: [Bitwarden integration](../user-guide/secrets/bitwarden.md).
 
 `bitwarden` (alias `bw`) subcommands:
 
@@ -481,7 +481,7 @@ Run a local OpenAI-compatible HTTP server that forwards requests to an OAuth-aut
 hermes security <subcommand>
 ```
 
-On-demand vulnerability scan against [OSV.dev](https://osv.dev). Covers the Hermes venv (installed PyPI distributions), Python dependencies declared by plugins under `~/.hermes/plugins/`, and pinned `npx`/`uvx` MCP servers in `config.yaml`. Does NOT scan globally-installed packages or editor/browser extensions.
+On-demand vulnerability scan against [OSV.dev](https://osv.dev). Covers the Hermes venv (installed PyPI distributions), Python dependencies declared by plugins under `~/.agentic-os/plugins/`, and pinned `npx`/`uvx` MCP servers in `config.yaml`. Does NOT scan globally-installed packages or editor/browser extensions.
 
 | Subcommand | Description |
 |------------|-------------|
@@ -557,7 +557,7 @@ The cron **trigger** is pluggable via the `cron.provider` config key. Empty
 NAS-managed provider for scale-to-zero hosted gateways) — configured via the
 `cron.chronos.*` keys (`portal_url`, `callback_url`, `expected_audience`,
 `nas_jwks_url`) — or name a custom provider under `plugins/cron/<name>/` or
-`$HERMES_HOME/plugins/<name>/`. An unknown or unavailable provider falls back to
+`$AGENTIC_OS_HOME/plugins/<name>/`. An unknown or unavailable provider falls back to
 the built-in, so cron is never left without a trigger. See the
 [cron internals](../developer-guide/cron-internals.md#gateway-integration) doc.
 
@@ -567,7 +567,7 @@ the built-in, so cron is never left without a trigger. See the
 hermes kanban [--board <slug>] <action> [options]
 ```
 
-Multi-profile, multi-project collaboration board. Each install can host many boards (one per project, repo, or domain); each board is a standalone queue with its own SQLite DB and dispatcher scope. New installs start with one board called `default`, whose DB is `~/.hermes/kanban.db` for back-compat; additional boards live at `~/.hermes/kanban/boards/<slug>/kanban.db`. The gateway-embedded dispatcher sweeps every board per tick.
+Multi-profile, multi-project collaboration board. Each install can host many boards (one per project, repo, or domain); each board is a standalone queue with its own SQLite DB and dispatcher scope. New installs start with one board called `default`, whose DB is `~/.agentic-os/kanban.db` for back-compat; additional boards live at `~/.agentic-os/kanban/boards/<slug>/kanban.db`. The gateway-embedded dispatcher sweeps every board per tick.
 
 **Global flags (apply to every action below):**
 
@@ -582,7 +582,7 @@ Multi-profile, multi-project collaboration board. Each install can host many boa
 | `init` | Create `kanban.db` if missing. Idempotent. |
 | `boards list` / `boards ls` | List all boards with task counts. `--json`, `--all` (include archived). |
 | `boards create <slug>` | Create a new board. Flags: `--name`, `--description`, `--icon`, `--color`, `--switch` (make active). Slug is kebab-case, auto-downcased. |
-| `boards switch <slug>` / `boards use` | Persist `<slug>` as the active board (writes `~/.hermes/kanban/current`). |
+| `boards switch <slug>` / `boards use` | Persist `<slug>` as the active board (writes `~/.agentic-os/kanban/current`). |
 | `boards show` / `boards current` | Print the currently-active board's name, DB path, and task counts. |
 | `boards rename <slug> "<name>"` | Change a board's display name. Slug is immutable. |
 | `boards rm <slug>` | Archive (default) or hard-delete a board. `--delete` skips the archive step. Archived boards move to `boards/_archived/<slug>-<ts>/`. Refused for `default`. |
@@ -622,7 +622,7 @@ hermes kanban boards rm atm10-server
 hermes kanban boards rm atm10-server --delete
 ```
 
-Board resolution order (highest precedence first): `--board <slug>` flag → `HERMES_KANBAN_BOARD` env var → `~/.hermes/kanban/current` file → `default`.
+Board resolution order (highest precedence first): `--board <slug>` flag → `HERMES_KANBAN_BOARD` env var → `~/.agentic-os/kanban/current` file → `default`.
 
 All actions are also available as a slash command in the gateway (`/kanban …`), with the same argument surface — including `boards` subcommands and the `--board` flag.
 
@@ -681,9 +681,9 @@ hermes webhook subscribe <name> [options]
 | `--deliver-chat-id` | Target chat/channel ID for cross-platform delivery. |
 | `--secret` | Custom HMAC secret. Auto-generated if omitted. |
 | `--deliver-only` | Skip the agent — deliver the rendered `--prompt` as the literal message. Zero LLM cost, sub-second delivery. Requires `--deliver` to be a real target (not `log`). |
-| `--script` | Filter/transform script under `~/.hermes/scripts/`. The webhook payload is passed as JSON on stdin; JSON stdout replaces the payload, and empty stdout, `[SILENT]`, or a nonzero exit code ignores the webhook. See [Script Filters and Transforms](../user-guide/messaging/webhooks.md#script-filters-and-transforms). |
+| `--script` | Filter/transform script under `~/.agentic-os/scripts/`. The webhook payload is passed as JSON on stdin; JSON stdout replaces the payload, and empty stdout, `[SILENT]`, or a nonzero exit code ignores the webhook. See [Script Filters and Transforms](../user-guide/messaging/webhooks.md#script-filters-and-transforms). |
 
-Subscriptions persist to `~/.hermes/webhook_subscriptions.json` and are hot-reloaded by the webhook adapter without a gateway restart.
+Subscriptions persist to `~/.agentic-os/webhook_subscriptions.json` and are hot-reloaded by the webhook adapter without a gateway restart.
 
 ## `hermes doctor`
 
@@ -713,7 +713,7 @@ Outputs a compact, plain-text summary of your entire Hermes setup. Designed to b
 |---------|---------|
 | **Header** | Hermes version, release date, git commit hash |
 | **Environment** | OS, Python version, OpenAI SDK version |
-| **Identity** | Active profile name, HERMES_HOME path |
+| **Identity** | Active profile name, AGENTIC_OS_HOME path |
 | **Model** | Configured default model and provider |
 | **Terminal** | Backend type (local, docker, ssh, etc.) |
 | **API keys** | Presence check for all 22 provider/tool API keys |
@@ -731,7 +731,7 @@ os:               Linux 6.14.0-37-generic x86_64
 python:           3.11.14
 openai_sdk:       2.24.0
 profile:          default
-hermes_home:      ~/.hermes
+hermes_home:      ~/.agentic-os
 model:            anthropic/claude-opus-4.6
 provider:         openrouter
 terminal:         local
@@ -807,7 +807,7 @@ hermes debug share --local      # Print report to terminal (no upload)
 hermes backup [options]
 ```
 
-Create a zip archive of your Hermes configuration, skills, sessions, and data. The backup excludes the hermes-agent codebase itself.
+Create a zip archive of your Hermes configuration, skills, sessions, and data. The backup excludes the agentic-os codebase itself.
 
 | Option | Description |
 |--------|-------------|
@@ -821,7 +821,7 @@ The backup uses SQLite's `backup()` API for safe copying, so it works correctly 
 
 - `*.db-wal`, `*.db-shm`, `*.db-journal` — SQLite's WAL / shared-memory / journal sidecars. The `*.db` file already got a consistent snapshot via `sqlite3.backup()`; shipping the live sidecars alongside it would let a restore see a half-committed state.
 - `checkpoints/` — per-session trajectory caches. Hash-keyed and regenerated per session; wouldn't port cleanly to another install anyway.
-- The `hermes-agent` code itself (this is a user-data backup, not a repo snapshot).
+- The `agentic-os` code itself (this is a user-data backup, not a repo snapshot).
 
 ### Examples
 
@@ -838,7 +838,7 @@ hermes backup --quick --label "pre-upgrade"  # Quick snapshot with label
 hermes checkpoints [COMMAND]
 ```
 
-Inspect and manage the shadow git store at `~/.hermes/checkpoints/` — the storage layer behind the in-session `/rollback` command. Safe to run any time; does not require the agent to be running.
+Inspect and manage the shadow git store at `~/.agentic-os/checkpoints/` — the storage layer behind the in-session `/rollback` command. Safe to run any time; does not require the agent to be running.
 
 | Subcommand | Description |
 |------------|-------------|
@@ -898,7 +898,7 @@ hermes import ~/hermes-backup-20260423.zip --force   # Overwrite without prompti
 hermes logs [log_name] [options]
 ```
 
-View, tail, and filter Hermes log files. All logs are stored in `~/.hermes/logs/` (or `<profile>/logs/` for non-default profiles).
+View, tail, and filter Hermes log files. All logs are stored in `~/.agentic-os/logs/` (or `<profile>/logs/` for non-default profiles).
 
 ### Log files
 
@@ -1101,7 +1101,7 @@ Notes:
 hermes bundles <subcommand>
 ```
 
-Skill bundles group several skills under one `/<bundle-name>` slash command. Invoking the bundle loads every referenced skill into a single combined user message. Storage: `~/.hermes/skill-bundles/<slug>.yaml`. See [Skill Bundles](../user-guide/features/skills.md#skill-bundles) for the YAML schema and behavior.
+Skill bundles group several skills under one `/<bundle-name>` slash command. Invoking the bundle loads every referenced skill into a single combined user message. Storage: `~/.agentic-os/skill-bundles/<slug>.yaml`. See [Skill Bundles](../user-guide/features/skills.md#skill-bundles) for the YAML schema and behavior.
 
 Subcommands:
 
@@ -1111,7 +1111,7 @@ Subcommands:
 | `show <name>` | Show one bundle's name, description, skills, and file path |
 | `create <name>` | Create a new bundle. Pass `--skill <id>` (repeat) or omit for interactive entry. `--description`, `--instruction`, `--force` available. |
 | `delete <name>` | Remove a bundle file |
-| `reload` | Re-scan `~/.hermes/skill-bundles/` and report added/removed bundles |
+| `reload` | Re-scan `~/.agentic-os/skill-bundles/` and report added/removed bundles |
 
 Examples:
 
@@ -1143,8 +1143,8 @@ The curator is an auxiliary-model background task that periodically reviews agen
 | `run` | Trigger a curator review now (blocks until the LLM pass finishes) |
 | `run --background` | Start the LLM pass in a background thread and return immediately |
 | `run --dry-run` | Preview only — produce the review report with no mutations |
-| `backup` | Take a manual tar.gz snapshot of `~/.hermes/skills/` (curator also snapshots automatically before every real run) |
-| `rollback` | Restore `~/.hermes/skills/` from a snapshot (defaults to newest) |
+| `backup` | Take a manual tar.gz snapshot of `~/.agentic-os/skills/` (curator also snapshots automatically before every real run) |
+| `rollback` | Restore `~/.agentic-os/skills/` from a snapshot (defaults to newest) |
 | `rollback --list` | List available snapshots |
 | `rollback --id <ts>` | Restore a specific snapshot by id |
 | `rollback -y` | Skip the confirmation prompt |
@@ -1196,7 +1196,7 @@ See [Fallback Providers](../user-guide/features/fallback-providers.md).
 hermes hooks <subcommand>
 ```
 
-Inspect shell-script hooks declared in `~/.hermes/config.yaml`, test them against synthetic payloads, and manage the first-use consent allowlist at `~/.hermes/shell-hooks-allowlist.json`.
+Inspect shell-script hooks declared in `~/.agentic-os/config.yaml`, test them against synthetic payloads, and manage the first-use consent allowlist at `~/.agentic-os/shell-hooks-allowlist.json`.
 
 | Subcommand | Description |
 |------------|-------------|
@@ -1245,7 +1245,7 @@ python -m acp_adapter
 Install support first:
 
 ```bash
-cd ~/.hermes/hermes-agent && uv pip install -e '.[acp]'
+cd ~/.agentic-os/agentic-os && uv pip install -e '.[acp]'
 ```
 
 See [ACP Editor Integration](../user-guide/features/acp.md) and [ACP Internals](../developer-guide/acp-internals.md).
@@ -1397,7 +1397,7 @@ hermes insights [--days N] [--source platform]
 hermes claw migrate [options]
 ```
 
-Migrate your OpenClaw setup to Hermes. Reads from `~/.openclaw` (or a custom path) and writes to `~/.hermes`. Automatically detects legacy directory names (`~/.clawdbot`, `~/.moltbot`) and config filenames (`clawdbot.json`, `moltbot.json`).
+Migrate your OpenClaw setup to Hermes. Reads from `~/.openclaw` (or a custom path) and writes to `~/.agentic-os`. Automatically detects legacy directory names (`~/.clawdbot`, `~/.moltbot`) and config filenames (`clawdbot.json`, `moltbot.json`).
 
 | Option | Description |
 |--------|-------------|
@@ -1405,7 +1405,7 @@ Migrate your OpenClaw setup to Hermes. Reads from `~/.openclaw` (or a custom pat
 | `--preset <name>` | Migration preset: `full` (all compatible settings) or `user-data` (excludes infrastructure config). Neither preset imports secrets — pass `--migrate-secrets` explicitly. |
 | `--overwrite` | Overwrite existing Hermes files on conflicts (default: refuse to apply when the plan has conflicts). |
 | `--migrate-secrets` | Include API keys in migration. Required even under `--preset full`. |
-| `--no-backup` | Skip the pre-migration zip snapshot of `~/.hermes/` (by default a single restore-point archive is written to `~/.hermes/backups/pre-migration-*.zip` before apply; restorable with `hermes import`). |
+| `--no-backup` | Skip the pre-migration zip snapshot of `~/.agentic-os/` (by default a single restore-point archive is written to `~/.agentic-os/backups/pre-migration-*.zip` before apply; restorable with `hermes import`). |
 | `--source <path>` | Custom OpenClaw directory (default: `~/.openclaw`). |
 | `--workspace-target <path>` | Target directory for workspace instructions (AGENTS.md). |
 | `--skill-conflict <mode>` | Handle skill name collisions: `skip` (default), `overwrite`, or `rename`. |
@@ -1456,7 +1456,7 @@ Start the Hermes **backend server** — the JSON-RPC/WebSocket gateway the [desk
 hermes dashboard [options]
 ```
 
-Launch the web dashboard — a browser-based UI for managing configuration, API keys, and monitoring sessions. (For a headless backend with no browser UI — e.g. what the desktop app spawns — use [`hermes serve`](#hermes-serve) above.) Requires `cd ~/.hermes/hermes-agent && uv pip install -e ".[web]"` (FastAPI + Uvicorn). The embedded browser Chat tab is always available and additionally needs the `pty` extra (`cd ~/.hermes/hermes-agent && uv pip install -e ".[web,pty]"`) plus a POSIX PTY environment such as Linux, macOS, or WSL2. See [Web Dashboard](/user-guide/features/web-dashboard) for full documentation.
+Launch the web dashboard — a browser-based UI for managing configuration, API keys, and monitoring sessions. (For a headless backend with no browser UI — e.g. what the desktop app spawns — use [`hermes serve`](#hermes-serve) above.) Requires `cd ~/.agentic-os/agentic-os && uv pip install -e ".[web]"` (FastAPI + Uvicorn). The embedded browser Chat tab is always available and additionally needs the `pty` extra (`cd ~/.agentic-os/agentic-os && uv pip install -e ".[web,pty]"`) plus a POSIX PTY environment such as Linux, macOS, or WSL2. See [Web Dashboard](/user-guide/features/web-dashboard) for full documentation.
 
 | Option | Default | Description |
 |--------|---------|-------------|
@@ -1471,7 +1471,7 @@ Launch the web dashboard — a browser-based UI for managing configuration, API 
 
 ### `hermes dashboard register`
 
-Register this install as a self-hosted dashboard with your Nous Portal account. Creates an OAuth client, writes `HERMES_DASHBOARD_OAUTH_CLIENT_ID` into `~/.hermes/.env`, and prints how to engage the login gate. Requires being logged in (`hermes setup`).
+Register this install as a self-hosted dashboard with your Nous Portal account. Creates an OAuth client, writes `HERMES_DASHBOARD_OAUTH_CLIENT_ID` into `~/.agentic-os/.env`, and prints how to engage the login gate. Requires being logged in (`hermes setup`).
 
 | Option | Description |
 |--------|-------------|
@@ -1555,7 +1555,7 @@ hermes completion fish > ~/.config/fish/completions/hermes.fish
 hermes update [--gateway] [--check] [--no-backup] [--backup] [--yes]
 ```
 
-Pulls the latest `hermes-agent` code and reinstalls dependencies in the managed venv, then re-runs the post-install hooks (MCP servers, skills sync, completion install). Safe to run on a live install. Use `--check` to see whether your checkout is behind `origin/main` without installing.
+Pulls the latest `agentic-os` code and reinstalls dependencies in the managed venv, then re-runs the post-install hooks (MCP servers, skills sync, completion install). Safe to run on a live install. Use `--check` to see whether your checkout is behind `origin/main` without installing.
 
 `hermes update` pulls the configured update branch (default: `main`). If your checkout is on another branch, Hermes may check out the update branch before pulling. Commit branch work before updating when you want to keep it outside the update autostash flow.
 
@@ -1564,7 +1564,7 @@ Pulls the latest `hermes-agent` code and reinstalls dependencies in the managed 
 | `--gateway` | Internal mode used by the messaging `/update` command. Uses file-based IPC for prompts and progress streaming instead of reading from terminal stdin. Not a gateway restart flag. |
 | `--check` | Check whether an update is available without pulling, installing dependencies, or restarting anything. |
 | `--no-backup` | Skip all pre-update backups for this run (both the quick state snapshot and the full zip), regardless of `updates.pre_update_backup`. |
-| `--backup` | Force a **full** pre-update backup for this run: the quick state snapshot plus a complete zip of `HERMES_HOME` (config, auth, sessions, skills, pairing data). The default mode is `quick` — a lightweight state snapshot only. Set the permanent mode via `updates.pre_update_backup: quick | full | off` in `config.yaml`. |
+| `--backup` | Force a **full** pre-update backup for this run: the quick state snapshot plus a complete zip of `AGENTIC_OS_HOME` (config, auth, sessions, skills, pairing data). The default mode is `quick` — a lightweight state snapshot only. Set the permanent mode via `updates.pre_update_backup: quick | full | off` in `config.yaml`. |
 | `--yes`, `-y` | Assume yes for interactive prompts such as config migration and stash restore. API-key entry is skipped; run `hermes config migrate` separately for those. |
 
 Additional behavior:
@@ -1572,8 +1572,8 @@ Additional behavior:
 - **Gateway restart.** After a successful update, Hermes attempts to restart all running gateway profiles automatically so they pick up the new code. Use `hermes gateway restart` when you want to restart a gateway without applying an update.
 - **Local source changes.** For git installs, dirty tracked files and untracked files are auto-stashed before branch checkout or pull (`git stash push --include-untracked`). Interactive terminal updates ask before restoring the stash. Non-interactive updates restore it by default; set `updates.non_interactive_local_changes: discard` only on managed installs where local source edits should be thrown away after a successful pull. If stash restore conflicts or the pull fails, the stash is left in place for manual recovery.
 - **npm lockfile churn.** Before stashing or switching branches, Hermes makes a best-effort cleanup of tracked `package-lock.json` diffs produced by npm install/build steps. Commit or manually stash intentional lockfile edits before running `hermes update`.
-- **Pairing data snapshot.** Even when `--backup` is off, `hermes update` takes a lightweight snapshot of `~/.hermes/pairing/` and the Feishu comment rules before `git pull`. You can roll it back with `hermes backup restore --state pre-update` if a pull rewrites a file you were editing.
-- **Legacy `hermes.service` warning.** If Hermes detects a pre-rename `hermes.service` systemd unit (instead of the current `hermes-gateway.service`), it prints a one-time migration hint so you can avoid flap-loop issues.
+- **Pairing data snapshot.** Even when `--backup` is off, `hermes update` takes a lightweight snapshot of `~/.agentic-os/pairing/` and the Feishu comment rules before `git pull`. You can roll it back with `hermes backup restore --state pre-update` if a pull rewrites a file you were editing.
+- **Legacy `hermes.service` warning.** If Hermes detects a pre-rename `hermes.service` systemd unit (instead of the current `agentic-os-gateway.service`), it prints a one-time migration hint so you can avoid flap-loop issues.
 - **Exit codes.** `0` on success, `1` on pull/install/post-install errors, `2` on unexpected working-tree changes that block `git pull`.
 
 ## Maintenance commands

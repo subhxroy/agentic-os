@@ -35,7 +35,7 @@ channel — review happens via ``/memory pending``). Foreground CLI memory
 writes prompt inline via the dangerous-command approval callback; skill
 writes always stage (too big to eyeball mid-loop).
 
-Pending records live under ``<HERMES_HOME>/pending/{memory,skills}/<id>.json``
+Pending records live under ``<AGENTIC_OS_HOME>/pending/{memory,skills}/<id>.json``
 so they survive process restarts and can be reviewed from CLI, gateway, or the
 web dashboard.
 """

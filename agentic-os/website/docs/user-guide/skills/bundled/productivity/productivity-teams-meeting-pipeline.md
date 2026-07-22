@@ -50,7 +50,7 @@ Multilingual trigger examples (not exhaustive):
 
 ## Prerequisites
 
-Before using the pipeline, verify these are set in `${HERMES_HOME:-~/.hermes}/.env`:
+Before using the pipeline, verify these are set in `${AGENTIC_OS_HOME:-~/.agentic-os}/.env`:
 
 ```bash
 MSGRAPH_TENANT_ID=...

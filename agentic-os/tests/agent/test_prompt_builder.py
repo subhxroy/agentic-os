@@ -409,12 +409,12 @@ class TestBuildSkillsSystemPrompt:
         clear_skills_system_prompt_cache(clear_snapshot=True)
 
     def test_empty_when_no_skills_dir(self, monkeypatch, tmp_path):
-        monkeypatch.setenv("HERMES_HOME", str(tmp_path))
+        monkeypatch.setenv("AGENTIC_OS_HOME", str(tmp_path))
         result = build_skills_system_prompt()
         assert result == ""
 
     def test_builds_index_with_skills(self, monkeypatch, tmp_path):
-        monkeypatch.setenv("HERMES_HOME", str(tmp_path))
+        monkeypatch.setenv("AGENTIC_OS_HOME", str(tmp_path))
         skills_dir = tmp_path / "skills" / "coding" / "python-debug"
         skills_dir.mkdir(parents=True)
         (skills_dir / "SKILL.md").write_text(
@@ -426,7 +426,7 @@ class TestBuildSkillsSystemPrompt:
         assert "available_skills" in result
 
     def test_deduplicates_skills(self, monkeypatch, tmp_path):
-        monkeypatch.setenv("HERMES_HOME", str(tmp_path))
+        monkeypatch.setenv("AGENTIC_OS_HOME", str(tmp_path))
         cat_dir = tmp_path / "skills" / "tools"
         for subdir in ["search", "search"]:
             d = cat_dir / subdir
@@ -444,7 +444,7 @@ class TestBuildSkillsSystemPrompt:
         (agent-created skills are the model's project memory, and models
         don't rediscover them via skills_list once the index goes quiet).
         """
-        monkeypatch.setenv("HERMES_HOME", str(tmp_path))
+        monkeypatch.setenv("AGENTIC_OS_HOME", str(tmp_path))
         for cat, name in (("social-media", "tweet-stuff"), ("github", "pr-review")):
             d = tmp_path / "skills" / cat / name
             d.mkdir(parents=True)
@@ -467,7 +467,7 @@ class TestBuildSkillsSystemPrompt:
     def test_compact_categories_demote_nested_and_miss_cache_separately(
         self, monkeypatch, tmp_path
     ):
-        monkeypatch.setenv("HERMES_HOME", str(tmp_path))
+        monkeypatch.setenv("AGENTIC_OS_HOME", str(tmp_path))
         d = tmp_path / "skills" / "social-media" / "twitter" / "thread-writer"
         d.mkdir(parents=True)
         (d / "SKILL.md").write_text(
@@ -486,7 +486,7 @@ class TestBuildSkillsSystemPrompt:
 
     def test_excludes_incompatible_platform_skills(self, monkeypatch, tmp_path):
         """Skills with platforms: [macos] should not appear on Linux."""
-        monkeypatch.setenv("HERMES_HOME", str(tmp_path))
+        monkeypatch.setenv("AGENTIC_OS_HOME", str(tmp_path))
         skills_dir = tmp_path / "skills" / "apple"
         skills_dir.mkdir(parents=True)
 
@@ -515,7 +515,7 @@ class TestBuildSkillsSystemPrompt:
 
     def test_includes_matching_platform_skills(self, monkeypatch, tmp_path):
         """Skills with platforms: [macos] should appear on macOS."""
-        monkeypatch.setenv("HERMES_HOME", str(tmp_path))
+        monkeypatch.setenv("AGENTIC_OS_HOME", str(tmp_path))
         skills_dir = tmp_path / "skills" / "apple"
         mac_skill = skills_dir / "imessage"
         mac_skill.mkdir(parents=True)
@@ -534,7 +534,7 @@ class TestBuildSkillsSystemPrompt:
 
     def test_excludes_disabled_skills(self, monkeypatch, tmp_path):
         """Skills in the user's disabled list should not appear in the system prompt."""
-        monkeypatch.setenv("HERMES_HOME", str(tmp_path))
+        monkeypatch.setenv("AGENTIC_OS_HOME", str(tmp_path))
         skills_dir = tmp_path / "skills" / "tools"
         skills_dir.mkdir(parents=True)
 
@@ -562,7 +562,7 @@ class TestBuildSkillsSystemPrompt:
         assert "old-tool" not in result
 
     def test_rebuilds_prompt_when_disabled_skills_change(self, monkeypatch, tmp_path):
-        monkeypatch.setenv("HERMES_HOME", str(tmp_path))
+        monkeypatch.setenv("AGENTIC_OS_HOME", str(tmp_path))
         skill_dir = tmp_path / "skills" / "tools" / "cached-skill"
         skill_dir.mkdir(parents=True)
         (skill_dir / "SKILL.md").write_text(
@@ -580,7 +580,7 @@ class TestBuildSkillsSystemPrompt:
         assert "cached-skill" not in second
 
     def test_includes_setup_needed_skills(self, monkeypatch, tmp_path):
-        monkeypatch.setenv("HERMES_HOME", str(tmp_path))
+        monkeypatch.setenv("AGENTIC_OS_HOME", str(tmp_path))
         monkeypatch.delenv("MISSING_API_KEY_XYZ", raising=False)
         skills_dir = tmp_path / "skills" / "media"
 
@@ -603,7 +603,7 @@ class TestBuildSkillsSystemPrompt:
 
     def test_includes_skills_with_met_prerequisites(self, monkeypatch, tmp_path):
         """Skills with satisfied prerequisites should appear normally."""
-        monkeypatch.setenv("HERMES_HOME", str(tmp_path))
+        monkeypatch.setenv("AGENTIC_OS_HOME", str(tmp_path))
         monkeypatch.setenv("MY_API_KEY", "test_value")
         skills_dir = tmp_path / "skills" / "media"
 
@@ -620,7 +620,7 @@ class TestBuildSkillsSystemPrompt:
     def test_non_local_backend_keeps_skill_visible_without_probe(
         self, monkeypatch, tmp_path
     ):
-        monkeypatch.setenv("HERMES_HOME", str(tmp_path))
+        monkeypatch.setenv("AGENTIC_OS_HOME", str(tmp_path))
         monkeypatch.setenv("TERMINAL_ENV", "docker")
         monkeypatch.delenv("BACKEND_ONLY_KEY", raising=False)
         skills_dir = tmp_path / "skills" / "media"
@@ -761,8 +761,8 @@ class TestBuildContextFilesPrompt:
         result = build_context_files_prompt(cwd=str(tmp_path))
         assert "type hints" in result
 
-    def test_loads_soul_md_from_hermes_home_only(self, tmp_path, monkeypatch):
-        monkeypatch.setenv("HERMES_HOME", str(tmp_path / "hermes_home"))
+    def test_loads_soul_md_from_agentic_os_home_only(self, tmp_path, monkeypatch):
+        monkeypatch.setenv("AGENTIC_OS_HOME", str(tmp_path / "hermes_home"))
         hermes_home = tmp_path / "hermes_home"
         hermes_home.mkdir()
         (hermes_home / "SOUL.md").write_text("Be concise and friendly.", encoding="utf-8")
@@ -772,7 +772,7 @@ class TestBuildContextFilesPrompt:
         assert "cwd soul should be ignored" not in result
 
     def test_soul_md_has_no_wrapper_text(self, tmp_path, monkeypatch):
-        monkeypatch.setenv("HERMES_HOME", str(tmp_path / "hermes_home"))
+        monkeypatch.setenv("AGENTIC_OS_HOME", str(tmp_path / "hermes_home"))
         hermes_home = tmp_path / "hermes_home"
         hermes_home.mkdir()
         (hermes_home / "SOUL.md").write_text("Be concise and friendly.", encoding="utf-8")
@@ -782,7 +782,7 @@ class TestBuildContextFilesPrompt:
         assert "## SOUL.md" not in result
 
     def test_empty_soul_md_adds_nothing(self, tmp_path, monkeypatch):
-        monkeypatch.setenv("HERMES_HOME", str(tmp_path / "hermes_home"))
+        monkeypatch.setenv("AGENTIC_OS_HOME", str(tmp_path / "hermes_home"))
         hermes_home = tmp_path / "hermes_home"
         hermes_home.mkdir()
         (hermes_home / "SOUL.md").write_text("\n\n", encoding="utf-8")
@@ -1483,7 +1483,7 @@ class TestBuildSkillsSystemPromptConditional:
         clear_skills_system_prompt_cache(clear_snapshot=True)
 
     def test_fallback_skill_hidden_when_primary_available(self, monkeypatch, tmp_path):
-        monkeypatch.setenv("HERMES_HOME", str(tmp_path))
+        monkeypatch.setenv("AGENTIC_OS_HOME", str(tmp_path))
         skill_dir = tmp_path / "skills" / "search" / "duckduckgo"
         skill_dir.mkdir(parents=True)
         (skill_dir / "SKILL.md").write_text(
@@ -1496,7 +1496,7 @@ class TestBuildSkillsSystemPromptConditional:
         assert "duckduckgo" not in result
 
     def test_fallback_skill_shown_when_primary_unavailable(self, monkeypatch, tmp_path):
-        monkeypatch.setenv("HERMES_HOME", str(tmp_path))
+        monkeypatch.setenv("AGENTIC_OS_HOME", str(tmp_path))
         skill_dir = tmp_path / "skills" / "search" / "duckduckgo"
         skill_dir.mkdir(parents=True)
         (skill_dir / "SKILL.md").write_text(
@@ -1509,7 +1509,7 @@ class TestBuildSkillsSystemPromptConditional:
         assert "duckduckgo" in result
 
     def test_requires_skill_hidden_when_toolset_missing(self, monkeypatch, tmp_path):
-        monkeypatch.setenv("HERMES_HOME", str(tmp_path))
+        monkeypatch.setenv("AGENTIC_OS_HOME", str(tmp_path))
         skill_dir = tmp_path / "skills" / "iot" / "openhue"
         skill_dir.mkdir(parents=True)
         (skill_dir / "SKILL.md").write_text(
@@ -1522,7 +1522,7 @@ class TestBuildSkillsSystemPromptConditional:
         assert "openhue" not in result
 
     def test_requires_skill_shown_when_toolset_available(self, monkeypatch, tmp_path):
-        monkeypatch.setenv("HERMES_HOME", str(tmp_path))
+        monkeypatch.setenv("AGENTIC_OS_HOME", str(tmp_path))
         skill_dir = tmp_path / "skills" / "iot" / "openhue"
         skill_dir.mkdir(parents=True)
         (skill_dir / "SKILL.md").write_text(
@@ -1535,7 +1535,7 @@ class TestBuildSkillsSystemPromptConditional:
         assert "openhue" in result
 
     def test_unconditional_skill_always_shown(self, monkeypatch, tmp_path):
-        monkeypatch.setenv("HERMES_HOME", str(tmp_path))
+        monkeypatch.setenv("AGENTIC_OS_HOME", str(tmp_path))
         skill_dir = tmp_path / "skills" / "general" / "notes"
         skill_dir.mkdir(parents=True)
         (skill_dir / "SKILL.md").write_text(
@@ -1549,7 +1549,7 @@ class TestBuildSkillsSystemPromptConditional:
 
     def test_no_args_shows_all_skills(self, monkeypatch, tmp_path):
         """Backward compat: calling with no args shows everything."""
-        monkeypatch.setenv("HERMES_HOME", str(tmp_path))
+        monkeypatch.setenv("AGENTIC_OS_HOME", str(tmp_path))
         skill_dir = tmp_path / "skills" / "search" / "duckduckgo"
         skill_dir.mkdir(parents=True)
         (skill_dir / "SKILL.md").write_text(
@@ -1560,7 +1560,7 @@ class TestBuildSkillsSystemPromptConditional:
 
     def test_null_metadata_does_not_crash(self, monkeypatch, tmp_path):
         """Regression: metadata key present but null should not AttributeError."""
-        monkeypatch.setenv("HERMES_HOME", str(tmp_path))
+        monkeypatch.setenv("AGENTIC_OS_HOME", str(tmp_path))
         skill_dir = tmp_path / "skills" / "general" / "safe-skill"
         skill_dir.mkdir(parents=True)
         # YAML `metadata:` with no value parses as {"metadata": None}
@@ -1575,7 +1575,7 @@ class TestBuildSkillsSystemPromptConditional:
 
     def test_null_hermes_under_metadata_does_not_crash(self, monkeypatch, tmp_path):
         """Regression: metadata.hermes present but null should not crash."""
-        monkeypatch.setenv("HERMES_HOME", str(tmp_path))
+        monkeypatch.setenv("AGENTIC_OS_HOME", str(tmp_path))
         skill_dir = tmp_path / "skills" / "general" / "nested-null"
         skill_dir.mkdir(parents=True)
         (skill_dir / "SKILL.md").write_text(

@@ -124,7 +124,7 @@ LEGACY_AUTHOR_MAP = {
     "m888.braun@hotmail.com": "ManniBr",  # PR #57417 partial salvage (gateway: fail-closed adapter resolution for unregistered secondary profiles)
     "poowis2011@hotmail.com": "Umi4Life",  # PR #47377 salvage (agent: emit one-shot fallback switch notice on successful fallback so gateway users see model/provider change; #35419)
     "austin@openvm067.space": "austinlaw076",  # PR #57563 partial salvage (auth: lazy per-profile Anthropic OAuth file; gateway: whatsapp_cloud/line added to port-binding platform set)
-    "sunsky.lau@gmail.com": "liuhao1024",  # PR #56993 salvage (gateway: process-level HERMES_HOME for pid/lock/status identity files; #56986)
+    "sunsky.lau@gmail.com": "liuhao1024",  # PR #56993 salvage (gateway: process-level AGENTIC_OS_HOME for pid/lock/status identity files; #56986)
     "roseycomanagement@roseyco.co.uk": "Roseyco-management",  # PR #63581 salvage (telegram: require getUpdates progress before polling is healthy; #63243, #63766)
     "nima20002000@users.noreply.github.com": "nima20002000",  # PR #36022/#36025 salvage (code-exec truncation metadata; achievements hover loop)
     "gauravsaxena.jaipur@gmail.com": "gauravsaxena1997",  # PR #59868 partial salvage (agent: guard response.text against httpx.ResponseNotRead in _summarize_api_error; #59769)
@@ -160,7 +160,7 @@ LEGACY_AUTHOR_MAP = {
     "ai-lab@foxmail.com": "CrazyBoyM",  # PR #55828 salvage (image_gen openai-codex: wire image-to-image / reference-image editing via Codex Responses input_image parts; magic-byte + read-guard + 25MB-cap + clamp-to-16 hardening)
     "r0gersm1th@users.noreply.github.com": "r0gersm1th",  # PR #3219 salvage (whatsapp bridge: resolve LID sender IDs to phone numbers in the message payload so phone-based allowlists match; commit authored by collaborator r0gersm1th, PR by @ajmeese7)
     "louis@letsfive.io": "Mibayy",  # PR #3296 salvage (status: provider label honors config.yaml model.base_url, not just OPENAI_BASE_URL env)
-    "me@keslerm.com": "keslerm",  # PR #3459 salvage (gateway: 'log' tool_progress mode — silent in chat, tool calls appended to ~/.hermes/logs/tool_calls.log via rotating handler; duplicate of #3458 by @dlkakbs who submitted 4 min earlier — both credited)
+    "me@keslerm.com": "keslerm",  # PR #3459 salvage (gateway: 'log' tool_progress mode — silent in chat, tool calls appended to ~/.agentic-os/logs/tool_calls.log via rotating handler; duplicate of #3458 by @dlkakbs who submitted 4 min earlier — both credited)
     "david.d.zhang@gmail.com": "Git-on-my-level",  # PR #3659 salvage (gateway: persist per-session /model overrides across gateway restarts)
     "tarunravi@gmail.com": "tarunravi",  # PR #2696 salvage (api-server: inline MEDIA:<path> image tags as base64 data URLs in final responses so remote OpenAI-compatible frontends can render server-local screenshots; the PR's tool-progress-streaming and SSE-sentinel pieces were independently superseded on main)
     "aqdrgg19@gmail.com": "VolodymyrBg",  # PR #2861 salvage (webhook: drop the unused full request payload from retained _delivery_info entries — up to ~1MB dead weight per delivery for the 1h idempotency TTL)
@@ -894,7 +894,7 @@ LEGACY_AUTHOR_MAP = {
     # Temporary tool-progress cleanup salvage (May 2026)
     "Mrcharlesiv@gmail.com": "mrcharlesiv",
     "nbot@liizfq.top": "liizfq",
-    "274096618+hermes-agent-dhabibi@users.noreply.github.com": "dhabibi",
+    "274096618+agentic-os-dhabibi@users.noreply.github.com": "dhabibi",
     "dejie.guo@gmail.com": "JayGwod",
     "133716830+0xKingBack@users.noreply.github.com": "0xKingBack",
     "daixin1204@gmail.com": "SimbaKingjoe",
@@ -1716,7 +1716,7 @@ LEGACY_AUTHOR_MAP = {
     "me+github7604@versun.org": "Versun",  # co-author only
     "my.vesper.nine@gmail.com": "kevin-ho",  # salvage: PR #15488 author @kevin-ho
     "noreply@paperclip.ing": "Paperclip",  # co-author only
-    "teknium@hermes-agent": "teknium1",
+    "teknium@agentic-os": "teknium1",
     "web3blind@gmail.com": "web3blind",
     "ztzheng@163.com": "chengoak",  # PR #17467
     "zwcf5200@163.com": "zwcf5200",  # PR #38661 (SSH remote cwd fix)
@@ -1765,7 +1765,7 @@ LEGACY_AUTHOR_MAP = {
     "sylw3st3rr@gmail.com": "Sylw3ster",  # salvage of #23252 (HERMES_KANBAN_BOARD restore)
     "hello@dominikh.com": "dmnkhorvath",  # salvage of #23358 (kanban worker send_message)
     "413011+smwbev@users.noreply.github.com": "smwbev",  # salvage of #23659 (aria-label colLabel)
-    "58116817+TurgutKural@users.noreply.github.com": "TurgutKural",  # salvage of #23356 (HERMES_HOME inject)
+    "58116817+TurgutKural@users.noreply.github.com": "TurgutKural",  # salvage of #23356 (AGENTIC_OS_HOME inject)
     "openclaw@agent.local": "29206394",  # PR #22194 salvage (sudo -S brute-force guard, #9590)
     "freedemon@gmail.com": "fr33d3m0n",  # PR #21128 salvage (sudo stdin/askpass DANGEROUS, #17873 cat 4)
     "zhaowh3613@outlook.com": "VinceZcrikl",  # PR #23647 salvage (npm UTF-8 decode on GBK Windows)
@@ -1983,7 +1983,7 @@ LEGACY_AUTHOR_MAP = {
     "takis312@hotmail.com": "ErnestHysa",  # PRs #32636/#32708 (MCP asyncio.sleep + O(n^2) watcher drain)
     "adrian@Adrians-MacBook-Pro.local": "alastraz",  # PR #41383 salvage (cua EAGAIN CLI-transport fallback)
     "me@simontaggart.com": "SiTaggart",  # PR #35583 (docker_forward_env empty-secret .env fallback)
-    "2663402852@qq.com": "x1am1",  # PR #35098 (chown root-owned top-level HERMES_HOME state files)
+    "2663402852@qq.com": "x1am1",  # PR #35098 (chown root-owned top-level AGENTIC_OS_HOME state files)
     "nicsequenzy@gmail.com": "polnikale",  # PR #35717 (discover Playwright headless_shell browser)
     "wasdhkzk@gmail.com": "whyhkzk",  # PR #32407 (sandbox-mirror inner-container guard; commits authored as whyhkzk + zhukun)
     "leonard@sellem.me": "leonardsellem",  # PR #37405 (desktop WS origin guard on remote/Tailscale binds)
@@ -2050,7 +2050,7 @@ LEGACY_AUTHOR_MAP = {
     "codeforgenet@icloud.com": "CodeForgeNet",  # PR #47437 salvage (compact_rows blob skip)
     "i@dex.moe": "dexhunter",  # PR #60339 salvage (skills snapshot manifest speedup)
     "1torhan@protonmail.com": "uzaylisak",  # PR #29988 salvage (detect_local_server_type process-lifetime cache)
-    "zhchl@hermes-agent.local": "8294",  # PR #50572 salvage (honor config context_length on banner)
+    "zhchl@agentic-os.local": "8294",  # PR #50572 salvage (honor config context_length on banner)
     "yansh2017@gmail.com": "ya-nsh",  # PR #26790 salvage (normalize local terminal relative cwd; #26783)
 }
 

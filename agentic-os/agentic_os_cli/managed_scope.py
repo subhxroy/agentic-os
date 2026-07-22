@@ -2,7 +2,7 @@
 
 A system-level directory (default ``/etc/hermes``, root-owned and not
 user-writable) supplies ``config.yaml`` and ``.env`` values that WIN over the
-user's ``~/.hermes/config.yaml`` and ``~/.hermes/.env`` on a per-leaf-key basis.
+user's ``~/.agentic-os/config.yaml`` and ``~/.agentic-os/.env`` on a per-leaf-key basis.
 
 This is DISTINCT from ``agentic_os_cli.config.is_managed()`` / ``HERMES_MANAGED``,
 which is a coarse package-manager write-lock (declarative-distro / formula

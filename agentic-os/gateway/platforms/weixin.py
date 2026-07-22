@@ -1152,7 +1152,7 @@ class WeixinAdapter(BasePlatformAdapter):
         super().__init__(config, Platform.WEIXIN)
         extra = config.extra or {}
         hermes_home = str(get_agentic_os_home())
-        self._hermes_home = hermes_home
+        self._agentic_os_home = hermes_home
         self._token_store = ContextTokenStore(hermes_home)
         self._typing_cache = TypingTicketCache()
         self._poll_session: Optional[aiohttp.ClientSession] = None
@@ -1337,7 +1337,7 @@ class WeixinAdapter(BasePlatformAdapter):
 
     async def _poll_loop(self) -> None:
         assert self._poll_session is not None
-        sync_buf = _load_sync_buf(self._hermes_home, self._account_id)
+        sync_buf = _load_sync_buf(self._agentic_os_home, self._account_id)
         timeout_ms = LONG_POLL_TIMEOUT_MS
         consecutive_failures = 0
 
@@ -1382,7 +1382,7 @@ class WeixinAdapter(BasePlatformAdapter):
                 new_sync_buf = str(response.get("get_updates_buf") or "")
                 if new_sync_buf:
                     sync_buf = new_sync_buf
-                    _save_sync_buf(self._hermes_home, self._account_id, sync_buf)
+                    _save_sync_buf(self._agentic_os_home, self._account_id, sync_buf)
 
                 for message in response.get("msgs") or []:
                     asyncio.create_task(self._process_message_safe(message))

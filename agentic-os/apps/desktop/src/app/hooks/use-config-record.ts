@@ -9,12 +9,12 @@ import type { HermesConfigRecord } from '@/types/hermes'
 // so a save in one shows in the others, and revisiting a tab paints the cache
 // instead of blanking on a fresh fetch.
 //
-// Distinct from session/hooks/use-hermes-config.ts, which is side-effecting —
+// Distinct from session/hooks/use-agentic-os-config.ts, which is side-effecting —
 // it pushes personality/cwd/voice/… into the session stores for live chat.
 export const HERMES_CONFIG_KEY = ['hermes-config-record'] as const
 
 // staleTime 0 → serve cache instantly, background-revalidate on every mount.
-export const useHermesConfigRecord = () =>
+export const useAgenticOSConfigRecord = () =>
   useQuery({ queryKey: HERMES_CONFIG_KEY, queryFn: getHermesConfigRecord, staleTime: 0 })
 
 export const setHermesConfigCache = writeCache<HermesConfigRecord>(HERMES_CONFIG_KEY)

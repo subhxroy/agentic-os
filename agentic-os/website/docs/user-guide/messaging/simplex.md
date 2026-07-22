@@ -41,7 +41,7 @@ Select **SimpleX Chat** and follow the prompts.
 
 ### Via environment variables
 
-Add these to `~/.hermes/.env`:
+Add these to `~/.agentic-os/.env`:
 
 ```
 SIMPLEX_WS_URL=ws://127.0.0.1:5225

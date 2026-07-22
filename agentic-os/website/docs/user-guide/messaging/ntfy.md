@@ -26,7 +26,7 @@ Select **ntfy** and follow the prompts.
 
 ### Via environment variables
 
-Add these to `~/.hermes/.env`:
+Add these to `~/.agentic-os/.env`:
 
 ```
 NTFY_TOPIC=hermes-myname-2026
@@ -66,8 +66,8 @@ In all cases, do not put sensitive data through ntfy unless the underlying topic
 2. On your phone: install the [ntfy app](https://ntfy.sh/docs/subscribe/phone/), tap **+**, enter `hermes-myname-2026`
 3. On the host:
    ```bash
-   echo 'NTFY_TOPIC=hermes-myname-2026' >> ~/.hermes/.env
-   echo 'NTFY_ALLOWED_USERS=hermes-myname-2026' >> ~/.hermes/.env
+   echo 'NTFY_TOPIC=hermes-myname-2026' >> ~/.agentic-os/.env
+   echo 'NTFY_ALLOWED_USERS=hermes-myname-2026' >> ~/.agentic-os/.env
    hermes gateway restart
    ```
 4. From the ntfy app, send a message to the topic. The agent's reply lands as a push notification.

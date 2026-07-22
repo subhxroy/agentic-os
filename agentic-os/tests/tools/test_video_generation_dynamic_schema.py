@@ -20,7 +20,7 @@ def _reset_registry():
 
 @pytest.fixture
 def cfg_home(tmp_path, monkeypatch):
-    monkeypatch.setenv("HERMES_HOME", str(tmp_path))
+    monkeypatch.setenv("AGENTIC_OS_HOME", str(tmp_path))
     return tmp_path
 
 

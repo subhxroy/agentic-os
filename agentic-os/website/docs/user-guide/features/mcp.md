@@ -22,7 +22,7 @@ If you have ever wanted Hermes to use a tool that already exists somewhere else,
 
 1. MCP support ships with the standard install — no extra step needed.
 
-2. Add an MCP server to `~/.hermes/config.yaml`:
+2. Add an MCP server to `~/.agentic-os/config.yaml`:
 
 ```yaml
 mcp_servers:
@@ -69,14 +69,14 @@ github       installed (disabled)   GitHub repo + PR tools
 
 Hit `Enter` on a row to install (and walk through any required credentials),
 enable, disable, or uninstall. Catalog entries are stored under
-`optional-mcps/` in the hermes-agent repo — presence in that directory means
+`optional-mcps/` in the agentic-os repo — presence in that directory means
 Nous approval. There is no community submission tier; entries are added by
 merging a PR.
 
 Catalog entries can require:
 
 - **API key** — Hermes prompts at install time and writes the value to
-  `~/.hermes/.env`. Non-secret values (base URLs) go to the same file.
+  `~/.agentic-os/.env`. Non-secret values (base URLs) go to the same file.
 - **OAuth** (remote MCP) — written as `auth: oauth` in your config; the MCP
   client opens a browser on first connection.
 - **OAuth** (third-party provider like Google/GitHub) — Hermes points you at
@@ -119,7 +119,7 @@ reachable to refine.
 Installing a catalog entry runs whatever the manifest specifies — `git clone`,
 the entry's `bootstrap` commands (`pip install`, `npm install`, etc.), and
 ultimately the MCP server's own code. Manifests are gated by PR review into
-the hermes-agent repo, so Nous has reviewed each entry before it shipped —
+the agentic-os repo, so Nous has reviewed each entry before it shipped —
 **but you should still read the manifest before installing**, especially the
 `source:` field's repository, the `install.bootstrap:` commands, and any
 `transport.command:` invocation.
@@ -146,7 +146,7 @@ to install the latest Hermes when you see that.
 
 Inside an entry's `transport.command`, `transport.args`, `transport.url`,
 and `headers`, `${VAR}` placeholders are resolved at server-connect time
-from environment variables (which include everything in `~/.hermes/.env`).
+from environment variables (which include everything in `~/.agentic-os/.env`).
 This is useful when a catalog entry wants to reference a value the user
 configured elsewhere — e.g. `${HOME}/foo` or `${MY_PROVIDER_TOKEN}`.
 
@@ -220,7 +220,7 @@ mcp_servers:
     auth: oauth
 ```
 
-On first connect, Hermes prints an authorize URL, opens your browser when possible, and waits for the OAuth callback on a local loopback port. Tokens are cached at `~/.hermes/mcp-tokens/<server>.json` with 0o600 perms; subsequent runs reuse them silently until refresh fails.
+On first connect, Hermes prints an authorize URL, opens your browser when possible, and waits for the OAuth callback on a local loopback port. Tokens are cached at `~/.agentic-os/mcp-tokens/<server>.json` with 0o600 perms; subsequent runs reuse them silently until refresh fails.
 
 **Remote / headless hosts.** When Hermes runs on a different machine than your browser, the loopback callback can't reach your laptop. Two ways to complete the flow:
 
@@ -258,7 +258,7 @@ mcp_servers:
 
 Then run `hermes mcp login googledrive` — with the pre-registered client, Hermes skips registration and runs the normal browser authorization flow.
 
-**Pitfall — config auto-reload race.** When you edit `~/.hermes/config.yaml` from inside a running Hermes session, the CLI auto-reloads MCP connections with a 30s timeout. That's not enough for an interactive OAuth flow. Add the entry, then run `hermes mcp login <server>` from a fresh terminal — it waits the full 5 minutes for you to complete auth.
+**Pitfall — config auto-reload race.** When you edit `~/.agentic-os/config.yaml` from inside a running Hermes session, the CLI auto-reloads MCP connections with a 30s timeout. That's not enough for an interactive OAuth flow. Add the entry, then run `hermes mcp login <server>` from a fresh terminal — it waits the full 5 minutes for you to complete auth.
 
 ## mTLS / client certificates
 
@@ -297,7 +297,7 @@ You can also keep the cert and key fully separate via `client_cert` (combined PE
 
 ## Basic configuration reference
 
-Hermes reads MCP config from `~/.hermes/config.yaml` under `mcp_servers`.
+Hermes reads MCP config from `~/.agentic-os/config.yaml` under `mcp_servers`.
 
 ### Common keys
 
@@ -634,7 +634,7 @@ Check:
 
 ```bash
 # Verify MCP deps are installed (already included in standard install)
-cd ~/.hermes/hermes-agent && uv pip install -e ".[mcp]"
+cd ~/.agentic-os/agentic-os && uv pip install -e ".[mcp]"
 
 node --version
 npx --version
@@ -750,7 +750,7 @@ Or if you installed Hermes in a specific location:
 {
   "mcpServers": {
     "hermes": {
-      "command": "/home/user/.hermes/hermes-agent/venv/bin/hermes",
+      "command": "/home/user/.hermes/agentic-os/venv/bin/hermes",
       "args": ["mcp", "serve"]
     }
   }
@@ -799,7 +799,7 @@ hermes mcp serve --verbose    # Debug logging on stderr
 
 ### How it works
 
-The MCP server reads conversation data directly from Hermes's session store (`~/.hermes/sessions/sessions.json` and the SQLite database). A background thread polls the database for new messages and maintains an in-memory event queue. For sending messages, it uses the same internal send engine (`tools/send_message_tool.py`) that powers cron delivery and the `hermes send` CLI.
+The MCP server reads conversation data directly from Hermes's session store (`~/.agentic-os/sessions/sessions.json` and the SQLite database). A background thread polls the database for new messages and maintains an in-memory event queue. For sending messages, it uses the same internal send engine (`tools/send_message_tool.py`) that powers cron delivery and the `hermes send` CLI.
 
 The gateway does NOT need to be running for read operations (listing conversations, reading history, polling events). It DOES need to be running for send operations, since the platform adapters need active connections.
 

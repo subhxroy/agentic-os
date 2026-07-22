@@ -875,7 +875,7 @@ class GatewayConfig:
     # When True, the default profile's gateway serves inbound messages for every
     # profile on the host: profiles are stamped into session keys and (in later
     # phases) per-profile adapters/credentials are resolved. When False, the
-    # gateway behaves exactly as before — single HERMES_HOME, no profile stamping.
+    # gateway behaves exactly as before — single AGENTIC_OS_HOME, no profile stamping.
     multiplex_profiles: bool = False
 
     # Opt-in systemd event-loop watchdog. Zero preserves Type=simple and
@@ -1190,8 +1190,8 @@ def load_gateway_config() -> GatewayConfig:
 
     Priority (highest to lowest):
     1. Environment variables
-    2. ~/.hermes/config.yaml (primary user-facing config)
-    3. ~/.hermes/gateway.json (legacy — provides defaults under config.yaml)
+    2. ~/.agentic-os/config.yaml (primary user-facing config)
+    3. ~/.agentic-os/gateway.json (legacy — provides defaults under config.yaml)
     4. Built-in defaults
     """
     _home = get_agentic_os_home()

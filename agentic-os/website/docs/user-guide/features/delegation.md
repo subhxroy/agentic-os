@@ -145,7 +145,7 @@ delivered records are bounded and profile-local.
 You can configure a different model for subagents via `config.yaml` — useful for delegating simple tasks to cheaper/faster models:
 
 ```yaml
-# In ~/.hermes/config.yaml
+# In ~/.agentic-os/config.yaml
 delegation:
   model: "google/gemini-flash-2.0"    # Cheaper model for subagents
   provider: "openrouter"              # Optional: route subagents to a different provider
@@ -192,7 +192,7 @@ delegation:
 A positive value enforces a hard wall-clock limit on each child; `0` or a negative value disables it.
 
 :::tip Diagnostic dump on zero-call timeout
-With a hard cap configured, if a subagent times out having made **zero** API calls (usually: provider unreachable, auth failure, or tool-schema rejection), `delegate_task` writes a structured diagnostic to `~/.hermes/logs/subagent-timeout-<session>-<timestamp>.log` containing the subagent's config snapshot, credential-resolution trace, and any early error messages. Much easier to root-cause than the previous silent-timeout behavior.
+With a hard cap configured, if a subagent times out having made **zero** API calls (usually: provider unreachable, auth failure, or tool-schema rejection), `delegate_task` writes a structured diagnostic to `~/.agentic-os/logs/subagent-timeout-<session>-<timestamp>.log` containing the subagent's config snapshot, credential-resolution trace, and any early error messages. Much easier to root-cause than the previous silent-timeout behavior.
 :::
 
 ## Monitoring Running Subagents (`/agents`)
@@ -217,7 +217,7 @@ Every `delegate_task` dispatch also creates one **append-only, human-readable lo
 The dispatch response includes the paths as `live_transcripts`, and the files are pre-created at dispatch time, so this works immediately:
 
 ```bash
-tail -f ~/.hermes/cache/delegation/live/deleg_ab12cd34/task-0.log
+tail -f ~/.agentic-os/cache/delegation/live/deleg_ab12cd34/task-0.log
 ```
 
 Each line is timestamped and shows the child's assistant text, thinking snippets, tool calls (`-> tool_name({args})`), tool results, and a final status marker. A `manifest.json` in the same directory describes the batch (goals, task count, per-task status). The logs persist after completion — they double as the full-fidelity operational record alongside the summary — and directories older than 7 days are pruned automatically on new dispatches. Because they live under `cache/delegation`, they are also readable from remote terminal backends (Docker/Modal/SSH).
@@ -286,7 +286,7 @@ For **durable execution** that must survive session closure or process restart, 
 ## Configuration
 
 ```yaml
-# In ~/.hermes/config.yaml
+# In ~/.agentic-os/config.yaml
 delegation:
   max_iterations: 50                        # Max turns per child (default: 50)
   # max_concurrent_children: 3              # Parallel children per batch (default: 3)

@@ -19,7 +19,7 @@ The setup wizard will install dependencies automatically via `uv` and walk you t
 Or manually (cloud mode with defaults):
 ```bash
 hermes config set memory.provider hindsight
-echo "HINDSIGHT_API_KEY=your-key" >> ~/.hermes/.env
+echo "HINDSIGHT_API_KEY=your-key" >> ~/.agentic-os/.env
 ```
 
 ### Cloud
@@ -32,7 +32,7 @@ Hermes spins up a local Hindsight daemon with built-in PostgreSQL. Requires an L
 
 Supports any OpenAI-compatible LLM endpoint (llama.cpp, vLLM, LM Studio, etc.) — pick `openai_compatible` as the provider and enter the base URL.
 
-Daemon startup logs: `~/.hermes/logs/hindsight-embed.log`
+Daemon startup logs: `~/.agentic-os/logs/hindsight-embed.log`
 Daemon runtime logs: `~/.hindsight/profiles/<profile>.log`
 
 To open the Hindsight web UI (local embedded mode only):
@@ -46,7 +46,7 @@ Points the plugin at an existing Hindsight instance you're already running (Dock
 
 ## Config
 
-Config file: `~/.hermes/hindsight/config.json`
+Config file: `~/.agentic-os/hindsight/config.json`
 
 ### Connection
 
@@ -84,7 +84,7 @@ Config file: `~/.hermes/hindsight/config.json`
 >
 > Per [Hindsight's docs](https://hindsight.vectorize.io/developer/observations), observations are the **consolidated** knowledge layer Hindsight builds on top of raw facts: deduplicated beliefs grounded in evidence, refined as new facts arrive, with proof counts and freshness signals. Raw `world` / `experience` facts are the individual supporting evidence that feeds them. For per-turn context injection, observations are denser per token and avoid feeding the model multiple raw facts that one observation already summarizes.
 >
-> Restore the broad recall with `"recall_types": "observation,world,experience"` (string or JSON list) in `~/.hermes/hindsight/config.json`. This applies to **both** auto-recall and the `hindsight_recall` tool — both read the same `recall_types` setting (the tool schema has no per-call `types` argument), so narrowing the default narrows both paths.
+> Restore the broad recall with `"recall_types": "observation,world,experience"` (string or JSON list) in `~/.agentic-os/hindsight/config.json`. This applies to **both** auto-recall and the `hindsight_recall` tool — both read the same `recall_types` setting (the tool schema has no per-call `types` argument), so narrowing the default narrows both paths.
 
 ### Retain
 
@@ -118,7 +118,7 @@ Config file: `~/.hermes/hindsight/config.json`
 | `llm_model` | per-provider | Model name (e.g. `gpt-4o-mini`, `qwen/qwen3.5-9b`) |
 | `llm_base_url` | — | Endpoint URL for `openai_compatible` (e.g. `http://192.168.1.10:8080/v1`) |
 
-The LLM API key is stored in `~/.hermes/.env` as `HINDSIGHT_LLM_API_KEY`.
+The LLM API key is stored in `~/.agentic-os/.env` as `HINDSIGHT_LLM_API_KEY`.
 
 ## Tools
 

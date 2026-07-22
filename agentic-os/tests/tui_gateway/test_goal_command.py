@@ -23,9 +23,9 @@ def hermes_home(tmp_path, monkeypatch):
     home = tmp_path / ".hermes"
     home.mkdir()
     monkeypatch.setattr(Path, "home", lambda: tmp_path)
-    monkeypatch.setenv("HERMES_HOME", str(home))
+    monkeypatch.setenv("AGENTIC_OS_HOME", str(home))
 
-    # Bust the goal-module DB cache so it re-resolves HERMES_HOME.
+    # Bust the goal-module DB cache so it re-resolves AGENTIC_OS_HOME.
     from agentic_os_cli import goals
 
     goals._DB_CACHE.clear()

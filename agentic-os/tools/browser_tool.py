@@ -92,13 +92,13 @@ def _build_browser_env() -> dict:
 
     Strips Hermes-managed secrets (provider keys, gateway tokens, GitHub auth,
     infra secrets) then re-adds only the browser-backend keys the worker needs.
-    The ``hermes_subprocess_env`` import is deferred to keep ``browser_tool``
+    The ``agentic_os_subprocess_env`` import is deferred to keep ``browser_tool``
     importable under test harnesses that load it against a stubbed ``tools``
     package (tests/tools/test_managed_browserbase_and_modal.py).
     """
-    from tools.environments.local import hermes_subprocess_env
+    from tools.environments.local import agentic_os_subprocess_env
 
-    env = hermes_subprocess_env(inherit_credentials=False)
+    env = agentic_os_subprocess_env(inherit_credentials=False)
     for _key in _BROWSER_PASSTHROUGH_KEYS:
         if _key in os.environ:
             env[_key] = os.environ[_key]
@@ -594,7 +594,7 @@ def _stop_cdp_supervisor(task_id: str) -> None:
 # When the test patches ``_PROVIDER_REGISTRY``, we honour it (so the cache
 # unit tests still drive the function); otherwise the registry-backed path
 # wins. This keeps the test surface stable while letting third-party
-# plugins drop in under ``~/.hermes/plugins/browser/<vendor>/``.
+# plugins drop in under ``~/.agentic-os/plugins/browser/<vendor>/``.
 
 _PROVIDER_REGISTRY: Dict[str, type] = {
     "browserbase": BrowserbaseProvider,
@@ -673,7 +673,7 @@ def _get_cloud_provider() -> Optional[CloudBrowserProvider]:
     :data:`agent.browser_registry._LEGACY_PREFERENCE` walk.
 
     Selection routes through :mod:`agent.browser_registry` so third-party
-    browser plugins (``~/.hermes/plugins/browser/<vendor>/``) participate
+    browser plugins (``~/.agentic-os/plugins/browser/<vendor>/``) participate
     in explicit-config resolution. Test fixtures that override
     ``_PROVIDER_REGISTRY`` or ``BrowserUseProvider`` / ``BrowserbaseProvider``
     on this module still drive the function — see

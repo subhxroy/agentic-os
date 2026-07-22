@@ -6275,7 +6275,7 @@ class TelegramAdapter(BasePlatformAdapter):
             logger.error("Failed to write update response from callback: %s", exc)
 
     # Maps `gt:<verb>` -> (script-name, extra-args, success-label, is_state).
-    # Scripts live in ~/.hermes/scripts/gmail-triage/. `arg` from the callback
+    # Scripts live in ~/.agentic-os/scripts/gmail-triage/. `arg` from the callback
     # data is always passed as the first positional arg.
     # is_state=True means the verb is a sticky sender-rule change (mute, trust,
     # vip) that should leave the keyboard tappable for follow-on actions.
@@ -9434,7 +9434,7 @@ def register(ctx) -> None:
         check_fn=check_telegram_requirements,
         is_connected=_is_connected,
         required_env=["TELEGRAM_BOT_TOKEN"],
-        install_hint="pip install 'hermes-agent[telegram]'",
+        install_hint="pip install 'agentic-os[telegram]'",
         setup_fn=interactive_setup,
         apply_yaml_config_fn=_apply_yaml_config,
         allowed_users_env="TELEGRAM_ALLOWED_USERS",

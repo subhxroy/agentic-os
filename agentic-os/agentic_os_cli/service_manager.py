@@ -339,8 +339,8 @@ def _profile_dir_for_gateway_service(name: str) -> Path:
     """Resolve ``gateway-<profile>`` to its persistent profile directory.
 
     s6 lifecycle commands may be invoked from any active profile, including
-    ``gateway stop --all``. Do not write the caller's HERMES_HOME blindly;
-    derive the shared profile root from the current HERMES_HOME and map the
+    ``gateway stop --all``. Do not write the caller's AGENTIC_OS_HOME blindly;
+    derive the shared profile root from the current AGENTIC_OS_HOME and map the
     service suffix to either the root default profile or
     ``<root>/profiles/<profile>``.
     """
@@ -348,7 +348,7 @@ def _profile_dir_for_gateway_service(name: str) -> Path:
 
     profile = name[len(S6_SERVICE_PREFIX):] if name.startswith(S6_SERVICE_PREFIX) else name
     validate_profile_name(profile)
-    hermes_home = Path(os.environ.get("HERMES_HOME", "/opt/data"))
+    hermes_home = Path(os.environ.get("AGENTIC_OS_HOME", "/opt/data"))
     if hermes_home.parent.name == "profiles":
         root = hermes_home.parent.parent
     else:
@@ -628,8 +628,8 @@ class S6ServiceManager:
         """Generate the run script for a profile-gateway s6 service.
 
         The script:
-          1. Sources HERMES_HOME (and any extra env) via with-contenv —
-             so e.g. ``-e HERMES_HOME=/data/hermes`` is honored at run
+          1. Sources AGENTIC_OS_HOME (and any extra env) via with-contenv —
+             so e.g. ``-e AGENTIC_OS_HOME=/data/hermes`` is honored at run
              time, not Python-substituted at registration time (OQ8-C).
           2. Resets ``HOME`` to ``/opt/data`` before the privilege drop
              so with-contenv's root HOME does not leak into the
@@ -641,13 +641,13 @@ class S6ServiceManager:
 
         Special case: ``profile == "default"`` emits ``hermes gateway
         run`` with **no** ``-p`` flag. This is the sentinel for "the
-        root HERMES_HOME profile" (the implicit profile that exists at
-        the top of $HERMES_HOME, not under profiles/). It must be
+        root AGENTIC_OS_HOME profile" (the implicit profile that exists at
+        the top of $AGENTIC_OS_HOME, not under profiles/). It must be
         spelled this way because ``_profile_suffix()`` returns the
         empty string for the root profile, and the dispatcher in
         ``agentic_os_cli.gateway`` maps that empty string to the
         ``gateway-default`` service slot. Passing ``-p default`` here
-        would instead look up ``$HERMES_HOME/profiles/default/`` — a
+        would instead look up ``$AGENTIC_OS_HOME/profiles/default/`` — a
         completely different (and almost always nonexistent) profile.
 
         Port selection: the gateway binds the port resolved by
@@ -655,7 +655,7 @@ class S6ServiceManager:
         ``API_SERVER_PORT`` (or ``platforms.api_server.extra.port`` in
         that profile's ``config.yaml``), defaulting to 8642. There is
         no ``[gateway] port`` key and no Python-side allocator: because
-        each supervised profile gateway loads its own ``HERMES_HOME``,
+        each supervised profile gateway loads its own ``AGENTIC_OS_HOME``,
         two profiles that both leave the port unset will both try to
         bind 8642 — give each profile a distinct ``API_SERVER_PORT`` in
         its ``.env``. Previously this method took a ``port`` parameter
@@ -685,9 +685,9 @@ class S6ServiceManager:
         # guard.
         lines.append("export HERMES_S6_SUPERVISED_CHILD=1")
         # ``--replace`` makes the supervised gateway authoritative for its
-        # profile's HERMES_HOME. Without it, a gateway started OUTSIDE s6
+        # profile's AGENTIC_OS_HOME. Without it, a gateway started OUTSIDE s6
         # (a stray ``hermes gateway run`` from a shell, an agent action, or
-        # the Open WebUI helper) grabs the per-HERMES_HOME PID lock first;
+        # the Open WebUI helper) grabs the per-AGENTIC_OS_HOME PID lock first;
         # the supervised slot then execs a bare ``gateway run``, hits the
         # "Another gateway instance is already running" guard, exits
         # non-zero, and s6 restarts it — a restart loop that floods the
@@ -696,7 +696,7 @@ class S6ServiceManager:
         # SIGTERM→SIGKILL-with-confirmation + scoped-lock cleanup, see
         # gateway/run.py) so s6 always wins. The HERMES_S6_SUPERVISED_CHILD
         # sentinel above prevents the run→start→run redirect recursion.
-        # Each profile is scoped to its own HERMES_HOME and s6 guarantees a
+        # Each profile is scoped to its own AGENTIC_OS_HOME and s6 guarantees a
         # single supervised instance per slot, so there is no legitimate
         # supervised sibling for ``--replace`` to clobber.
         if profile == "default":
@@ -737,10 +737,10 @@ class S6ServiceManager:
     def _render_log_run(profile: str) -> str:
         """Generate the log/run script for a profile-gateway service.
 
-        OQ8-C: persist to ``${HERMES_HOME}/logs/gateways/<profile>/``.
-        CRITICAL: the HERMES_HOME path is sourced from the runtime env
+        OQ8-C: persist to ``${AGENTIC_OS_HOME}/logs/gateways/<profile>/``.
+        CRITICAL: the AGENTIC_OS_HOME path is sourced from the runtime env
         via with-contenv — NOT Python-substituted at registration time
-        — so a container started with ``-e HERMES_HOME=/data/hermes``
+        — so a container started with ``-e AGENTIC_OS_HOME=/data/hermes``
         gets its logs under /data/hermes/logs/..., not the build-time
         default.
 
@@ -781,8 +781,8 @@ class S6ServiceManager:
         return (
             f"#!/command/with-contenv sh\n"
             f"# shellcheck shell=sh\n"
-            f': "${{HERMES_HOME:=/opt/data}}"\n'
-            f'log_dir="$HERMES_HOME/logs/gateways/{prof}"\n'
+            f': "${{AGENTIC_OS_HOME:=/opt/data}}"\n'
+            f'log_dir="$AGENTIC_OS_HOME/logs/gateways/{prof}"\n'
             f'mkdir -p "$log_dir"\n'
             # The gateways/ parent must be chowned too (non-recursively):
             # `mkdir -p` creates it root-owned on a root-context boot, and a
@@ -792,7 +792,7 @@ class S6ServiceManager:
             # root-context boot, so it also heals volumes already poisoned
             # by older images. Non-recursive on purpose: sibling profile
             # dirs are each managed by their own log/run. See #45258.
-            f'chown hermes:hermes "$HERMES_HOME/logs/gateways" 2>/dev/null || true\n'
+            f'chown hermes:hermes "$AGENTIC_OS_HOME/logs/gateways" 2>/dev/null || true\n'
             f'chown -R hermes:hermes "$log_dir" 2>/dev/null || true\n'
             f'rm -f "$log_dir/lock"\n'
             # Skip the drop when already non-root (CAP_SETGID).

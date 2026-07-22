@@ -343,10 +343,10 @@ def test_hardline_blocks_line_continuation(command, desc_substr):
 def clean_session(monkeypatch):
     """Reset session-scoped approval state around each test."""
     monkeypatch.delenv("HERMES_YOLO_MODE", raising=False)
-    monkeypatch.delenv("HERMES_INTERACTIVE", raising=False)
-    monkeypatch.delenv("HERMES_GATEWAY_SESSION", raising=False)
+    monkeypatch.delenv("AGENTIC_OS_INTERACTIVE", raising=False)
+    monkeypatch.delenv("AGENTIC_OS_GATEWAY_SESSION", raising=False)
     monkeypatch.delenv("HERMES_CRON_SESSION", raising=False)
-    monkeypatch.delenv("HERMES_EXEC_ASK", raising=False)
+    monkeypatch.delenv("AGENTIC_OS_EXEC_ASK", raising=False)
     token = set_current_session_key("hardline_test")
     try:
         disable_session_yolo("hardline_test")

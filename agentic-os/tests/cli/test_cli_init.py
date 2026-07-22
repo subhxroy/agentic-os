@@ -558,7 +558,7 @@ class TestRootLevelProviderOverride:
 
         hermes_home = tmp_path / ".hermes"
         hermes_home.mkdir()
-        monkeypatch.setenv("HERMES_HOME", str(hermes_home))
+        monkeypatch.setenv("AGENTIC_OS_HOME", str(hermes_home))
 
         config_path = hermes_home / "config.yaml"
         config_path.write_text(yaml.safe_dump({
@@ -570,7 +570,7 @@ class TestRootLevelProviderOverride:
         }))
 
         import cli
-        monkeypatch.setattr(cli, "_hermes_home", hermes_home)
+        monkeypatch.setattr(cli, "_agentic_os_home", hermes_home)
         cfg = cli.load_cli_config()
 
         assert cfg["model"]["provider"] == "openrouter"
@@ -581,7 +581,7 @@ class TestRootLevelProviderOverride:
 
         hermes_home = tmp_path / ".hermes"
         hermes_home.mkdir()
-        monkeypatch.setenv("HERMES_HOME", str(hermes_home))
+        monkeypatch.setenv("AGENTIC_OS_HOME", str(hermes_home))
 
         config_path = hermes_home / "config.yaml"
         config_path.write_text(yaml.safe_dump({
@@ -593,7 +593,7 @@ class TestRootLevelProviderOverride:
         }))
 
         import cli
-        monkeypatch.setattr(cli, "_hermes_home", hermes_home)
+        monkeypatch.setattr(cli, "_agentic_os_home", hermes_home)
         cfg = cli.load_cli_config()
 
         assert cfg["model"]["provider"] == "opencode-go"
@@ -604,7 +604,7 @@ class TestRootLevelProviderOverride:
 
         hermes_home = tmp_path / ".hermes"
         hermes_home.mkdir()
-        monkeypatch.setenv("HERMES_HOME", str(hermes_home))
+        monkeypatch.setenv("AGENTIC_OS_HOME", str(hermes_home))
 
         config_path = hermes_home / "config.yaml"
         config_path.write_text(yaml.safe_dump({
@@ -615,7 +615,7 @@ class TestRootLevelProviderOverride:
         }))
 
         import cli
-        monkeypatch.setattr(cli, "_hermes_home", hermes_home)
+        monkeypatch.setattr(cli, "_agentic_os_home", hermes_home)
         cfg = cli.load_cli_config()
 
         assert cfg["model"]["base_url"] == "https://example.com/v1"
@@ -793,7 +793,7 @@ class TestRootLevelProviderOverride:
 
         home = tmp_path / ".hermes"
         home.mkdir()
-        monkeypatch.setenv("HERMES_HOME", str(home))
+        monkeypatch.setenv("AGENTIC_OS_HOME", str(home))
         cfg_path = home / "config.yaml"
         cfg_path.write_text("model:\n  name: claude-sonnet-4\n  provider: my-litellm\n")
         # bust the mtime cache

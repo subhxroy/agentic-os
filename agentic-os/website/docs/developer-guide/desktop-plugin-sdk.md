@@ -17,13 +17,13 @@ It imports one module — `@hermes/plugin-sdk` — and gets everything: the app'
 live state, the gateway JSON-RPC door, a scoped REST/socket backend namespace,
 React Query, and the app's own UI kit so plugin UI looks native by default. No
 repo clone, no `npm run build`, no patching app source. Drop the file in
-`$HERMES_HOME/desktop-plugins/<id>/plugin.js` and the app loads it within seconds
+`$AGENTIC_OS_HOME/desktop-plugins/<id>/plugin.js` and the app loads it within seconds
 and hot-reloads every save.
 
 :::warning This is not the web-dashboard plugin SDK
 "Plugin" means several unrelated things across Hermes. This page is the **native
 desktop app** (`hermes desktop`) SDK — the `@hermes/plugin-sdk` module and
-`$HERMES_HOME/desktop-plugins/`. The **web dashboard** (`hermes dashboard`) has
+`$AGENTIC_OS_HOME/desktop-plugins/`. The **web dashboard** (`hermes dashboard`) has
 its own, unrelated plugin system on `window.__HERMES_PLUGIN_SDK__` with a
 `manifest.json` — documented at
 [Extending the Dashboard](/user-guide/features/extending-the-dashboard). Python
@@ -53,7 +53,7 @@ plugin, and fail to resolve in a disk plugin). Capability comes in tiers:
 
 | Mode | Where | Who | Build step |
 |------|-------|-----|------------|
-| **Disk** (recommended) | `$HERMES_HOME/desktop-plugins/<id>/plugin.js` | users, agents | none — plain ESM, loaded uncompiled |
+| **Disk** (recommended) | `$AGENTIC_OS_HOME/desktop-plugins/<id>/plugin.js` | users, agents | none — plain ESM, loaded uncompiled |
 | **Bundled** | `apps/desktop/src/plugins/<id>/plugin.tsx` | in-tree, shipped with the app | the app's own Vite build |
 
 Both take the same `HermesPlugin` contract, appear in **Settings → Plugins**, and
@@ -66,12 +66,12 @@ repo.
 
 ## Quick start — your first plugin
 
-Create `$HERMES_HOME/desktop-plugins/hello/plugin.js` (that's `~/.hermes/...`
-by default, or `~/.hermes/profiles/<name>/...` under a named profile). The folder
+Create `$AGENTIC_OS_HOME/desktop-plugins/hello/plugin.js` (that's `~/.agentic-os/...`
+by default, or `~/.agentic-os/profiles/<name>/...` under a named profile). The folder
 name must equal the plugin `id`.
 
 ```javascript
-// ~/.hermes/desktop-plugins/hello/plugin.js
+// ~/.agentic-os/desktop-plugins/hello/plugin.js
 import { host, haptic, useValue } from '@hermes/plugin-sdk'
 import { jsx, jsxs } from 'react/jsx-runtime'
 
@@ -453,7 +453,7 @@ Desktop plugins reuse the dashboard plugin backend mount. Put the backend in a
 `manifest.json`:
 
 ```
-~/.hermes/plugins/<id>/
+~/.agentic-os/plugins/<id>/
 └── dashboard/
     ├── manifest.json      # { "name": "<id>", "api": "plugin_api.py" }
     └── plugin_api.py      # exports `router = APIRouter()`
@@ -476,7 +476,7 @@ async def action(body: dict):
 
 Routes mount under `/api/plugins/<id>/` (`GET /api/plugins/<id>/board`, …).
 Backend code runs inside the gateway process, so it can import from the
-hermes-agent codebase directly (`hermes_state`, `hermes_cli.config`, …). See
+agentic-os codebase directly (`agentic_os_state`, `agentic_os_cli.config`, …). See
 [Extending the Dashboard → Backend API routes](/user-guide/features/extending-the-dashboard#backend-api-routes)
 for the full backend reference — the mount is identical.
 
@@ -606,17 +606,17 @@ not treat this pipeline as a trust boundary.
 
 The canonical, always-current export list is `apps/desktop/src/sdk/index.ts`.
 
-### Agents: the `hermes-desktop-plugins` skill
+### Agents: the `agentic-os-desktop-plugins` skill
 
 When an agent writes a desktop plugin, it should load the bundled
-**`hermes-desktop-plugins`** skill — it carries the same contract as this page in
+**`agentic-os-desktop-plugins`** skill — it carries the same contract as this page in
 agent-facing form, with a ready-to-copy `templates/plugin.js`. This page is the
 human/developer reference; the skill is the working checklist.
 
 ## Troubleshooting
 
 **My plugin doesn't appear.** Confirm the file is at
-`$HERMES_HOME/desktop-plugins/<id>/plugin.js` and the folder name matches the
+`$AGENTIC_OS_HOME/desktop-plugins/<id>/plugin.js` and the folder name matches the
 export `id`. Run ⌘K → **Reload desktop plugins**. Check the app for an error
 toast naming the failure, and tail `hermes logs gui -f`.
 
@@ -627,9 +627,9 @@ toast naming the failure, and tail `hermes logs gui -f`.
 in a `jsx()` call isn't imported. Add it to the import line.
 
 **`ctx.rest` returns 404.** The backend isn't mounted: confirm
-`~/.hermes/plugins/<id>/dashboard/manifest.json` has `"api": "plugin_api.py"`,
+`~/.agentic-os/plugins/<id>/dashboard/manifest.json` has `"api": "plugin_api.py"`,
 that the plugin is in `plugins.enabled` in `config.yaml`, and restart the gateway
-(backend routes mount at startup). Tail `~/.hermes/logs/errors.log` for
+(backend routes mount at startup). Tail `~/.agentic-os/logs/errors.log` for
 `Failed to load plugin <id> API routes`.
 
 **`ctx.socket` never fires.** On an OAuth remote it's a no-op by design — use your

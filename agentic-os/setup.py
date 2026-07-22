@@ -28,7 +28,7 @@ def _source_tree_is_writable() -> bool:
 
 
 def _temporary_build_dir(kind: str) -> str:
-    return tempfile.mkdtemp(prefix=f"hermes-agent-{kind}-")
+    return tempfile.mkdtemp(prefix=f"agentic-os-{kind}-")
 
 
 def _would_write_under_source(path_value: str | None) -> bool:

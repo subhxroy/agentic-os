@@ -6,7 +6,7 @@ Exposes an HTTP server with endpoints:
 - POST /v1/responses               — OpenAI Responses API format (stateful via previous_response_id; X-Hermes-Session-Key supported)
 - GET  /v1/responses/{response_id} — Retrieve a stored response
 - DELETE /v1/responses/{response_id} — Delete a stored response
-- GET  /v1/models                  — lists hermes-agent and any configured model_routes aliases
+- GET  /v1/models                  — lists agentic-os and any configured model_routes aliases
 - GET  /v1/capabilities            — machine-readable API capabilities for external UIs
 - GET  /api/sessions               — list client-visible Hermes sessions
 - POST /api/sessions               — create an empty Hermes session
@@ -23,7 +23,7 @@ Exposes an HTTP server with endpoints:
 - GET  /health/detailed            — rich status for cross-container dashboard probing
 
 Any OpenAI-compatible frontend (Open WebUI, LobeChat, LibreChat,
-AnythingLLM, NextChat, ChatBox, etc.) can connect to hermes-agent
+AnythingLLM, NextChat, ChatBox, etc.) can connect to agentic-os
 through this adapter by pointing at http://localhost:8642/v1 and
 authenticating with API_SERVER_KEY.
 
@@ -96,7 +96,7 @@ logger = logging.getLogger(__name__)
 
 
 def _hermes_version() -> str:
-    """Return the hermes-agent version string, or "dev" if it can't be resolved.
+    """Return the agentic-os version string, or "dev" if it can't be resolved.
 
     Tries the installed package metadata first (authoritative for a pip/uv
     install), then the in-tree ``agentic_os_cli.__version__`` (covers editable /
@@ -428,7 +428,7 @@ class ResponseStore:
             self._conn = sqlite3.connect(":memory:", check_same_thread=False)
             self._db_path = None
         # Use shared WAL-fallback helper so response_store.db degrades
-        # gracefully on NFS/SMB/FUSE-mounted HERMES_HOME (same filesystem
+        # gracefully on NFS/SMB/FUSE-mounted AGENTIC_OS_HOME (same filesystem
         # issue addressed for state.db/kanban.db — see
         # agentic_os_state._WAL_INCOMPAT_MARKERS).
         from agentic_os_state import apply_wal_with_fallback
@@ -919,7 +919,7 @@ class APIServerAdapter(BasePlatformAdapter):
     OpenAI-compatible HTTP API server adapter.
 
     Runs an aiohttp web server that accepts OpenAI-format requests
-    and routes them through hermes-agent's AIAgent.
+    and routes them through agentic-os's AIAgent.
     """
 
     # Stateless request/response: every route (the OpenAI-spec
@@ -1945,7 +1945,7 @@ class APIServerAdapter(BasePlatformAdapter):
         })
 
     async def _handle_models(self, request: "web.Request") -> "web.Response":
-        """GET /v1/models — list hermes-agent and any configured model_routes aliases.
+        """GET /v1/models — list agentic-os and any configured model_routes aliases.
 
         Under ``/p/<profile>/v1/models`` (multiplex on) the advertised primary
         model id follows that profile's name/config, not the default adapter's
@@ -5429,7 +5429,7 @@ class APIServerAdapter(BasePlatformAdapter):
             # unsandboxed local terminal backend. The API server can drive the
             # agent's terminal/file tools as the host user; on a public bind
             # that is the exact surface the hermes-0day campaign abused to write
-            # ~/.hermes/config.yaml and plant persistence. Sandboxing (Docker /
+            # ~/.agentic-os/config.yaml and plant persistence. Sandboxing (Docker /
             # remote backend) contains the blast radius. Warn, don't refuse —
             # the operator may have an external firewall / strong key.
             if is_network_accessible(self._host):

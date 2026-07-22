@@ -85,7 +85,7 @@ Creates a new profile.
 | `--clone-from <profile>` | Clone config/skills/SOUL from a specific profile instead of the current one. Implies `--clone` unless paired with `--clone-all`. |
 | `--no-alias` | Skip wrapper script creation. |
 | `--description "<text>"` | One- or two-sentence description of what this profile is good at. Used by the kanban orchestrator to route tasks based on role instead of profile name alone. Skip and add later via `hermes profile describe`. Persisted in `<profile_dir>/profile.yaml`. |
-| `--no-skills` | Create an **empty** profile with zero bundled skills enabled. Writes a `.no-bundled-skills` marker into the profile so future `hermes update` runs won't re-seed the bundled set, and refuses to combine with `--clone`, `--clone-from`, or `--clone-all` (which would copy skills in anyway). Useful for narrow orchestrator profiles or sandbox profiles that should not inherit the full skill catalog. To toggle this on an already-created profile (including the default `~/.hermes`), use `hermes skills opt-out` / `hermes skills opt-in`. |
+| `--no-skills` | Create an **empty** profile with zero bundled skills enabled. Writes a `.no-bundled-skills` marker into the profile so future `hermes update` runs won't re-seed the bundled set, and refuses to combine with `--clone`, `--clone-from`, or `--clone-all` (which would copy skills in anyway). Useful for narrow orchestrator profiles or sandbox profiles that should not inherit the full skill catalog. To toggle this on an already-created profile (including the default `~/.agentic-os`), use `hermes skills opt-out` / `hermes skills opt-in`. |
 
 Creating a profile does **not** make that profile directory the default project/workspace directory for terminal commands. If you want a profile to start in a specific project, set `terminal.cwd` in that profile's `config.yaml`.
 
@@ -185,7 +185,7 @@ This shows the profile's Hermes home directory, not the terminal working directo
 ```bash
 $ hermes profile show work
 Profile: work
-Path:    ~/.hermes/profiles/work
+Path:    ~/.agentic-os/profiles/work
 Model:   anthropic/claude-sonnet-4 (anthropic)
 Gateway: stopped
 Skills:  12
@@ -238,7 +238,7 @@ Renames a profile. Updates the directory and shell alias.
 
 ```bash
 hermes profile rename mybot assistant
-# ~/.hermes/profiles/mybot → ~/.hermes/profiles/assistant
+# ~/.agentic-os/profiles/mybot → ~/.agentic-os/profiles/assistant
 # ~/.local/bin/mybot → ~/.local/bin/assistant
 ```
 

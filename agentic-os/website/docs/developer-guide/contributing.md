@@ -44,13 +44,13 @@ For most contributors, the best development bootstrap is the same path users
 take: run the standard installer, then work inside the repository it cloned.
 The installer creates the Hermes venv, wires the `hermes` command, stamps the
 install method for `hermes update`, and clones the full git project into
-`$HERMES_HOME/hermes-agent` (usually `~/.hermes/hermes-agent`). That keeps your
+`$AGENTIC_OS_HOME/agentic-os` (usually `~/.agentic-os/agentic-os`). That keeps your
 development environment on the same layout the CLI, updater, lazy dependency
 installer, gateway, and docs assume.
 
 ```bash
 curl -fsSL https://agentic-os.nousresearch.com/install.sh | bash
-cd "${HERMES_HOME:-$HOME/.hermes}/hermes-agent"
+cd "${AGENTIC_OS_HOME:-$HOME/.hermes}/agentic-os"
 
 # Add dev/test extras on top of the standard install.
 uv pip install -e ".[all,dev]"
@@ -66,12 +66,12 @@ git checkout -b fix/description
 scripts/run_tests.sh
 ```
 
-You can also run a fully isolated Hermes instance (throwaway HERMES_HOME, separate Electron
+You can also run a fully isolated Hermes instance (throwaway AGENTIC_OS_HOME, separate Electron
 userData, distinct Electron app name to avoid the single-instance lock):
 
 ```bash
-scripts/dev-sandbox.sh python -m hermes_cli.main
-scripts/dev-sandbox.sh --persistent python -m hermes_cli.main desktop  # state survives restarts, but lives in the worktree :)
+scripts/dev-sandbox.sh python -m agentic_os_cli.main
+scripts/dev-sandbox.sh --persistent python -m agentic_os_cli.main desktop  # state survives restarts, but lives in the worktree :)
 ```
 
 ### Manual clone fallback
@@ -79,7 +79,7 @@ scripts/dev-sandbox.sh --persistent python -m hermes_cli.main desktop  # state s
 Use this only if you intentionally do not want Hermes' managed install layout
 (for example, a throwaway clone inside a container or CI job). If you install
 this way, make sure you run the `hermes` entrypoint from this venv; running the
-system `python3 -m hermes_cli.main` can pick up unrelated system Python
+system `python3 -m agentic_os_cli.main` can pick up unrelated system Python
 packages.
 
 Create the venv **outside** the cloned source tree. A venv that lives inside
@@ -90,10 +90,10 @@ tree means no relative path from the workspace resolves to it.
 
 ```bash
 git clone https://github.com/subhxroy/agentic-os.git
-cd hermes-agent
+cd agentic-os
 
 # Create venv with Python 3.11, OUTSIDE the source tree
-uv venv ~/.hermes/venvs/hermes-dev --python 3.11
+uv venv ~/.agentic-os/venvs/hermes-dev --python 3.11
 export VIRTUAL_ENV="$HOME/.hermes/venvs/hermes-dev"
 export PATH="$VIRTUAL_ENV/bin:$PATH"
 
@@ -107,12 +107,12 @@ npm install
 ### Configure for Development
 
 ```bash
-mkdir -p ~/.hermes/{cron,sessions,logs,memories,skills}
-cp cli-config.yaml.example ~/.hermes/config.yaml
-touch ~/.hermes/.env
+mkdir -p ~/.agentic-os/{cron,sessions,logs,memories,skills}
+cp cli-config.yaml.example ~/.agentic-os/config.yaml
+touch ~/.agentic-os/.env
 
 # Add at minimum an LLM provider key:
-echo 'OPENROUTER_API_KEY=sk-or-v1-your-key' >> ~/.hermes/.env
+echo 'OPENROUTER_API_KEY=sk-or-v1-your-key' >> ~/.agentic-os/.env
 ```
 
 ### Run
@@ -143,7 +143,7 @@ scripts/run_tests.sh
 - **Comments**: Only when explaining non-obvious intent, trade-offs, or API quirks
 - **Error handling**: Catch specific exceptions. Use `logger.warning()`/`logger.error()` with `exc_info=True` for unexpected errors
 - **Cross-platform**: Never assume Unix (see below)
-- **Profile-safe paths**: Never hardcode `~/.hermes` — use `get_agentic_os_home()` from `hermes_constants` for code paths and `display_agentic_os_home()` for user-facing messages. See [AGENTS.md](https://github.com/subhxroy/agentic-os/blob/main/AGENTS.md#profiles-multi-instance-support) for full rules.
+- **Profile-safe paths**: Never hardcode `~/.agentic-os` — use `get_agentic_os_home()` from `agentic_os_constants` for code paths and `display_agentic_os_home()` for user-facing messages. See [AGENTS.md](https://github.com/subhxroy/agentic-os/blob/main/AGENTS.md#profiles-multi-instance-support) for full rules.
 
 ## Cross-Platform Compatibility
 

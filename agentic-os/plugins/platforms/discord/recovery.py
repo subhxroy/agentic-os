@@ -25,10 +25,10 @@ class DiscordRecoveryStore:
     def __init__(self, hermes_home: Path | None = None) -> None:
         self._lock = threading.Lock()
         self._initialized = False
-        self._hermes_home = Path(hermes_home or get_agentic_os_home())
+        self._agentic_os_home = Path(hermes_home or get_agentic_os_home())
 
     def path(self) -> Path:
-        directory = self._hermes_home / "gateway"
+        directory = self._agentic_os_home / "gateway"
         directory.mkdir(parents=True, exist_ok=True)
         return directory / _DB_FILENAME
 

@@ -54,8 +54,8 @@ def build_claw_parser(subparsers, *, cmd_claw: Callable) -> None:
     claw_migrate.add_argument(
         "--no-backup",
         action="store_true",
-        help="Skip the pre-migration zip snapshot of ~/.hermes/ (by default a "
-        "single restore-point archive is written to ~/.hermes/backups/ "
+        help="Skip the pre-migration zip snapshot of ~/.agentic-os/ (by default a "
+        "single restore-point archive is written to ~/.agentic-os/backups/ "
         "before apply; restorable with 'hermes import').",
     )
     claw_migrate.add_argument(

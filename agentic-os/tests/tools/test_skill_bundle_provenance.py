@@ -223,7 +223,7 @@ def test_real_temp_repo_and_home_install_e2e(served_repo, monkeypatch, tmp_path)
 
     _repo, url = served_repo
     home = tmp_path / "home"
-    monkeypatch.setenv("HERMES_HOME", str(home))
+    monkeypatch.setenv("AGENTIC_OS_HOME", str(home))
     monkeypatch.setattr("tools.skills_hub.is_safe_url", lambda _url: True)
     monkeypatch.setattr("tools.skills_hub.check_website_access", lambda _url: None)
     monkeypatch.setattr(hub, "create_source_router", lambda auth=None: [UrlSource()])

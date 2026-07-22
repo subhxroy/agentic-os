@@ -42,7 +42,7 @@ import { useConfirmDelete } from "@nous-research/ui/hooks/use-confirm-delete";
 import { ConfirmDialog } from "@nous-research/ui/ui/components/confirm-dialog";
 import { useModalBehavior } from "@/hooks/useModalBehavior";
 import { DeleteConfirmDialog } from "@/components/DeleteConfirmDialog";
-import { HermesConsoleModal } from "@/components/HermesConsoleModal";
+import { AgenticOSConsoleModal } from "@/components/AgenticOSConsoleModal";
 import { cn, themedBody } from "@/lib/utils";
 import { api } from "@/lib/api";
 import type {
@@ -703,7 +703,7 @@ export default function SystemPage() {
         description="Remove this hook from config and revoke its consent? It stops firing on the next restart."
         loading={hookDelete.isDeleting}
       />
-      <HermesConsoleModal
+      <AgenticOSConsoleModal
         open={consoleOpen}
         onClose={() => setConsoleOpen(false)}
       />
@@ -1308,7 +1308,7 @@ export default function SystemPage() {
                   id="import-path"
                   value={importPath}
                   onChange={(e) => setImportPath(e.target.value)}
-                  placeholder="$HERMES_HOME/backups/hermes-backup.zip"
+                  placeholder="$AGENTIC_OS_HOME/backups/hermes-backup.zip"
                 />
               </div>
               <Button

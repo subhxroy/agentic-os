@@ -2,7 +2,7 @@
 
 Covers the core catalog/slot schema/renderers/fill (cron/blueprint_catalog.py),
 the shared /blueprint command handler (agentic_os_cli/blueprint_cmd.py), and
-the docs generator. Uses an isolated HERMES_HOME for anything that touches the
+the docs generator. Uses an isolated AGENTIC_OS_HOME for anything that touches the
 cron job store.
 """
 
@@ -158,7 +158,7 @@ class TestRenderers:
 def isolated_home(tmp_path, monkeypatch):
     home = tmp_path / ".hermes"
     home.mkdir()
-    monkeypatch.setenv("HERMES_HOME", str(home))
+    monkeypatch.setenv("AGENTIC_OS_HOME", str(home))
     import agentic_os_constants
     importlib.reload(agentic_os_constants)
     import cron.jobs as jobs

@@ -7,7 +7,7 @@ import { getUiState, patchUiState, resetUiState } from '../app/uiStore.js'
 import type * as EnvModule from '../config/env.js'
 import { TUI_SESSION_MODEL_FLAG } from '../domain/slash.js'
 
-// DASHBOARD_TUI_MODE resolves once at module load from HERMES_TUI_DASHBOARD,
+// DASHBOARD_TUI_MODE resolves once at module load from AGENTIC_OS_TUI_DASHBOARD,
 // so toggling process.env in a test body can't move it. Mock just that one
 // export (everything else stays real) and flip the holder per test.
 const envState = { dashboardTuiMode: false }
@@ -806,7 +806,7 @@ describe('createSlashHandler', () => {
             }
 
             if (method === 'command.dispatch') {
-              return Promise.resolve({ type: 'skill', message: skillMessage, name: 'hermes-agent-dev' })
+              return Promise.resolve({ type: 'skill', message: skillMessage, name: 'agentic-os-dev' })
             }
 
             return Promise.resolve({})
@@ -817,9 +817,9 @@ describe('createSlashHandler', () => {
     })
 
     const h = createSlashHandler(ctx)
-    expect(h('/hermes-agent-dev')).toBe(true)
+    expect(h('/agentic-os-dev')).toBe(true)
     await vi.waitFor(() => {
-      expect(ctx.transcript.sys).toHaveBeenCalledWith('⚡ loading skill: hermes-agent-dev')
+      expect(ctx.transcript.sys).toHaveBeenCalledWith('⚡ loading skill: agentic-os-dev')
     })
     expect(ctx.transcript.send).toHaveBeenCalledWith(skillMessage)
   })

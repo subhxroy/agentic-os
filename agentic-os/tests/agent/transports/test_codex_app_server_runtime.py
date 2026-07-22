@@ -276,7 +276,7 @@ class TestSpawnEnvIsolation:
 
         monkeypatch.setattr(subprocess, "Popen", FakePopen)
         monkeypatch.setenv("HOME", "/users/alice")
-        monkeypatch.setenv("HERMES_HOME", "/users/alice/.hermes/profiles/backend-worker")
+        monkeypatch.setenv("AGENTIC_OS_HOME", "/users/alice/.hermes/profiles/backend-worker")
         monkeypatch.setenv("HERMES_KANBAN_TASK", "t_smoke")
         monkeypatch.setenv(
             "HERMES_KANBAN_DB",
@@ -298,7 +298,7 @@ class TestSpawnEnvIsolation:
 
 
 class TestSpawnEnvSecretStripping:
-    """codex app-server routes its spawn env through hermes_subprocess_env(
+    """codex app-server routes its spawn env through agentic_os_subprocess_env(
     inherit_credentials=True) instead of a raw os.environ.copy().
 
     codex is a model-driving CLI executor: it legitimately needs LLM provider
@@ -373,7 +373,7 @@ class TestSpawnEnvSecretStripping:
         assert env.get("OPENAI_API_KEY") == "sk-codex-needs-this"
 
     def test_home_still_preserved_through_helper(self, monkeypatch):
-        """Regression guard: routing through hermes_subprocess_env must not
+        """Regression guard: routing through agentic_os_subprocess_env must not
         rewrite HOME (codex's shell tool spawns gh/git/aws that need it)."""
         monkeypatch.setenv("HOME", "/users/alice")
         env = self._capture_spawn_env(monkeypatch)

@@ -3,7 +3,7 @@ Agentic OS Uninstaller.
 
 Provides options for:
 - Full uninstall: Remove everything including configs and data
-- Keep data: Remove code but keep ~/.hermes/ (configs, sessions, logs)
+- Keep data: Remove code but keep ~/.agentic-os/ (configs, sessions, logs)
 """
 
 import os
@@ -60,13 +60,13 @@ def remove_path_from_shell_configs():
             content = config_path.read_text()
             original_content = content
             
-            # Remove lines containing hermes-agent or hermes PATH entries
+            # Remove lines containing agentic-os or hermes PATH entries
             new_lines = []
             skip_next = False
             
             for line in content.split('\n'):
                 # Skip the "# Agentic OS" comment and following line
-                if '# Agentic OS' in line or '# hermes-agent' in line:
+                if '# Agentic OS' in line or '# agentic-os' in line:
                     skip_next = True
                     continue
                 if skip_next and ('hermes' in line.lower() and 'PATH' in line):
@@ -294,20 +294,20 @@ def uninstall_gateway_service():
 # The installer (``scripts/install.ps1``) does four Windows-only things that
 # ``remove_path_from_shell_configs`` / ``remove_wrapper_script`` don't cover:
 #
-#   1. Sets User-scope env vars ``HERMES_HOME`` and ``HERMES_GIT_BASH_PATH``
+#   1. Sets User-scope env vars ``AGENTIC_OS_HOME`` and ``HERMES_GIT_BASH_PATH``
 #      via ``[Environment]::SetEnvironmentVariable(..., "User")``.  These
 #      don't live in ~/.bashrc — they're in the Windows registry at
 #      HKCU\Environment.
 #   2. Prepends to User-scope ``PATH`` (same registry location) entries
-#      like ``%LOCALAPPDATA%\hermes\git\cmd``, ``%LOCALAPPDATA%\hermes\git\bin``,
-#      ``%LOCALAPPDATA%\hermes\git\usr\bin``, ``%LOCALAPPDATA%\hermes\node``.
+#      like ``%LOCALAPPDATA%\agentic-os\git\cmd``, ``%LOCALAPPDATA%\agentic-os\git\bin``,
+#      ``%LOCALAPPDATA%\agentic-os\git\usr\bin``, ``%LOCALAPPDATA%\agentic-os\node``.
 #      Again not in any rc file — only accessible via the registry or the
 #      .NET [Environment] API.
-#   3. Downloads PortableGit to ``%LOCALAPPDATA%\hermes\git\`` and Node to
-#      ``%LOCALAPPDATA%\hermes\node\`` as user-scoped, isolated copies.
+#   3. Downloads PortableGit to ``%LOCALAPPDATA%\agentic-os\git\`` and Node to
+#      ``%LOCALAPPDATA%\agentic-os\node\`` as user-scoped, isolated copies.
 #      These are ~200MB combined and serve no purpose after uninstall.
 #   4. On the ``hermes dashboard`` + gateway paths, drops files into
-#      ``%LOCALAPPDATA%\hermes\gateway-service\`` and sometimes
+#      ``%LOCALAPPDATA%\agentic-os\gateway-service\`` and sometimes
 #      ``%APPDATA%\Microsoft\Windows\Start Menu\Programs\Startup\`` — the
 #      latter is handled by ``gateway_windows.uninstall()`` already.
 #
@@ -323,9 +323,9 @@ def _hermes_path_markers(hermes_home: Path) -> list[str]:
     """Path-entry substrings that identify Hermes-owned User-PATH entries."""
     root = str(hermes_home).rstrip("\\/")
     # Match on prefix so sub-entries (git\cmd, git\bin, git\usr\bin, node, etc.)
-    # all get swept.  Also match the bare hermes-agent install dir.
-    markers = [root + "\\hermes-agent", root + "\\git", root + "\\node", root + "\\venv"]
-    # Also match if HERMES_HOME was customised to somewhere else — find-and-nuke
+    # all get swept.  Also match the bare agentic-os install dir.
+    markers = [root + "\\agentic-os", root + "\\git", root + "\\node", root + "\\venv"]
+    # Also match if AGENTIC_OS_HOME was customised to somewhere else — find-and-nuke
     # any entry whose path component contains "hermes".  We don't want to catch
     # unrelated entries like "chermes-foo" or "ephermeral", so we look for
     # backslash-hermes as a word-ish boundary.
@@ -372,7 +372,7 @@ def remove_path_from_windows_registry(hermes_home: Path) -> list[str]:
 
 
 def remove_hermes_env_vars_windows() -> list[str]:
-    """Delete HERMES_HOME and HERMES_GIT_BASH_PATH from User-scope env vars."""
+    """Delete AGENTIC_OS_HOME and HERMES_GIT_BASH_PATH from User-scope env vars."""
     try:
         import winreg
     except ImportError:
@@ -382,7 +382,7 @@ def remove_hermes_env_vars_windows() -> list[str]:
     try:
         with winreg.OpenKey(winreg.HKEY_CURRENT_USER, "Environment", 0,
                             winreg.KEY_READ | winreg.KEY_WRITE) as key:
-            for name in ("HERMES_HOME", "HERMES_GIT_BASH_PATH"):
+            for name in ("AGENTIC_OS_HOME", "HERMES_GIT_BASH_PATH"):
                 try:
                     winreg.QueryValueEx(key, name)
                 except FileNotFoundError:
@@ -418,7 +418,7 @@ def _is_windows() -> bool:
     return sys.platform == "win32"
 
 
-def _is_default_hermes_home(hermes_home: Path) -> bool:
+def _is_default_agentic_os_home(hermes_home: Path) -> bool:
     """Return True when ``hermes_home`` points at the default (non-profile) root."""
     try:
         from agentic_os_constants import get_default_agentic_os_root
@@ -444,11 +444,11 @@ def _discover_named_profiles():
 
 def _uninstall_profile(profile) -> None:
     """Fully uninstall a single named profile: stop its gateway service,
-    remove its alias wrapper, and wipe its HERMES_HOME directory.
+    remove its alias wrapper, and wipe its AGENTIC_OS_HOME directory.
 
     We shell out to ``hermes -p <name> gateway stop|uninstall`` because
     service names, unit paths, and plist paths are all derived from the
-    current HERMES_HOME and can't be easily switched in-process.
+    current AGENTIC_OS_HOME and can't be easily switched in-process.
     """
     import sys as _sys
     name = profile.name
@@ -483,7 +483,7 @@ def _uninstall_profile(profile) -> None:
         except Exception as e:
             log_warn(f"  Could not remove alias {alias_path}: {e}")
 
-    # 3. Wipe the profile's HERMES_HOME directory.
+    # 3. Wipe the profile's AGENTIC_OS_HOME directory.
     try:
         if profile_home.exists():
             shutil.rmtree(profile_home)
@@ -497,7 +497,7 @@ def run_gui_uninstall(args):
 
     Mirrors ``hermes uninstall --gui``. Removes the desktop app's built
     artifacts, the packaged app bundle (best-effort), and the Electron
-    userData dir — nothing under ``$HERMES_HOME`` config/sessions/.env, and
+    userData dir — nothing under ``$AGENTIC_OS_HOME`` config/sessions/.env, and
     never the Python agent or its venv.
     """
     from agentic_os_cli.gui_uninstall import (
@@ -569,8 +569,8 @@ def run_uninstall(args):
     Run the uninstall process.
     
     Options:
-    - Full uninstall: removes code + ~/.hermes/ (configs, data, logs)
-    - Keep data: removes code but keeps ~/.hermes/ for future reinstall
+    - Full uninstall: removes code + ~/.agentic-os/ (configs, data, logs)
+    - Keep data: removes code but keeps ~/.agentic-os/ for future reinstall
     """
     project_root = get_project_root()
     hermes_home = get_agentic_os_home()
@@ -584,13 +584,13 @@ def run_uninstall(args):
         return
 
     # Detect named profiles when uninstalling from the default root —
-    # offer to clean them up too instead of leaving zombie HERMES_HOMEs
+    # offer to clean them up too instead of leaving zombie AGENTIC_OS_HOMEs
     # and systemd units behind.
-    is_default_profile = _is_default_hermes_home(hermes_home)
+    is_default_profile = _is_default_agentic_os_home(hermes_home)
     named_profiles = _discover_named_profiles() if is_default_profile else []
 
     # Non-interactive fast path (``--yes``): no prompts. ``--full`` selects a
-    # full wipe (code + ~/.hermes data); otherwise keep-data. Named profiles
+    # full wipe (code + ~/.agentic-os data); otherwise keep-data. Named profiles
     # are NOT auto-removed here — that's a destructive, surprising default for
     # an unattended run, so it stays opt-in to the interactive flow. This is
     # the path the desktop app's detached cleanup script uses for its
@@ -656,7 +656,7 @@ def run_uninstall(args):
 
     # When doing a full uninstall from the default profile, also offer to
     # remove any named profiles — stopping their gateway services, unlinking
-    # their alias wrappers, and wiping their HERMES_HOME dirs. Otherwise
+    # their alias wrappers, and wiping their AGENTIC_OS_HOME dirs. Otherwise
     # those leave zombie services and data behind.
     remove_profiles = False
     if full_uninstall and named_profiles:
@@ -725,7 +725,7 @@ def _print_uninstall_dry_run(*, project_root: Path, hermes_home: Path, full_unin
     print(f"  • Code checkout: {project_root}")
     if full_uninstall:
         print(f"  • Hermes config/data: {hermes_home}")
-        if _is_default_hermes_home(hermes_home):
+        if _is_default_agentic_os_home(hermes_home):
             profiles = _discover_named_profiles()
             if profiles:
                 print("  • Named profiles (interactive uninstall asks before removing):")
@@ -750,7 +750,7 @@ def _perform_uninstall(
     Steps: stop gateway → strip PATH (rc files + Windows registry) → remove the
     ``hermes`` wrapper + node symlinks → remove the desktop Chat GUI artifacts →
     delete the code checkout → (Windows) remove PortableGit/Node → optionally
-    wipe ``$HERMES_HOME`` data and named profiles on full uninstall.
+    wipe ``$AGENTIC_OS_HOME`` data and named profiles on full uninstall.
     """
     print()
     print(color("Uninstalling...", Colors.CYAN, Colors.BOLD))
@@ -784,7 +784,7 @@ def _perform_uninstall(
         else:
             log_info("No Hermes-owned PATH entries in User environment")
 
-        log_info("Removing HERMES_HOME / HERMES_GIT_BASH_PATH User env vars...")
+        log_info("Removing AGENTIC_OS_HOME / HERMES_GIT_BASH_PATH User env vars...")
         removed_env = remove_hermes_env_vars_windows()
         if removed_env:
             for name in removed_env:
@@ -819,7 +819,7 @@ def _perform_uninstall(
     #     checkout — should go with it. uninstall_gui() never touches config /
     #     sessions / .env, so it's safe in keep-data mode; on full uninstall the
     #     step-5 rmtree(hermes_home) would sweep the in-tree artifacts anyway,
-    #     but the packaged app + Electron userData live OUTSIDE HERMES_HOME and
+    #     but the packaged app + Electron userData live OUTSIDE AGENTIC_OS_HOME and
     #     must be cleaned explicitly here.
     log_info("Removing desktop Chat GUI artifacts...")
     try:
@@ -837,7 +837,7 @@ def _perform_uninstall(
     # We need to be careful here
     try:
         if project_root.exists():
-            # If the install is inside ~/.hermes/, just remove the hermes-agent subdir
+            # If the install is inside ~/.agentic-os/, just remove the agentic-os subdir
             if hermes_home in project_root.parents or project_root.parent == hermes_home:
                 shutil.rmtree(project_root)
                 log_success(f"Removed {project_root}")
@@ -851,7 +851,7 @@ def _perform_uninstall(
 
     # 4b. Remove Windows-only installer artifacts that are NOT user data:
     #     PortableGit, bundled Node, gateway-service dir.  Installer put them
-    #     under HERMES_HOME but they're install tooling, not config — safe to
+    #     under AGENTIC_OS_HOME but they're install tooling, not config — safe to
     #     remove even in "keep data" mode.  If we're doing a full uninstall
     #     the step-5 rmtree(hermes_home) would sweep them anyway; calling
     #     this helper there is a no-op since they'll already be gone.
@@ -864,10 +864,10 @@ def _perform_uninstall(
         else:
             log_info("No Windows installer artifacts to remove")
     
-    # 5. Optionally remove ~/.hermes/ data directory (and named profiles)
+    # 5. Optionally remove ~/.agentic-os/ data directory (and named profiles)
     if full_uninstall:
         # 5a. Stop and remove each named profile's gateway service and
-        #     alias wrapper. The profile HERMES_HOME dirs live under
+        #     alias wrapper. The profile AGENTIC_OS_HOME dirs live under
         #     ``<default>/profiles/<name>/`` and will be swept away by the
         #     rmtree below, but services + alias scripts live OUTSIDE the
         #     default root and have to be cleaned up explicitly.

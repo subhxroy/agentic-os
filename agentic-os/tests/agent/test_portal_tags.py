@@ -27,7 +27,7 @@ def test_nous_portal_tags_contains_product_and_client():
     from agent.portal_tags import agentic_os_client_tag, nous_portal_tags
 
     tags = nous_portal_tags()
-    assert "product=hermes-agent" in tags
+    assert "product=agentic-os" in tags
     assert agentic_os_client_tag() in tags
     assert len(tags) == 2
 
@@ -54,7 +54,7 @@ def test_nous_portal_tags_appends_conversation_when_session_id_given():
     from agent.portal_tags import conversation_tag, nous_portal_tags
 
     tags = nous_portal_tags(session_id="sess-42")
-    assert "product=hermes-agent" in tags
+    assert "product=agentic-os" in tags
     assert conversation_tag("sess-42") in tags
     assert len(tags) == 3
 

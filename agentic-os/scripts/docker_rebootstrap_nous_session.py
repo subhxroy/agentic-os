@@ -201,7 +201,7 @@ def reseed_if_terminal(auth_path: str, seed_raw: str) -> str:
 def main() -> int:
     auth_path = sys.argv[1] if len(sys.argv) > 1 else ""
     if not auth_path:
-        home = os.environ.get("HERMES_HOME", "")
+        home = os.environ.get("AGENTIC_OS_HOME", "")
         auth_path = os.path.join(home, "auth.json") if home else "auth.json"
     seed_raw = os.environ.get(REBOOTSTRAP_ENV, "")
 

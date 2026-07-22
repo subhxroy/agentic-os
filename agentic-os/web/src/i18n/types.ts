@@ -576,7 +576,7 @@ export interface Translations {
     fontMono?: string;
   };
 
-  // ── Achievements plugin (plugins/hermes-achievements) ──
+  // ── Achievements plugin (plugins/agentic-os-achievements) ──
   achievements: {
     hero: {
       kicker: string;

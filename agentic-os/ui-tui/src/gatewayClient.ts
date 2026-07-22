@@ -14,8 +14,8 @@ const MAX_GATEWAY_LOG_LINES = 200
 const MAX_LOG_LINE_BYTES = 4096
 const MAX_BUFFERED_EVENTS = 2000
 const MAX_LOG_PREVIEW = 240
-const STARTUP_TIMEOUT_MS = Math.max(5000, parseInt(process.env.HERMES_TUI_STARTUP_TIMEOUT_MS ?? '15000', 10) || 15000)
-const REQUEST_TIMEOUT_MS = Math.max(30000, parseInt(process.env.HERMES_TUI_RPC_TIMEOUT_MS ?? '120000', 10) || 120000)
+const STARTUP_TIMEOUT_MS = Math.max(5000, parseInt(process.env.AGENTIC_OS_TUI_STARTUP_TIMEOUT_MS ?? '15000', 10) || 15000)
+const REQUEST_TIMEOUT_MS = Math.max(30000, parseInt(process.env.AGENTIC_OS_TUI_RPC_TIMEOUT_MS ?? '120000', 10) || 120000)
 const WS_CONNECTING = 0
 const WS_OPEN = 1
 const WS_CLOSING = 2
@@ -36,13 +36,13 @@ const describeChild = (proc: ChildProcess | null) => {
 }
 
 const resolveGatewayAttachUrl = () => {
-  const raw = process.env.HERMES_TUI_GATEWAY_URL?.trim()
+  const raw = process.env.AGENTIC_OS_TUI_GATEWAY_URL?.trim()
 
   return raw ? raw : null
 }
 
 const resolveSidecarUrl = () => {
-  const raw = process.env.HERMES_TUI_SIDECAR_URL?.trim()
+  const raw = process.env.AGENTIC_OS_TUI_SIDECAR_URL?.trim()
 
   return raw ? raw : null
 }

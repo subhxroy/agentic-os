@@ -6,7 +6,7 @@ import { useI18n } from '@/i18n'
 import { notifyError } from '@/store/notifications'
 import type { HermesConfigRecord } from '@/types/hermes'
 
-import { setHermesConfigCache, useHermesConfigRecord } from '../hooks/use-config-record'
+import { setHermesConfigCache, useAgenticOSConfigRecord } from '../hooks/use-config-record'
 
 import { ConfigField } from './config-field'
 import { SECTIONS } from './constants'
@@ -33,7 +33,7 @@ export function voiceProviderKeys(section: 'tts' | 'stt', providerKey: string): 
 export function VoiceProviderFields({ section, providerKey }: { section: 'tts' | 'stt'; providerKey: string }) {
   const { t } = useI18n()
   const keys = useMemo(() => voiceProviderKeys(section, providerKey), [section, providerKey])
-  const { data: loadedConfig } = useHermesConfigRecord()
+  const { data: loadedConfig } = useAgenticOSConfigRecord()
 
   const { data: schemaResponse } = useQuery({
     queryKey: ['hermes-config-schema'],

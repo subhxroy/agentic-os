@@ -14,7 +14,7 @@ Agentic OS automatically saves every conversation as a session. Sessions enable 
 
 Every conversation — whether from the CLI, Telegram, Discord, Slack, WhatsApp, Signal, Matrix, Teams, or any other messaging platform — is stored as a session with full message history. Sessions are tracked in:
 
-1. **SQLite database** (`~/.hermes/state.db`) — structured session metadata with FTS5 full-text search, plus full message history
+1. **SQLite database** (`~/.agentic-os/state.db`) — structured session metadata with FTS5 full-text search, plus full message history
 
 The SQLite database stores:
 - Session ID, source platform, user ID
@@ -157,7 +157,7 @@ The recap:
 - **Caps** at the last 10 exchanges with a "... N earlier messages ..." indicator
 - Uses **dim styling** to distinguish from the active conversation
 
-To disable the recap and keep the minimal one-liner behavior, set in `~/.hermes/config.yaml`:
+To disable the recap and keep the minimal one-liner behavior, set in `~/.agentic-os/config.yaml`:
 
 ```yaml
 display:
@@ -370,7 +370,7 @@ Trace exports are secret-redacted by default (they're meant to leave the machine
 
 #### Markdown / QMD
 
-Pass `--format md` or `--format qmd` when you want a readable, file-based archive before hiding or deleting old sessions. Markdown/QMD exports write one file per session into a directory (default: `~/.hermes/session-exports`).
+Pass `--format md` or `--format qmd` when you want a readable, file-based archive before hiding or deleting old sessions. Markdown/QMD exports write one file per session into a directory (default: `~/.agentic-os/session-exports`).
 
 ```bash
 # Export one session to Markdown
@@ -644,14 +644,14 @@ Sessions with **active background processes** are never auto-reset, regardless o
 
 | What | Path | Description |
 |------|------|-------------|
-| SQLite database | `~/.hermes/state.db` | All session metadata + messages with FTS5 |
-| Gateway messages    | `~/.hermes/state.db`   | SQLite — canonical store for all session messages |
-| Gateway routing index | `~/.hermes/sessions/sessions.json` | Maps session keys to active session IDs (origin metadata, expiry flags) |
+| SQLite database | `~/.agentic-os/state.db` | All session metadata + messages with FTS5 |
+| Gateway messages    | `~/.agentic-os/state.db`   | SQLite — canonical store for all session messages |
+| Gateway routing index | `~/.agentic-os/sessions/sessions.json` | Maps session keys to active session IDs (origin metadata, expiry flags) |
 
 The SQLite database uses WAL mode for concurrent readers and a single writer, which suits the gateway's multi-platform architecture well.
 
 :::warning `sessions.json` is not the session list
-`~/.hermes/sessions/sessions.json` is the **gateway routing index** — it maps
+`~/.agentic-os/sessions/sessions.json` is the **gateway routing index** — it maps
 messaging session keys (`agent:main:<platform>:...`) to active session IDs.
 It only ever contains gateway/messaging entries, so if you run a messaging
 platform you'll see only those (e.g. `agent:main:whatsapp:dm:...`).
@@ -659,7 +659,7 @@ platform you'll see only those (e.g. `agent:main:whatsapp:dm:...`).
 This is **expected** and does **not** mean your CLI sessions are missing.
 `hermes sessions list`, `/sessions`, and the dashboard all read `state.db`,
 which holds **every** session (CLI, TUI, and gateway). The `/save` snapshots
-under `~/.hermes/sessions/saved/*.json` are convenience exports, not the index.
+under `~/.agentic-os/sessions/saved/*.json` are convenience exports, not the index.
 
 If CLI sessions genuinely don't appear in `hermes sessions list`, the cause is
 `state.db` not receiving them — run `hermes sessions repair` and watch for a
@@ -669,7 +669,7 @@ persistence failed for that run.
 
 :::note Legacy JSONL transcripts
 Sessions created before state.db became canonical may have leftover
-`*.jsonl` files in `~/.hermes/sessions/`. They are no longer written or
+`*.jsonl` files in `~/.agentic-os/sessions/`. They are no longer written or
 read by Hermes. Safe to delete after verifying the corresponding session
 exists in state.db.
 :::
@@ -690,9 +690,9 @@ Key tables in `state.db`:
 - Before reset, the agent saves memories and skills from the expiring session
 - Opt-in auto-pruning: when `sessions.auto_prune` is `true`, ended sessions older than `sessions.retention_days` (default 90) are pruned at CLI/gateway startup
 - After a prune that actually removed rows, `state.db` is `VACUUM`ed to reclaim disk space (SQLite does not shrink the file on plain DELETE)
-- Pruning runs at most once per `sessions.min_interval_hours` (default 24); the last-run timestamp is tracked inside `state.db` itself so it's shared across every Hermes process in the same `HERMES_HOME`
+- Pruning runs at most once per `sessions.min_interval_hours` (default 24); the last-run timestamp is tracked inside `state.db` itself so it's shared across every Hermes process in the same `AGENTIC_OS_HOME`
 
-Default is **off** — session history is valuable for `session_search` recall, and silently deleting it could surprise users. Enable in `~/.hermes/config.yaml`:
+Default is **off** — session history is valuable for `session_search` recall, and silently deleting it could surprise users. Enable in `~/.agentic-os/config.yaml`:
 
 ```yaml
 sessions:

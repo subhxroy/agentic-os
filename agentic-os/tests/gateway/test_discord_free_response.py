@@ -837,7 +837,7 @@ async def test_fetch_channel_context_skips_self_improvement_boundary_message(ada
             make_history_message(author=human, content="question after reply", msg_id=5),
             make_history_message(
                 author=adapter._client.user,
-                content="💾 Self-improvement review: Skill 'hermes-gateway-display-config' patched",
+                content="💾 Self-improvement review: Skill 'agentic-os-gateway-display-config' patched",
                 msg_id=4,
             ),
             make_history_message(author=codex, content="Codex final answer", msg_id=3),

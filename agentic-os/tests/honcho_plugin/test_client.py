@@ -8,7 +8,7 @@ import types
 from pathlib import Path
 from unittest.mock import patch, MagicMock
 
-from agentic_os_cli.profiles import _get_default_hermes_home
+from agentic_os_cli.profiles import _get_default_agentic_os_home
 
 import pytest
 
@@ -119,8 +119,8 @@ class TestFromGlobalConfig:
                 }
             }
         }))
-        # Isolate from real ~/.hermes/honcho.json
-        monkeypatch.setenv("HERMES_HOME", str(tmp_path / "isolated"))
+        # Isolate from real ~/.agentic-os/honcho.json
+        monkeypatch.setenv("AGENTIC_OS_HOME", str(tmp_path / "isolated"))
 
         config = HonchoClientConfig.from_global_config(config_path=config_file)
         assert config.api_key == "***"
@@ -312,7 +312,7 @@ class TestResolveSessionName:
         with patch.object(
             HonchoClientConfig, "_git_repo_name", return_value="agentic-os"
         ):
-            result = config.resolve_session_name("/home/user/hermes-agent/subdir")
+            result = config.resolve_session_name("/home/user/agentic-os/subdir")
         assert result == "agentic-os"
 
     def test_per_repo_with_peer_prefix(self):
@@ -343,19 +343,19 @@ class TestResolveSessionName:
 
 
 class TestResolveConfigPath:
-    def test_prefers_hermes_home_when_exists(self, tmp_path):
+    def test_prefers_agentic_os_home_when_exists(self, tmp_path):
         hermes_home = tmp_path / "hermes"
         hermes_home.mkdir()
         local_cfg = hermes_home / "honcho.json"
         local_cfg.write_text('{"apiKey": "local"}')
 
-        with patch.dict(os.environ, {"HERMES_HOME": str(hermes_home)}):
+        with patch.dict(os.environ, {"AGENTIC_OS_HOME": str(hermes_home)}):
             result = resolve_config_path()
         assert result == local_cfg
 
     def test_falls_back_to_default_profile_when_no_local(self, tmp_path, monkeypatch):
-        # Profile mode: HERMES_HOME points at ~/.hermes/profiles/<name>, so
-        # _get_default_hermes_home() must resolve back to ~/.hermes — that's
+        # Profile mode: AGENTIC_OS_HOME points at ~/.agentic-os/profiles/<name>, so
+        # _get_default_agentic_os_home() must resolve back to ~/.agentic-os — that's
         # the bug the HOME-anchored helper fixes (vs. blindly using Path.home()).
         fake_home = tmp_path / "fakehome"
         fake_home.mkdir()
@@ -366,20 +366,20 @@ class TestResolveConfigPath:
         default_cfg.write_text('{"apiKey": "default-key"}')
 
         monkeypatch.setattr(Path, "home", lambda: fake_home)
-        monkeypatch.setenv("HERMES_HOME", str(profile_home))
+        monkeypatch.setenv("AGENTIC_OS_HOME", str(profile_home))
 
         result = resolve_config_path()
 
-        assert _get_default_hermes_home() == default_home
+        assert _get_default_agentic_os_home() == default_home
         assert result == default_cfg
 
-    def test_falls_back_to_global_without_hermes_home_env(self, tmp_path):
+    def test_falls_back_to_global_without_agentic_os_home_env(self, tmp_path):
         fake_home = tmp_path / "fakehome"
         fake_home.mkdir()
 
         with patch.dict(os.environ, {}, clear=False), \
              patch.object(Path, "home", return_value=fake_home):
-            os.environ.pop("HERMES_HOME", None)
+            os.environ.pop("AGENTIC_OS_HOME", None)
             result = resolve_config_path()
         assert result == fake_home / ".honcho" / "config.json"
 
@@ -389,7 +389,7 @@ class TestResolveConfigPath:
         hermes_home = tmp_path / "hermes"
         hermes_home.mkdir()
 
-        with patch.dict(os.environ, {"HERMES_HOME": str(hermes_home)}), \
+        with patch.dict(os.environ, {"AGENTIC_OS_HOME": str(hermes_home)}), \
              patch.object(Path, "home", return_value=fake_home):
             assert resolve_global_config_path() == fake_home / ".honcho" / "config.json"
             assert resolve_config_path() == fake_home / ".honcho" / "config.json"
@@ -409,7 +409,7 @@ class TestResolveConfigPath:
         }))
 
         monkeypatch.setattr(Path, "home", lambda: fake_home)
-        monkeypatch.setenv("HERMES_HOME", str(profile_home))
+        monkeypatch.setenv("AGENTIC_OS_HOME", str(profile_home))
 
         config = HonchoClientConfig.from_global_config()
 
@@ -425,7 +425,7 @@ class TestResolveConfigPath:
             "workspace": "local-ws",
         }))
 
-        with patch.dict(os.environ, {"HERMES_HOME": str(hermes_home)}), \
+        with patch.dict(os.environ, {"AGENTIC_OS_HOME": str(hermes_home)}), \
              patch.object(Path, "home", return_value=tmp_path):
             config = HonchoClientConfig.from_global_config()
         assert config.api_key == "***"
@@ -440,7 +440,7 @@ class TestResolveActiveHost:
     def test_default_returns_hermes(self):
         with patch.dict(os.environ, {}, clear=True):
             os.environ.pop("HERMES_HONCHO_HOST", None)
-            os.environ.pop("HERMES_HOME", None)
+            os.environ.pop("AGENTIC_OS_HOME", None)
             with patch(
                 "plugins.memory.honcho.client.resolve_config_path",
                 return_value=Path("/nonexistent/honcho.json"),

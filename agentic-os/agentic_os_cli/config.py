@@ -1,9 +1,9 @@
 """
 Configuration management for Agentic OS.
 
-Config files are stored in ~/.hermes/ for easy access:
-- ~/.hermes/config.yaml  - All settings (model, toolsets, terminal, etc.)
-- ~/.hermes/.env         - API keys and secrets
+Config files are stored in ~/.agentic-os/ for easy access:
+- ~/.agentic-os/config.yaml  - All settings (model, toolsets, terminal, etc.)
+- ~/.agentic-os/.env         - API keys and secrets
 
 This module provides:
 - hermes config          - Show current configuration
@@ -100,7 +100,7 @@ def _warn_config_parse_failure(
 ) -> None:
     """Surface a config.yaml parse failure to user, log, and stderr.
 
-    A YAML parse error in ``~/.hermes/config.yaml`` causes ``load_config()``
+    A YAML parse error in ``~/.agentic-os/config.yaml`` causes ``load_config()``
     to silently fall back to ``DEFAULT_CONFIG``, which means every user
     override (auxiliary providers, fallback chain, model overrides, etc.)
     is dropped. Before this helper that was a one-line ``print(...)`` that
@@ -179,7 +179,7 @@ _ENV_VAR_NAME_RE = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*$")
 #   ``$EDITOR``.
 # * ``SHELL`` — what subprocess uses with ``shell=True`` (we try to
 #   avoid that, but defense in depth).
-# * ``HERMES_HOME`` / ``HERMES_PROFILE`` / ``HERMES_CONFIG`` /
+# * ``AGENTIC_OS_HOME`` / ``HERMES_PROFILE`` / ``HERMES_CONFIG`` /
 #   ``HERMES_ENV`` — Hermes runtime location flags. Writing these into
 #   ``.env`` would relocate state in ways the user did not request from
 #   the dashboard. ``config.yaml`` is the supported surface for these.
@@ -211,7 +211,7 @@ _ENV_VAR_NAME_DENYLIST: frozenset[str] = frozenset({
     # Hermes runtime location — never via dashboard env writer.
     # NOT a HERMES_* blanket: integration credentials (HERMES_GEMINI_*,
     # HERMES_LANGFUSE_*, HERMES_SPOTIFY_*, ...) ARE allowed.
-    "HERMES_HOME", "HERMES_PROFILE", "HERMES_CONFIG", "HERMES_ENV",
+    "AGENTIC_OS_HOME", "HERMES_PROFILE", "HERMES_CONFIG", "HERMES_ENV",
 })
 
 
@@ -226,9 +226,9 @@ def _reject_denylisted_env_var(key: str) -> None:
             f"Environment variable {key!r} is on the writer denylist. "
             "Names that influence subprocess execution (LD_PRELOAD, "
             "PYTHONPATH, PATH, EDITOR, ...) or Hermes runtime location "
-            "(HERMES_HOME, HERMES_PROFILE, ...) cannot be persisted via "
+            "(AGENTIC_OS_HOME, HERMES_PROFILE, ...) cannot be persisted via "
             "the env writer. If you really need this, edit "
-            "~/.hermes/.env directly."
+            "~/.agentic-os/.env directly."
         )
 
 _LAST_EXPANDED_CONFIG_BY_PATH: Dict[str, Any] = {}
@@ -352,7 +352,7 @@ def is_managed() -> bool:
     """Check if Hermes is running in package-manager-managed mode.
 
     Two signals: the HERMES_MANAGED env var (set by the systemd service),
-    or a .managed marker file in HERMES_HOME (set by the NixOS activation
+    or a .managed marker file in AGENTIC_OS_HOME (set by the NixOS activation
     script, so interactive shells also see it).
     """
     return get_managed_system() is not None
@@ -365,7 +365,7 @@ def get_managed_update_command() -> Optional[str]:
     """Return the preferred upgrade command for a managed install."""
     managed_system = get_managed_system()
     if managed_system == "Homebrew":
-        return "brew upgrade hermes-agent"
+        return "brew upgrade agentic-os"
     if managed_system == "NixOS":
         return _NIX_UPDATE_MSG
     return None
@@ -377,7 +377,7 @@ def _install_method_project_root(project_root: Optional[Path] = None) -> Path:
     This is the parent of ``agentic_os_cli/`` — i.e. the git checkout for source
     installs, ``/opt/hermes`` inside the published image, the venv's
     site-packages root for pip installs. It is a property of the running
-    interpreter, NOT of ``$HERMES_HOME``, which is why a code-scoped stamp
+    interpreter, NOT of ``$AGENTIC_OS_HOME``, which is why a code-scoped stamp
     here is immune to two installs sharing one data directory.
     """
     if project_root is not None:
@@ -391,20 +391,20 @@ def detect_install_method(project_root: Optional[Path] = None) -> str:
     Resolution order:
     1. Code-scoped stamp ``<install tree>/.install_method`` (next to the
        running code) — the authoritative marker.
-    2. Legacy home-scoped stamp ``$HERMES_HOME/.install_method`` — read for
+    2. Legacy home-scoped stamp ``$AGENTIC_OS_HOME/.install_method`` — read for
        backward compatibility, but a ``docker`` value is IGNORED when we are
        not actually running inside a container (see below).
     3. HERMES_MANAGED env / .managed marker (NixOS, Homebrew)
     4. .git directory presence -> 'git'
     5. Fallback -> 'pip'
 
-    Why the stamp is code-scoped, not home-scoped (issue: shared ``~/.hermes``)
+    Why the stamp is code-scoped, not home-scoped (issue: shared ``~/.agentic-os``)
     --------------------------------------------------------------------------
     The install method describes *the binary that is running*, but
-    ``$HERMES_HOME`` is a shared DATA directory — the Docker docs deliberately
-    bind-mount it (``~/.hermes:/opt/data``) so config/sessions/memory persist
+    ``$AGENTIC_OS_HOME`` is a shared DATA directory — the Docker docs deliberately
+    bind-mount it (``~/.agentic-os:/opt/data``) so config/sessions/memory persist
     and can be shared with a host-side Desktop/CLI install. When a
-    containerised gateway and a host install share one ``$HERMES_HOME``, a
+    containerised gateway and a host install share one ``$AGENTIC_OS_HOME``, a
     home-scoped stamp is a single slot describing two different installs:
     the container stamps ``docker`` on every boot, the host install then reads
     ``docker`` and ``hermes update`` refuses to run ("doesn't apply inside the
@@ -430,7 +430,7 @@ def detect_install_method(project_root: Optional[Path] = None) -> str:
     """
     root = _install_method_project_root(project_root)
 
-    # 1. Code-scoped stamp — authoritative, immune to shared $HERMES_HOME.
+    # 1. Code-scoped stamp — authoritative, immune to shared $AGENTIC_OS_HOME.
     try:
         method = (root / ".install_method").read_text(encoding="utf-8").strip().lower()
         if method:
@@ -440,7 +440,7 @@ def detect_install_method(project_root: Optional[Path] = None) -> str:
 
     # 2. Legacy home-scoped stamp — back-compat. Ignore a ``docker`` value
     #    when we are not actually containerised: that is the signature of a
-    #    host install whose shared $HERMES_HOME was stamped by a co-located
+    #    host install whose shared $AGENTIC_OS_HOME was stamped by a co-located
     #    container, and honouring it wrongly blocks ``hermes update``.
     try:
         method = (
@@ -488,7 +488,7 @@ def stamp_install_method(method: str, project_root: Optional[Path] = None) -> No
     """Write the install method next to the running code (code-scoped stamp).
 
     The stamp lives in the install tree (``<install tree>/.install_method``),
-    not in ``$HERMES_HOME``, so that two installs sharing one data directory
+    not in ``$AGENTIC_OS_HOME``, so that two installs sharing one data directory
     do not overwrite each other's marker. See ``detect_install_method`` for
     the full rationale.
 
@@ -508,8 +508,8 @@ def stamp_install_method(method: str, project_root: Optional[Path] = None) -> No
 def is_uv_tool_install() -> bool:
     """Return True when the *running* Hermes lives in a ``uv tool`` layout.
 
-    ``uv tool install hermes-agent`` places the install at
-    ``.../uv/tools/hermes-agent/...`` (default ``~/.local/share/uv/tools``,
+    ``uv tool install agentic-os`` places the install at
+    ``.../uv/tools/agentic-os/...`` (default ``~/.local/share/uv/tools``,
     or ``$UV_TOOL_DIR/...``). Such installs live outside any virtualenv, so
     ``uv pip install`` fails with ``No virtual environment found`` and the
     update path must use ``uv tool upgrade`` instead.
@@ -517,14 +517,14 @@ def is_uv_tool_install() -> bool:
     Detection is intentionally restricted to properties of the running
     interpreter (``sys.prefix`` / ``sys.executable``). We deliberately do
     NOT consult ``uv tool list``: it would also return True when
-    ``hermes-agent`` happens to be uv-tool-installed on the machine while
+    ``agentic-os`` happens to be uv-tool-installed on the machine while
     the *active* Hermes is a regular pip/venv install, causing
     ``hermes update`` to upgrade the wrong copy. It would also block on a
     subprocess call (~seconds) just to compute a recommendation string.
     """
     def _has_uv_tool_marker(path: str) -> bool:
         norm = os.path.normpath(path).replace(os.sep, "/").lower()
-        return "/uv/tools/hermes-agent/" in norm + "/"
+        return "/uv/tools/agentic-os/" in norm + "/"
 
     if _has_uv_tool_marker(sys.prefix):
         return True
@@ -538,16 +538,16 @@ def recommended_update_command_for_method(method: str) -> str:
     if method == "nixos":
         return _NIX_UPDATE_MSG
     if method == "homebrew":
-        return "brew upgrade hermes-agent"
+        return "brew upgrade agentic-os"
     if method == "docker":
         return "docker pull subhxroy/agentic-os:latest"
     if method == "pip":
         if is_uv_tool_install():
-            return "uv tool upgrade hermes-agent"
+            return "uv tool upgrade agentic-os"
         import shutil
         if shutil.which("uv"):
-            return "uv pip install --upgrade hermes-agent"
-        return "pip install --upgrade hermes-agent"
+            return "uv pip install --upgrade agentic-os"
+        return "pip install --upgrade agentic-os"
     return "hermes update"
 
 
@@ -628,7 +628,7 @@ pulling a fresh image and restarting your container instead:
 
   docker pull subhxroy/agentic-os:latest
   # then restart whatever started the container, e.g.:
-  docker compose up -d --force-recreate hermes-agent
+  docker compose up -d --force-recreate agentic-os
   # or, for ad-hoc runs, exit the current container and `docker run` again
 
 Verify the new version after restart:
@@ -639,7 +639,7 @@ Notes:
     won't move your container — pull the newer tag you actually want, or
     switch to ``:latest`` / ``:main`` for rolling updates.  See available
     tags at https://hub.docker.com/r/subhxroy/agentic-os/tags
-  • Your config and session history live under ``$HERMES_HOME`` (``/opt/data``
+  • Your config and session history live under ``$AGENTIC_OS_HOME`` (``/opt/data``
     in the container, typically bind-mounted from the host) and persist
     across image upgrades — re-pulling doesn't lose any state.
   • Running a fork?  Build your own image with this repo's ``Dockerfile``
@@ -666,7 +666,7 @@ def format_managed_message(action: str = "modify this Hermes installation") -> s
         return (
             f"Cannot {action}: this Hermes installation is managed by NixOS "
             f"(HERMES_MANAGED={env_hint}).\n"
-            "Edit services.hermes-agent.settings in your configuration.nix and run:\n"
+            "Edit services.agentic-os.settings in your configuration.nix and run:\n"
             "  sudo nixos-rebuild switch"
         )
 
@@ -676,7 +676,7 @@ def format_managed_message(action: str = "modify this Hermes installation") -> s
             f"Cannot {action}: this Hermes installation is managed by Homebrew "
             f"(HERMES_MANAGED={env_hint}).\n"
             "Use:\n"
-            "  brew upgrade hermes-agent"
+            "  brew upgrade agentic-os"
         )
 
     return (
@@ -694,7 +694,7 @@ def managed_error(action: str = "modify configuration"):
 # =============================================================================
 
 def get_container_exec_info() -> Optional[dict]:
-    """Read container mode metadata from HERMES_HOME/.container-mode.
+    """Read container mode metadata from AGENTIC_OS_HOME/.container-mode.
 
     Returns a dict with keys: backend, container_name, exec_user, hermes_bin
     or None if container mode is not active, we're already inside the
@@ -763,8 +763,8 @@ def _resolve_hermes_uid_gid() -> tuple[Optional[int], Optional[int]]:
 
     Docker containers running Hermes commonly set these to map the in-container
     user to a host user so volume-mounted state files end up with the right
-    ownership. The entrypoint chowns the top-level HERMES_HOME once, but
-    subdirectories created at runtime by ``ensure_hermes_home()`` (especially
+    ownership. The entrypoint chowns the top-level AGENTIC_OS_HOME once, but
+    subdirectories created at runtime by ``ensure_agentic_os_home()`` (especially
     for profile namespaces under ``profiles/<name>/``) need the same chown
     or they land as ``root:root`` and block subsequent uid-mapped workers
     with ``PermissionError [Errno 13]``. See #34107.
@@ -797,7 +797,7 @@ def _chown_to_hermes_uid(path) -> None:
       - On Windows (chown semantics don't apply)
 
     Used by :func:`_secure_dir` to keep ownership consistent across all
-    directories created by :func:`ensure_hermes_home` on Docker deployments.
+    directories created by :func:`ensure_agentic_os_home` on Docker deployments.
     See #34107.
     """
     uid, gid = _resolve_hermes_uid_gid()
@@ -824,9 +824,9 @@ def _secure_dir(path):
     permissions (0750) so interactive users in the hermes group can
     share state with the gateway service.
 
-    The mode can be overridden via the HERMES_HOME_MODE environment variable
-    (e.g. HERMES_HOME_MODE=0701) for deployments where a web server (nginx,
-    caddy, etc.) needs to traverse HERMES_HOME to reach a served subdirectory.
+    The mode can be overridden via the AGENTIC_OS_HOME_MODE environment variable
+    (e.g. AGENTIC_OS_HOME_MODE=0701) for deployments where a web server (nginx,
+    caddy, etc.) needs to traverse AGENTIC_OS_HOME to reach a served subdirectory.
     The execute-only bit on a directory permits cd-through without exposing
     directory listings.
 
@@ -838,7 +838,7 @@ def _secure_dir(path):
     if is_managed():
         return
     try:
-        mode_str = os.environ.get("HERMES_HOME_MODE", "").strip()
+        mode_str = os.environ.get("AGENTIC_OS_HOME_MODE", "").strip()
         mode = int(mode_str, 8) if mode_str else 0o700
     except ValueError:
         mode = 0o700
@@ -893,7 +893,7 @@ def _secure_file(path):
 
 
 def _ensure_default_soul_md(home: Path) -> None:
-    """Seed a default SOUL.md into HERMES_HOME, upgrading legacy empty templates.
+    """Seed a default SOUL.md into AGENTIC_OS_HOME, upgrading legacy empty templates.
 
     First run: write DEFAULT_SOUL_MD. Existing installs whose SOUL.md is still
     the old comment-only scaffold (seeded by older install.sh / install.ps1 /
@@ -914,13 +914,13 @@ def _ensure_default_soul_md(home: Path) -> None:
 
 
 # Home paths whose directory skeleton has been created this process — see
-# ensure_hermes_home(). Only successful passes are recorded, so a raised
+# ensure_agentic_os_home(). Only successful passes are recorded, so a raised
 # managed-mode/missing-profile error keeps re-checking on later loads.
-_HERMES_HOME_ENSURED: set = set()
+_AGENTIC_OS_HOME_ENSURED: set = set()
 
 
-def ensure_hermes_home():
-    """Ensure ~/.hermes directory structure exists with secure permissions.
+def ensure_agentic_os_home():
+    """Ensure ~/.agentic-os directory structure exists with secure permissions.
 
     In managed mode (NixOS), dirs are created by the activation script with
     setgid + group-writable (2770). We skip mkdir and set umask(0o007) so
@@ -929,7 +929,7 @@ def ensure_hermes_home():
     Memoized per home path: this runs on EVERY ``load_config()`` (inside the
     config lock), and the ~14 mkdir/chmod syscalls per call made repeated
     config loads the dominant cost of hot read paths like ``model.options``.
-    After the first successful pass for a given ``HERMES_HOME`` we only re-run
+    After the first successful pass for a given ``AGENTIC_OS_HOME`` we only re-run
     the full walk if the home directory itself has vanished (a deleted home is
     recreated on the next load, as before). Profile switches change
     ``get_agentic_os_home()`` and therefore re-run for the new path.
@@ -937,11 +937,11 @@ def ensure_hermes_home():
     home = get_agentic_os_home()
     key = str(home)
 
-    if key in _HERMES_HOME_ENSURED and home.is_dir():
+    if key in _AGENTIC_OS_HOME_ENSURED and home.is_dir():
         return
     # Named profiles must be created explicitly (e.g. ``hermes profile create``).
     # If a stale process keeps running after the profile was renamed/deleted,
-    # silently mkdir-ing the old HERMES_HOME would resurrect an empty skeleton
+    # silently mkdir-ing the old AGENTIC_OS_HOME would resurrect an empty skeleton
     # and make the deleted profile reappear in Desktop/profile lists.
     if home.parent.name == "profiles" and not home.exists():
         raise FileNotFoundError(
@@ -951,7 +951,7 @@ def ensure_hermes_home():
     if is_managed():
         old_umask = os.umask(0o007)
         try:
-            _ensure_hermes_home_managed(home)
+            _ensure_agentic_os_home_managed(home)
         finally:
             os.umask(old_umask)
     else:
@@ -966,14 +966,14 @@ def ensure_hermes_home():
             _secure_dir(d)
         _ensure_default_soul_md(home)
 
-    _HERMES_HOME_ENSURED.add(key)
+    _AGENTIC_OS_HOME_ENSURED.add(key)
 
 
-def _ensure_hermes_home_managed(home: Path):
+def _ensure_agentic_os_home_managed(home: Path):
     """Managed-mode variant: verify dirs exist (activation creates them), seed SOUL.md."""
     if not home.is_dir():
         raise RuntimeError(
-            f"HERMES_HOME {home} does not exist. "
+            f"AGENTIC_OS_HOME {home} does not exist. "
             "Run 'sudo nixos-rebuild switch' first."
         )
     for subdir in ("cron", "sessions", "logs", "memories"):
@@ -1213,9 +1213,9 @@ DEFAULT_CONFIG = {
         "env_passthrough": [],
         # HOME handling for host tool subprocesses:
         #   auto    — host keeps the real OS-user HOME; containers use
-        #             HERMES_HOME/home for persistent state (default)
+        #             AGENTIC_OS_HOME/home for persistent state (default)
         #   real    — force the real OS-user HOME
-        #   profile — force HERMES_HOME/home when it exists (old strict
+        #   profile — force AGENTIC_OS_HOME/home when it exists (old strict
         #             per-profile CLI config isolation)
         "home_mode": "auto",
         # Extra files to source in the login shell when building the
@@ -1358,7 +1358,7 @@ DEFAULT_CONFIG = {
         # limited the `/rollback` listing; v2 actually rewrites the ref and
         # garbage-collects older commits.
         "max_snapshots": 20,
-        # Hard ceiling on total ``~/.hermes/checkpoints/`` size (MB).  When
+        # Hard ceiling on total ``~/.agentic-os/checkpoints/`` size (MB).  When
         # exceeded, the oldest checkpoint per project is dropped in a
         # round-robin pass until total size falls under the cap.
         # 0 disables the size cap.
@@ -1864,12 +1864,12 @@ DEFAULT_CONFIG = {
         #   "cli" — the classic prompt_toolkit REPL (default, preserves prior behavior)
         #   "tui" — the modern Ink TUI (same as passing `--tui`)
         # Explicit flags always win over this setting: `--cli` forces the classic
-        # REPL and `--tui` (or HERMES_TUI=1) forces the TUI regardless of config.
+        # REPL and `--tui` (or AGENTIC_OS_TUI=1) forces the TUI regardless of config.
         "interface": "cli",
         # When true, `hermes --tui` auto-resumes the most recent human-
         # facing session on launch instead of forging a fresh one.
         # Mirrors `hermes -c` muscle memory.  Default off so existing
-        # users aren't surprised.  HERMES_TUI_RESUME=<id> always wins.
+        # users aren't surprised.  AGENTIC_OS_TUI_RESUME=<id> always wins.
         "tui_auto_resume_recent": False,
         # When true (default), `hermes --tui` drops a one-time hint
         # ("subagents working · /agents to watch live") the first time a turn
@@ -1971,7 +1971,7 @@ DEFAULT_CONFIG = {
         "tool_progress_grouping": "accumulate",
         # Optional custom phrases for generic long-running status messages.
         # Built-in defaults live in gateway/assets/status_phrases.yaml. Users
-        # can set `path`/`paths` to HERMES_HOME-relative YAML files/directories
+        # can set `path`/`paths` to AGENTIC_OS_HOME-relative YAML files/directories
         # (or rely on conventional status_phrases.yaml / status_phrases/*.yaml).
         # Keys: status, generic. Use
         # mode: "append" (default) to add phrases, or "replace" to fully
@@ -2230,7 +2230,7 @@ DEFAULT_CONFIG = {
             # use, OR an absolute path to a pre-downloaded .onnx file.
             # Full voice list: https://github.com/OHF-Voice/piper1-gpl/blob/main/docs/VOICES.md
             "voice": "en_US-lessac-medium",
-            # "voices_dir": "",        # Override voice cache dir; default = ~/.hermes/cache/piper-voices/
+            # "voices_dir": "",        # Override voice cache dir; default = ~/.agentic-os/cache/piper-voices/
             # "use_cuda": False,       # Requires onnxruntime-gpu
             # "length_scale": 1.0,     # 2.0 = twice as slow
             # "noise_scale": 0.667,
@@ -2294,7 +2294,7 @@ DEFAULT_CONFIG = {
     # "compressor" = built-in lossy summarization (default).
     # Set to a plugin name to activate an alternative engine (e.g. "lcm"
     # for Lossless Context Management).  The engine must be installed as
-    # a plugin in plugins/context_engine/<name>/ or ~/.hermes/plugins/.
+    # a plugin in plugins/context_engine/<name>/ or ~/.agentic-os/plugins/.
     "context": {
         "engine": "compressor",
     },
@@ -2351,7 +2351,7 @@ DEFAULT_CONFIG = {
         # the parent's context window and trigger a compression/429 death
         # spiral. delegate_task sizes each summary against the parent's
         # remaining context headroom (split across the batch); when it must
-        # trim, the full text is spilled to ~/.hermes/cache/delegation/
+        # trim, the full text is spilled to ~/.agentic-os/cache/delegation/
         # (mounted into remote backends) and the in-context summary becomes a
         # head+tail window plus a footer with the exact read_file offset to
         # page the omitted middle — the same convention web_extract uses for
@@ -2440,7 +2440,7 @@ DEFAULT_CONFIG = {
 
     # Skills — external skill directories for sharing skills across tools/agents.
     # Each path is expanded (~, ${VAR}) and resolved.  Read-only — skill creation
-    # always goes to ~/.hermes/skills/.
+    # always goes to ~/.agentic-os/skills/.
     "skills": {
         "external_dirs": [],   # e.g. ["~/.agents/skills", "/shared/team-skills"]
         # Substitute ${HERMES_SKILL_DIR} and ${HERMES_SESSION_ID} in SKILL.md
@@ -2523,8 +2523,8 @@ DEFAULT_CONFIG = {
         # to keep all bundled built-ins permanently.
         "prune_builtins": True,
         # Pre-run backup: before every real curator pass (dry-run is
-        # skipped), snapshot ~/.hermes/skills/ into
-        # ~/.hermes/skills/.curator_backups/<utc-iso>/skills.tar.gz so the
+        # skipped), snapshot ~/.agentic-os/skills/ into
+        # ~/.agentic-os/skills/.curator_backups/<utc-iso>/skills.tar.gz so the
         # user can roll back with `hermes curator rollback`.
         "backup": {
             "enabled": True,
@@ -2706,7 +2706,7 @@ DEFAULT_CONFIG = {
         # through tools.slash_confirm — native yes/no buttons on Telegram,
         # Discord, and Slack; text fallback elsewhere.  Users click "Always
         # Approve" to silence the prompt permanently; that flips this key to
-        # false.  TUI has its own modal overlay (HERMES_TUI_NO_CONFIRM=1 to
+        # false.  TUI has its own modal overlay (AGENTIC_OS_TUI_NO_CONFIRM=1 to
         # opt out there).
         "destructive_slash_confirm": True,
     },
@@ -2737,7 +2737,7 @@ DEFAULT_CONFIG = {
     # subagent_stop, etc.).  Each entry maps an event name to a list of
     # {matcher, command, timeout} dicts.  First registration of a new
     # command prompts the user for consent; subsequent runs reuse the
-    # stored approval from ~/.hermes/shell-hooks-allowlist.json.
+    # stored approval from ~/.agentic-os/shell-hooks-allowlist.json.
     # See `website/docs/user-guide/features/hooks.md` for schema + examples.
     "hooks": {},
 
@@ -2785,7 +2785,7 @@ DEFAULT_CONFIG = {
         # Active cron SCHEDULER provider (Axis B — the trigger that decides
         # WHEN a due job fires). Empty string = the built-in in-process 60s
         # ticker (default). Name an installed provider (plugins/cron_providers/<name>/ or
-        # $HERMES_HOME/plugins/<name>/) to relocate the trigger — e.g. "chronos",
+        # $AGENTIC_OS_HOME/plugins/<name>/) to relocate the trigger — e.g. "chronos",
         # the NAS-mediated managed-cron provider for scale-to-zero deployments.
         # An unknown or unavailable provider falls back to the built-in, so cron
         # never loses its trigger.
@@ -2918,7 +2918,7 @@ DEFAULT_CONFIG = {
         #     with the active virtualenv/conda env's python, so project deps
         #     (pandas, torch, project packages) and relative paths resolve.
         #   strict            — scripts run in an isolated temp directory with
-        #     hermes-agent's own python (sys.executable). Maximum isolation
+        #     agentic-os's own python (sys.executable). Maximum isolation
         #     and reproducibility; project deps and relative paths won't work.
         # Env scrubbing (strips *_API_KEY, *_TOKEN, *_SECRET, ...) and the
         # tool whitelist apply identically in both modes.
@@ -2957,7 +2957,7 @@ DEFAULT_CONFIG = {
         },
     },
 
-    # Logging — controls file logging to ~/.hermes/logs/.
+    # Logging — controls file logging to ~/.agentic-os/logs/.
     # agent.log captures INFO+ (all agent activity); errors.log captures WARNING+.
     "logging": {
         "level": "INFO",       # Minimum level for agent.log: DEBUG, INFO, WARNING
@@ -2968,7 +2968,7 @@ DEFAULT_CONFIG = {
     # Remotely-hosted model catalog manifest.  When enabled, the CLI fetches
     # curated model lists for OpenRouter and Nous Portal from this URL,
     # falling back to the in-repo snapshot on network failure.  Lets us
-    # update model picker lists without shipping a hermes-agent release.
+    # update model picker lists without shipping a agentic-os release.
     # The default URL is served by the docs site GitHub Pages deploy.
     "model_catalog": {
         "enabled": True,
@@ -3021,7 +3021,7 @@ DEFAULT_CONFIG = {
         # its routing index. The primary copy lives in state.db (the
         # gateway_routing table). Default True for backward compatibility with
         # external tooling and downgrade safety; set to false to stop
-        # producing ~/.hermes/sessions/sessions.json entirely.
+        # producing ~/.agentic-os/sessions/sessions.json entirely.
         "write_sessions_json": True,
 
         # Scale-to-zero idle detection (Phase 0). The gateway watches for idle
@@ -3089,7 +3089,7 @@ DEFAULT_CONFIG = {
 
         # When false (default), any file path the agent emits is delivered
         # as a native attachment as long as it isn't under the credential /
-        # system-path denylist (/etc, /proc, ~/.ssh, ~/.aws, ~/.hermes/.env,
+        # system-path denylist (/etc, /proc, ~/.ssh, ~/.aws, ~/.agentic-os/.env,
         # auth.json, etc.). This matches the symmetry of inbound delivery
         # — we accept any document type the user uploads, and the agent
         # can hand back any file that isn't a credential.
@@ -3104,7 +3104,7 @@ DEFAULT_CONFIG = {
         "strict": False,
         # Extra directories from which model-emitted bare file paths may be
         # uploaded as native gateway attachments. Files inside the Hermes
-        # cache (~/.hermes/cache/{documents,images,audio,video,screenshots})
+        # cache (~/.agentic-os/cache/{documents,images,audio,video,screenshots})
         # are always trusted; this list adds operator-controlled roots
         # (project dirs, scratch dirs, mounted shares). Accepts a list of
         # absolute paths or a single os.pathsep-separated string. Bridged
@@ -3177,7 +3177,7 @@ DEFAULT_CONFIG = {
         "fresh_final_after_seconds": 0.0,
     },
 
-    # Session storage — controls automatic cleanup of ~/.hermes/state.db.
+    # Session storage — controls automatic cleanup of ~/.agentic-os/state.db.
     # state.db accumulates every session, message, tool call, and FTS5 index
     # entry forever.  Without auto-pruning, a heavy user (gateway + cron)
     # reports 384MB+ databases with 68K+ messages, which slows down FTS5
@@ -3204,7 +3204,7 @@ DEFAULT_CONFIG = {
         # state.db itself, so it's shared across all processes.
         "min_interval_hours": 24,
         # Legacy per-session JSON snapshot writer.  When true, the agent
-        # rewrites ``~/.hermes/sessions/session_{sid}.json`` on every turn
+        # rewrites ``~/.agentic-os/sessions/session_{sid}.json`` on every turn
         # boundary with the full message list.  state.db is canonical and
         # has every field the snapshot stored (plus per-message timestamps
         # and token counts), so this is off by default — the snapshots had
@@ -3233,13 +3233,13 @@ DEFAULT_CONFIG = {
         #
         #   quick (default) — snapshot critical small state files (pairing
         #     JSONs, cron jobs, config.yaml, .env, auth.json, per-profile
-        #     DBs) into <HERMES_HOME>/state-snapshots/ before the update.
+        #     DBs) into <AGENTIC_OS_HOME>/state-snapshots/ before the update.
         #     Files over 1 GiB (e.g. a bloated state.db) are skipped with a
         #     warning so the snapshot stays fast. Restore via ``/snapshot``.
         #     This is the #15733 (lost pairing data) / #34600 (emptied cron
         #     jobs) safety net.
         #   full — the quick snapshot PLUS a full ``hermes backup``-style zip
-        #     of HERMES_HOME into <HERMES_HOME>/backups/, restorable with
+        #     of AGENTIC_OS_HOME into <AGENTIC_OS_HOME>/backups/, restorable with
         #     ``hermes import``. Can add minutes on large homes. This is the
         #     #48200 (wrong-path wipe) safety net. ``--backup`` forces this
         #     for a single run.
@@ -3302,7 +3302,7 @@ DEFAULT_CONFIG = {
 
         # How to handle missing server binaries.
         # ``"auto"`` — try to install via npm/go/pip into
-        #              ``<HERMES_HOME>/lsp/bin/`` on first use.
+        #              ``<AGENTIC_OS_HOME>/lsp/bin/`` on first use.
         # ``"manual"`` — only use binaries already on PATH.
         # ``"off"`` — alias for ``manual``.
         "install_strategy": "auto",
@@ -3348,7 +3348,7 @@ DEFAULT_CONFIG = {
     # External secret sources
     # =========================================================================
     # Pull credentials from external secret managers at process startup
-    # rather than storing them in ~/.hermes/.env.
+    # rather than storing them in ~/.agentic-os/.env.
     "secrets": {
         # Optional explicit ordering of enabled secret sources.  When
         # omitted, sources run in registration order (bundled first,
@@ -3366,7 +3366,7 @@ DEFAULT_CONFIG = {
             "enabled": False,
             # Name of the env var that holds the Bitwarden machine-account
             # access token.  This is the one bootstrap secret; it lives
-            # in ~/.hermes/.env (or your shell) and never in config.yaml.
+            # in ~/.agentic-os/.env (or your shell) and never in config.yaml.
             "access_token_env": "BWS_ACCESS_TOKEN",
             # UUID of the BSM project to sync from.
             "project_id": "",
@@ -3378,7 +3378,7 @@ DEFAULT_CONFIG = {
             # take effect until you also cleared the matching .env line.
             "override_existing": True,
             # When True, the bws binary is auto-downloaded into
-            # ~/.hermes/bin/ on first use.  When False you must install
+            # ~/.agentic-os/bin/ on first use.  When False you must install
             # bws yourself and have it on PATH.
             "auto_install": True,
             # Bitwarden region / self-hosted endpoint.  Empty string
@@ -3402,7 +3402,7 @@ DEFAULT_CONFIG = {
             # `op read --account <account>`.  Empty = op's default account.
             "account": "",
             # Name of the env var holding a 1Password service-account token
-            # for headless auth.  Sourced from ~/.hermes/.env (or the shell)
+            # for headless auth.  Sourced from ~/.agentic-os/.env (or the shell)
             # and exported to the op child as OP_SERVICE_ACCOUNT_TOKEN.
             # Leave the var unset to use an interactive/desktop op session.
             "service_account_token_env": "OP_SERVICE_ACCOUNT_TOKEN",
@@ -5794,7 +5794,7 @@ def warn_deprecated_cwd_env_vars(config: Optional[Dict[str, Any]] = None) -> Non
             f"this is deprecated."
         )
     if lines:
-        hint_path = os.environ.get("HERMES_HOME", "~/.hermes")
+        hint_path = os.environ.get("AGENTIC_OS_HOME", "~/.agentic-os")
         lines.insert(0, "\033[33m⚠ Deprecated .env settings detected:\033[0m")
         lines.append(
             "  \033[2mMove to config.yaml instead:  "
@@ -6133,7 +6133,7 @@ def migrate_config(interactive: bool = True, quiet: bool = False) -> Dict[str, A
                 disabled = []
             disabled_set = set(disabled)
 
-            # Scan ``$HERMES_HOME/plugins/`` for currently installed user plugins.
+            # Scan ``$AGENTIC_OS_HOME/plugins/`` for currently installed user plugins.
             grandfathered: List[str] = []
             try:
                 user_plugins_dir = get_agentic_os_home() / "plugins"
@@ -6192,8 +6192,8 @@ def migrate_config(interactive: bool = True, quiet: bool = False) -> Dict[str, A
     #   2. Writes the `auxiliary.curator` aux-task slot (provider, model,
     #      base_url, api_key, timeout, extra_body) — canonical slot for
     #      routing the curator fork to a cheaper aux model.
-    #   3. Creates `~/.hermes/logs/curator/` if missing (belt-and-suspenders
-    #      on top of ensure_hermes_home() — old profiles that predate this
+    #   3. Creates `~/.agentic-os/logs/curator/` if missing (belt-and-suspenders
+    #      on top of ensure_agentic_os_home() — old profiles that predate this
     #      migration still benefit).
     if current_ver < 23:
         try:
@@ -7023,7 +7023,7 @@ def cfg_get(cfg: Optional[Dict[str, Any]], *keys: str, default: Any = None) -> A
       3. ``cfg is None`` (callers sometimes pass ``load_config() or None``).
 
     Named ``cfg_get`` rather than ``cfg_path`` to avoid shadowing the
-    ubiquitous ``cfg_path = _hermes_home / "config.yaml"`` local variable
+    ubiquitous ``cfg_path = _agentic_os_home / "config.yaml"`` local variable
     that appears in gateway/run.py, cron/scheduler.py, main.py, etc.
 
     Explicit ``None`` values are returned as-is (matches ``dict.get(key,
@@ -7057,7 +7057,7 @@ def cfg_get(cfg: Optional[Dict[str, Any]], *keys: str, default: Any = None) -> A
 
 
 def read_raw_config() -> Dict[str, Any]:
-    """Read ~/.hermes/config.yaml as-is, without merging defaults or migrating.
+    """Read ~/.agentic-os/config.yaml as-is, without merging defaults or migrating.
 
     Returns the raw YAML dict, or ``{}`` if the file doesn't exist or can't
     be parsed.  Use this for lightweight config reads where you just need a
@@ -7145,13 +7145,13 @@ def atomic_config_write(config_path: Path, data: Any, **kwargs: Any) -> None:
 
 
 def load_config() -> Dict[str, Any]:
-    """Load configuration from ~/.hermes/config.yaml.
+    """Load configuration from ~/.agentic-os/config.yaml.
 
     Cached on the config file's (mtime_ns, size). Returns a deepcopy of
     the cached value when unchanged, since most call sites mutate the
     result (e.g. ``cfg["model"]["default"] = ...`` before ``save_config``).
     The cache is keyed on ``str(config_path)`` so profile switches
-    (which change ``HERMES_HOME`` and therefore ``get_config_path()``)
+    (which change ``AGENTIC_OS_HOME`` and therefore ``get_config_path()``)
     don't collide.
 
     Read-only callers should use ``load_config_readonly()`` to skip the
@@ -7303,7 +7303,7 @@ def apply_terminal_config_to_env(
 
 def _load_config_impl(*, want_deepcopy: bool) -> Dict[str, Any]:
     with _CONFIG_LOCK:
-        ensure_hermes_home()
+        ensure_agentic_os_home()
         config_path = get_config_path()
         path_key = str(config_path)
 
@@ -7530,7 +7530,7 @@ def save_config(
     preserve_keys: Optional[Set[Tuple[str, ...]]] = None,
     merge_existing: bool = False,
 ):
-    """Save configuration to ~/.hermes/config.yaml.\n
+    """Save configuration to ~/.agentic-os/config.yaml.\n
 
     Default values from ``DEFAULT_CONFIG`` are not written to disk unless
     the user explicitly set them (i.e. the path exists in the raw config
@@ -7566,7 +7566,7 @@ def save_config(
                 )
         from utils import atomic_yaml_write
 
-        ensure_hermes_home()
+        ensure_agentic_os_home()
         config_path = get_config_path()
         require_readable_config_before_write(config_path)
         # Compute explicit user paths BEFORE any normalisation --------
@@ -7663,7 +7663,7 @@ def _parse_env_value(raw_value: str) -> str:
 
 
 def load_env() -> Dict[str, str]:
-    """Load environment variables from ~/.hermes/.env.
+    """Load environment variables from ~/.agentic-os/.env.
 
     Sanitizes lines before parsing so that corrupted files (e.g.
     concatenated KEY=VALUE pairs on a single line) are handled
@@ -7844,7 +7844,7 @@ def _sanitize_env_lines(lines: list) -> list:
 
 
 def sanitize_env_file() -> int:
-    """Read, sanitize, and rewrite ~/.hermes/.env in place.
+    """Read, sanitize, and rewrite ~/.agentic-os/.env in place.
 
     Returns the number of lines that were fixed (concatenation splits +
     placeholder removals).  Returns 0 when no changes are needed.
@@ -7965,7 +7965,7 @@ def _env_line_defines_key(line: str, key: str) -> bool:
 
 
 def save_env_value(key: str, value: str):
-    """Save or update a value in ~/.hermes/.env."""
+    """Save or update a value in ~/.agentic-os/.env."""
     if is_managed():
         managed_error(f"set {key}")
         return
@@ -7988,7 +7988,7 @@ def save_env_value(key: str, value: str):
     value = value.replace("\n", "").replace("\r", "")
     # API keys / tokens must be ASCII — strip non-ASCII with a warning.
     value = _check_non_ascii_credential(key, value)
-    ensure_hermes_home()
+    ensure_agentic_os_home()
     env_path = get_env_path()
 
     # On Windows, open() defaults to the system locale (cp1252) which can
@@ -8059,7 +8059,7 @@ def save_env_value(key: str, value: str):
 
 
 def remove_env_value(key: str) -> bool:
-    """Remove a key from ~/.hermes/.env and os.environ.
+    """Remove a key from ~/.agentic-os/.env and os.environ.
 
     Returns True if the key was found and removed, False otherwise.
     """
@@ -8168,7 +8168,7 @@ def save_env_value_secure(key: str, value: str) -> Dict[str, Any]:
 
 
 def reload_env() -> int:
-    """Re-read ~/.hermes/.env into os.environ. Returns count of vars updated.
+    """Re-read ~/.agentic-os/.env into os.environ. Returns count of vars updated.
 
     Adds/updates vars that changed and removes vars that were deleted from
     the .env file (but only vars known to Hermes — OPTIONAL_ENV_VARS and
@@ -8190,7 +8190,7 @@ def reload_env() -> int:
 
 
 def get_env_value(key: str) -> Optional[str]:
-    """Get a value from ~/.hermes/.env or environment."""
+    """Get a value from ~/.agentic-os/.env or environment."""
     # Check environment first
     if key in os.environ:
         return os.environ[key]
@@ -8201,7 +8201,7 @@ def get_env_value(key: str) -> Optional[str]:
 
 
 def get_env_value_prefer_dotenv(key: str) -> Optional[str]:
-    """Resolve a credential env value, preferring ``~/.hermes/.env`` over ``os.environ``.
+    """Resolve a credential env value, preferring ``~/.agentic-os/.env`` over ``os.environ``.
 
     Used for Hermes-managed credentials where a deliberate edit to ``.env``
     must take precedence over a stale value inherited from the parent shell
@@ -8821,7 +8821,7 @@ def set_config_value(key: str, value: str, force: bool = False):
         key = "model.base_url"
         print("  (note: 'api_base' is an alias — saved as model.base_url)")
     # Write only user config back (not the full merged defaults)
-    ensure_hermes_home()
+    ensure_agentic_os_home()
     from utils import atomic_yaml_write
     atomic_yaml_write(config_path, user_config, sort_keys=False)
     
@@ -8928,7 +8928,7 @@ def unset_config_value(key: str):
         print(f"Config key not set: {key}", file=sys.stderr)
         sys.exit(1)
 
-    ensure_hermes_home()
+    ensure_agentic_os_home()
     from utils import atomic_yaml_write
     atomic_yaml_write(config_path, user_config, sort_keys=False)
     print(f"✓ Unset {key} from {config_path}")

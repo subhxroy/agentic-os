@@ -10,7 +10,7 @@ path via ``hermes chat --query``) couldn't see what the aggregator actually
 produced without joining to the session DB by hand.
 
 These exercise the real ``consume_and_save_trace`` → ``save_moa_turn`` path
-with real file I/O against a temp HERMES_HOME — no mocks on the write path.
+with real file I/O against a temp AGENTIC_OS_HOME — no mocks on the write path.
 """
 
 from __future__ import annotations
@@ -23,10 +23,10 @@ from agent.moa_loop import MoAChatCompletions
 
 
 def _enable_traces(tmp_path, monkeypatch):
-    """Point HERMES_HOME at a temp dir and turn moa.save_traces on."""
+    """Point AGENTIC_OS_HOME at a temp dir and turn moa.save_traces on."""
     hermes_home = tmp_path / ".hermes"
     hermes_home.mkdir()
-    monkeypatch.setenv("HERMES_HOME", str(hermes_home))
+    monkeypatch.setenv("AGENTIC_OS_HOME", str(hermes_home))
 
     # save_moa_turn reads config via agentic_os_cli.config.load_config; stub it to
     # return traces-on so the test doesn't depend on a real config file.

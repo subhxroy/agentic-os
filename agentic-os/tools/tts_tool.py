@@ -16,7 +16,7 @@ Built-in TTS providers:
 
 Custom command providers:
 - Users can declare any number of named providers with ``type: command``
-  under ``tts.providers.<name>`` in ``~/.hermes/config.yaml``. Hermes
+  under ``tts.providers.<name>`` in ``~/.agentic-os/config.yaml``. Hermes
   writes the input text to a temp file and runs the configured shell
   command, which must produce the audio file at the expected path.
   See the Local Command section of ``website/docs/user-guide/features/tts.md``.
@@ -25,7 +25,7 @@ Output formats:
 - Opus (.ogg) for Telegram voice bubbles (requires ffmpeg for Edge TTS)
 - MP3 (.mp3) for everything else (CLI, Discord, WhatsApp)
 
-Configuration is loaded from ~/.hermes/config.yaml under the 'tts:' key.
+Configuration is loaded from ~/.agentic-os/config.yaml under the 'tts:' key.
 The user chooses the provider and voice; the model just sends text.
 
 Usage:
@@ -331,11 +331,11 @@ def _resolve_max_text_length(
 
 
 # ===========================================================================
-# Config loader -- reads tts: section from ~/.hermes/config.yaml
+# Config loader -- reads tts: section from ~/.agentic-os/config.yaml
 # ===========================================================================
 def _load_tts_config() -> Dict[str, Any]:
     """
-    Load TTS configuration from ~/.hermes/config.yaml.
+    Load TTS configuration from ~/.agentic-os/config.yaml.
 
     Returns a dict with provider settings. Falls back to defaults
     for any missing fields.
@@ -1861,7 +1861,7 @@ def _generate_gemini_tts(text: str, output_path: str, tts_config: Dict[str, Any]
         # Include Hermes client context following Gemini's partner
         # integration guidance:
         # https://ai.google.dev/gemini-api/docs/partner-integration
-        headers["X-Goog-Api-Client"] = f"hermes-agent/{_hermes_version}"
+        headers["X-Goog-Api-Client"] = f"agentic-os/{_hermes_version}"
 
     endpoint = f"{base_url}/models/{model}:generateContent"
     response = requests.post(
@@ -2055,8 +2055,8 @@ def _check_piper_available() -> bool:
 def _get_piper_voices_dir() -> Path:
     """Return the directory where Hermes caches Piper voice models.
 
-    Resolves to ``~/.hermes/cache/piper-voices/`` under the active
-    HERMES_HOME so voice downloads follow profile boundaries.
+    Resolves to ``~/.agentic-os/cache/piper-voices/`` under the active
+    AGENTIC_OS_HOME so voice downloads follow profile boundaries.
     """
     from agentic_os_constants import get_agentic_os_dir
     root = Path(get_agentic_os_dir("cache/piper-voices", "piper_voices_cache"))
@@ -2288,7 +2288,7 @@ def text_to_speech_tool(
     """
     Convert text to speech audio.
 
-    Reads provider/voice config from ~/.hermes/config.yaml (tts: section).
+    Reads provider/voice config from ~/.agentic-os/config.yaml (tts: section).
     The model sends text; the user configures voice and provider.
 
     On messaging platforms, the returned MEDIA:<path> tag is intercepted
@@ -2451,7 +2451,7 @@ def text_to_speech_tool(
                 return json.dumps({
                     "success": False,
                     "error": "Mistral provider selected but 'mistralai' package not installed. "
-                             "Run: pip install 'hermes-agent[mistral]'"
+                             "Run: pip install 'agentic-os[mistral]'"
                 }, ensure_ascii=False)
             logger.info("Generating speech with Mistral Voxtral TTS...")
             _generate_mistral_tts(text, file_str, tts_config)

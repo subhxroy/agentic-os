@@ -151,7 +151,7 @@ def _start_desktop_cron_ticker(stop_event: "threading.Event", interval: int = 60
 
     Cross-process safe: the built-in provider's ``cron.scheduler.tick`` takes
     the ``cron/.tick.lock`` file lock, so this never double-fires alongside a
-    real gateway on the same HERMES_HOME — whichever process grabs the lock
+    real gateway on the same AGENTIC_OS_HOME — whichever process grabs the lock
     first wins the tick.
     """
     from cron.scheduler_provider import resolve_cron_scheduler
@@ -1515,7 +1515,7 @@ _FS_READDIR_HIDDEN = {
 # (agent.file_safety.get_read_block_error and
 # gateway.platforms.base._ROOT_CREDENTIAL_FILES) so the dashboard Files tab
 # doesn't lag behind them — an operator can point the managed root at
-# HERMES_HOME itself, at which point every one of these basenames is a live
+# AGENTIC_OS_HOME itself, at which point every one of these basenames is a live
 # secret store sitting in the browsable tree.
 _SENSITIVE_MANAGED_FILE_BASENAMES = frozenset({
     "auth.json",
@@ -1540,7 +1540,7 @@ _SENSITIVE_MANAGED_FILE_BASENAMES = frozenset({
 # basename-only guard would still expose e.g. ``mcp-tokens/<server>.json``
 # (live MCP OAuth tokens) and ``pairing/<x>``. We match on ANY path component
 # so these trees are blocked wherever they appear under the browsable root,
-# without needing to resolve them relative to HERMES_HOME.
+# without needing to resolve them relative to AGENTIC_OS_HOME.
 _SENSITIVE_MANAGED_DIR_NAMES = frozenset({
     "mcp-tokens",
     "pairing",
@@ -1575,7 +1575,7 @@ def _is_sensitive_path(path: Path) -> bool:
     credential-directory-tree check: a path is sensitive if its own basename
     is sensitive OR any of its path components is a credential directory
     (``mcp-tokens`` / ``pairing``). The component match is case-insensitive
-    and needs no HERMES_HOME resolution, so it blocks these trees wherever
+    and needs no AGENTIC_OS_HOME resolution, so it blocks these trees wherever
     they sit under the operator-configured managed root — closing the gap
     the canonical guards cover as directory trees but a basename-only check
     would miss.
@@ -1853,7 +1853,7 @@ def _local_dashboard_request(request: Request) -> bool:
 
 
 def _default_hermes_root_is_opt_data() -> bool:
-    raw = os.environ.get("HERMES_HOME", "").strip()
+    raw = os.environ.get("AGENTIC_OS_HOME", "").strip()
     if not raw:
         return False
     try:
@@ -2061,7 +2061,7 @@ async def upload_chat_image(payload: ChatImageUpload, profile: Optional[str] = N
     clipboard image bytes are not visible to the server-side clipboard, so the
     page uploads them here, then drives the TUI's ``/image <path>`` command
     with the returned gateway-visible path. Files land under
-    ``HERMES_HOME/images/`` — the same directory ``clipboard.paste`` /
+    ``AGENTIC_OS_HOME/images/`` — the same directory ``clipboard.paste`` /
     ``image.attach`` already use.
     """
     data, mime_type, ext = _decode_chat_image_upload(payload)
@@ -3376,7 +3376,7 @@ async def run_debug_share_endpoint(body: DebugShareRequest | None = None):
 # Both commands are spawned as detached subprocesses so the HTTP request
 # returns immediately.  stdin is closed (``DEVNULL``) so any stray ``input()``
 # calls fail fast with EOF rather than hanging forever.  stdout/stderr are
-# streamed to a per-action log file under ``~/.hermes/logs/<action>.log`` so
+# streamed to a per-action log file under ``~/.agentic-os/logs/<action>.log`` so
 # the dashboard can tail them back to the user.
 # ---------------------------------------------------------------------------
 
@@ -4100,7 +4100,7 @@ async def speak_text(payload: TTSSpeakRequest):
     Used by the desktop voice-conversation mode to play back assistant
     responses without exposing the on-disk file path. Reuses the
     existing TTS provider chain (Edge / OpenAI / ElevenLabs / etc.)
-    configured in ``~/.hermes/config.yaml`` under ``tts.``.
+    configured in ``~/.agentic-os/config.yaml`` under ``tts.``.
     """
     text = (payload.text or "").strip()
     if not text:
@@ -6347,7 +6347,7 @@ def set_moa_models(body: MoaConfigPayload, profile: Optional[str] = None):
 async def set_model_assignment(body: ModelAssignment, profile: Optional[str] = None):
     """Assign a model to the main slot or an auxiliary task slot.
 
-    Writes to ``~/.hermes/config.yaml`` — applies to **new** sessions only.
+    Writes to ``~/.agentic-os/config.yaml`` — applies to **new** sessions only.
     The currently running chat PTY (if any) is not affected; use the
     ``/model`` slash command inside a chat to hot-swap that specific session.
     """
@@ -8925,7 +8925,7 @@ async def get_messaging_platforms(profile: Optional[str] = None):
     # Profile-scoped so the dashboard's global profile switcher shows the
     # TARGET profile's channel credentials/state, not the root install's.
     # Inside _profile_scope, load_env()/read_runtime_status()/get_running_pid()
-    # all resolve against the requested profile's HERMES_HOME.
+    # all resolve against the requested profile's AGENTIC_OS_HOME.
     with _profile_scope(profile) as scoped_dir:
         env_on_disk = load_env()
         runtime = read_runtime_status()
@@ -8966,7 +8966,7 @@ def _multiplex_port_binding_conflict(
     if not requested or requested.lower() == "current":
         from agentic_os_cli.profiles import get_active_profile_name
 
-        # The dashboard's own profile. "custom" (an unrecognized HERMES_HOME)
+        # The dashboard's own profile. "custom" (an unrecognized AGENTIC_OS_HOME)
         # is outside the profiles tree, so a multiplexed gateway never serves
         # it — nothing to guard.
         target = get_active_profile_name()
@@ -9153,7 +9153,7 @@ def _anthropic_oauth_status() -> Dict[str, Any]:
     """Status for the "Anthropic API Key" catalog entry.
 
     Two sources, in priority order:
-    1. ``~/.hermes/.anthropic_oauth.json`` — Hermes-managed PKCE flow (what
+    1. ``~/.agentic-os/.anthropic_oauth.json`` — Hermes-managed PKCE flow (what
        this entry's Connect button writes)
     2. ``ANTHROPIC_API_KEY`` → ``ANTHROPIC_TOKEN`` → ``CLAUDE_CODE_OAUTH_TOKEN``
        env vars (registry order) — from ``.env``, the shell, or an external
@@ -9663,7 +9663,7 @@ async def disconnect_oauth_provider(
 #     2. UI opens auth_url in a new tab. User authorizes, copies code.
 #     3. POST /api/providers/oauth/anthropic/submit { session_id, code }
 #          → server exchanges (code + verifier) → tokens at console.anthropic.com
-#          → persists to ~/.hermes/.anthropic_oauth.json AND credential pool
+#          → persists to ~/.agentic-os/.anthropic_oauth.json AND credential pool
 #          → returns { ok: true, status: "approved" }
 #
 #   Device code (Nous, OpenAI Codex):
@@ -11409,12 +11409,12 @@ def _cron_profile_dicts() -> List[Dict[str, Any]]:
 def _cron_default_profile() -> str:
     """Profile to target when a cron request carries no explicit ``profile``.
 
-    A desktop pool backend runs one process per profile (HERMES_HOME already
+    A desktop pool backend runs one process per profile (AGENTIC_OS_HOME already
     scoped), but these cron endpoints deliberately route storage through the
     profiles tree via ``_cron_profile_home`` — so a hardcoded ``"default"``
-    fallback would write a non-default profile's job into ``~/.hermes``.
+    fallback would write a non-default profile's job into ``~/.agentic-os``.
     Resolve the process's own profile instead. ``custom`` (an unrecognized
-    HERMES_HOME outside the profiles tree) has no profile-dir equivalent, so
+    AGENTIC_OS_HOME outside the profiles tree) has no profile-dir equivalent, so
     it keeps the legacy ``default`` fallback.
     """
     try:
@@ -11427,7 +11427,7 @@ def _cron_default_profile() -> str:
 
 
 def _cron_profile_home(profile: Optional[str]) -> Tuple[str, Path]:
-    """Resolve a profile query value to (profile_name, HERMES_HOME)."""
+    """Resolve a profile query value to (profile_name, AGENTIC_OS_HOME)."""
     from agentic_os_cli import profiles as profiles_mod
 
     raw = (profile or _cron_default_profile()).strip() or "default"
@@ -12157,7 +12157,7 @@ async def test_mcp_server(name: str, profile: Optional[str] = None):
         # skills lock for its ENTIRE body. Holding that across the probe
         # serialized every other endpoint (config/skills/toolsets all take the
         # same lock), so a slow server made unrelated requests time out at 15s.
-        # The probe touches no skills globals; it only needs the HERMES_HOME
+        # The probe touches no skills globals; it only needs the AGENTIC_OS_HOME
         # override for .env interpolation + OAuth token resolution, which the
         # contextvar provides (copied into this to_thread worker; and
         # _run_on_mcp_loop re-wraps it onto the MCP event-loop thread).
@@ -12579,7 +12579,7 @@ async def install_mcp_catalog_entry(body: MCPCatalogInstall, profile: Optional[s
 
     # Git-bootstrap entries can take a while to clone — run via the background
     # action path so the request returns immediately and the UI can tail logs.
-    # The -p subprocess rebinds HERMES_HOME-derived paths in the child.
+    # The -p subprocess rebinds AGENTIC_OS_HOME-derived paths in the child.
     if entry.install is not None:
         # Unique per-entry action name: a shared "mcp-install" would let a
         # re-click (or a second entry) overwrite the tracked process/log while
@@ -14062,7 +14062,7 @@ class ProfileCreate(BaseModel):
     keep_skills: List[str] = []
     # Skills-hub identifiers to install into the new profile. Installed async
     # via a subprocess scoped to the profile (`hermes -p <name> skills install`)
-    # because skills_hub.SKILLS_DIR is import-time-bound and the HERMES_HOME
+    # because skills_hub.SKILLS_DIR is import-time-bound and the AGENTIC_OS_HOME
     # override can't redirect it. Returns spawned PIDs for the UI to poll.
     hub_skills: List[str] = []
 
@@ -14126,7 +14126,7 @@ def _fallback_profile_dicts(profiles_mod) -> List[Dict[str, Any]]:
             return default
 
     profiles: List[Dict[str, Any]] = []
-    default_home = profiles_mod._get_default_hermes_home()
+    default_home = profiles_mod._get_default_agentic_os_home()
     if default_home.is_dir():
         model, provider = _safe(lambda: profiles_mod._read_config_model(default_home), (None, None))
         profiles.append({
@@ -14194,7 +14194,7 @@ def _write_profile_model(profile_dir: Path, provider: str, model: str) -> None:
     """Write the main model assignment into a specific profile's config.yaml.
 
     Scopes ``load_config``/``save_config`` to ``profile_dir`` via the
-    context-local HERMES_HOME override so the write lands in the target
+    context-local AGENTIC_OS_HOME override so the write lands in the target
     profile's config rather than the dashboard process's active profile.
     Clears any stale ``base_url`` / ``context_length`` the same way
     ``POST /api/model/set`` does, since the new model may differ.
@@ -14215,7 +14215,7 @@ def _write_profile_mcp_servers(profile_dir: Path, servers: List["MCPServerCreate
     """Write MCP server entries into a specific profile's config.yaml.
 
     Scopes ``load_config``/``save_config`` to ``profile_dir`` via the
-    context-local HERMES_HOME override (same mechanism as
+    context-local AGENTIC_OS_HOME override (same mechanism as
     ``_write_profile_model``) so the entries land in the target profile's
     config rather than the dashboard process's active profile.
 
@@ -14266,7 +14266,7 @@ def _disable_unselected_skills(profile_dir: Path, keep: List[str]) -> int:
     uses "replace" semantics: the user picks exactly which seeded built-in /
     optional skills stay active, and everything else gets added to the disabled
     list. (Hub skills are installed separately via subprocess and are active on
-    install.) Scoped to the profile via the HERMES_HOME override. Returns the
+    install.) Scoped to the profile via the AGENTIC_OS_HOME override. Returns the
     number of skills newly disabled.
     """
     from agentic_os_constants import set_AGENTIC_OS_HOME_OVERRIDE, reset_AGENTIC_OS_HOME_OVERRIDE
@@ -14388,7 +14388,7 @@ async def create_profile_endpoint(body: ProfileCreate):
 
     # Optional skills-hub installs. Spawned async, scoped to the new profile
     # via `-p <name>` (a fresh subprocess re-binds skills_hub.SKILLS_DIR to the
-    # profile's HERMES_HOME at import). Returns PIDs for the UI to poll.
+    # profile's AGENTIC_OS_HOME at import). Returns PIDs for the UI to poll.
     hub_installs: List[Dict[str, Any]] = []
     for identifier in body.hub_skills:
         ident = (identifier or "").strip()
@@ -14426,7 +14426,7 @@ async def get_active_profile_endpoint():
 
     ``active`` is the sticky default written by ``hermes profile use`` —
     the profile new CLI invocations pick up. ``current`` is the profile
-    the running dashboard/gateway is scoped to (derived from HERMES_HOME).
+    the running dashboard/gateway is scoped to (derived from AGENTIC_OS_HOME).
     """
     from agentic_os_cli import profiles as profiles_mod
     try:
@@ -14602,7 +14602,7 @@ async def update_profile_model_endpoint(name: str, body: ProfileModelUpdate):
     """Set the main model (``model.default`` + ``model.provider``) for a
     specific profile's config.yaml, without touching the dashboard's own
     active profile. Mirrors ``POST /api/model/set`` (main scope) but scoped
-    to the named profile via the HERMES_HOME override.
+    to the named profile via the AGENTIC_OS_HOME override.
     """
     profile_dir = _resolve_profile_dir(name)
     provider = (body.provider or "").strip()
@@ -14680,7 +14680,7 @@ def _profile_scope(profile: Optional[str]):
     config resolution is untouched, but the skill-module globals are still
     retargeted to the *current* ``get_agentic_os_home()`` so writes land in the
     live home even when the import-time binding is stale (e.g. the process
-    imported the modules before a HERMES_HOME override, or under test
+    imported the modules before a AGENTIC_OS_HOME override, or under test
     isolation).
     """
     requested = (profile or "").strip()
@@ -14701,20 +14701,20 @@ def _profile_scope(profile: Optional[str]):
         token = set_AGENTIC_OS_HOME_OVERRIDE(str(profile_dir))
 
     with _SKILLS_PROFILE_LOCK:
-        old_home = _skills_tool.HERMES_HOME
+        old_home = _skills_tool.AGENTIC_OS_HOME
         old_skills_dir = _skills_tool.SKILLS_DIR
-        old_mgr_home = _skill_mgr.HERMES_HOME
+        old_mgr_home = _skill_mgr.AGENTIC_OS_HOME
         old_mgr_skills_dir = _skill_mgr.SKILLS_DIR
-        _skills_tool.HERMES_HOME = profile_dir
+        _skills_tool.AGENTIC_OS_HOME = profile_dir
         _skills_tool.SKILLS_DIR = profile_dir / "skills"
-        _skill_mgr.HERMES_HOME = profile_dir
+        _skill_mgr.AGENTIC_OS_HOME = profile_dir
         _skill_mgr.SKILLS_DIR = profile_dir / "skills"
         try:
             yield profile_dir if token is not None else None
         finally:
-            _skills_tool.HERMES_HOME = old_home
+            _skills_tool.AGENTIC_OS_HOME = old_home
             _skills_tool.SKILLS_DIR = old_skills_dir
-            _skill_mgr.HERMES_HOME = old_mgr_home
+            _skill_mgr.AGENTIC_OS_HOME = old_mgr_home
             _skill_mgr.SKILLS_DIR = old_mgr_skills_dir
             if token is not None:
                 reset_AGENTIC_OS_HOME_OVERRIDE(token)
@@ -15414,7 +15414,7 @@ class ToolsetEnvUpdate(BaseModel):
 async def save_toolset_env(name: str, body: ToolsetEnvUpdate, profile: Optional[str] = None):
     """Persist API keys for a toolset's provider env vars.
 
-    Writes each ``key: value`` to ``~/.hermes/.env`` via ``save_env_value`` —
+    Writes each ``key: value`` to ``~/.agentic-os/.env`` via ``save_env_value`` —
     the same store ``hermes tools`` writes when it prompts for keys. Keys are
     validated against the env-var allowlist for the toolset's category (the
     union of every visible provider's ``env_vars``), so the GUI can't write an
@@ -15487,7 +15487,7 @@ async def run_toolset_post_setup(
     ``profile`` spawns the hook as ``hermes -p <profile> tools post-setup``.
     Most hooks install machine-level artifacts (repo node_modules, shared
     pip packages) where the scope is inert, but hooks that read config or
-    write per-profile state must see the same HERMES_HOME the rest of the
+    write per-profile state must see the same AGENTIC_OS_HOME the rest of the
     drawer's writes targeted — so the scope is threaded for consistency.
     """
     from agentic_os_cli.tools_config import (
@@ -16622,32 +16622,32 @@ def _resolve_chat_argv(
     function to inject a tiny fake command (``cat``, ``sh -c 'printf …'``)
     so nothing has to build Node or the TUI bundle.
 
-    Session resume is propagated via the ``HERMES_TUI_RESUME`` env var —
+    Session resume is propagated via the ``AGENTIC_OS_TUI_RESUME`` env var —
     matching what ``agentic_os_cli.main._launch_tui`` does for the CLI path.
     Appending ``--resume <id>`` to argv doesn't work because ``ui-tui`` does
     not parse its argv.
 
-    ``HERMES_TUI_GATEWAY_URL`` is injected so the PTY child can attach to
+    ``AGENTIC_OS_TUI_GATEWAY_URL`` is injected so the PTY child can attach to
     this process's in-memory ``tui_gateway`` instance instead of spawning
     its own Python gateway subprocess.
 
-    `sidecar_url` (when set) is forwarded as ``HERMES_TUI_SIDECAR_URL`` so
+    `sidecar_url` (when set) is forwarded as ``AGENTIC_OS_TUI_SIDECAR_URL`` so
     the spawned ``tui_gateway.entry`` can mirror dispatcher emits to the
     dashboard's ``/api/pub`` endpoint (see :func:`pub_ws`).
 
     `active_session_file` (when set) is forwarded as
-    ``HERMES_TUI_ACTIVE_SESSION_FILE``. The TUI writes the current session id
+    ``AGENTIC_OS_TUI_ACTIVE_SESSION_FILE``. The TUI writes the current session id
     there whenever it creates/resumes/switches sessions, giving the dashboard a
     small cross-process breadcrumb for reconnecting after an unexpected browser
     WebSocket close.
 
     `profile` (when set) scopes the ENTIRE chat to that profile by pointing
-    ``HERMES_HOME`` at the profile dir in the child env. Every spawned
+    ``AGENTIC_OS_HOME`` at the profile dir in the child env. Every spawned
     process (the TUI and the ``tui_gateway.entry`` it launches) resolves
     ``get_agentic_os_home()`` from that env var at its own import, so the child
     binds the profile's config, skills, memory, and state.db from the start
     — the same propagation ``hermes -p <name>`` performs. The in-process
-    ``HERMES_TUI_GATEWAY_URL`` attach is SKIPPED for scoped chats: the
+    ``AGENTIC_OS_TUI_GATEWAY_URL`` attach is SKIPPED for scoped chats: the
     dashboard's in-memory gateway runs under the dashboard's own profile,
     so a profile-scoped chat must spawn its own gateway subprocess.
     """
@@ -16673,8 +16673,8 @@ def _resolve_chat_argv(
     # makes browser-side transcript scrolling feel broken. Keep the terminal
     # build unchanged for native CLI usage; only disable mouse tracking for
     # the dashboard PTY path.
-    env.setdefault("HERMES_TUI_DISABLE_MOUSE", "1")
-    env.setdefault("HERMES_TUI_INLINE", "1")
+    env.setdefault("AGENTIC_OS_TUI_DISABLE_MOUSE", "1")
+    env.setdefault("AGENTIC_OS_TUI_INLINE", "1")
     # The dashboard terminal is xterm.js, which always renders 24-bit RGB.
     # But chalk inside the TUI child decides its color depth from the
     # SERVER process env — and hosted/cloud deploys run the dashboard under
@@ -16686,10 +16686,10 @@ def _resolve_chat_argv(
     # COLORTERM=truecolor into os.environ. Backfill it for the PTY child;
     # setdefault so an explicit operator value still wins.
     env.setdefault("COLORTERM", "truecolor")
-    env["HERMES_TUI_DASHBOARD"] = "1"
+    env["AGENTIC_OS_TUI_DASHBOARD"] = "1"
 
     if profile_dir is not None:
-        env["HERMES_HOME"] = str(profile_dir)
+        env["AGENTIC_OS_HOME"] = str(profile_dir)
 
     if resume:
         _resume_db = _open_session_db_for_profile(
@@ -16701,21 +16701,21 @@ def _resolve_chat_argv(
             _resume_db.close()
         if latest_resume:
             resume = latest_resume
-        env["HERMES_TUI_RESUME"] = resume
+        env["AGENTIC_OS_TUI_RESUME"] = resume
 
     if sidecar_url:
-        env["HERMES_TUI_SIDECAR_URL"] = sidecar_url
+        env["AGENTIC_OS_TUI_SIDECAR_URL"] = sidecar_url
 
     if active_session_file:
-        env["HERMES_TUI_ACTIVE_SESSION_FILE"] = active_session_file
+        env["AGENTIC_OS_TUI_ACTIVE_SESSION_FILE"] = active_session_file
 
     # Profile-scoped chats must NOT attach to the dashboard's in-memory
     # gateway — it runs under the dashboard's own profile. Without the
     # attach URL, gatewayClient spawns its own `tui_gateway.entry`, which
-    # inherits the profile HERMES_HOME set above.
+    # inherits the profile AGENTIC_OS_HOME set above.
     if profile_dir is None:
         if gateway_ws_url := _build_gateway_ws_url():
-            env["HERMES_TUI_GATEWAY_URL"] = gateway_ws_url
+            env["AGENTIC_OS_TUI_GATEWAY_URL"] = gateway_ws_url
 
     return list(argv), str(cwd) if cwd else None, env
 
@@ -17588,7 +17588,7 @@ async def pty_ws(ws: WebSocket) -> None:
     attach_token = ws.query_params.get("attach") or None
     registry_resume = raw_resume
     if raw_resume and env:
-        registry_resume = env.get("HERMES_TUI_RESUME") or raw_resume
+        registry_resume = env.get("AGENTIC_OS_TUI_RESUME") or raw_resume
     if attach_token is not None and (registry_resume or profile):
         # Key explicit resumes on their canonical target, never the active-session fallback.
         attach_token = f"{attach_token}\0{profile or ''}\0{registry_resume or ''}"
@@ -17699,7 +17699,7 @@ async def gateway_ws(ws: WebSocket) -> None:
 # /api/pub + /api/events — chat-tab event broadcast.
 #
 # The PTY-side ``tui_gateway.entry`` opens /api/pub at startup (driven by
-# HERMES_TUI_SIDECAR_URL set in /api/pty's PTY env) and writes every
+# AGENTIC_OS_TUI_SIDECAR_URL set in /api/pty's PTY env) and writes every
 # dispatcher emit through it.  The dashboard fans those frames out to any
 # subscriber that opened /api/events on the same channel id.  This is what
 # gives the React sidebar its tool-call feed without breaking the PTY
@@ -17937,7 +17937,7 @@ def mount_spa(application: FastAPI):
             html = html.replace('href="/ds-assets/', f'href="{prefix}/ds-assets/')
             html = html.replace('src="/ds-assets/', f'src="{prefix}/ds-assets/')
         # Theme flash mitigation: when the active theme is a user theme
-        # (``HERMES_HOME/dashboard-themes/<name>.yaml``), inject a minimal
+        # (``AGENTIC_OS_HOME/dashboard-themes/<name>.yaml``), inject a minimal
         # critical-CSS block so the first paint uses the target palette.
         # Without this the SPA paints the default Hermes Teal canvas, then
         # ``ThemeProvider`` flips the CSS variables once
@@ -18181,7 +18181,7 @@ def _normalise_theme_definition(data: Dict[str, Any]) -> Optional[Dict[str, Any]
     # tag on theme apply.  Clipped to _THEME_CUSTOM_CSS_MAX to keep the
     # payload bounded.  We intentionally do NOT parse/sanitise the CSS
     # here — the dashboard is localhost-only and themes are user-authored
-    # YAML in ~/.hermes/, same trust level as the config file itself.
+    # YAML in ~/.agentic-os/, same trust level as the config file itself.
     custom_css_val = data.get("customCSS")
     custom_css: Optional[str] = None
     if isinstance(custom_css_val, str) and custom_css_val.strip():
@@ -18236,7 +18236,7 @@ def _normalise_theme_definition(data: Dict[str, Any]) -> Optional[Dict[str, Any]
 
 
 def _discover_user_themes() -> list:
-    """Scan ~/.hermes/dashboard-themes/*.yaml for user-created themes.
+    """Scan ~/.agentic-os/dashboard-themes/*.yaml for user-created themes.
 
     Returns a list of fully-normalised theme definitions ready to ship
     to the frontend, so the client can apply them without a secondary
@@ -18244,7 +18244,7 @@ def _discover_user_themes() -> list:
 
     Uses the dashboard process launch home, not ``get_agentic_os_home()``, so a
     transient profile override from embedded chat does not hide themes that
-    live under the server's own ``HERMES_HOME``.
+    live under the server's own ``AGENTIC_OS_HOME``.
     """
     themes_dir = get_process_agentic_os_home() / "dashboard-themes"
     if not themes_dir.is_dir():
@@ -18267,7 +18267,7 @@ async def get_dashboard_themes():
 
     Built-in entries ship name/label/description only (the frontend owns
     their full definitions in `web/src/themes/presets.ts`).  User themes
-    from `~/.hermes/dashboard-themes/*.yaml` ship with their full
+    from `~/.agentic-os/dashboard-themes/*.yaml` ship with their full
     normalised definition under `definition`, so the client can apply
     them without a stub.
     """
@@ -18398,7 +18398,7 @@ def _discover_dashboard_plugins() -> list:
     """Scan plugins/*/dashboard/manifest.json for dashboard extensions.
 
     Checks three plugin sources (same as agentic_os_cli.plugins):
-    1. User plugins:    ~/.hermes/plugins/<name>/dashboard/manifest.json
+    1. User plugins:    ~/.agentic-os/plugins/<name>/dashboard/manifest.json
     2. Bundled plugins: <repo>/plugins/<name>/dashboard/manifest.json  (memory/, etc.)
     3. Project plugins: ./.hermes/plugins/  (only if HERMES_ENABLE_PROJECT_PLUGINS)
     """
@@ -18410,7 +18410,7 @@ def _discover_dashboard_plugins() -> list:
     # User dashboard plugins are a dashboard-owned asset (same category as
     # theme YAML): resolve them from the process launch home so they don't
     # vanish when a request is scoped to another profile via a context-local
-    # HERMES_HOME override (e.g. embedded /chat under --open-profile).
+    # AGENTIC_OS_HOME override (e.g. embedded /chat under --open-profile).
     search_dirs = [
         (get_process_agentic_os_home() / "plugins", "user"),
         (bundled_root / "memory", "bundled"),
@@ -18979,7 +18979,7 @@ def _mount_plugin_api_routes():
             _log.warning(
                 "Plugin %s: ignoring backend api=%s (project plugins may "
                 "not auto-import Python code; move the plugin to "
-                "~/.hermes/plugins/ if you trust it)",
+                "~/.agentic-os/plugins/ if you trust it)",
                 plugin["name"], api_file_name,
             )
             continue

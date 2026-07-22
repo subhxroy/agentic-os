@@ -129,7 +129,7 @@ let
     lib.composeManyExtensions [
       editableOverlay
       (final: prev: {
-        hermes-agent = prev.hermes-agent.overrideAttrs (old: {
+        agentic-os = prev.agentic-os.overrideAttrs (old: {
           # point straight at the real source instead of the filtered nix store copy
           src = workspaceRoot;
           nativeBuildInputs = old.nativeBuildInputs ++ final.resolveBuildSystem { editables = [ ]; };
@@ -139,10 +139,10 @@ let
   );
 in
 {
-  venv = pythonSet.mkVirtualEnv "hermes-agent-env" {
-    hermes-agent = dependency-groups;
+  venv = pythonSet.mkVirtualEnv "agentic-os-env" {
+    agentic-os = dependency-groups;
   };
-  editableVenv = editableSet.mkVirtualEnv "hermes-agent-editable-env" {
-    hermes-agent = dependency-groups;
+  editableVenv = editableSet.mkVirtualEnv "agentic-os-editable-env" {
+    agentic-os = dependency-groups;
   };
 }

@@ -116,7 +116,7 @@ def _xai_user_agent() -> str:
 
         return hermes_xai_user_agent()
     except Exception:
-        return "hermes-agent/video_gen"
+        return "agentic-os/video_gen"
 
 
 def _xai_headers(api_key: str) -> Dict[str, str]:

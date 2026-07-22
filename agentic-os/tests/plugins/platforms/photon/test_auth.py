@@ -48,10 +48,10 @@ _PHOTON_ENV = (
 
 
 @pytest.fixture
-def tmp_hermes_home(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
+def tmp_agentic_os_home(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
     home = tmp_path / "hermes"
     home.mkdir()
-    monkeypatch.setenv("HERMES_HOME", str(home))
+    monkeypatch.setenv("AGENTIC_OS_HOME", str(home))
     for key in _PHOTON_ENV:
         monkeypatch.delenv(key, raising=False)
     yield home
@@ -63,16 +63,16 @@ def tmp_hermes_home(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
 # ---------------------------------------------------------------------------
 # Credential storage
 
-def test_store_and_load_photon_token(tmp_hermes_home: Path) -> None:
+def test_store_and_load_photon_token(tmp_agentic_os_home: Path) -> None:
     photon_auth.store_photon_token("abc123def456")
     assert photon_auth.load_photon_token() == "abc123def456"
 
-    auth_json = json.loads((tmp_hermes_home / "auth.json").read_text())
+    auth_json = json.loads((tmp_agentic_os_home / "auth.json").read_text())
     assert auth_json["credential_pool"]["photon"][0]["access_token"] == "abc123def456"
 
 
 def test_store_project_credentials_round_trip(
-    tmp_hermes_home: Path, monkeypatch: pytest.MonkeyPatch,
+    tmp_agentic_os_home: Path, monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     # Don't touch .env / os.environ here — exercise the auth.json path.
     monkeypatch.setattr(photon_auth, "_persist_runtime_env", lambda *a, **k: None)
@@ -94,18 +94,18 @@ def test_store_project_credentials_round_trip(
     assert photon_auth.load_dashboard_project_id() == "sp-123"
 
 
-def test_store_project_credentials_writes_env(tmp_hermes_home: Path) -> None:
+def test_store_project_credentials_writes_env(tmp_agentic_os_home: Path) -> None:
     photon_auth.store_project_credentials(
         spectrum_project_id="sp-789",
         project_secret="sek-ret",
         dashboard_project_id="dash-1",
     )
-    env_text = (tmp_hermes_home / ".env").read_text()
+    env_text = (tmp_agentic_os_home / ".env").read_text()
     assert "PHOTON_PROJECT_ID=sp-789" in env_text
     assert "PHOTON_PROJECT_SECRET=sek-ret" in env_text
 
 
-def test_store_user_numbers_round_trip(tmp_hermes_home: Path) -> None:
+def test_store_user_numbers_round_trip(tmp_agentic_os_home: Path) -> None:
     photon_auth.store_user_numbers(
         phone_number="+15551234567",
         assigned_phone_number="+16282679185",
@@ -128,7 +128,7 @@ def test_store_user_numbers_round_trip(tmp_hermes_home: Path) -> None:
 
 
 def test_load_user_numbers_falls_back_to_home_channel(
-    tmp_hermes_home: Path,
+    tmp_agentic_os_home: Path,
 ) -> None:
     from agentic_os_cli.config import save_env_value
 
@@ -140,7 +140,7 @@ def test_load_user_numbers_falls_back_to_home_channel(
 
 
 def test_refresh_user_numbers_reads_existing_assignment(
-    tmp_hermes_home: Path, monkeypatch: pytest.MonkeyPatch,
+    tmp_agentic_os_home: Path, monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     photon_auth.store_user_numbers(phone_number="+15551234567")
 
@@ -164,7 +164,7 @@ def test_refresh_user_numbers_reads_existing_assignment(
 
 
 def test_load_project_credentials_env_override(
-    tmp_hermes_home: Path, monkeypatch: pytest.MonkeyPatch,
+    tmp_agentic_os_home: Path, monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     monkeypatch.setattr(photon_auth, "_persist_runtime_env", lambda *a, **k: None)
     photon_auth.store_project_credentials(
@@ -448,7 +448,7 @@ def test_get_imessage_line_provisions_when_missing(monkeypatch: pytest.MonkeyPat
 # Credential summary (no secret leakage)
 
 def test_credential_summary_no_secret_leak(
-    tmp_hermes_home: Path, monkeypatch: pytest.MonkeyPatch,
+    tmp_agentic_os_home: Path, monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     monkeypatch.setattr(photon_auth, "_persist_runtime_env", lambda *a, **k: None)
     photon_auth.store_photon_token("token-aaaaaaaaaaaaaaaa")
@@ -523,7 +523,7 @@ def test_validate_photon_token_rejects_project_api_denial(
 
 
 def test_login_device_flow_validates_before_persisting(
-    tmp_hermes_home: Path, monkeypatch: pytest.MonkeyPatch,
+    tmp_agentic_os_home: Path, monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     def fake_post(url: str, *, json: Dict[str, Any], timeout: float) -> _FakeResponse:
         if url.endswith("/api/auth/device/code"):
@@ -550,7 +550,7 @@ def test_login_device_flow_validates_before_persisting(
 
 
 def test_login_device_flow_raises_when_token_invalid(
-    tmp_hermes_home: Path, monkeypatch: pytest.MonkeyPatch,
+    tmp_agentic_os_home: Path, monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     def fake_post(url: str, *, json: Dict[str, Any], timeout: float) -> _FakeResponse:
         if url.endswith("/api/auth/device/code"):

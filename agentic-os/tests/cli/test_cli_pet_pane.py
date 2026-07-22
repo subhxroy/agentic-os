@@ -19,12 +19,12 @@ from cli import HermesCLI
 
 @pytest.fixture
 def boba_like(tmp_path, monkeypatch):
-    """Install a synthetic pet into a temp HERMES_HOME and return its slug."""
+    """Install a synthetic pet into a temp AGENTIC_OS_HOME and return its slug."""
     from PIL import Image
 
     home = tmp_path / ".hermes"
     home.mkdir()
-    monkeypatch.setenv("HERMES_HOME", str(home))
+    monkeypatch.setenv("AGENTIC_OS_HOME", str(home))
 
     cols, rows = 8, 9
     sheet = Image.new("RGBA", (FRAME_W * cols, FRAME_H * rows), (0, 0, 0, 0))

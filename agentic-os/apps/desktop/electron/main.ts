@@ -415,24 +415,24 @@ if (INSTALL_STAMP) {
   )
 }
 
-// HERMES_HOME — the user-facing root for everything Hermes-related. Mirrors
-// scripts/install.ps1's $HermesHome and scripts/install.sh's $HERMES_HOME.
+// AGENTIC_OS_HOME — the user-facing root for everything Hermes-related. Mirrors
+// scripts/install.ps1's $HermesHome and scripts/install.sh's $AGENTIC_OS_HOME.
 //
 // Defaults:
-//   Windows: %LOCALAPPDATA%\hermes (matches install.ps1)
-//   macOS / Linux: ~/.hermes (matches install.sh)
+//   Windows: %LOCALAPPDATA%\agentic-os (matches install.ps1)
+//   macOS / Linux: ~/.agentic-os (matches install.sh)
 //
-// Special case for Windows: if the user has a legacy ~/.hermes directory
+// Special case for Windows: if the user has a legacy ~/.agentic-os directory
 // (e.g., from a prior pip install or a manual setup) AND no
-// %LOCALAPPDATA%\hermes yet, prefer the legacy path so we don't orphan their
+// %LOCALAPPDATA%\agentic-os yet, prefer the legacy path so we don't orphan their
 // existing config / sessions / .env. New installs go to %LOCALAPPDATA%.
 //
 // HERMES_DESKTOP_USER_DATA_DIR (used by test:desktop:fresh) puts the sandbox
-// HERMES_HOME beneath the throwaway userData dir so a fresh-install run never
-// touches the user's real ~/.hermes / %LOCALAPPDATA%\hermes.
+// AGENTIC_OS_HOME beneath the throwaway userData dir so a fresh-install run never
+// touches the user's real ~/.agentic-os / %LOCALAPPDATA%\agentic-os.
 function resolveHermesHome() {
-  if (process.env.HERMES_HOME) {
-    return normalizeHermesHomeRoot(process.env.HERMES_HOME)
+  if (process.env.AGENTIC_OS_HOME) {
+    return normalizeHermesHomeRoot(process.env.AGENTIC_OS_HOME)
   }
 
   if (USER_DATA_OVERRIDE) {
@@ -441,12 +441,12 @@ function resolveHermesHome() {
 
   if (IS_WINDOWS) {
     // A GUI app launched from Explorer inherits the environment block captured
-    // at login, so a HERMES_HOME set via `setx` AFTER login is invisible in
+    // at login, so a AGENTIC_OS_HOME set via `setx` AFTER login is invisible in
     // process.env even though the CLI (a fresh shell) sees it. Without this the
-    // backend silently falls back to %LOCALAPPDATA%\hermes and reports "No
+    // backend silently falls back to %LOCALAPPDATA%\agentic-os and reports "No
     // inference provider configured" despite a valid configured home (#45471).
     // Consult the live User-scoped registry value before the default below.
-    const fromRegistry = readWindowsUserEnvVar('HERMES_HOME')
+    const fromRegistry = readWindowsUserEnvVar('AGENTIC_OS_HOME')
 
     if (fromRegistry) {
       return normalizeHermesHomeRoot(fromRegistry)
@@ -458,7 +458,7 @@ function resolveHermesHome() {
     const legacy = path.join(app.getPath('home'), '.hermes')
 
     // Migrate transparently to LOCALAPPDATA, but honour an existing legacy
-    // ~/.hermes setup (no LOCALAPPDATA install yet) so users don't lose state.
+    // ~/.agentic-os setup (no LOCALAPPDATA install yet) so users don't lose state.
     if (!directoryExists(localappdata) && directoryExists(legacy)) {
       return legacy
     }
@@ -469,13 +469,13 @@ function resolveHermesHome() {
   return path.join(app.getPath('home'), '.hermes')
 }
 
-const HERMES_HOME = resolveHermesHome()
+const AGENTIC_OS_HOME = resolveHermesHome()
 
 function hermesManagedNodePathEntries() {
   // NOTE: keep this ordering in sync with iter_hermes_node_dirs() in
-  // hermes_constants.py — this Node main process cannot import the Python
+  // agentic_os_constants.py — this Node main process cannot import the Python
   // module, so the platform-ordering rule is mirrored here.
-  const root = path.join(HERMES_HOME, 'node')
+  const root = path.join(AGENTIC_OS_HOME, 'node')
   const bin = path.join(root, 'bin')
   const entries = IS_WINDOWS ? [root, bin] : [bin, root]
 
@@ -486,12 +486,12 @@ function pathWithHermesManagedNode(...entries) {
   return [...hermesManagedNodePathEntries(), ...entries, process.env.PATH].filter(Boolean).join(path.delimiter)
 }
 
-// ACTIVE_HERMES_ROOT — the canonical mutable Hermes install. Same path
+// ACTIVE_AGENTIC_ROOT — the canonical mutable Hermes install. Same path
 // install.ps1 / install.sh use, so a desktop-only user and a CLI-only user end
 // up with identical layouts and can share one install.
-const ACTIVE_HERMES_ROOT = path.join(HERMES_HOME, 'hermes-agent')
+const ACTIVE_AGENTIC_ROOT = path.join(AGENTIC_OS_HOME, 'agentic-os')
 // VENV_ROOT — venv lives inside the repo, exactly like install.ps1 does it.
-const VENV_ROOT = path.join(ACTIVE_HERMES_ROOT, 'venv')
+const VENV_ROOT = path.join(ACTIVE_AGENTIC_ROOT, 'venv')
 // BOOTSTRAP_COMPLETE_MARKER — written by the first-launch bootstrap runner
 // (Phase 1D) after install.ps1 has completed all stages and the user has
 // finished initial configuration. Presence of this marker means the install
@@ -500,10 +500,10 @@ const VENV_ROOT = path.join(ACTIVE_HERMES_ROOT, 'venv')
 // means we re-run the bootstrap; install.ps1's stages are idempotent so a
 // re-run on an already-good install just discovers everything in place.
 //
-// We deliberately put the marker INSIDE ACTIVE_HERMES_ROOT (not alongside)
+// We deliberately put the marker INSIDE ACTIVE_AGENTIC_ROOT (not alongside)
 // so that deleting the checkout to start fresh also deletes the marker --
 // avoids the confusing "marker exists but checkout is gone" state.
-const BOOTSTRAP_COMPLETE_MARKER = path.join(ACTIVE_HERMES_ROOT, '.hermes-bootstrap-complete')
+const BOOTSTRAP_COMPLETE_MARKER = path.join(ACTIVE_AGENTIC_ROOT, '.hermes-bootstrap-complete')
 const BOOTSTRAP_MARKER_SCHEMA_VERSION = 1
 
 const DESKTOP_CONNECTION_CONFIG_PATH = path.join(app.getPath('userData'), 'connection.json')
@@ -511,9 +511,9 @@ const DESKTOP_UPDATE_CONFIG_PATH = path.join(app.getPath('userData'), 'updates.j
 const DESKTOP_WINDOW_STATE_PATH = path.join(app.getPath('userData'), 'window-state.json')
 // active-profile.json records which Hermes profile the desktop launches its
 // local backend as. When set, startHermes() passes `hermes --profile <name>
-// dashboard …`, which deterministically pins HERMES_HOME (see
+// dashboard …`, which deterministically pins AGENTIC_OS_HOME (see
 // _apply_profile_override in agentic_os_cli/main.py) and bypasses the sticky
-// ~/.hermes/active_profile file. Unset (null) preserves the legacy behavior:
+// ~/.agentic-os/active_profile file. Unset (null) preserves the legacy behavior:
 // no --profile flag, so the backend honors active_profile / default.
 const DESKTOP_PROFILE_CONFIG_PATH = path.join(app.getPath('userData'), 'active-profile.json')
 // Mirrors agentic_os_cli.profiles._PROFILE_ID_RE so we never hand the backend a
@@ -523,10 +523,10 @@ const PROFILE_NAME_RE = /^[a-z0-9][a-z0-9_-]{0,63}$/
 // tracks main. User can also override at runtime via
 // hermesDesktop.updates.setBranch().
 const DEFAULT_UPDATE_BRANCH = 'main'
-// desktop.log lives under HERMES_HOME/logs/ so it sits next to agent.log,
-// errors.log, gateway.log produced by hermes_logging.setup_logging — one log
+// desktop.log lives under AGENTIC_OS_HOME/logs/ so it sits next to agent.log,
+// errors.log, gateway.log produced by agentic_os_logging.setup_logging — one log
 // directory per user, regardless of which UI surface produced the line.
-const DESKTOP_LOG_PATH = path.join(HERMES_HOME, 'logs', 'desktop.log')
+const DESKTOP_LOG_PATH = path.join(AGENTIC_OS_HOME, 'logs', 'desktop.log')
 const DESKTOP_LOG_FLUSH_MS = 120
 const DESKTOP_LOG_BUFFER_MAX_CHARS = 64 * 1024
 // Bound desktop.log on disk. It is an append-only forensic log, so a boot loop
@@ -535,7 +535,7 @@ const DESKTOP_LOG_BUFFER_MAX_CHARS = 64 * 1024
 // bound — we have seen it reach ~326 GB and exhaust the disk, which then breaks
 // update/install (no room for git/venv/npm temp files).
 //
-// Mirror the Python logs (hermes_logging.py RotatingFileHandler, maxBytes x
+// Mirror the Python logs (agentic_os_logging.py RotatingFileHandler, maxBytes x
 // backupCount): cascade live -> .1 -> .2 -> .3, drop the oldest. Steady-state
 // stays bounded at ~(backupCount + 1) x cap however hard the app loops.
 //
@@ -1478,7 +1478,7 @@ function directoryExists(filePath) {
 }
 
 // --- in-app update mutual exclusion (#50238) -------------------------------
-// The Tauri updater writes HERMES_HOME/.hermes-update-in-progress for the whole
+// The Tauri updater writes AGENTIC_OS_HOME/.hermes-update-in-progress for the whole
 // duration of an `--update` run (see update.rs UpdateMarkerGuard). If the user
 // relaunches the desktop mid-update — because the window vanished with no
 // progress and looks crashed — a fresh instance must NOT spawn its own local
@@ -1508,7 +1508,7 @@ const UPDATE_HANDOFF_DWELL_MS = 2500
 // Emits a boot-progress phase so the renderer shows "Update in progress…"
 // rather than a frozen splash. Returns true if it parked at all.
 async function waitForUpdateToFinish() {
-  let marker = readLiveUpdateMarker(HERMES_HOME)
+  let marker = readLiveUpdateMarker(AGENTIC_OS_HOME)
 
   if (!marker) {
     return false
@@ -1524,7 +1524,7 @@ async function waitForUpdateToFinish() {
       12
     )
     await new Promise(r => setTimeout(r, UPDATE_WAIT_POLL_MS))
-    marker = readLiveUpdateMarker(HERMES_HOME)
+    marker = readLiveUpdateMarker(AGENTIC_OS_HOME)
   }
 
   if (marker) {
@@ -1596,7 +1596,7 @@ function unwrapWindowsVenvHermesCommand(command, backendArgs) {
     getVenvPython,
     getVenvSitePackagesEntries,
     buildDesktopBackendEnv,
-    hermesHome: HERMES_HOME,
+    hermesHome: AGENTIC_OS_HOME,
     resolvePath: (...segments) => path.resolve(...segments),
     dirname: p => path.dirname(p),
     basename: p => path.basename(p),
@@ -1643,7 +1643,7 @@ function backendSupportsServe(backend) {
       const prefix = backend.args && backend.args[0] === '-m' ? backend.args.slice(0, 2) : []
       execFileSync(backend.command, [...prefix, 'serve', '--help'], {
         cwd: backend.root || undefined,
-        env: { ...process.env, HERMES_HOME, ...(backend.env || {}) },
+        env: { ...process.env, AGENTIC_OS_HOME, ...(backend.env || {}) },
         timeout: 15000,
         stdio: 'ignore',
         windowsHide: true
@@ -1894,7 +1894,7 @@ function findGitBash() {
     return findOnPath('bash')
   }
 
-  // install.ps1 drops PortableGit at %LOCALAPPDATA%\hermes\git\... — checked
+  // install.ps1 drops PortableGit at %LOCALAPPDATA%\agentic-os\git\... — checked
   // first so users who installed via install.ps1 are detected before we
   // start probing system-wide locations.
   const localAppData = process.env.LOCALAPPDATA || ''
@@ -1958,7 +1958,7 @@ function makeDashboardReadyFile() {
 }
 
 // resolveGitBinary — locate git.exe on Windows. A fresh installer-driven
-// install only has PortableGit under %LOCALAPPDATA%\hermes\git (never on
+// install only has PortableGit under %LOCALAPPDATA%\agentic-os\git (never on
 // PATH), so a bare spawn('git') ENOENTs and self-update checks fail with
 // "Couldn't check for updates". Mirror findGitBash: PortableGit first, then
 // standard Git-for-Windows locations, then PATH. Cached after first probe.
@@ -2115,16 +2115,16 @@ function writeZoomState(zoomLevel) {
 }
 
 // Match the backend's source resolution but bias toward a real git checkout.
-// Dev → SOURCE_REPO_ROOT. Packaged/CLI install → ACTIVE_HERMES_ROOT.
-// HERMES_DESKTOP_HERMES_ROOT always wins so devs can pin a worktree.
+// Dev → SOURCE_REPO_ROOT. Packaged/CLI install → ACTIVE_AGENTIC_ROOT.
+// HERMES_DESKTOP_AGENTIC_ROOT always wins so devs can pin a worktree.
 function resolveUpdateRoot() {
   const candidates = [
-    process.env.HERMES_DESKTOP_HERMES_ROOT && path.resolve(process.env.HERMES_DESKTOP_HERMES_ROOT),
+    process.env.HERMES_DESKTOP_AGENTIC_ROOT && path.resolve(process.env.HERMES_DESKTOP_AGENTIC_ROOT),
     !IS_PACKAGED && isHermesSourceRoot(SOURCE_REPO_ROOT) ? SOURCE_REPO_ROOT : null,
-    isHermesSourceRoot(ACTIVE_HERMES_ROOT) ? ACTIVE_HERMES_ROOT : null
+    isHermesSourceRoot(ACTIVE_AGENTIC_ROOT) ? ACTIVE_AGENTIC_ROOT : null
   ].filter(Boolean)
 
-  return candidates.find(c => directoryExists(path.join(c, '.git'))) || candidates[0] || ACTIVE_HERMES_ROOT
+  return candidates.find(c => directoryExists(path.join(c, '.git'))) || candidates[0] || ACTIVE_AGENTIC_ROOT
 }
 
 function runGit(args, options: any = {}): Promise<{ code: number; stdout: string; stderr: string }> {
@@ -2351,15 +2351,15 @@ let updateInFlight = false
 let isQuittingForHandoff = false
 
 // Resolve the staged updater binary. The Tauri installer copies itself to
-// HERMES_HOME/hermes-setup.exe on a successful install (see
-// apps/bootstrap-installer paths::copy_self_to_hermes_home). That binary owns
+// AGENTIC_OS_HOME/hermes-setup.exe on a successful install (see
+// apps/bootstrap-installer paths::copy_self_to_agentic_os_home). That binary owns
 // ALL repo mutation — running `hermes update` + rebuilding the desktop — so
 // the desktop never touches its own bits while running. Returns null when the
 // updater isn't staged (e.g. a dev/source run that never went through the
 // installer); callers degrade gracefully.
 function resolveUpdaterBinary() {
   const name = IS_WINDOWS ? 'hermes-setup.exe' : 'hermes-setup'
-  const candidate = path.join(HERMES_HOME, name)
+  const candidate = path.join(AGENTIC_OS_HOME, name)
 
   return fileExists(candidate) ? candidate : null
 }
@@ -2601,7 +2601,7 @@ async function applyUpdates(opts = {}) {
     if (!updater) {
       // No staged updater binary — this is a CLI-installed user (they ran
       // `hermes desktop`, never the Tauri installer that self-copies
-      // hermes-setup.exe into HERMES_HOME). They DO have a working `hermes`
+      // hermes-setup.exe into AGENTIC_OS_HOME). They DO have a working `hermes`
       // on PATH / in the venv, so the correct path is the one-liner in their
       // native medium. We show the EXACT command, branch-pinned to the
       // checkout they're on — bare `hermes update` defaults to main and would
@@ -2677,10 +2677,10 @@ async function applyUpdates(opts = {}) {
     // Detached so the updater outlives this process — it needs us GONE before
     // `hermes update` will run (the venv shim is locked while we live).
     const child = spawnUpdaterProcess(updater, updaterArgs, {
-      cwd: HERMES_HOME,
+      cwd: AGENTIC_OS_HOME,
       env: {
         ...process.env,
-        HERMES_HOME,
+        AGENTIC_OS_HOME,
         PATH: pathWithHermesManagedNode(venvBin)
       },
       detached: true,
@@ -2695,7 +2695,7 @@ async function applyUpdates(opts = {}) {
     // waitForUpdateToFinish() gate sees a live update and parks instead.
     // The updater overwrites this with its own PID later; same format.
     if (Number.isInteger(child.pid)) {
-      writeUpdateMarker(HERMES_HOME, child.pid)
+      writeUpdateMarker(AGENTIC_OS_HOME, child.pid)
     }
 
     rememberLog(`[updates] launched updater: ${updater} ${updaterArgs.join(' ')}; exiting desktop to release venv shim`)
@@ -2752,10 +2752,10 @@ async function handOffWindowsBootstrapRecovery(reason) {
   await releaseBackendLockForUpdate(updateRoot)
 
   const child = spawnUpdaterProcess(updater, updaterArgs, {
-    cwd: HERMES_HOME,
+    cwd: AGENTIC_OS_HOME,
     env: {
       ...process.env,
-      HERMES_HOME,
+      AGENTIC_OS_HOME,
       PATH: pathWithHermesManagedNode(venvBin)
     },
     detached: true,
@@ -2766,7 +2766,7 @@ async function handOffWindowsBootstrapRecovery(reason) {
   // hand-off has the same window where the renderer can respawn a backend
   // before the updater writes its own marker.
   if (Number.isInteger(child.pid)) {
-    writeUpdateMarker(HERMES_HOME, child.pid)
+    writeUpdateMarker(AGENTIC_OS_HOME, child.pid)
   }
 
   rememberLog(
@@ -2869,13 +2869,13 @@ async function applyUpdatesPosixInApp(opts: any) {
 
   // Put the Hermes-managed Node and the venv on PATH so `hermes desktop`'s
   // npm build can find them on a machine with no system Node. Windows portable
-  // Node lives directly under %LOCALAPPDATA%\hermes\node, not node\bin.
+  // Node lives directly under %LOCALAPPDATA%\agentic-os\node, not node\bin.
   // PYTHONUNBUFFERED: `hermes update` writes to a pipe here, so CPython
   // block-buffers stdout and long quiet steps (the pre-update backup can zip
   // multi-GB archives for minutes) stream nothing to the progress UI — users
   // read the silence as a hang and cancel a healthy update.
   const env: Record<string, string> = {
-    HERMES_HOME,
+    AGENTIC_OS_HOME,
     PYTHONUNBUFFERED: '1',
     PATH: pathWithHermesManagedNode(path.join(updateRoot, 'venv', 'bin'))
   }
@@ -3173,7 +3173,7 @@ function readBootstrapMarker() {
   return readJson(BOOTSTRAP_COMPLETE_MARKER)
 }
 
-// Marker-independent: is the canonical install at ACTIVE_HERMES_ROOT actually
+// Marker-independent: is the canonical install at ACTIVE_AGENTIC_ROOT actually
 // runnable right now? A complete CLI install (`install.sh --include-desktop`)
 // or a DMG launch over a prior CLI install satisfies this WITHOUT the desktop
 // ever having written the bootstrap marker -- so we must be able to recognise
@@ -3182,11 +3182,11 @@ function isActiveRuntimeUsable() {
   const venvPython = getVenvPython(VENV_ROOT)
 
   return (
-    isHermesSourceRoot(ACTIVE_HERMES_ROOT) &&
+    isHermesSourceRoot(ACTIVE_AGENTIC_ROOT) &&
     fileExists(venvPython) &&
     canImportHermesCli(venvPython, {
       env: {
-        PYTHONPATH: [ACTIVE_HERMES_ROOT, process.env.PYTHONPATH].filter(Boolean).join(path.delimiter)
+        PYTHONPATH: [ACTIVE_AGENTIC_ROOT, process.env.PYTHONPATH].filter(Boolean).join(path.delimiter)
       }
     })
   )
@@ -3415,7 +3415,7 @@ function createPythonBackend(root, label, backendArgs, options: any = {}) {
     command,
     args: ['-m', 'agentic_os_cli.main', ...backendArgs],
     env: buildDesktopBackendEnv({
-      hermesHome: HERMES_HOME,
+      hermesHome: AGENTIC_OS_HOME,
       pythonPathEntries: [root, ...getVenvSitePackagesEntries(venvRoot)],
       venvRoot
     }),
@@ -3425,7 +3425,7 @@ function createPythonBackend(root, label, backendArgs, options: any = {}) {
   }
 }
 
-// createActiveBackend — build a backend pointing at ACTIVE_HERMES_ROOT, the
+// createActiveBackend — build a backend pointing at ACTIVE_AGENTIC_ROOT, the
 // canonical install location shared with the CLI installer. The venv at
 // VENV_ROOT may not exist yet on first run; bootstrap=true tells
 // ensureRuntime() to create / refresh it before launch.
@@ -3435,24 +3435,24 @@ function createActiveBackend(backendArgs) {
 
   return {
     kind: 'python',
-    label: `Hermes at ${ACTIVE_HERMES_ROOT}`,
+    label: `Hermes at ${ACTIVE_AGENTIC_ROOT}`,
     command,
     args: ['-m', 'agentic_os_cli.main', ...backendArgs],
     env: buildDesktopBackendEnv({
-      hermesHome: HERMES_HOME,
-      pythonPathEntries: [ACTIVE_HERMES_ROOT, ...getVenvSitePackagesEntries(VENV_ROOT)],
+      hermesHome: AGENTIC_OS_HOME,
+      pythonPathEntries: [ACTIVE_AGENTIC_ROOT, ...getVenvSitePackagesEntries(VENV_ROOT)],
       venvRoot: VENV_ROOT
     }),
-    root: ACTIVE_HERMES_ROOT,
+    root: ACTIVE_AGENTIC_ROOT,
     bootstrap: true,
     shell: false
   }
 }
 
 function resolveHermesBackend(backendArgs) {
-  // 1. Explicit override -- HERMES_DESKTOP_HERMES_ROOT points at a developer
+  // 1. Explicit override -- HERMES_DESKTOP_AGENTIC_ROOT points at a developer
   //    checkout. Honour it as-is (no bootstrap; the user is driving).
-  const overrideRoot = process.env.HERMES_DESKTOP_HERMES_ROOT && path.resolve(process.env.HERMES_DESKTOP_HERMES_ROOT)
+  const overrideRoot = process.env.HERMES_DESKTOP_AGENTIC_ROOT && path.resolve(process.env.HERMES_DESKTOP_AGENTIC_ROOT)
 
   if (overrideRoot && isHermesSourceRoot(overrideRoot)) {
     const backend = createPythonBackend(overrideRoot, `Hermes source at ${overrideRoot}`, backendArgs)
@@ -3474,8 +3474,8 @@ function resolveHermesBackend(backendArgs) {
     }
   }
 
-  // 3. Bootstrap-complete ACTIVE_HERMES_ROOT -- the canonical install at
-  //    %LOCALAPPDATA%\hermes\hermes-agent (Windows) or ~/.hermes/hermes-agent.
+  // 3. Bootstrap-complete ACTIVE_AGENTIC_ROOT -- the canonical install at
+  //    %LOCALAPPDATA%\agentic-os\agentic-os (Windows) or ~/.agentic-os/agentic-os.
   //    The bootstrap marker means install.ps1 stages finished and the user
   //    completed initial configuration; we trust the install and go straight
   //    to spawning hermes. Updates flow through the in-app update path
@@ -3563,7 +3563,7 @@ function resolveHermesBackend(backendArgs) {
     // backend hands the spawn step a guaranteed ModuleNotFoundError.
     // Verify the import works before trusting the candidate; on
     // failure, fall through to step 6 so the bootstrap runner pulls
-    // a uv-managed 3.11 into %LOCALAPPDATA%\hermes\hermes-agent\venv.
+    // a uv-managed 3.11 into %LOCALAPPDATA%\agentic-os\agentic-os\venv.
     if (canImportHermesCli(python)) {
       return {
         kind: 'python',
@@ -3598,7 +3598,7 @@ function resolveHermesBackend(backendArgs) {
     env: {},
     shell: false,
     // Hints for the bootstrap runner / UI layer:
-    activeRoot: ACTIVE_HERMES_ROOT,
+    activeRoot: ACTIVE_AGENTIC_ROOT,
     installStamp: INSTALL_STAMP, // may be null in dev
     isPackaged: IS_PACKAGED,
     platform: process.platform
@@ -3657,8 +3657,8 @@ async function ensureRuntime(backend) {
       installStamp: backend.installStamp,
       activeRoot: backend.activeRoot,
       sourceRepoRoot: SOURCE_REPO_ROOT,
-      hermesHome: HERMES_HOME,
-      logRoot: path.join(HERMES_HOME, 'logs'),
+      hermesHome: AGENTIC_OS_HOME,
+      logRoot: path.join(AGENTIC_OS_HOME, 'logs'),
       abortSignal: bootstrapAbortController.signal,
       onEvent: ev => {
         // Tee every bootstrap event to (a) the desktop log for forensics
@@ -3694,7 +3694,7 @@ async function ensureRuntime(backend) {
       const bootstrapError = new Error(
         `Hermes bootstrap failed${bootstrapResult.failedStage ? ` at stage '${bootstrapResult.failedStage}'` : ''}: ` +
           `${bootstrapResult.error || 'unknown error'}. ` +
-          `Check ${path.join(HERMES_HOME, 'logs', 'desktop.log')} for the full transcript.`
+          `Check ${path.join(AGENTIC_OS_HOME, 'logs', 'desktop.log')} for the full transcript.`
       ) as any
 
       bootstrapError.isBootstrapFailure = true
@@ -3719,9 +3719,9 @@ async function ensureRuntime(backend) {
   // sync flow exited through, minus all the factory/pip/marker machinery
   // (install.ps1 owns those concerns now and the bootstrap-complete marker
   // attests they ran successfully).
-  if (!isHermesSourceRoot(ACTIVE_HERMES_ROOT)) {
+  if (!isHermesSourceRoot(ACTIVE_AGENTIC_ROOT)) {
     throw new Error(
-      `Hermes install at ${ACTIVE_HERMES_ROOT} is missing or incomplete. ` +
+      `Hermes install at ${ACTIVE_AGENTIC_ROOT} is missing or incomplete. ` +
         'Reinstall via the desktop installer or scripts/install.ps1.'
     )
   }
@@ -3729,7 +3729,7 @@ async function ensureRuntime(backend) {
   // On Windows, preflight Git Bash. Hermes' terminal tool calls bash.exe
   // directly (tools/environments/local.py); without it the agent can't run
   // terminal commands. install.ps1's Stage-Git puts PortableGit at
-  // %LOCALAPPDATA%\hermes\git\, which findGitBash() picks up, so for any
+  // %LOCALAPPDATA%\agentic-os\git\, which findGitBash() picks up, so for any
   // user who completed the bootstrap this is a no-op. For users who got
   // here via an external `hermes` on PATH, this check still helps.
   if (IS_WINDOWS && !findGitBash()) {
@@ -3757,7 +3757,7 @@ async function ensureRuntime(backend) {
   }
 
   backend.command = getVenvPython(VENV_ROOT)
-  backend.label = `Hermes at ${ACTIVE_HERMES_ROOT} (venv: ${VENV_ROOT})`
+  backend.label = `Hermes at ${ACTIVE_AGENTIC_ROOT} (venv: ${VENV_ROOT})`
   updateBootProgress({
     phase: 'runtime.ready',
     message: 'Hermes runtime is ready',
@@ -6135,7 +6135,7 @@ function writeDesktopConnectionConfig(config) {
 }
 
 // Returns the desktop's chosen profile name, or null when unset. "default" is
-// a valid stored value (pins the root HERMES_HOME explicitly); null means "no
+// a valid stored value (pins the root AGENTIC_OS_HOME explicitly); null means "no
 // preference" and preserves the legacy launch (no --profile flag).
 function readActiveDesktopProfile() {
   try {
@@ -6835,7 +6835,7 @@ async function spawnPoolBackend(profile, entry) {
   }
 
   const token = crypto.randomBytes(32).toString('base64url')
-  // --profile wins over the inherited HERMES_HOME env (see _apply_profile_override
+  // --profile wins over the inherited AGENTIC_OS_HOME env (see _apply_profile_override
   // step 3 in agentic_os_cli/main.py), so the child re-homes to this profile.
   // --port 0: the OS assigns an ephemeral port; the child announces it on stdout.
   const backendArgs = ['--profile', profile, 'serve', '--host', '127.0.0.1', '--port', '0']
@@ -6855,7 +6855,7 @@ async function spawnPoolBackend(profile, entry) {
       cwd: hermesCwd,
       env: {
         ...process.env,
-        HERMES_HOME,
+        AGENTIC_OS_HOME,
         ...backend.env,
         // Pin the gateway's tool/terminal cwd to the same directory we chose for
         // the child process. Inherited TERMINAL_CWD (or a stale config bridge)
@@ -6970,7 +6970,7 @@ function stopAllPoolBackends() {
 // Returns the profile name whose backend was torn down, or null when the
 // request is not a profile-delete.  The caller uses this to skip ensureBackend
 // for the just-torn-down profile — otherwise ensureBackend respawns a pool
-// backend whose ensure_hermes_home() recreates the deleted profile directory.
+// backend whose ensure_agentic_os_home() recreates the deleted profile directory.
 //
 // The routing *decision* (which branch fires, what profile name gets
 // returned) lives in the pure decideProfileDeleteAction() in
@@ -7082,8 +7082,8 @@ async function startHermes() {
     // --port 0: the OS assigns an ephemeral port; the child announces it on stdout.
     const backendArgs = ['serve', '--host', '127.0.0.1', '--port', '0']
     // Pin the desktop's chosen profile via the global --profile flag. This is
-    // deterministic (it wins over the sticky ~/.hermes/active_profile file) and
-    // resolves HERMES_HOME the same way `hermes -p <name>` does on the CLI. An
+    // deterministic (it wins over the sticky ~/.agentic-os/active_profile file) and
+    // resolves AGENTIC_OS_HOME the same way `hermes -p <name>` does on the CLI. An
     // unset preference keeps the legacy launch so existing installs are
     // unaffected.
     const activeProfile = readActiveDesktopProfile()
@@ -7110,15 +7110,15 @@ async function startHermes() {
         cwd: hermesCwd,
         env: {
           ...process.env,
-          // Explicitly pin HERMES_HOME for the child so Python's get_agentic_os_home()
+          // Explicitly pin AGENTIC_OS_HOME for the child so Python's get_agentic_os_home()
           // resolves to the SAME location our resolveHermesHome() picked. Without
-          // this pin, Python falls back to ~/.hermes on every platform — fine on
+          // this pin, Python falls back to ~/.agentic-os on every platform — fine on
           // mac/linux (where our default matches), but on Windows our default is
-          // %LOCALAPPDATA%\hermes, which differs from C:\Users\<u>\.hermes.
+          // %LOCALAPPDATA%\agentic-os, which differs from C:\Users\<u>\.hermes.
           // Mismatch would split config / sessions / .env / logs across two
-          // directories. install.ps1 sets HERMES_HOME via setx; the desktop
+          // directories. install.ps1 sets AGENTIC_OS_HOME via setx; the desktop
           // can't reliably do that, so we set it inline for every spawn.
-          HERMES_HOME,
+          AGENTIC_OS_HOME,
           ...backend.env,
           TERMINAL_CWD: hermesCwd,
           HERMES_DASHBOARD_SESSION_TOKEN: token,
@@ -8186,7 +8186,7 @@ ipcMain.handle('hermes:profile:set', async (_event, name) => {
   const next = writeActiveDesktopProfile(name)
 
   // Switching profiles is a backend re-home: relaunch the dashboard under the
-  // new HERMES_HOME. Pool backends keep their own homes, so only the primary
+  // new AGENTIC_OS_HOME. Pool backends keep their own homes, so only the primary
   // is torn down.
   await teardownPrimaryBackendAndWait()
   mainWindow?.reload()
@@ -8468,7 +8468,7 @@ ipcMain.handle('hermes:api', async (_event, request) => {
   const profile = request?.profile
   // After tearing down a backend for profile deletion, route to the primary
   // backend instead of spawning a fresh pool backend.  A freshly spawned
-  // backend calls ensure_hermes_home() which recreates the profile directory,
+  // backend calls ensure_agentic_os_home() which recreates the profile directory,
   // defeating the deletion and leaving a zombie process.
   const routeProfile = resolveRouteProfile(tornDownProfile, profile)
   const connection = await ensureBackend(routeProfile)
@@ -9414,12 +9414,12 @@ function uninstallVenvPython() {
 
 async function getUninstallSummary() {
   const py = uninstallVenvPython()
-  const agentRoot = ACTIVE_HERMES_ROOT
+  const agentRoot = ACTIVE_AGENTIC_ROOT
 
   // Fast JS-side fallback used when the agent venv is gone (lite client) or the
   // probe fails — the renderer still needs *something* to render options from.
   const fallback = () => ({
-    hermes_home: HERMES_HOME,
+    hermes_home: AGENTIC_OS_HOME,
     agent_installed: isHermesSourceRoot(agentRoot) && fileExists(py),
     gui_installed: true,
     source_built_artifacts: [],
@@ -9453,7 +9453,7 @@ async function getUninstallSummary() {
         ['-m', 'agentic_os_cli.main', 'uninstall', '--gui-summary'],
         hiddenWindowsChildOptions({
           cwd: agentRoot,
-          env: { ...process.env, HERMES_HOME, NO_COLOR: '1' },
+          env: { ...process.env, AGENTIC_OS_HOME, NO_COLOR: '1' },
           stdio: ['ignore', 'pipe', 'ignore']
         })
       )
@@ -9521,7 +9521,7 @@ async function runDesktopUninstall(mode) {
 
     if (sysPy) {
       py = sysPy
-      pythonPath = ACTIVE_HERMES_ROOT
+      pythonPath = ACTIVE_AGENTIC_ROOT
     } else if (IS_WINDOWS) {
       rememberLog(
         '[uninstall] no system Python found for lite/full on Windows; falling back ' +
@@ -9541,7 +9541,7 @@ async function runDesktopUninstall(mode) {
   // lock would make the script's rmdir half-fail (#37532 for the update path).
   // Reuses the incident-hardened update teardown; no-op on macOS/Linux.
   try {
-    await releaseBackendLock(ACTIVE_HERMES_ROOT, 'uninstall')
+    await releaseBackendLock(ACTIVE_AGENTIC_ROOT, 'uninstall')
   } catch (error) {
     rememberLog(`[uninstall] backend teardown errored (continuing): ${error.message}`)
   }
@@ -9550,10 +9550,10 @@ async function runDesktopUninstall(mode) {
     desktopPid: process.pid,
     pythonExe: py,
     pythonPath,
-    agentRoot: ACTIVE_HERMES_ROOT,
+    agentRoot: ACTIVE_AGENTIC_ROOT,
     uninstallArgs,
     appPath: removeBundle,
-    hermesHome: HERMES_HOME
+    hermesHome: AGENTIC_OS_HOME
   }
 
   let scriptPath

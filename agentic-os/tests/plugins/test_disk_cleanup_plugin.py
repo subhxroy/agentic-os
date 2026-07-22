@@ -22,15 +22,15 @@ import pytest
 
 @pytest.fixture(autouse=True)
 def _isolate_env(tmp_path, monkeypatch):
-    """Isolate HERMES_HOME for each test.
+    """Isolate AGENTIC_OS_HOME for each test.
 
-    The global hermetic fixture already redirects HERMES_HOME to a tempdir,
+    The global hermetic fixture already redirects AGENTIC_OS_HOME to a tempdir,
     but we want the plugin to work with a predictable subpath. We reset
-    HERMES_HOME here for clarity.
+    AGENTIC_OS_HOME here for clarity.
     """
     hermes_home = tmp_path / ".hermes"
     hermes_home.mkdir()
-    monkeypatch.setenv("HERMES_HOME", str(hermes_home))
+    monkeypatch.setenv("AGENTIC_OS_HOME", str(hermes_home))
     yield hermes_home
 
 
@@ -75,14 +75,14 @@ def _load_plugin_init():
 # ---------------------------------------------------------------------------
 
 class TestIsSafePath:
-    def test_accepts_path_under_hermes_home(self, _isolate_env):
+    def test_accepts_path_under_agentic_os_home(self, _isolate_env):
         dg = _load_lib()
         p = _isolate_env / "subdir" / "file.txt"
         p.parent.mkdir()
         p.write_text("x")
         assert dg.is_safe_path(p) is True
 
-    def test_rejects_outside_hermes_home(self, _isolate_env):
+    def test_rejects_outside_agentic_os_home(self, _isolate_env):
         dg = _load_lib()
         assert dg.is_safe_path(Path("/etc/passwd")) is False
 
@@ -395,7 +395,7 @@ class TestTrackForgetQuick:
 
         def guarded_iterdir(path):
             if path == _isolate_env / "agentic-os":
-                raise AssertionError("quick() descended into protected hermes-agent/")
+                raise AssertionError("quick() descended into protected agentic-os/")
             return original_iterdir(path)
 
         monkeypatch.setattr(Path, "iterdir", guarded_iterdir)

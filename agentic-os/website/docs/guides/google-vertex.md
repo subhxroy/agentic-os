@@ -18,13 +18,13 @@ Vertex has **no static API key** for the standard endpoint. Every request needs 
 - **Credentials**, one of:
   - a **service-account JSON** key file with the `roles/aiplatform.user` role, or
   - **Application Default Credentials** via `gcloud auth application-default login` (or the metadata server when running on a GCP VM).
-- **`google-auth`** — installed automatically the first time you select Vertex (lazy install), or explicitly with `pip install 'hermes-agent[vertex]'`.
+- **`google-auth`** — installed automatically the first time you select Vertex (lazy install), or explicitly with `pip install 'agentic-os[vertex]'`.
 
 ## Quick Start
 
 ```bash
 # Option A — service account JSON (recommended for servers / gateways)
-echo "VERTEX_CREDENTIALS_PATH=/path/to/service-account.json" >> ~/.hermes/.env
+echo "VERTEX_CREDENTIALS_PATH=/path/to/service-account.json" >> ~/.agentic-os/.env
 
 # Option B — Application Default Credentials (good for local dev)
 gcloud auth application-default login
@@ -44,10 +44,10 @@ hermes chat
 
 Vertex splits its settings by sensitivity:
 
-- The **credential path** is a pointer to a secret and lives in `~/.hermes/.env`.
-- **Project ID and region** are non-secret routing settings and live in `~/.hermes/config.yaml`.
+- The **credential path** is a pointer to a secret and lives in `~/.agentic-os/.env`.
+- **Project ID and region** are non-secret routing settings and live in `~/.agentic-os/config.yaml`.
 
-`~/.hermes/.env`:
+`~/.agentic-os/.env`:
 
 ```bash
 # One of these (checked in this order); omit both to use ADC:
@@ -55,7 +55,7 @@ VERTEX_CREDENTIALS_PATH=/path/to/service-account.json
 GOOGLE_APPLICATION_CREDENTIALS=/path/to/service-account.json
 ```
 
-`~/.hermes/config.yaml`:
+`~/.agentic-os/config.yaml`:
 
 ```yaml
 model:
@@ -124,11 +124,11 @@ The doctor reports whether Vertex credentials can be resolved (service-account p
 
 ### "Vertex AI credentials could not be resolved"
 
-Hermes found neither a service-account JSON nor working ADC. Either set `VERTEX_CREDENTIALS_PATH` in `~/.hermes/.env`, or run `gcloud auth application-default login`. If your project isn't embedded in the credentials, set `vertex.project_id` in `config.yaml`.
+Hermes found neither a service-account JSON nor working ADC. Either set `VERTEX_CREDENTIALS_PATH` in `~/.agentic-os/.env`, or run `gcloud auth application-default login`. If your project isn't embedded in the credentials, set `vertex.project_id` in `config.yaml`.
 
 ### `google-auth` not installed
 
-Install the extra: `pip install 'hermes-agent[vertex]'`. Hermes also lazy-installs it the first time you select the Vertex provider.
+Install the extra: `pip install 'agentic-os[vertex]'`. Hermes also lazy-installs it the first time you select the Vertex provider.
 
 ### 404 on Gemini 3.x models
 

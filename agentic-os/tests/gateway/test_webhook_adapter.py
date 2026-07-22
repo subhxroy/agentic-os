@@ -696,8 +696,8 @@ class TestPayloadFilters:
 
     @pytest.mark.asyncio
     async def test_filter_accepts_nested_any_and_in_file(self, tmp_path, monkeypatch):
-        """Nested any groups can match dynamic watchlists under HERMES_HOME."""
-        monkeypatch.setenv("HERMES_HOME", str(tmp_path))
+        """Nested any groups can match dynamic watchlists under AGENTIC_OS_HOME."""
+        monkeypatch.setenv("AGENTIC_OS_HOME", str(tmp_path))
         watchlist = tmp_path / "data" / "watchlist.json"
         watchlist.parent.mkdir()
         watchlist.write_text(json.dumps(["chat-1", "chat-2"]), encoding="utf-8")
@@ -710,11 +710,11 @@ class TestPayloadFilters:
                         "any": [
                             {
                                 "field": "payload.chatId",
-                                "in_file": "~/.hermes/data/watchlist.json",
+                                "in_file": "~/.agentic-os/data/watchlist.json",
                             },
                             {
                                 "field": "payload.id.remote",
-                                "in_file": "~/.hermes/data/watchlist.json",
+                                "in_file": "~/.agentic-os/data/watchlist.json",
                             },
                         ]
                     },
@@ -784,7 +784,7 @@ class TestPayloadFilters:
     @pytest.mark.asyncio
     async def test_script_transforms_payload_before_prompt_rendering(self, tmp_path, monkeypatch):
         """A script can replace the payload used by prompt templates."""
-        monkeypatch.setenv("HERMES_HOME", str(tmp_path))
+        monkeypatch.setenv("AGENTIC_OS_HOME", str(tmp_path))
         scripts = tmp_path / "scripts"
         scripts.mkdir()
         script = scripts / "todoist_filter.py"
@@ -825,8 +825,8 @@ class TestPayloadFilters:
 
     @pytest.mark.asyncio
     async def test_script_tilde_hermes_path_resolves_to_active_profile_home(self, tmp_path, monkeypatch):
-        """~/.hermes/scripts paths must resolve through HERMES_HOME for profiles."""
-        monkeypatch.setenv("HERMES_HOME", str(tmp_path))
+        """~/.agentic-os/scripts paths must resolve through AGENTIC_OS_HOME for profiles."""
+        monkeypatch.setenv("AGENTIC_OS_HOME", str(tmp_path))
         scripts = tmp_path / "scripts"
         scripts.mkdir()
         (scripts / "todoist_filter.py").write_text(
@@ -839,7 +839,7 @@ class TestPayloadFilters:
         routes = {
             "todoist": {
                 "secret": _INSECURE_NO_AUTH,
-                "script": "~/.hermes/scripts/todoist_filter.py",
+                "script": "~/.agentic-os/scripts/todoist_filter.py",
                 "prompt": "Task: {body}",
             }
         }
@@ -866,7 +866,7 @@ class TestPayloadFilters:
     @pytest.mark.asyncio
     async def test_script_silent_stdout_ignores_without_idempotency_hit(self, tmp_path, monkeypatch):
         """Empty or [SILENT] script stdout filters the webhook out."""
-        monkeypatch.setenv("HERMES_HOME", str(tmp_path))
+        monkeypatch.setenv("AGENTIC_OS_HOME", str(tmp_path))
         scripts = tmp_path / "scripts"
         scripts.mkdir()
         (scripts / "skip.py").write_text("print('[SILENT]')\n", encoding="utf-8")
@@ -901,7 +901,7 @@ class TestPayloadFilters:
     @pytest.mark.asyncio
     async def test_script_nonzero_exit_ignores_webhook(self, tmp_path, monkeypatch):
         """A script can fail closed by exiting nonzero."""
-        monkeypatch.setenv("HERMES_HOME", str(tmp_path))
+        monkeypatch.setenv("AGENTIC_OS_HOME", str(tmp_path))
         scripts = tmp_path / "scripts"
         scripts.mkdir()
         (scripts / "skip.py").write_text(

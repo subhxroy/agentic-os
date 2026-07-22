@@ -33,7 +33,7 @@ def _b64_png() -> str:
 
 @pytest.fixture(autouse=True)
 def _isolation(tmp_path, monkeypatch):
-    monkeypatch.setenv("HERMES_HOME", str(tmp_path))
+    monkeypatch.setenv("AGENTIC_OS_HOME", str(tmp_path))
     import agentic_os_cli.models as _models_mod
     monkeypatch.setattr(_models_mod, "_deepinfra_catalog_cache", {})
     monkeypatch.setenv("DEEPINFRA_API_KEY", "test-key")

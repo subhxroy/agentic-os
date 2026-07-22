@@ -5,7 +5,7 @@ Unified tool configuration for Agentic OS.
 Select a platform → toggle toolsets on/off → for newly enabled tools
 that need API keys, run through provider-aware configuration.
 
-Saves per-platform tool configuration to ~/.hermes/config.yaml under
+Saves per-platform tool configuration to ~/.agentic-os/config.yaml under
 the `platform_toolsets` key.
 """
 
@@ -1157,7 +1157,7 @@ def _run_cua_driver_installer(label: str = "Installing", verbose: bool = True) -
             )
             # Preserve the full installer output. During `hermes update`,
             # sys.stdout is the mirroring _UpdateOutputStream whose `_log`
-            # handle is ~/.hermes/logs/update.log — write straight to it so
+            # handle is ~/.agentic-os/logs/update.log — write straight to it so
             # the captured "Next steps" wall is kept in full (success AND
             # failure), without echoing it to the terminal.
             if result.stdout:
@@ -1241,7 +1241,7 @@ def _run_post_setup(post_setup_key: str):
                 _print_success("    Node.js dependencies installed")
             else:
                 from agentic_os_constants import display_agentic_os_home
-                _print_warning(f"    npm install failed - run manually: cd {display_agentic_os_home()}/hermes-agent && npm install --workspaces=false")
+                _print_warning(f"    npm install failed - run manually: cd {display_agentic_os_home()}/agentic-os && npm install --workspaces=false")
                 if result.stderr:
                     _print_info(f"      {result.stderr.strip()[:200]}")
         elif node_modules.exists():
@@ -1249,7 +1249,7 @@ def _run_post_setup(post_setup_key: str):
             # the truth ("nothing to do") instead of implying a fresh install.
             _print_success("    agent-browser already installed, nothing to do")
         else:
-            _print_warning("    Node.js not found - browser tools require: npm install (in hermes-agent directory)")
+            _print_warning("    Node.js not found - browser tools require: npm install (in agentic-os directory)")
             return
 
         # Step 2: only the local browser provider actually needs Chromium on
@@ -1414,7 +1414,7 @@ def _run_post_setup(post_setup_key: str):
                 return
         _print_info("    Default voice: en_US-lessac-medium (downloaded on first TTS call)")
         _print_info("    Full voice list: https://github.com/OHF-Voice/piper1-gpl/blob/main/docs/VOICES.md")
-        _print_info("    Switch voices by setting tts.piper.voice in ~/.hermes/config.yaml")
+        _print_info("    Switch voices by setting tts.piper.voice in ~/.agentic-os/config.yaml")
 
     elif post_setup_key == "ddgs":
         try:
@@ -1442,7 +1442,7 @@ def _run_post_setup(post_setup_key: str):
         # Run the full `hermes auth spotify` flow — if the user has no
         # client_id yet, this drops them into the interactive wizard
         # (opens the Spotify dashboard, prompts for client_id, persists
-        # to ~/.hermes/.env), then continues straight into PKCE. If they
+        # to ~/.agentic-os/.env), then continues straight into PKCE. If they
         # already have an app, it skips the wizard and just does OAuth.
         from types import SimpleNamespace
         try:

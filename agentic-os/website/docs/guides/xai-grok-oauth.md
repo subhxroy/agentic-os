@@ -53,7 +53,7 @@ hermes model
 hermes
 ```
 
-After the first login, credentials are stored under `~/.hermes/auth.json` and refreshed automatically before they expire.
+After the first login, credentials are stored under `~/.agentic-os/auth.json` and refreshed automatically before they expire.
 
 ## Logging In Manually
 
@@ -78,7 +78,7 @@ The same device-code flow applies when you sign in from the web dashboard or the
 
 1. Hermes requests a device code from `auth.x.ai`.
 2. You open the verification URL, sign in, enter the displayed code if prompted, and approve access.
-3. Hermes polls xAI until approval, then saves tokens to `~/.hermes/auth.json`.
+3. Hermes polls xAI until approval, then saves tokens to `~/.agentic-os/auth.json`.
 4. From then on, Hermes refreshes the access token in the background — you stay signed in until you `hermes auth logout xai-oauth` or revoke access from your xAI account settings.
 
 ## Checking Login Status
@@ -106,7 +106,7 @@ hermes config set model.provider xai-oauth
 
 ## Configuration Reference
 
-After login, `~/.hermes/config.yaml` will contain:
+After login, `~/.agentic-os/config.yaml` will contain:
 
 ```yaml
 model:

@@ -76,7 +76,7 @@ class TestSecretCaptureGuidance:
     def test_gateway_secret_capture_message_points_to_local_setup(self):
         message = GATEWAY_SECRET_CAPTURE_UNSUPPORTED_MESSAGE
         assert "local cli" in message.lower()
-        assert "~/.hermes/.env" in message
+        assert "~/.agentic-os/.env" in message
 
 
 class TestSafeUrlForLog:
@@ -985,7 +985,7 @@ class TestMediaDeliveryPathValidation:
         """The motivating case: agent produces a PDF in a project directory.
 
         Reproduces the Discord-PDF-not-delivered bug. Before recency trust,
-        files outside ~/.hermes/cache/* were silently dropped, leaving the
+        files outside ~/.agentic-os/cache/* were silently dropped, leaving the
         user with a raw filepath in chat instead of an attachment.
         """
         self._patch_roots(monkeypatch)
@@ -1095,7 +1095,7 @@ class TestMediaDeliveryDefaultMode:
         assert BasePlatformAdapter.validate_media_delivery_path(str(secret)) is None
 
     def test_denylist_blocks_hermes_credentials(self, tmp_path, monkeypatch):
-        """~/.hermes/.env and ~/.hermes/auth.json stay blocked even in
+        """~/.agentic-os/.env and ~/.agentic-os/auth.json stay blocked even in
         default mode. They live under $HOME (not the system prefix list)
         so this exercises the home-relative denied paths.
         """
@@ -1108,7 +1108,7 @@ class TestMediaDeliveryDefaultMode:
         env_file.write_text("OPENAI_API_KEY=sk-...")
         monkeypatch.setenv("HOME", str(fake_home))
         monkeypatch.setattr(
-            "gateway.platforms.base._HERMES_HOME",
+            "gateway.platforms.base._AGENTIC_OS_HOME",
             hermes_dir,
         )
 
@@ -1123,7 +1123,7 @@ class TestMediaDeliveryDefaultMode:
         ],
     )
     def test_denylist_blocks_mcp_oauth_tokens(self, tmp_path, monkeypatch, rel):
-        """Live MCP OAuth tokens/client creds under ~/.hermes/mcp-tokens/ must
+        """Live MCP OAuth tokens/client creds under ~/.agentic-os/mcp-tokens/ must
         never deliver as native media — same exfil class as auth.json/.env.
         Sibling to the pairing/ directory denylist entry.
         """
@@ -1136,11 +1136,11 @@ class TestMediaDeliveryDefaultMode:
         secret.write_text('{"access_token": "live-bearer-abc123"}')
         monkeypatch.setenv("HOME", str(fake_home))
         monkeypatch.setattr(
-            "gateway.platforms.base._HERMES_HOME",
+            "gateway.platforms.base._AGENTIC_OS_HOME",
             hermes_dir,
         )
         monkeypatch.setattr(
-            "gateway.platforms.base._HERMES_ROOT",
+            "gateway.platforms.base._AGENTIC_ROOT",
             hermes_dir,
         )
 
@@ -1157,7 +1157,7 @@ class TestMediaDeliveryDefaultMode:
         config_file.write_text("model:\n  provider: openai\n")
         monkeypatch.setenv("HOME", str(fake_home))
         monkeypatch.setattr(
-            "gateway.platforms.base._HERMES_HOME",
+            "gateway.platforms.base._AGENTIC_OS_HOME",
             hermes_dir,
         )
 
@@ -1175,18 +1175,18 @@ class TestMediaDeliveryDefaultMode:
         config_file.write_text("profiles:\n  active: work\n")
         monkeypatch.setenv("HOME", str(fake_home))
         monkeypatch.setattr(
-            "gateway.platforms.base._HERMES_HOME",
+            "gateway.platforms.base._AGENTIC_OS_HOME",
             profile_home,
         )
         monkeypatch.setattr(
-            "gateway.platforms.base._HERMES_ROOT",
+            "gateway.platforms.base._AGENTIC_ROOT",
             hermes_root,
         )
 
         assert BasePlatformAdapter.validate_media_delivery_path(str(config_file)) is None
 
     def test_denylist_blocks_google_token_default_mode(self, tmp_path, monkeypatch):
-        """Integration credentials at the HERMES_HOME root (google_token.json)
+        """Integration credentials at the AGENTIC_OS_HOME root (google_token.json)
         must never be deliverable, even though they aren't the historically
         enumerated .env/auth.json/config.yaml files. Regression for a
         refreshed google_token.json being auto-attached to a Slack reply
@@ -1200,8 +1200,8 @@ class TestMediaDeliveryDefaultMode:
         token = hermes_dir / "google_token.json"
         token.write_text('{"access_token": "***", "refresh_token": "***"}')
         monkeypatch.setenv("HOME", str(fake_home))
-        monkeypatch.setattr("gateway.platforms.base._HERMES_HOME", hermes_dir)
-        monkeypatch.setattr("gateway.platforms.base._HERMES_ROOT", hermes_dir)
+        monkeypatch.setattr("gateway.platforms.base._AGENTIC_OS_HOME", hermes_dir)
+        monkeypatch.setattr("gateway.platforms.base._AGENTIC_ROOT", hermes_dir)
 
         assert BasePlatformAdapter.validate_media_delivery_path(str(token)) is None
 
@@ -1222,13 +1222,13 @@ class TestMediaDeliveryDefaultMode:
         token = hermes_dir / "google_token.json"
         token.write_text('{"access_token": "***"}')  # mtime = now → "recent"
         monkeypatch.setenv("HOME", str(fake_home))
-        monkeypatch.setattr("gateway.platforms.base._HERMES_HOME", hermes_dir)
-        monkeypatch.setattr("gateway.platforms.base._HERMES_ROOT", hermes_dir)
+        monkeypatch.setattr("gateway.platforms.base._AGENTIC_OS_HOME", hermes_dir)
+        monkeypatch.setattr("gateway.platforms.base._AGENTIC_ROOT", hermes_dir)
 
         assert BasePlatformAdapter.validate_media_delivery_path(str(token)) is None
 
     def test_denylist_blocks_pairing_directory_contents(self, tmp_path, monkeypatch):
-        """Files under ~/.hermes/pairing/ (platform pairing tokens) are
+        """Files under ~/.agentic-os/pairing/ (platform pairing tokens) are
         credential material and must not be deliverable.
         """
         self._patch_roots(monkeypatch)
@@ -1240,8 +1240,8 @@ class TestMediaDeliveryDefaultMode:
         token = pairing / "telegram-approved.json"
         token.write_text('{"approved": ["123"]}')
         monkeypatch.setenv("HOME", str(fake_home))
-        monkeypatch.setattr("gateway.platforms.base._HERMES_HOME", hermes_dir)
-        monkeypatch.setattr("gateway.platforms.base._HERMES_ROOT", hermes_dir)
+        monkeypatch.setattr("gateway.platforms.base._AGENTIC_OS_HOME", hermes_dir)
+        monkeypatch.setattr("gateway.platforms.base._AGENTIC_ROOT", hermes_dir)
 
         assert BasePlatformAdapter.validate_media_delivery_path(str(token)) is None
 
@@ -1258,13 +1258,13 @@ class TestMediaDeliveryDefaultMode:
         artifact.write_bytes(b"%PDF-1.4")
         self._patch_roots(monkeypatch, cache_dir)
         monkeypatch.setenv("HOME", str(fake_home))
-        monkeypatch.setattr("gateway.platforms.base._HERMES_HOME", hermes_dir)
-        monkeypatch.setattr("gateway.platforms.base._HERMES_ROOT", hermes_dir)
+        monkeypatch.setattr("gateway.platforms.base._AGENTIC_OS_HOME", hermes_dir)
+        monkeypatch.setattr("gateway.platforms.base._AGENTIC_ROOT", hermes_dir)
 
         assert BasePlatformAdapter.validate_media_delivery_path(str(artifact)) == str(artifact.resolve())
 
-    def test_denylist_blocks_non_cache_file_under_hermes_home(self, tmp_path, monkeypatch):
-        """A non-credential file the agent wrote directly under ~/.hermes
+    def test_denylist_blocks_non_cache_file_under_agentic_os_home(self, tmp_path, monkeypatch):
+        """A non-credential file the agent wrote directly under ~/.agentic-os
         (not in a cache subdir) is still deliverable via recency trust — we
         did NOT blanket-deny the tree (per #32090/#34425). This guards against
         accidentally re-introducing the rejected whole-tree deny.
@@ -1279,8 +1279,8 @@ class TestMediaDeliveryDefaultMode:
         artifact = hermes_dir / "adhoc_report.pdf"
         artifact.write_bytes(b"%PDF-1.4")  # fresh mtime
         monkeypatch.setenv("HOME", str(fake_home))
-        monkeypatch.setattr("gateway.platforms.base._HERMES_HOME", hermes_dir)
-        monkeypatch.setattr("gateway.platforms.base._HERMES_ROOT", hermes_dir)
+        monkeypatch.setattr("gateway.platforms.base._AGENTIC_OS_HOME", hermes_dir)
+        monkeypatch.setattr("gateway.platforms.base._AGENTIC_ROOT", hermes_dir)
 
         assert BasePlatformAdapter.validate_media_delivery_path(str(artifact)) == str(artifact.resolve())
 
@@ -1373,7 +1373,7 @@ class TestMediaDeliveryDefaultMode:
         assert BasePlatformAdapter.validate_media_delivery_path(str(key)) is None
 
     def test_root_home_hermes_env_still_blocked(self, tmp_path, monkeypatch):
-        """``~/.hermes/.env`` stays blocked under the $HOME exception — it is a
+        """``~/.agentic-os/.env`` stays blocked under the $HOME exception — it is a
         more-specific denied path, not reachable just because home is allowed.
         """
         self._patch_roots(monkeypatch)
@@ -1388,12 +1388,12 @@ class TestMediaDeliveryDefaultMode:
             "gateway.platforms.base._MEDIA_DELIVERY_DENIED_PREFIXES",
             (str(fake_home),),
         )
-        monkeypatch.setattr("gateway.platforms.base._HERMES_HOME", hermes_dir)
+        monkeypatch.setattr("gateway.platforms.base._AGENTIC_OS_HOME", hermes_dir)
 
         assert BasePlatformAdapter.validate_media_delivery_path(str(env_file)) is None
 
     def test_profile_scoped_cache_delivers_under_symlinked_root(self, tmp_path, monkeypatch):
-        """Reopened #31733: a profile gateway whose HERMES_HOME is symlinked
+        """Reopened #31733: a profile gateway whose AGENTIC_OS_HOME is symlinked
         under a denied prefix (e.g. /opt/data -> /root/.hermes) emits
         profile-scoped paths (``<root>/profiles/<name>/cache/images/x.png``)
         that resolve under ``/root``. ``$HOME`` is NOT that prefix, so the
@@ -1420,7 +1420,7 @@ class TestMediaDeliveryDefaultMode:
             (str(denied_root),),
         )
         monkeypatch.setattr(
-            "gateway.platforms.base._HERMES_ROOT", hermes_root
+            "gateway.platforms.base._AGENTIC_ROOT", hermes_root
         )
 
         assert (
@@ -1450,7 +1450,7 @@ class TestMediaDeliveryDefaultMode:
             (str(denied_root),),
         )
         monkeypatch.setattr(
-            "gateway.platforms.base._HERMES_ROOT", hermes_root
+            "gateway.platforms.base._AGENTIC_ROOT", hermes_root
         )
 
         assert BasePlatformAdapter.validate_media_delivery_path(str(cred)) is None

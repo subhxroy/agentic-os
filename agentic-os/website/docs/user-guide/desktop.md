@@ -156,13 +156,13 @@ To launch via the CLI, simply run `hermes desktop`. By default it installs works
 | `--build-only`       | Build the desktop app but do not launch it (used by `hermes update`)                      |
 | `--source`           | Launch via `electron .` against `apps/desktop/dist` instead of the packaged app           |
 | `--cwd PATH`         | Initial project directory for desktop chat sessions (sets `HERMES_DESKTOP_CWD`)           |
-| `--hermes-root PATH` | Override the Hermes source root the app uses (sets `HERMES_DESKTOP_HERMES_ROOT`)          |
+| `--hermes-root PATH` | Override the Hermes source root the app uses (sets `HERMES_DESKTOP_AGENTIC_ROOT`)          |
 | `--ignore-existing`  | Force the app to ignore any `hermes` CLI already on `PATH` during backend resolution      |
 | `--fake-boot`        | Enable deterministic boot delays for validating the startup UI                            |
 
 ## How it works
 
-The packaged app ships the Electron shell and a native React chat surface. On first launch it can install the Agentic OS runtime into `HERMES_HOME` (`~/.hermes`, or `%LOCALAPPDATA%\hermes` on Windows) — **the same layout a CLI install uses**, which is why the two are interchangeable. Backend resolution first honours `HERMES_DESKTOP_HERMES_ROOT`, then a completed managed install, then a probed `hermes` on `PATH` (unless `--ignore-existing` / `HERMES_DESKTOP_IGNORE_EXISTING=1` is set), and finally an explicit `HERMES_DESKTOP_HERMES` command override for packagers such as Nix. The React renderer talks to a headless backend the app launches for you — a `hermes serve` process that serves the `tui_gateway` JSON-RPC/WebSocket API — and reuses the agent runtime rather than embedding `hermes --tui`. The desktop app is **self-contained**: it runs its own `hermes serve` backend and never opens or requires the [web dashboard](./features/web-dashboard.md). (Runtimes older than the `serve` command fall back to a headless `dashboard --no-open` automatically, so an app update never outruns its backend.) Install, backend-resolution, and self-update logic live in the Electron main process.
+The packaged app ships the Electron shell and a native React chat surface. On first launch it can install the Agentic OS runtime into `AGENTIC_OS_HOME` (`~/.agentic-os`, or `%LOCALAPPDATA%\agentic-os` on Windows) — **the same layout a CLI install uses**, which is why the two are interchangeable. Backend resolution first honours `HERMES_DESKTOP_AGENTIC_ROOT`, then a completed managed install, then a probed `hermes` on `PATH` (unless `--ignore-existing` / `HERMES_DESKTOP_IGNORE_EXISTING=1` is set), and finally an explicit `HERMES_DESKTOP_HERMES` command override for packagers such as Nix. The React renderer talks to a headless backend the app launches for you — a `hermes serve` process that serves the `tui_gateway` JSON-RPC/WebSocket API — and reuses the agent runtime rather than embedding `hermes --tui`. The desktop app is **self-contained**: it runs its own `hermes serve` backend and never opens or requires the [web dashboard](./features/web-dashboard.md). (Runtimes older than the `serve` command fall back to a headless `dashboard --no-open` automatically, so an app update never outruns its backend.) Install, backend-resolution, and self-update logic live in the Electron main process.
 
 ## Connecting to a remote backend
 
@@ -183,11 +183,11 @@ The rest of this section shows the username/password path because it's the quick
 
 ### On the backend (the remote machine)
 
-Set a username and password, then start the backend bound to a reachable address. The credentials live in `~/.hermes/.env` (the secrets file, mode 0600):
+Set a username and password, then start the backend bound to a reachable address. The credentials live in `~/.agentic-os/.env` (the secrets file, mode 0600):
 
 ```bash
 # 1. Set the dashboard login credentials.
-cat >> ~/.hermes/.env <<'EOF'
+cat >> ~/.agentic-os/.env <<'EOF'
 HERMES_DASHBOARD_BASIC_AUTH_USERNAME=admin
 HERMES_DASHBOARD_BASIC_AUTH_PASSWORD=choose-a-strong-password
 # Recommended: a stable signing secret so sessions survive restarts.
@@ -195,7 +195,7 @@ HERMES_DASHBOARD_BASIC_AUTH_PASSWORD=choose-a-strong-password
 # on every restart.
 HERMES_DASHBOARD_BASIC_AUTH_SECRET=$(openssl rand -base64 32)
 EOF
-chmod 600 ~/.hermes/.env
+chmod 600 ~/.agentic-os/.env
 
 # 2. Run the backend bound to a reachable address. The non-loopback bind
 #    engages the auth gate; the username/password provider handles login.
@@ -231,7 +231,7 @@ The remote gateway host is configured per [profile](./profiles.md), so each prof
 ### Troubleshooting
 
 - **Sign-in fails with 401 / "Invalid credentials"** — the username or password doesn't match the backend's `HERMES_DASHBOARD_BASIC_AUTH_USERNAME` / `HERMES_DASHBOARD_BASIC_AUTH_PASSWORD`. The backend returns the same generic error for an unknown user and a wrong password (no enumeration oracle), so double-check both. Confirm the gate is on with `curl -s http://<host>:9119/api/status | jq '.auth_required, .auth_providers'` — it should report `true` and include `"basic"`.
-- **No "Sign in" button — it asks for a session token instead** — the backend's username/password provider isn't active. `/api/status` won't list `"basic"` in `auth_providers`. Make sure both the username and a password (or password hash) are set in `~/.hermes/.env` and that the dashboard process actually loaded them.
+- **No "Sign in" button — it asks for a session token instead** — the backend's username/password provider isn't active. `/api/status` won't list `"basic"` in `auth_providers`. Make sure both the username and a password (or password hash) are set in `~/.agentic-os/.env` and that the dashboard process actually loaded them.
 - **Signed out on every restart** — set `HERMES_DASHBOARD_BASIC_AUTH_SECRET` to a stable value. Without it the token-signing key is regenerated per boot, invalidating all sessions.
 - **Connection refused / times out** — the backend bound to `127.0.0.1` (the default) or a firewall/VPN is blocking the port. Bind to `0.0.0.0` or the tailscale IP and open the port to your trusted network.
 
@@ -242,7 +242,7 @@ For the same setup from the web-dashboard angle, see [Web Dashboard → Connecti
 The desktop app is contribution-driven — panes, pages, sidebar nav, status-bar
 items, palette commands, keybinds, and themes all register through one SDK, and
 you can add your own. A plugin is a single ESM file dropped in
-`$HERMES_HOME/desktop-plugins/<id>/plugin.js`; the app loads it within seconds and
+`$AGENTIC_OS_HOME/desktop-plugins/<id>/plugin.js`; the app loads it within seconds and
 hot-reloads every save. Manage installed plugins live in **Settings → Plugins**.
 
 See [Desktop Plugin SDK](../developer-guide/desktop-plugin-sdk.md) for the full
@@ -250,7 +250,7 @@ reference. (This is separate from the [web dashboard plugin system](./features/e
 
 ## Troubleshooting
 
-Boot logs land in `HERMES_HOME/logs/desktop.log` (it includes backend output and recent Python tracebacks) — check it first if the app reports a boot failure. You can also tail it from the CLI:
+Boot logs land in `AGENTIC_OS_HOME/logs/desktop.log` (it includes backend output and recent Python tracebacks) — check it first if the app reports a boot failure. You can also tail it from the CLI:
 
 ```bash
 hermes logs gui -f
@@ -260,10 +260,10 @@ Common resets:
 
 ```bash
 # Force a clean first-launch setup (macOS/Linux)
-rm "$HOME/.hermes/hermes-agent/.hermes-bootstrap-complete"
+rm "$HOME/.hermes/agentic-os/.hermes-bootstrap-complete"
 
 # Rebuild a broken Python venv (macOS/Linux)
-rm -rf "$HOME/.hermes/hermes-agent/venv"
+rm -rf "$HOME/.hermes/agentic-os/venv"
 
 # Reset a stuck macOS microphone prompt
 tccutil reset Microphone com.nousresearch.hermes
@@ -279,7 +279,7 @@ To **choose your own mirror** (e.g. a corporate/trusted one), set `ELECTRON_MIRR
 
 ```bash
 ELECTRON_MIRROR=https://npmmirror.com/mirrors/electron/ \
-  bash -c 'cd "$HOME/.hermes/hermes-agent/apps/desktop" && CSC_IDENTITY_AUTO_DISCOVERY=false npm run pack'
+  bash -c 'cd "$HOME/.hermes/agentic-os/apps/desktop" && CSC_IDENTITY_AUTO_DISCOVERY=false npm run pack'
 ```
 
 To clear a corrupt cached zip by hand:
@@ -302,8 +302,8 @@ npm run dev          # Vite renderer + Electron, which boots the Python backend
 Point the app at a specific checkout, or sandbox it from your real config:
 
 ```bash
-HERMES_DESKTOP_HERMES_ROOT=/path/to/clone npm run dev
-HERMES_HOME=/tmp/throwaway npm run dev
+HERMES_DESKTOP_AGENTIC_ROOT=/path/to/clone npm run dev
+AGENTIC_OS_HOME=/tmp/throwaway npm run dev
 npm run dev:fake-boot   # exercise the startup overlay with deterministic delays
 ```
 

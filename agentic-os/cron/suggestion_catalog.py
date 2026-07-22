@@ -72,7 +72,7 @@ CATALOG: List[CatalogEntry] = [
                 "only mail that needs a reply today, is from a manager/family "
                 "member, or mentions a deadline. Pipe candidates through the "
                 "urgency classifier (run `python3 -m cron.scripts.classify_items "
-                "--threshold 7 --criteria ...` from the hermes-agent install — "
+                "--threshold 7 --criteria ...` from the agentic-os install — "
                 "resolve the script path at run time, do not assume a fixed "
                 "location) and deliver ONLY what it returns. If nothing "
                 "clears the bar, respond with [SILENT] so the user is not "

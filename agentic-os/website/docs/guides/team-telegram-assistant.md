@@ -26,7 +26,7 @@ Before starting, make sure you have:
 
 - **Agentic OS installed** on a server or VPS (not your laptop — the bot needs to stay running). Follow the [installation guide](/getting-started/installation) if you haven't yet.
 - **A Telegram account** for yourself (the bot owner)
-- **An LLM provider configured** — at minimum, an API key for OpenAI, Anthropic, or another supported provider in `~/.hermes/.env`
+- **An LLM provider configured** — at minimum, an API key for OpenAI, Anthropic, or another supported provider in `~/.agentic-os/.env`
 
 :::tip
 A $5/month VPS is plenty for running the gateway. Hermes itself is lightweight — the LLM API calls are what cost money, and those happen remotely.
@@ -93,7 +93,7 @@ This walks you through everything with arrow-key selection. Pick **Telegram**, p
 
 ### Option B: Manual Configuration
 
-Add these lines to `~/.hermes/.env`:
+Add these lines to `~/.agentic-os/.env`:
 
 ```bash
 # Telegram bot token from BotFather
@@ -155,7 +155,7 @@ hermes gateway stop
 hermes gateway status
 
 # View live logs
-journalctl --user -u hermes-gateway -f
+journalctl --user -u agentic-os-gateway -f
 
 # Keep running after SSH logout
 sudo loginctl enable-linger $USER
@@ -163,14 +163,14 @@ sudo loginctl enable-linger $USER
 # Linux servers — explicit system-service commands
 sudo hermes gateway start --system
 sudo hermes gateway status --system
-journalctl -u hermes-gateway -f
+journalctl -u agentic-os-gateway -f
 ```
 
 ```bash
 # macOS — manage the service
 hermes gateway start
 hermes gateway stop
-tail -f ~/.hermes/logs/gateway.log
+tail -f ~/.agentic-os/logs/gateway.log
 ```
 
 :::tip macOS PATH
@@ -196,7 +196,7 @@ Now let's give your teammates access. There are two approaches.
 Collect each team member's Telegram user ID (have them message [@userinfobot](https://t.me/userinfobot)) and add them as a comma-separated list:
 
 ```bash
-# In ~/.hermes/.env
+# In ~/.agentic-os/.env
 TELEGRAM_ALLOWED_USERS=123456789,987654321,555555555
 ```
 
@@ -260,7 +260,7 @@ A **home channel** is where the bot delivers cron job results and proactive mess
 
 **Option 1:** Use the `/sethome` command in any Telegram group or chat where the bot is a member.
 
-**Option 2:** Set it manually in `~/.hermes/.env`:
+**Option 2:** Set it manually in `~/.agentic-os/.env`:
 
 ```bash
 TELEGRAM_HOME_CHANNEL=-1001234567890
@@ -271,7 +271,7 @@ To find a channel ID, add [@userinfobot](https://t.me/userinfobot) to the group 
 
 ### Configure Tool Progress Display
 
-Control how much detail the bot shows when using tools. In `~/.hermes/config.yaml`:
+Control how much detail the bot shows when using tools. In `~/.agentic-os/config.yaml`:
 
 ```yaml
 display:
@@ -289,7 +289,7 @@ Users can also change this per-session with the `/verbose` command in chat.
 
 ### Set Up a Personality with SOUL.md
 
-Customize how the bot communicates by editing `~/.hermes/SOUL.md`:
+Customize how the bot communicates by editing `~/.agentic-os/SOUL.md`:
 
 For a full guide, see [Use SOUL.md with Hermes](/guides/use-soul-with-hermes).
 
@@ -306,7 +306,7 @@ before guessing at solutions.
 If your team works on specific projects, create context files so the bot knows your stack:
 
 ```markdown
-<!-- ~/.hermes/AGENTS.md -->
+<!-- ~/.agentic-os/AGENTS.md -->
 # Team Context
 - We use Python 3.12 with FastAPI and SQLAlchemy
 - Frontend is React with TypeScript
@@ -373,12 +373,12 @@ Cron job prompts run in completely fresh sessions with no memory of prior conver
 On a shared team bot, use Docker as the terminal backend so agent commands run in a container instead of on your host:
 
 ```bash
-# In ~/.hermes/.env
+# In ~/.agentic-os/.env
 TERMINAL_ENV=docker
 TERMINAL_DOCKER_IMAGE=nikolaik/python-nodejs:python3.11-nodejs20
 ```
 
-Or in `~/.hermes/config.yaml`:
+Or in `~/.agentic-os/config.yaml`:
 
 ```yaml
 terminal:
@@ -397,10 +397,10 @@ This way, even if someone asks the bot to run something destructive, your host s
 hermes gateway status
 
 # Watch live logs (Linux)
-journalctl --user -u hermes-gateway -f
+journalctl --user -u agentic-os-gateway -f
 
 # Watch live logs (macOS)
-tail -f ~/.hermes/logs/gateway.log
+tail -f ~/.agentic-os/logs/gateway.log
 ```
 
 ### Keep Hermes Updated
@@ -416,11 +416,11 @@ hermes gateway stop && hermes gateway start
 
 | What | Location |
 |------|----------|
-| Gateway logs | `journalctl --user -u hermes-gateway` (Linux) or `~/.hermes/logs/gateway.log` (macOS) |
-| Cron job output | `~/.hermes/cron/output/{job_id}/{timestamp}.md` |
-| Cron job definitions | `~/.hermes/cron/jobs.json` |
-| Pairing data | `~/.hermes/pairing/` |
-| Session history | `~/.hermes/sessions/` |
+| Gateway logs | `journalctl --user -u agentic-os-gateway` (Linux) or `~/.agentic-os/logs/gateway.log` (macOS) |
+| Cron job output | `~/.agentic-os/cron/output/{job_id}/{timestamp}.md` |
+| Cron job definitions | `~/.agentic-os/cron/jobs.json` |
+| Pairing data | `~/.agentic-os/pairing/` |
+| Session history | `~/.agentic-os/sessions/` |
 
 ---
 

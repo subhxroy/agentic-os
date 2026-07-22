@@ -23,8 +23,8 @@ param(
     # exact ref.  Precedence: Commit > Tag > Branch.
     [string]$Commit = "",
     [string]$Tag = "",
-    [string]$HermesHome = $(if ($env:HERMES_HOME) { $env:HERMES_HOME } else { "$env:LOCALAPPDATA\hermes" }),
-    [string]$InstallDir = $(if ($env:HERMES_HOME) { "$env:HERMES_HOME\hermes-agent" } else { "$env:LOCALAPPDATA\hermes\hermes-agent" }),
+    [string]$HermesHome = $(if ($env:AGENTIC_OS_HOME) { $env:AGENTIC_OS_HOME } else { "$env:LOCALAPPDATA\hermes" }),
+    [string]$InstallDir = $(if ($env:AGENTIC_OS_HOME) { "$env:AGENTIC_OS_HOME\agentic-os" } else { "$env:LOCALAPPDATA\hermes\agentic-os" }),
 
     # --- Stage protocol (additive; default invocation behaves as before) ----
     # See the "Stage protocol" section near the bottom of the file for the
@@ -552,7 +552,7 @@ function Resolve-UvCmd {
     }
 
     # Fall back to PATH (covers edge cases where the installer ran in a
-    # sibling process and HERMES_HOME wasn't propagated).
+    # sibling process and AGENTIC_OS_HOME wasn't propagated).
     if (Get-Command uv -ErrorAction SilentlyContinue) {
         $script:UvCmd = "uv"
         return
@@ -810,7 +810,7 @@ function Install-Git {
       1. Existing ``git`` on PATH -- use it as-is (the common fast path).
       2. Download **PortableGit** from the official git-for-windows GitHub
          release (self-extracting 7z.exe) and unpack it to
-         ``%LOCALAPPDATA%\hermes\git`` -- never touches system Git, never
+         ``%LOCALAPPDATA%\agentic-os\git`` -- never touches system Git, never
          requires admin, works even on locked-down machines and machines
          with a broken system Git install.
 
@@ -824,7 +824,7 @@ function Install-Git {
     We deliberately skip winget because it fails badly when the system Git
     install is in a half-installed state (partially registered, or uninstall-
     blocked).  Owning the Hermes copy of Git ourselves is predictable and
-    recoverable: if it ever breaks, ``Remove-Item %LOCALAPPDATA%\hermes\git``
+    recoverable: if it ever breaks, ``Remove-Item %LOCALAPPDATA%\agentic-os\git``
     and re-running this installer fully recovers.
 
     After install we locate ``bash.exe`` and persist the path in
@@ -1672,8 +1672,8 @@ function Install-Repository {
                     $zipUrl = "https://github.com/subhxroy/agentic-os/archive/refs/heads/$Branch.zip"
                     $zipLabel = $Branch
                 }
-                $zipPath = "$env:TEMP\hermes-agent-$zipLabel.zip"
-                $extractPath = "$env:TEMP\hermes-agent-extract"
+                $zipPath = "$env:TEMP\agentic-os-$zipLabel.zip"
+                $extractPath = "$env:TEMP\agentic-os-extract"
 
                 Invoke-WebRequest -Uri $zipUrl -OutFile $zipPath -UseBasicParsing
                 if (Test-Path $extractPath) { Remove-Item -Recurse -Force $extractPath }
@@ -1863,7 +1863,7 @@ function Install-Venv {
             & taskkill /F /T /IM hermes.exe /FI "PID ne $myPid" 2>$null | Out-Null
             # taskkill /IM hermes.exe is NOT enough: the gateway/agent that a
             # scheduled task or watchdog autostarts runs as
-            # `pythonw.exe -m hermes_cli.main gateway run` straight out of
+            # `pythonw.exe -m agentic_os_cli.main gateway run` straight out of
             # venv\Scripts\, so its image name is python/pythonw, not hermes.exe.
             # That process holds the venv's .pyd files open and re-triggers the
             # access-denied failure. Stop anything whose executable lives under
@@ -2085,7 +2085,7 @@ try:
     specs = data['project']['optional-dependencies']['all']
     out = []
     for s in specs:
-        m = re.search(r'hermes-agent\[([\w-]+)\]', s)
+        m = re.search(r'agentic-os\[([\w-]+)\]', s)
         if m: out.append(m.group(1))
     print(','.join(out))
 except Exception:
@@ -2123,7 +2123,7 @@ except Exception:
         }
     }
     if (-not $installed) {
-        throw "Failed to install hermes-agent package even with no extras. Inspect the uv pip install output above."
+        throw "Failed to install agentic-os package even with no extras. Inspect the uv pip install output above."
     }
 
     # Baseline-import gate. Even if a tier reported success above, the
@@ -2165,7 +2165,7 @@ except Exception:
         # uv on Windows can register hermes.exe in dist-info/RECORD but fail to
         # materialise the .exe (file lock during self-update, distlib edge case).
         # Catch it here so a fresh install/update does not finish with a broken
-        # `hermes` command while hermes-agent.exe / hermes-acp.exe exist
+        # `hermes` command while agentic-os.exe / hermes-acp.exe exist
         $scriptsDir = Join-Path $InstallDir "venv\Scripts"
         $pythonExe = Join-Path $scriptsDir "python.exe"
         if ((Test-Path $scriptsDir) -and (Test-Path $pythonExe)) {
@@ -2194,7 +2194,7 @@ print(','.join(scripts))
                     }
                     if ($stillMissing.Count -gt 0) {
                         Write-Warn "Entry points still missing after repair: $($stillMissing -join ', ')"
-                        Write-Info "Workaround: `"$pythonExe`" -m hermes_cli.main <command>"
+                        Write-Info "Workaround: `"$pythonExe`" -m agentic_os_cli.main <command>"
                     } else {
                         Write-Success "Console entry points restored"
                     }
@@ -2271,15 +2271,15 @@ function Set-PathVariable {
         Write-Info "PATH already configured"
     }
     
-    # Set HERMES_HOME so the Python code finds config/data in the right place.
-    # Only needed on Windows where we install to %LOCALAPPDATA%\hermes instead
-    # of the Unix default ~/.hermes
-    $currentHermesHome = [Environment]::GetEnvironmentVariable("HERMES_HOME", "User")
+    # Set AGENTIC_OS_HOME so the Python code finds config/data in the right place.
+    # Only needed on Windows where we install to %LOCALAPPDATA%\agentic-os instead
+    # of the Unix default ~/.agentic-os
+    $currentHermesHome = [Environment]::GetEnvironmentVariable("AGENTIC_OS_HOME", "User")
     if (-not $currentHermesHome -or $currentHermesHome -ne $HermesHome) {
-        [Environment]::SetEnvironmentVariable("HERMES_HOME", $HermesHome, "User")
-        Write-Success "Set HERMES_HOME=$HermesHome"
+        [Environment]::SetEnvironmentVariable("AGENTIC_OS_HOME", $HermesHome, "User")
+        Write-Success "Set AGENTIC_OS_HOME=$HermesHome"
     }
-    $env:HERMES_HOME = $HermesHome
+    $env:AGENTIC_OS_HOME = $HermesHome
     
     # Update current session
     $env:Path = "$hermesBin;$env:Path"
@@ -2367,7 +2367,7 @@ function Write-BootstrapMarker {
 function Copy-ConfigTemplates {
     Write-Info "Setting up configuration files..."
     
-    # Create the HERMES_HOME directory structure ($HermesHome, default %LOCALAPPDATA%\hermes)
+    # Create the AGENTIC_OS_HOME directory structure ($HermesHome, default %LOCALAPPDATA%\agentic-os)
     New-Item -ItemType Directory -Force -Path "$HermesHome\cron" | Out-Null
     New-Item -ItemType Directory -Force -Path "$HermesHome\sessions" | Out-Null
     New-Item -ItemType Directory -Force -Path "$HermesHome\logs" | Out-Null
@@ -3067,7 +3067,7 @@ function Install-Desktop {
     # 3c. Grant ALL APPLICATION PACKAGES (S-1-15-2-2) RX on the unpacked app
     #     directory. Chromium's GPU/renderer sandboxes CHECK-fail with
     #     0x80000003 when this ACE is missing alongside orphan AppContainer
-    #     SIDs under %LOCALAPPDATA% (electron/electron#51761, hermes-agent#38216).
+    #     SIDs under %LOCALAPPDATA% (electron/electron#51761, agentic-os#38216).
     #     Best-effort -- never fail an otherwise-good install over ACL repair.
     try {
         $appDir = Split-Path -Parent $desktopExe
@@ -3153,7 +3153,7 @@ function New-DesktopShortcuts {
 
 function Install-PlatformSdks {
     # Ensure messaging-platform SDKs matching tokens the user added to
-    # ~/.hermes/.env are importable.  Two problems this solves:
+    # ~/.agentic-os/.env are importable.  Two problems this solves:
     #
     # 1. The tiered `uv pip install` cascade above can fall through to a
     #    lower tier when the first fails (common when RL git deps choke),
@@ -3282,9 +3282,9 @@ function Invoke-SetupWizard {
 
     # Run hermes setup using the venv Python directly (no activation needed)
     if (-not $NoVenv) {
-        & ".\venv\Scripts\python.exe" -m hermes_cli.main setup
+        & ".\venv\Scripts\python.exe" -m agentic_os_cli.main setup
     } else {
-        python -m hermes_cli.main setup
+        python -m agentic_os_cli.main setup
     }
 
     Pop-Location
@@ -3385,7 +3385,7 @@ function Write-Completion {
     Write-Host "   Data:      " -NoNewline -ForegroundColor Yellow
     Write-Host "$HermesHome\cron\, sessions\, logs\"
     Write-Host "   Code:      " -NoNewline -ForegroundColor Yellow
-    Write-Host "$HermesHome\hermes-agent\"
+    Write-Host "$HermesHome\agentic-os\"
     Write-Host ""
     
     Write-Host "---------------------------------------------------------" -ForegroundColor Cyan

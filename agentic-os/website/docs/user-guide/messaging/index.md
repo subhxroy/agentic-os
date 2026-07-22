@@ -160,7 +160,7 @@ A systemd-managed gateway can opt into process recovery when Python's asyncio
 event loop stops receiving scheduling time. This covers whole-process stalls
 that also prevent platform-specific liveness tasks from running:
 
-```yaml title="~/.hermes/config.yaml"
+```yaml title="~/.agentic-os/config.yaml"
 gateway:
   systemd_watchdog_seconds: 120
 ```
@@ -238,7 +238,7 @@ old behavior: in-flight responses are lost on crash).
 
 **By default sessions never auto-reset** — context lives until you `/reset`
 manually or context compression kicks in. If you want automatic resets, opt in
-with the `session_reset` section in `~/.hermes/config.yaml`:
+with the `session_reset` section in `~/.agentic-os/config.yaml`:
 
 ```yaml
 session_reset:
@@ -263,7 +263,7 @@ guard. Set it to `0` to disable the cutoff (any live process blocks reset, the
 old behavior), or raise it if you run legitimate multi-day jobs whose liveness
 should keep the conversation open.
 
-Configure per-platform overrides in `~/.hermes/gateway.json`:
+Configure per-platform overrides in `~/.agentic-os/gateway.json`:
 
 ```json
 {
@@ -380,7 +380,7 @@ If you find the busy-ack noisy — especially with voice input or rapid-fire mes
 
 ## Tool Progress Notifications
 
-Control how much tool activity is displayed in `~/.hermes/config.yaml`:
+Control how much tool activity is displayed in `~/.agentic-os/config.yaml`:
 
 ```yaml
 display:
@@ -446,7 +446,7 @@ Each `/background` prompt spawns a **separate agent instance** that runs asynchr
 
 ### Background Process Notifications
 
-When the agent running a background session uses `terminal(background=true)` to start long-running processes (servers, builds, etc.), the gateway can push status updates to your chat. Control this with `display.background_process_notifications` in `~/.hermes/config.yaml`:
+When the agent running a background session uses `terminal(background=true)` to start long-running processes (servers, builds, etc.), the gateway can push status updates to your chat. Control this with `display.background_process_notifications` in `~/.agentic-os/config.yaml`:
 
 ```yaml
 display:
@@ -486,7 +486,7 @@ hermes gateway install               # Install as user service
 hermes gateway start                 # Start the service
 hermes gateway stop                  # Stop the service
 hermes gateway status                # Check status
-journalctl --user -u hermes-gateway -f  # View logs
+journalctl --user -u agentic-os-gateway -f  # View logs
 
 # Enable lingering (keeps running after logout)
 sudo loginctl enable-linger $USER
@@ -495,17 +495,17 @@ sudo loginctl enable-linger $USER
 sudo hermes gateway install --system
 sudo hermes gateway start --system
 sudo hermes gateway status --system
-journalctl -u hermes-gateway -f
+journalctl -u agentic-os-gateway -f
 ```
 
 Use the user service on laptops and dev boxes. Use the system service on VPS or headless hosts that should come back at boot without relying on systemd linger.
 
 :::danger Don't add a custom `ExecStopPost` kill drop-in
-The unit Hermes installs already shuts the gateway down cleanly with `KillMode=mixed` + `KillSignal=SIGTERM`, and uses `Restart=always` with `RestartForceExitStatus` so updates and `/restart` respawn correctly. Do **not** add a systemd drop-in such as `ExecStopPost=/bin/kill -9 $MAINPID` — `ExecStopPost` fires on *every* stop, including clean restarts, so it `SIGKILL`s the freshly spawned instance before it stabilizes and `Restart=always` immediately respawns it. The result is an infinite restart loop (and, on Telegram, a flood of restart messages). If you've added such a drop-in, remove it: `systemctl --user edit hermes-gateway` (or `sudo systemctl edit hermes-gateway` for a system service) and delete the `ExecStopPost` line, then `systemctl --user daemon-reload`.
+The unit Hermes installs already shuts the gateway down cleanly with `KillMode=mixed` + `KillSignal=SIGTERM`, and uses `Restart=always` with `RestartForceExitStatus` so updates and `/restart` respawn correctly. Do **not** add a systemd drop-in such as `ExecStopPost=/bin/kill -9 $MAINPID` — `ExecStopPost` fires on *every* stop, including clean restarts, so it `SIGKILL`s the freshly spawned instance before it stabilizes and `Restart=always` immediately respawns it. The result is an infinite restart loop (and, on Telegram, a flood of restart messages). If you've added such a drop-in, remove it: `systemctl --user edit agentic-os-gateway` (or `sudo systemctl edit agentic-os-gateway` for a system service) and delete the `ExecStopPost` line, then `systemctl --user daemon-reload`.
 :::
 
 :::tip Headless VMs: user service + linger avoids root prompts
-A system service needs root for every restart — including the automatic gateway restart at the end of `hermes update`. When `hermes update` runs as a non-root user, it tries passwordless `sudo systemctl`; if that's unavailable, it skips the restart and prints the manual `sudo systemctl restart hermes-gateway` command (it never blocks on an interactive password prompt).
+A system service needs root for every restart — including the automatic gateway restart at the end of `hermes update`. When `hermes update` runs as a non-root user, it tries passwordless `sudo systemctl`; if that's unavailable, it skips the restart and prints the manual `sudo systemctl restart agentic-os-gateway` command (it never blocks on an interactive password prompt).
 
 For a headless VM you never log into, a **user** service with lingering enabled gives you the same start-at-boot behavior with zero root involvement:
 
@@ -514,17 +514,17 @@ hermes gateway install          # user service
 sudo loginctl enable-linger $USER   # one-time: start at boot, survive logout
 ```
 
-After that, `hermes update` can restart the gateway without any privileges. If you prefer to keep the system service, either run updates with `sudo hermes update`, or grant the service account passwordless sudo for systemctl, e.g. in `sudo visudo -f /etc/sudoers.d/hermes-gateway`:
+After that, `hermes update` can restart the gateway without any privileges. If you prefer to keep the system service, either run updates with `sudo hermes update`, or grant the service account passwordless sudo for systemctl, e.g. in `sudo visudo -f /etc/sudoers.d/agentic-os-gateway`:
 
 ```
-hermes ALL=(root) NOPASSWD: /usr/bin/systemctl --no-ask-password reset-failed hermes-gateway*, /usr/bin/systemctl --no-ask-password start hermes-gateway*, /usr/bin/systemctl --no-ask-password restart hermes-gateway*
+hermes ALL=(root) NOPASSWD: /usr/bin/systemctl --no-ask-password reset-failed agentic-os-gateway*, /usr/bin/systemctl --no-ask-password start agentic-os-gateway*, /usr/bin/systemctl --no-ask-password restart agentic-os-gateway*
 ```
 :::
 
 Avoid keeping both the user and system gateway units installed at once unless you really mean to. Hermes will warn if it detects both because start/stop/status behavior gets ambiguous.
 
 :::info Multiple installations
-If you run multiple Hermes installations on the same machine (with different `HERMES_HOME` directories), each gets its own systemd service name. The default `~/.hermes` uses `hermes-gateway`; other installations use `hermes-gateway-<hash>`. The `hermes gateway` commands automatically target the correct service for your current `HERMES_HOME`.
+If you run multiple Hermes installations on the same machine (with different `AGENTIC_OS_HOME` directories), each gets its own systemd service name. The default `~/.agentic-os` uses `agentic-os-gateway`; other installations use `agentic-os-gateway-<hash>`. The `hermes gateway` commands automatically target the correct service for your current `AGENTIC_OS_HOME`.
 :::
 
 ### macOS (launchd)
@@ -534,21 +534,21 @@ hermes gateway install               # Install as launchd agent
 hermes gateway start                 # Start the service
 hermes gateway stop                  # Stop the service
 hermes gateway status                # Check status
-tail -f ~/.hermes/logs/gateway.log   # View logs
+tail -f ~/.agentic-os/logs/gateway.log   # View logs
 ```
 
 The generated plist lives at `~/Library/LaunchAgents/ai.hermes.gateway.plist`. It includes three environment variables:
 
 - **PATH** — your full shell PATH at install time, with the venv `bin/` and `node_modules/.bin` prepended. This ensures user-installed tools (Node.js, ffmpeg, etc.) are available to gateway subprocesses like the WhatsApp bridge.
 - **VIRTUAL_ENV** — points to the Python virtualenv so tools can resolve packages correctly.
-- **HERMES_HOME** — scopes the gateway to your Hermes installation.
+- **AGENTIC_OS_HOME** — scopes the gateway to your Hermes installation.
 
 :::tip PATH changes after install
 launchd plists are static — if you install new tools (e.g. a new Node.js version via nvm, or ffmpeg via Homebrew) after setting up the gateway, run `hermes gateway install` again to capture the updated PATH. The gateway will detect the stale plist and reload automatically.
 :::
 
 :::info Multiple installations
-Like the Linux systemd service, each `HERMES_HOME` directory gets its own launchd label. The default `~/.hermes` uses `ai.hermes.gateway`; other installations use `ai.hermes.gateway-<suffix>`.
+Like the Linux systemd service, each `AGENTIC_OS_HOME` directory gets its own launchd label. The default `~/.agentic-os` uses `ai.hermes.gateway`; other installations use `ai.hermes.gateway-<suffix>`.
 :::
 
 ## Platform-Specific Toolsets
@@ -611,7 +611,7 @@ The breaker does **not** auto-resume — it stays open until you run `/platform 
 
 When an adapter is paused, check:
 
-1. **Gateway log** (`~/.hermes/logs/gateway.log` or the systemd / launchd unit log). Search for the platform name and `circuit breaker`, `paused`, or `disabled`. The trip event includes the failure count and the last error.
+1. **Gateway log** (`~/.agentic-os/logs/gateway.log` or the systemd / launchd unit log). Search for the platform name and `circuit breaker`, `paused`, or `disabled`. The trip event includes the failure count and the last error.
 2. **`/platform list`** output — shows the current state and last reason.
 3. **The provider's status page** (Telegram bot API status, Discord status, etc.). The breaker tripped because the platform was unhealthy; don't try to resume until it's back.
 

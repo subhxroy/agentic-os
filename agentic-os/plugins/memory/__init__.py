@@ -2,8 +2,8 @@
 
 Scans two directories for memory provider plugins:
 
-1. Bundled providers: ``plugins/memory/<name>/`` (shipped with hermes-agent)
-2. User-installed providers: ``$HERMES_HOME/plugins/<name>/``
+1. Bundled providers: ``plugins/memory/<name>/`` (shipped with agentic-os)
+2. User-installed providers: ``$AGENTIC_OS_HOME/plugins/<name>/``
 
 Each subdirectory must contain ``__init__.py`` with a class implementing
 the MemoryProvider ABC.  On name collisions, bundled providers take
@@ -62,7 +62,7 @@ def _register_synthetic_package(name: str, search_locations: List[str]) -> None:
 # ---------------------------------------------------------------------------
 
 def _get_user_plugins_dir() -> Optional[Path]:
-    """Return ``$HERMES_HOME/plugins/`` or None if unavailable."""
+    """Return ``$AGENTIC_OS_HOME/plugins/`` or None if unavailable."""
     try:
         from agentic_os_constants import get_agentic_os_home
         d = get_agentic_os_home() / "plugins"
@@ -106,7 +106,7 @@ def _iter_provider_dirs() -> List[Tuple[str, Path]]:
             seen.add(child.name)
             dirs.append((child.name, child))
 
-    # 2. User-installed providers ($HERMES_HOME/plugins/<name>/)
+    # 2. User-installed providers ($AGENTIC_OS_HOME/plugins/<name>/)
     user_dir = _get_user_plugins_dir()
     if user_dir:
         for child in sorted(user_dir.iterdir()):
@@ -195,7 +195,7 @@ def load_memory_provider(name: str) -> Optional["MemoryProvider"]:
     """Load and return a MemoryProvider instance by name.
 
     Checks both bundled (``plugins/memory/<name>/``) and user-installed
-    (``$HERMES_HOME/plugins/<name>/``) directories.  Bundled takes
+    (``$AGENTIC_OS_HOME/plugins/<name>/``) directories.  Bundled takes
     precedence on name collisions.
 
     Returns None if the provider is not found or fails to load.

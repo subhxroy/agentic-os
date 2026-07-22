@@ -13,7 +13,7 @@ The fix has two halves:
     delivers a loud actionable error.
 
 These tests exercise the full run_job path (real imports, mocked AIAgent +
-resolve_runtime_provider against a temp HERMES_HOME) and the create_job
+resolve_runtime_provider against a temp AGENTIC_OS_HOME) and the create_job
 snapshot capture. They are load-bearing: without the guard, cases (b) call the
 agent and "succeed" instead of failing closed.
 """
@@ -50,7 +50,7 @@ def _run_with_current_provider(job, current_provider, tmp_path):
     Returns (success, output, final_response, error, agent_constructed).
     """
     fake_db = MagicMock()
-    with patch("cron.scheduler._hermes_home", tmp_path), \
+    with patch("cron.scheduler._agentic_os_home", tmp_path), \
          patch("cron.scheduler._resolve_origin", return_value=None), \
          patch("agentic_os_cli.env_loader.load_hermes_dotenv"), \
          patch("agentic_os_cli.env_loader.reset_secret_source_cache"), \
@@ -250,7 +250,7 @@ def _run_with_current_provider_and_model(job, current_provider, current_model, t
         f"model:\n  default: {current_model}\n"
     )
     fake_db = MagicMock()
-    with patch("cron.scheduler._hermes_home", tmp_path), \
+    with patch("cron.scheduler._agentic_os_home", tmp_path), \
          patch("cron.scheduler._get_agentic_os_home", return_value=tmp_path), \
          patch("cron.scheduler._resolve_origin", return_value=None), \
          patch("agentic_os_cli.env_loader.load_hermes_dotenv"), \
@@ -356,7 +356,7 @@ class TestRuntimeResolutionTargetModel:
             }
 
         fake_db = MagicMock()
-        with patch("cron.scheduler._hermes_home", tmp_path), \
+        with patch("cron.scheduler._agentic_os_home", tmp_path), \
              patch("cron.scheduler._resolve_origin", return_value=None), \
              patch("agentic_os_cli.env_loader.load_hermes_dotenv"), \
              patch("agentic_os_cli.env_loader.reset_secret_source_cache"), \

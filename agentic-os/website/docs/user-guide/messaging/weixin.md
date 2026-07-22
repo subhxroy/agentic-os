@@ -34,7 +34,7 @@ Install the required dependencies:
 ```bash
 pip install aiohttp cryptography
 # Optional: for terminal QR code display
-cd ~/.hermes/hermes-agent && uv pip install -e ".[messaging]"
+cd ~/.agentic-os/agentic-os && uv pip install -e ".[messaging]"
 ```
 
 ## Setup
@@ -53,7 +53,7 @@ Select **Weixin** when prompted. The wizard will:
 2. Display the QR code in your terminal (or provide a URL)
 3. Wait for you to scan the QR code with the WeChat mobile app
 4. Prompt you to confirm the login on your phone
-5. Save the account credentials automatically to `~/.hermes/weixin/accounts/`
+5. Save the account credentials automatically to `~/.agentic-os/weixin/accounts/`
 
 Once confirmed, you'll see a message like:
 
@@ -65,7 +65,7 @@ The wizard stores the `account_id`, `token`, and `base_url` so you don't need to
 
 ### 2. Configure Environment Variables
 
-After initial QR login, set at minimum the account ID in `~/.hermes/.env`:
+After initial QR login, set at minimum the account ID in `~/.agentic-os/.env`:
 
 ```bash
 WEIXIN_ACCOUNT_ID=your-account-id
@@ -231,7 +231,7 @@ All outbound media goes through the encrypted CDN upload flow:
 
 The iLink Bot API requires a `context_token` to be echoed back with each outbound message for a given peer. The adapter maintains a disk-backed context token store:
 
-- Tokens are saved per account+peer to `~/.hermes/weixin/accounts/<account_id>.context-tokens.json`
+- Tokens are saved per account+peer to `~/.agentic-os/weixin/accounts/<account_id>.context-tokens.json`
 - On startup, previously saved tokens are restored
 - Every inbound message updates the stored token for that sender
 - Outbound messages automatically include the latest context token
@@ -330,4 +330,4 @@ Only one Weixin gateway instance can use a given token at a time. The adapter ac
 | Voice messages show as text | If WeChat provides a transcription, the adapter uses the text. This is expected behavior |
 | Messages appear duplicated | The adapter deduplicates by message ID. If you see duplicates, check if multiple gateway instances are running |
 | `iLink POST ... HTTP 4xx/5xx` | API error from the iLink service. Check your token validity and network connectivity |
-| Terminal QR code doesn't render | Reinstall with the messaging extra: `cd ~/.hermes/hermes-agent && uv pip install -e ".[messaging]"`. Alternatively, open the URL printed above the QR |
+| Terminal QR code doesn't render | Reinstall with the messaging extra: `cd ~/.agentic-os/agentic-os && uv pip install -e ".[messaging]"`. Alternatively, open the URL printed above the QR |

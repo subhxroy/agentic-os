@@ -495,7 +495,7 @@ describe('createGatewayEventHandler', () => {
         cwd: '/repo',
         python: '/opt/venv/bin/python',
         stderr_tail:
-          '[startup] timed out\nModuleNotFoundError: No module named openai\nFileNotFoundError: ~/.hermes/config.yaml'
+          '[startup] timed out\nModuleNotFoundError: No module named openai\nFileNotFoundError: ~/.agentic-os/config.yaml'
       },
       type: 'gateway.start_timeout'
     } as any)

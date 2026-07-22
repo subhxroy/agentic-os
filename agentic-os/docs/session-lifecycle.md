@@ -197,7 +197,7 @@ SessionStore(sessions_dir: Path, config: GatewayConfig, has_active_processes_fn=
   {session_id}.jsonl     # (Legacy, removed in spec 002)
 ```
 
-The canonical transcript store is SQLite via `SessionDB` (from `hermes_state`). The
+The canonical transcript store is SQLite via `SessionDB` (from `agentic_os_state`). The
 `sessions.json` file persists the `session_key → session_id` mapping and entry metadata
 (flags, timestamps, token counts). If SQLite is unavailable, the store falls back to
 JSONL, but this is a degradation path.
@@ -399,7 +399,7 @@ unexpected exit). For each session updated within the last 120 seconds:
 
 ### Stuck-Loop Detection (`_suspend_stuck_loop_sessions`)
 
-Counts consecutive restarts via a JSON file (`{HERMES_HOME}/restart_counts.json`). If a
+Counts consecutive restarts via a JSON file (`{AGENTIC_OS_HOME}/restart_counts.json`). If a
 session has been active across 3+ consecutive restarts, it's auto-suspended so the user
 gets a clean slate.
 

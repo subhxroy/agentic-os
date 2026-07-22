@@ -1324,10 +1324,10 @@ class SessionStore:
         data = {
             "_README": (
                 "LEGACY MIRROR of the gateway routing index (the primary copy "
-                "lives in the gateway_routing table in ~/.hermes/state.db). "
+                "lives in the gateway_routing table in ~/.agentic-os/state.db). "
                 "Maps messaging session keys (agent:main:<platform>:...) to "
                 "active session IDs. This is NOT the session list. ALL "
-                "sessions (CLI, TUI, and gateway) live in ~/.hermes/state.db "
+                "sessions (CLI, TUI, and gateway) live in ~/.agentic-os/state.db "
                 "and are shown by `hermes sessions list` and `/sessions`. "
                 "Disable this file with `gateway.write_sessions_json: false` "
                 "in config.yaml."

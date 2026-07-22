@@ -80,7 +80,7 @@ Temporary access tokens expire after **24 hours**, which means a token generated
    - `whatsapp_business_messaging`
    - `whatsapp_business_management`
 5. Set **token expiration: Never**.
-6. Copy the token → update `WHATSAPP_CLOUD_ACCESS_TOKEN` in `~/.hermes/.env` → restart the gateway.
+6. Copy the token → update `WHATSAPP_CLOUD_ACCESS_TOKEN` in `~/.agentic-os/.env` → restart the gateway.
 
 System User tokens don't expire unless you explicitly revoke them.
 
@@ -142,7 +142,7 @@ Once your tunnel is running:
    ```bash
    python -c "import secrets; print(secrets.token_urlsafe(32))"
    ```
-   Save it as `WHATSAPP_CLOUD_VERIFY_TOKEN` in `~/.hermes/.env`.
+   Save it as `WHATSAPP_CLOUD_VERIFY_TOKEN` in `~/.agentic-os/.env`.
 3. Start the Hermes gateway: `hermes gateway`.
 4. In the Meta App Dashboard → **WhatsApp → Configuration** (or **Use cases → Customize → Configuration** depending on UI version) → click **Edit** on the Webhook section.
 5. Fill in:
@@ -180,7 +180,7 @@ Up to 5 numbers in dev mode.  Going to App Review removes this limit.
 
 ## Allowlist (Hermes-side)
 
-In addition to Meta's recipient whitelist, Hermes has its own per-platform allowlist that controls **which incoming messages the agent processes**.  Add to `~/.hermes/.env`:
+In addition to Meta's recipient whitelist, Hermes has its own per-platform allowlist that controls **which incoming messages the agent processes**.  Add to `~/.agentic-os/.env`:
 
 ```bash
 # Comma-separated phone numbers, country code, no '+' / spaces / dashes
@@ -213,7 +213,7 @@ The `hermes whatsapp-cloud` wizard prints these links at the end of setup. None 
 
 ## Configuration reference
 
-All settings live in `~/.hermes/.env`.  Required values are in **bold**.
+All settings live in `~/.agentic-os/.env`.  Required values are in **bold**.
 
 | Variable | Default | Description |
 |---|---|---|
@@ -328,7 +328,7 @@ Meta's default throughput is **80 messages/second per business phone number**, w
 Almost always one of:
 
 - **Tunnel URL is wrong or stale** — cloudflared quick tunnels rotate.  Get a fresh URL and update both `.env` and Meta's dashboard.
-- **Verify token mismatch** — the token in `~/.hermes/.env`'s `WHATSAPP_CLOUD_VERIFY_TOKEN` must match exactly what you typed into Meta's dashboard.  Run the curl probe above to confirm the gateway's verify handshake works locally first.
+- **Verify token mismatch** — the token in `~/.agentic-os/.env`'s `WHATSAPP_CLOUD_VERIFY_TOKEN` must match exactly what you typed into Meta's dashboard.  Run the curl probe above to confirm the gateway's verify handshake works locally first.
 - **Gateway not running** — check `hermes gateway` is up.
 - **App Secret not set** — without it, Hermes refuses inbound POSTs with 503.  Meta interprets that as "can't validate."
 

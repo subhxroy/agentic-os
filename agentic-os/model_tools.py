@@ -819,7 +819,7 @@ def _normalize_json_strings_for_schema(value: Any, schema: Any) -> Any:
     matching schema position actually expects an array or object, so
     legitimate JSON-looking string fields (``type: string``) are preserved.
 
-    Ported from cline/cline#11803, adapted to hermes-agent's coercion layer.
+    Ported from cline/cline#11803, adapted to agentic-os's coercion layer.
     Returns the original value object when nothing changed (identity preserved
     so callers can cheaply detect no-ops).
     """

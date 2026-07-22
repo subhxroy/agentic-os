@@ -6,7 +6,7 @@ based on the user's configured IANA timezone (e.g. ``Asia/Kolkata``).
 
 Resolution order:
   1. ``agentic_os_timeZONE`` environment variable
-  2. ``timezone`` key in ``~/.hermes/config.yaml``
+  2. ``timezone`` key in ``~/.agentic-os/config.yaml``
   3. Falls back to the server's local time (``datetime.now().astimezone()``)
 
 Invalid timezone values log a warning and fall back safely — Hermes never

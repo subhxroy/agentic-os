@@ -122,9 +122,9 @@ from agentic_os_cli.timeouts import (
     get_provider_stale_timeout,
 )
 
-_hermes_home = get_agentic_os_home()
+_agentic_os_home = get_agentic_os_home()
 _project_env = Path(__file__).parent / '.env'
-_loaded_env_paths = load_hermes_dotenv(hermes_home=_hermes_home, project_env=_project_env)
+_loaded_env_paths = load_hermes_dotenv(hermes_home=_agentic_os_home, project_env=_project_env)
 if _loaded_env_paths:
     for _env_path in _loaded_env_paths:
         logger.info("Loaded environment variables from %s", _env_path)
@@ -338,7 +338,7 @@ def _safe_session_filename_component(session_id: str) -> str:
 
     Session IDs can originate from untrusted input (e.g. the
     ``X-Hermes-Session-Id`` API header) and are otherwise interpolated raw
-    into on-disk artifact filenames under ``~/.hermes/sessions/``.  Without
+    into on-disk artifact filenames under ``~/.agentic-os/sessions/``.  Without
     sanitization, a traversal-shaped ID such as ``../../../../etc/pwned``
     would let a caller write the session snapshot / request dump outside the
     sessions directory.  This collapses every non ``[A-Za-z0-9_-]`` character
@@ -406,7 +406,7 @@ class AIAgent:
     """
 
     _TOOL_CALL_ARGUMENTS_CORRUPTION_MARKER = (
-        "[hermes-agent: tool call arguments were corrupted in this session and "
+        "[agentic-os: tool call arguments were corrupted in this session and "
         "have been dropped to keep the conversation alive. See issue #15236.]"
     )
 
@@ -1350,7 +1350,7 @@ class AIAgent:
         This helper substitutes an actionable hint into the stale-timeout
         warning when the request matches a known silent-reject pattern.
         Currently flagged: ``gpt-5.5`` family on the Codex backend.  See
-        hermes-agent #21444 for the symptom history.  The upstream backend
+        agentic-os #21444 for the symptom history.  The upstream backend
         behavior has historically come and gone with ChatGPT entitlement
         changes — the heuristic stays in place as future-proofing even when
         the symptom is dormant.
@@ -1386,7 +1386,7 @@ class AIAgent:
             "Workaround: try `gpt-5.4` on the same OAuth profile, or `gpt-5.3-codex`, "
             "or switch to a different model/provider in your fallback chain. "
             "Some ChatGPT Codex accounts do not support `gpt-5.4-codex`. "
-            "See hermes-agent#21444 for symptom history."
+            "See agentic-os#21444 for symptom history."
         )
 
     def _is_openrouter_url(self) -> bool:
@@ -2696,7 +2696,7 @@ class AIAgent:
 
         Gated by ``sessions.write_json_snapshots`` (default False).  state.db
         is the canonical message store; this writer exists only for users
-        whose external tooling consumes ``~/.hermes/sessions/session_{sid}.json``
+        whose external tooling consumes ``~/.agentic-os/sessions/session_{sid}.json``
         directly.  When the flag is off this is a fast no-op.
 
         When enabled, rewrites the snapshot after every persistence point with
@@ -3059,7 +3059,7 @@ class AIAgent:
         path and any path echoed inside the tool's error preview — is
         backtick-wrapped via ``_neutralize_footer_paths`` so the gateway's
         bare-path media extractor can never auto-attach a protected file
-        (e.g. ``~/.hermes/config.yaml``) to a messaging channel (#35584).
+        (e.g. ``~/.agentic-os/config.yaml``) to a messaging channel (#35584).
         """
         if not failed:
             return ""

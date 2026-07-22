@@ -175,7 +175,7 @@ def test_client_id_defaults_to_hermes_agent(monkeypatch):
 
 def test_grant_persists_default_client_id(tmp_path, fake_as, monkeypatch):
     # Drop the fixture's override so the default takes effect; the grant must
-    # store client_id=hermes-agent so refresh reuses the right client.
+    # store client_id=agentic-os so refresh reuses the right client.
     monkeypatch.delenv("HONCHO_OAUTH_CLIENT_ID", raising=False)
     config_path = tmp_path / "honcho.json"
     config_path.write_text(json.dumps({"hosts": {}}))
@@ -194,9 +194,9 @@ def test_grant_persists_default_client_id(tmp_path, fake_as, monkeypatch):
 
 def test_config_path_rides_the_authorize_link(fake_as):
     endpoints = oauth_flow.resolve_endpoints()
-    url, _ = oauth_flow.begin_authorization(endpoints, config_path="~/.hermes/honcho.json")
+    url, _ = oauth_flow.begin_authorization(endpoints, config_path="~/.agentic-os/honcho.json")
     q = parse_qs(urlparse(url).query)
-    assert q["config_path"][0] == "~/.hermes/honcho.json"
+    assert q["config_path"][0] == "~/.agentic-os/honcho.json"
     bare, _ = oauth_flow.begin_authorization(endpoints)
     assert "config_path=" not in bare
 
@@ -206,7 +206,7 @@ def test_display_config_path_never_leaks_absolute_path():
 
     # Under home → collapsed to ~/…; outside home → bare filename only.
     under_home = Path.home() / ".hermes" / "profiles" / "work" / "honcho.json"
-    assert oauth_flow._display_config_path(under_home) == "~/.hermes/profiles/work/honcho.json"
+    assert oauth_flow._display_config_path(under_home) == "~/.agentic-os/profiles/work/honcho.json"
     assert oauth_flow._display_config_path("/var/folders/tmp/honcho.json") == "honcho.json"
 
 

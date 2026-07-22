@@ -54,7 +54,7 @@ def _get_registered() -> Dict[str, str]:
 _config_files: List[Dict[str, str]] | None = None
 
 
-def _resolve_hermes_home() -> Path:
+def _resolve_agentic_os_home() -> Path:
     from agentic_os_constants import get_agentic_os_home
     return get_agentic_os_home()
 
@@ -65,15 +65,15 @@ def register_credential_file(
 ) -> bool:
     """Register a credential file for mounting into remote sandboxes.
 
-    *relative_path* is relative to ``HERMES_HOME`` (e.g. ``google_token.json``).
+    *relative_path* is relative to ``AGENTIC_OS_HOME`` (e.g. ``google_token.json``).
     Returns True if the file exists on the host and was registered.
 
     Security: rejects absolute paths and path traversal sequences (``..``).
-    The resolved host path must remain inside HERMES_HOME so that a malicious
+    The resolved host path must remain inside AGENTIC_OS_HOME so that a malicious
     skill cannot declare ``required_credential_files: ['../../.ssh/id_rsa']``
     and exfiltrate sensitive host files into a container sandbox.
 
-    Containment alone is not sufficient, because HERMES_HOME is exactly where
+    Containment alone is not sufficient, because AGENTIC_OS_HOME is exactly where
     the MASTER credential stores live. A skill legitimately needs its own
     service token (``google_token.json``); it never needs ``.env`` (every
     provider key), ``auth.json`` (all provider tokens and OAuth grants),
@@ -82,12 +82,12 @@ def register_credential_file(
     — the same guard that stops the agent reading them with ``read_file``, so
     the mount surface cannot hand a skill what the read surface denies it.
     """
-    hermes_home = _resolve_hermes_home()
+    hermes_home = _resolve_agentic_os_home()
 
-    # Reject absolute paths — they bypass the HERMES_HOME sandbox entirely.
+    # Reject absolute paths — they bypass the AGENTIC_OS_HOME sandbox entirely.
     if os.path.isabs(relative_path):
         logger.warning(
-            "credential_files: rejected absolute path %r (must be relative to HERMES_HOME)",
+            "credential_files: rejected absolute path %r (must be relative to AGENTIC_OS_HOME)",
             relative_path,
         )
         return False
@@ -95,7 +95,7 @@ def register_credential_file(
     host_path = hermes_home / relative_path
 
     # Resolve symlinks and normalise ``..`` before the containment check so
-    # that traversal like ``../. ssh/id_rsa`` cannot escape HERMES_HOME.
+    # that traversal like ``../. ssh/id_rsa`` cannot escape AGENTIC_OS_HOME.
     from tools.path_security import validate_within_dir
 
     containment_error = validate_within_dir(host_path, hermes_home)
@@ -113,7 +113,7 @@ def register_credential_file(
         return False
 
     # Master credential stores are never mountable, even though they sit
-    # inside HERMES_HOME and therefore pass the containment check above.
+    # inside AGENTIC_OS_HOME and therefore pass the containment check above.
     # Fails CLOSED: if the canonical guard can't be consulted we refuse the
     # mount rather than risk bind-mounting auth.json into a sandbox. The
     # import lives at module top (no circular-import concern — file_safety is
@@ -182,7 +182,7 @@ def _load_config_files() -> List[Dict[str, str]]:
     result: List[Dict[str, str]] = []
     try:
         from agentic_os_cli.config import read_raw_config
-        hermes_home = _resolve_hermes_home()
+        hermes_home = _resolve_agentic_os_home()
         cfg = read_raw_config()
         cred_files = cfg_get(cfg, "terminal", "credential_files")
         if isinstance(cred_files, list):
@@ -264,7 +264,7 @@ def get_skills_directory_mount(
     at ``<container_base>/external_skills/<index>``.
     """
     mounts = []
-    hermes_home = _resolve_hermes_home()
+    hermes_home = _resolve_agentic_os_home()
     skills_dir = hermes_home / "skills"
     if skills_dir.is_dir():
         host_path = _safe_skills_path(skills_dir)
@@ -347,7 +347,7 @@ def iter_skills_files(
     """
     result: List[Dict[str, str]] = []
 
-    hermes_home = _resolve_hermes_home()
+    hermes_home = _resolve_agentic_os_home()
     skills_dir = hermes_home / "skills"
     if skills_dir.is_dir():
         container_root = f"{container_base.rstrip('/')}/skills"

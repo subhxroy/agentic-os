@@ -34,7 +34,7 @@ def test_local_environment_does_not_cd_into_nested_matching_relative_cwd(tmp_pat
 
     assert result["returncode"] == 0
     assert result["output"].strip() == str(project)
-    assert "cd: hermes-agent" not in result["output"]
+    assert "cd: agentic-os" not in result["output"]
 
 
 def test_local_environment_keeps_existing_relative_child_cwd(tmp_path, monkeypatch):

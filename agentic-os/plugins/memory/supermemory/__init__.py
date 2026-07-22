@@ -550,7 +550,7 @@ class SupermemoryMemoryProvider(MemoryProvider):
         self._entity_context = _DEFAULT_ENTITY_CONTEXT
         self._api_timeout = _DEFAULT_API_TIMEOUT
         self._base_url = _DEFAULT_BASE_URL
-        self._hermes_home = ""
+        self._agentic_os_home = ""
         self._write_enabled = True
         self._active = False
         # Multi-container support
@@ -576,7 +576,7 @@ class SupermemoryMemoryProvider(MemoryProvider):
 
     def get_config_schema(self):
         # Only prompt for the API key during `hermes memory setup`.
-        # All other options are documented for $HERMES_HOME/supermemory.json
+        # All other options are documented for $AGENTIC_OS_HOME/supermemory.json
         # or the SUPERMEMORY_CONTAINER_TAG env var.
         return [
             {"key": "api_key", "description": "Supermemory API key", "secret": True, "required": True, "env_var": "SUPERMEMORY_API_KEY", "url": _API_KEY_URL},
@@ -643,10 +643,10 @@ class SupermemoryMemoryProvider(MemoryProvider):
 
     def initialize(self, session_id: str, **kwargs) -> None:
         from agentic_os_constants import get_agentic_os_home
-        self._hermes_home = kwargs.get("hermes_home") or str(get_agentic_os_home())
+        self._agentic_os_home = kwargs.get("hermes_home") or str(get_agentic_os_home())
         self._session_id = session_id
         self._turn_count = 0
-        self._config = _load_supermemory_config(self._hermes_home)
+        self._config = _load_supermemory_config(self._agentic_os_home)
         self._api_key = os.environ.get("SUPERMEMORY_API_KEY", "")
 
         # Resolve container tag: env var > config > default.

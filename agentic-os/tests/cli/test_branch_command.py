@@ -19,7 +19,7 @@ import pytest
 @pytest.fixture
 def session_db(tmp_path):
     """Create a real SessionDB for testing."""
-    os.environ["HERMES_HOME"] = str(tmp_path / ".hermes")
+    os.environ["AGENTIC_OS_HOME"] = str(tmp_path / ".hermes")
     os.makedirs(tmp_path / ".hermes", exist_ok=True)
     from agentic_os_state import SessionDB
     db = SessionDB(db_path=tmp_path / ".hermes" / "test_sessions.db")

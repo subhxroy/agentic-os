@@ -29,7 +29,7 @@ hermes fallback
 
 `hermes fallback` reuses the provider picker from `hermes model` — same provider list, same credential prompts, same validation. Use the subcommands `add`, `list` (alias `ls`), `remove` (alias `rm`), and `clear` to manage the chain. Changes persist under the top-level `fallback_providers:` list in `config.yaml`.
 
-If you'd rather edit the YAML directly, add a top-level `fallback_providers` list to `~/.hermes/config.yaml`:
+If you'd rather edit the YAML directly, add a top-level `fallback_providers` list to `~/.agentic-os/config.yaml`:
 
 ```yaml
 fallback_providers:

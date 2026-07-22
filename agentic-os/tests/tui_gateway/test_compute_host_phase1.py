@@ -35,15 +35,15 @@ def _wait_for_frame(out: io.StringIO, predicate, timeout: float = 2.0) -> dict:
 
 
 def test_compute_host_workers_inherit_tui_pool_env_or_8(monkeypatch):
-    monkeypatch.delenv("HERMES_TUI_RPC_POOL_WORKERS", raising=False)
+    monkeypatch.delenv("AGENTIC_OS_TUI_RPC_POOL_WORKERS", raising=False)
     monkeypatch.delenv("HERMES_COMPUTE_HOST_WORKERS", raising=False)
     assert _default_workers() == 8
 
-    monkeypatch.setenv("HERMES_TUI_RPC_POOL_WORKERS", "11")
+    monkeypatch.setenv("AGENTIC_OS_TUI_RPC_POOL_WORKERS", "11")
     assert _default_workers() == 11
 
     # Dead-RC tombstone: malformed env falls back to 8, not the old except-branch 4.
-    monkeypatch.setenv("HERMES_TUI_RPC_POOL_WORKERS", "not-an-int")
+    monkeypatch.setenv("AGENTIC_OS_TUI_RPC_POOL_WORKERS", "not-an-int")
     assert _default_workers() == 8
 
 
@@ -211,7 +211,7 @@ def test_compute_host_compress_control_runs_identity_guard_in_host(monkeypatch):
         sess["session_key"] = "after-key"
 
     server._sessions["sid"] = session
-    monkeypatch.setenv("HERMES_COMPUTE_HOST_CHILD", "1")
+    monkeypatch.setenv("AGENTIC_OS_COMPUTE_HOST_CHILD", "1")
     monkeypatch.setattr(server, "_compress_session_history", _compress)
     monkeypatch.setattr(server, "_sync_session_key_after_compress", _sync)
     monkeypatch.setattr(server, "_emit", lambda *_args, **_kwargs: None)
@@ -290,7 +290,7 @@ def test_supervisor_crash_emits_turn_error_and_respawns(tmp_path):
     script.write_text(
         """
 import json, os, sys
-print(json.dumps({'type':'hello','host_pid':os.getpid(),'boot_id':'boot-1','build_sha':'test','hermes_home':os.environ.get('HERMES_HOME','')}), flush=True)
+print(json.dumps({'type':'hello','host_pid':os.getpid(),'boot_id':'boot-1','build_sha':'test','hermes_home':os.environ.get('AGENTIC_OS_HOME','')}), flush=True)
 for raw in sys.stdin:
     frame=json.loads(raw)
     if frame.get('type') == 'shutdown':

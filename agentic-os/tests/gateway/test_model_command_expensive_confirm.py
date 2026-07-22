@@ -77,7 +77,7 @@ def _setup_isolated_home(tmp_path, monkeypatch, *, warn):
         encoding="utf-8",
     )
 
-    monkeypatch.setattr(gateway_run, "_hermes_home", hermes_home)
+    monkeypatch.setattr(gateway_run, "_agentic_os_home", hermes_home)
     monkeypatch.setattr("agent.models_dev.fetch_models_dev", lambda: {})
     monkeypatch.setattr(
         "agentic_os_cli.model_switch.switch_model",

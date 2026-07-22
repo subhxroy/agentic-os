@@ -30,8 +30,8 @@ from datetime import datetime, timezone
 REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, REPO_ROOT)
 
-# Ensure HERMES_HOME is set for imports that touch it at module level.
-os.environ.setdefault("HERMES_HOME", os.path.join(os.path.expanduser("~"), ".hermes"))
+# Ensure AGENTIC_OS_HOME is set for imports that touch it at module level.
+os.environ.setdefault("AGENTIC_OS_HOME", os.path.join(os.path.expanduser("~"), ".hermes"))
 
 from agentic_os_cli.models import (  # noqa: E402
     OPENROUTER_MODELS,
@@ -63,7 +63,7 @@ def build_catalog() -> dict:
         "version": CATALOG_VERSION,
         "updated_at": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
         "metadata": {
-            "source": "hermes-agent repo",
+            "source": "agentic-os repo",
             "docs": "https://agentic-os.nousresearch.com/docs/reference/model-catalog",
         },
         "providers": {

@@ -13,7 +13,7 @@ for any future keepalive / transport plumbing.
 Opt-in — not part of default CI:
     HERMES_LIVE_TESTS=1 pytest tests/run_agent/test_sequential_chats_live.py -v
 
-Requires ``OPENROUTER_API_KEY`` to be set (or sourced via ~/.hermes/.env).
+Requires ``OPENROUTER_API_KEY`` to be set (or sourced via ~/.agentic-os/.env).
 """
 from __future__ import annotations
 
@@ -23,7 +23,7 @@ from pathlib import Path
 import pytest
 
 
-# Load ~/.hermes/.env so live runs pick up OPENROUTER_API_KEY without
+# Load ~/.agentic-os/.env so live runs pick up OPENROUTER_API_KEY without
 # needing the runner to shell-source it first. Silent if the file is absent.
 def _load_user_env() -> None:
     env_file = Path.home() / ".hermes" / ".env"

@@ -98,7 +98,7 @@ After getting the number:
 
 ## Step 3: Configure Hermes
 
-Add the following to your `~/.hermes/.env` file:
+Add the following to your `~/.agentic-os/.env` file:
 
 ```bash
 # Required
@@ -118,7 +118,7 @@ To use the pairing flow instead, remove both variables and rely on the
 [DM pairing system](/user-guide/security#dm-pairing-system).
 :::
 
-Optional behavior settings in `~/.hermes/config.yaml`:
+Optional behavior settings in `~/.agentic-os/config.yaml`:
 
 ```yaml
 unauthorized_dm_behavior: pair
@@ -144,7 +144,7 @@ The gateway starts the WhatsApp bridge automatically using the saved session.
 
 ## Session Persistence
 
-The Baileys bridge saves its session under `~/.hermes/platforms/whatsapp/session`. This means:
+The Baileys bridge saves its session under `~/.agentic-os/platforms/whatsapp/session`. This means:
 
 - **Sessions survive restarts** — you don't need to re-scan the QR code every time
 - The session data includes encryption keys and device credentials
@@ -176,7 +176,7 @@ Hermes supports voice on WhatsApp:
 - Agent responses are prefixed with "⚕ **Agentic OS**" by default. You can customize or disable this in `config.yaml`:
 
 ```yaml
-# ~/.hermes/config.yaml
+# ~/.agentic-os/config.yaml
 whatsapp:
   reply_prefix: ""                          # Empty string disables the header
   # reply_prefix: "🤖 *My Bot*\n──────\n"  # Custom prefix (supports \n for newlines)
@@ -214,7 +214,7 @@ When the agent calls tools (web search, file operations, etc.), WhatsApp display
 WhatsApp delivers each message individually, so a rapid burst (forwarded batches, paste-splits, multi-line text) would otherwise trigger a separate agent invocation per fragment — wasting tokens and producing several disjointed replies. The adapter buffers successive text messages from the same chat and dispatches them as one combined request after a short quiet period (default **5s**, extended to **10s** for very long fragments). Tune via `config.yaml`:
 
 ```yaml
-# ~/.hermes/config.yaml
+# ~/.agentic-os/config.yaml
 gateway:
   platforms:
     whatsapp:
@@ -233,13 +233,13 @@ Set `text_batch_delay_seconds: 0` to dispatch each message immediately (disables
 |---------|----------|
 | **QR code not scanning** | Ensure terminal is wide enough (60+ columns). Try a different terminal. Make sure you're scanning from the correct WhatsApp account (bot number, not personal). |
 | **QR code expires** | QR codes refresh every ~20 seconds. If it times out, restart `hermes whatsapp`. |
-| **Session not persisting** | Check that `~/.hermes/platforms/whatsapp/session` exists and is writable. If containerized, mount it as a persistent volume. |
+| **Session not persisting** | Check that `~/.agentic-os/platforms/whatsapp/session` exists and is writable. If containerized, mount it as a persistent volume. |
 | **Logged out unexpectedly** | WhatsApp unlinks devices after long inactivity. Keep the phone on and connected to the network, then re-pair with `hermes whatsapp` if needed. |
 | **Bridge crashes or reconnect loops** | Restart the gateway, update Hermes, and re-pair if the session was invalidated by a WhatsApp protocol change. |
 | **Bot stops working after WhatsApp update** | Update Hermes to get the latest bridge version, then re-pair. |
 | **macOS: "Node.js not installed" but node works in terminal** | launchd services don't inherit your shell PATH. Run `hermes gateway install` to re-snapshot your current PATH into the plist, then `hermes gateway start`. See the [Gateway Service docs](./index.md#macos-launchd) for details. |
 | **Messages not being received** | Verify `WHATSAPP_ALLOWED_USERS` includes the sender's number (with country code, no `+` or spaces), or set it to `*` to allow everyone. Set `WHATSAPP_DEBUG=true` in `.env` and restart the gateway to see raw message events in `bridge.log`. |
-| **Bot replies to strangers with a pairing code** | Set `whatsapp.unauthorized_dm_behavior: ignore` in `~/.hermes/config.yaml` if you want unauthorized DMs to be silently ignored instead. |
+| **Bot replies to strangers with a pairing code** | Set `whatsapp.unauthorized_dm_behavior: ignore` in `~/.agentic-os/config.yaml` if you want unauthorized DMs to be silently ignored instead. |
 
 ---
 
@@ -259,8 +259,8 @@ whatsapp:
   unauthorized_dm_behavior: ignore
 ```
 
-- The `~/.hermes/platforms/whatsapp/session` directory contains full session credentials — protect it like a password
-- Set file permissions: `chmod 700 ~/.hermes/platforms/whatsapp/session`
+- The `~/.agentic-os/platforms/whatsapp/session` directory contains full session credentials — protect it like a password
+- Set file permissions: `chmod 700 ~/.agentic-os/platforms/whatsapp/session`
 - Use a **dedicated phone number** for the bot to isolate risk from your personal account
 - If you suspect compromise, unlink the device from WhatsApp → Settings → Linked Devices
 - Phone numbers in logs are partially redacted, but review your log retention policy

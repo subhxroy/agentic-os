@@ -132,7 +132,7 @@ dependencies = [
   # processes), pinning ``agent.log`` at the 5 MiB threshold and spamming
   # stderr on every emit (see #44873). ``concurrent-log-handler`` wraps the
   # rename in a cross-process file lock (via ``portalocker``: pywin32 on
-  # Windows) so only one process rotates at a time. ``hermes_logging.py``
+  # Windows) so only one process rotates at a time. ``agentic_os_logging.py``
   # aliases it ONLY on Windows — POSIX renames an open file fine, so stdlib
   # already works there and managed-mode perms depend on its exact lifecycle.
   # Hence the ``sys_platform == 'win32'`` marker: the dep (and its portalocker
@@ -195,7 +195,7 @@ mem0 = ["mem0ai==2.0.10"]
 # (see the main `dependencies` list) since the byte/pixel shrink paths are on
 # the default vision-embed path and the mid-session lazy install deadlocked the
 # CLI under prompt_toolkit (#40490). This extra is kept as a no-op back-compat
-# alias so existing `pip install hermes-agent[vision]` invocations still resolve.
+# alias so existing `pip install agentic-os[vision]` invocations still resolve.
 vision = []
 # CVE-2026-48710 (BadHost): Starlette is pulled transitively by mcp's
 # sse-starlette / HTTP-SSE stack (and by fastapi in the `web` extra). Before

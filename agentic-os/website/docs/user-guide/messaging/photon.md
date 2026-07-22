@@ -75,10 +75,10 @@ The setup, in order:
    your agent.
 6. **Runs `npm install`** inside the plugin's sidecar directory.
 
-Runtime credentials are written to `~/.hermes/.env`
+Runtime credentials are written to `~/.agentic-os/.env`
 (`PHOTON_PROJECT_ID` = the Spectrum project id, `PHOTON_PROJECT_SECRET`),
 the same place every other channel keeps its token. Management metadata
-(device token, dashboard project id) lives in `~/.hermes/auth.json` under
+(device token, dashboard project id) lives in `~/.agentic-os/auth.json` under
 `credential_pool.photon` / `credential_pool.photon_project`.
 
 ## Authorizing users
@@ -95,13 +95,13 @@ hermes pairing approve photon <CODE>
 
 Use `hermes pairing list` to see pending codes and approved users.
 
-**Pre-authorize specific numbers** (in `~/.hermes/.env`):
+**Pre-authorize specific numbers** (in `~/.agentic-os/.env`):
 
 ```bash
 PHOTON_ALLOWED_USERS=+15551234567,+15559876543
 ```
 
-**Open access** (dev only, in `~/.hermes/.env`):
+**Open access** (dev only, in `~/.agentic-os/.env`):
 
 ```bash
 PHOTON_ALLOW_ALL_USERS=true

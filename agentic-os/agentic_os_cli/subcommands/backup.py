@@ -18,7 +18,7 @@ def build_backup_parser(subparsers, *, cmd_backup: Callable) -> None:
         "backup",
         help="Back up Hermes home directory to a zip file",
         description="Create a zip archive of your entire Hermes configuration, "
-        "skills, sessions, and data (excludes the hermes-agent codebase). "
+        "skills, sessions, and data (excludes the agentic-os codebase). "
         "Use --quick for a fast snapshot of just critical state files.",
     )
     backup_parser.add_argument(

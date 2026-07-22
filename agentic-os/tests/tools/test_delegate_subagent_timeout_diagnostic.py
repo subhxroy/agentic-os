@@ -2,7 +2,7 @@
 
 When delegate_task's child subagent times out without having made any API
 call, a structured diagnostic file is written under
-``~/.hermes/logs/subagent-timeout-<sid>-<ts>.log``. This gives users a
+``~/.agentic-os/logs/subagent-timeout-<sid>-<ts>.log``. This gives users a
 concrete artifact to inspect (worker thread stack, system prompt size,
 tool schema bytes, credential pool state, etc.) instead of the previous
 opaque "subagent timed out" error.
@@ -28,7 +28,7 @@ import pytest
 def hermes_home(tmp_path, monkeypatch):
     home = tmp_path / ".hermes"
     home.mkdir()
-    monkeypatch.setenv("HERMES_HOME", str(home))
+    monkeypatch.setenv("AGENTIC_OS_HOME", str(home))
     return home
 
 
@@ -111,7 +111,7 @@ class TestDumpSubagentTimeoutDiagnostic:
         assert path is not None
         p = Path(path)
         assert p.is_file()
-        # File lives under HERMES_HOME/logs/
+        # File lives under AGENTIC_OS_HOME/logs/
         assert p.parent == hermes_home / "logs"
         assert p.name.startswith("subagent-timeout-sa-7-abc123-")
         assert p.suffix == ".log"
@@ -202,11 +202,11 @@ class TestDumpSubagentTimeoutDiagnostic:
         assert "<worker thread already exited>" in content
 
     def test_returns_none_on_unwritable_logs_dir(self, tmp_path, monkeypatch):
-        # Point HERMES_HOME at an unwritable path so logs/ can't be created
+        # Point AGENTIC_OS_HOME at an unwritable path so logs/ can't be created
         # (simulates permission-denied). Helper must not raise.
         from tools.delegate_tool import _dump_subagent_timeout_diagnostic
         bogus = tmp_path / "does-not-exist" / ".hermes"
-        monkeypatch.setenv("HERMES_HOME", str(bogus))
+        monkeypatch.setenv("AGENTIC_OS_HOME", str(bogus))
         child = _StubChild()
 
         # Make the logs dir itself unwritable by creating it as a FILE

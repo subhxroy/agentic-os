@@ -87,7 +87,7 @@ class TestConfigFilePermissions(unittest.TestCase):
     def test_save_config_sets_0600(self):
         config_path = Path(self.tmpdir) / "config.yaml"
         with patch("agentic_os_cli.config.get_config_path", return_value=config_path), \
-             patch("agentic_os_cli.config.ensure_hermes_home"):
+             patch("agentic_os_cli.config.ensure_agentic_os_home"):
             from agentic_os_cli.config import save_config
             save_config({"model": "test/model"})
 
@@ -97,18 +97,18 @@ class TestConfigFilePermissions(unittest.TestCase):
     def test_save_env_value_sets_0600(self):
         env_path = Path(self.tmpdir) / ".env"
         with patch("agentic_os_cli.config.get_env_path", return_value=env_path), \
-             patch("agentic_os_cli.config.ensure_hermes_home"):
+             patch("agentic_os_cli.config.ensure_agentic_os_home"):
             from agentic_os_cli.config import save_env_value
             save_env_value("TEST_KEY", "test_value")
 
             file_mode = stat.S_IMODE(os.stat(env_path).st_mode)
             self.assertEqual(file_mode, 0o600)
 
-    def test_ensure_hermes_home_sets_0700(self):
+    def test_ensure_agentic_os_home_sets_0700(self):
         home = Path(self.tmpdir) / ".hermes"
         with patch("agentic_os_cli.config.get_agentic_os_home", return_value=home):
-            from agentic_os_cli.config import ensure_hermes_home
-            ensure_hermes_home()
+            from agentic_os_cli.config import ensure_agentic_os_home
+            ensure_agentic_os_home()
 
             home_mode = stat.S_IMODE(os.stat(home).st_mode)
             self.assertEqual(home_mode, 0o700)

@@ -51,10 +51,10 @@ class TestDiscovery:
         """Scanner should find the plugin but NOT load it by default."""
         from agentic_os_cli import plugins as plugins_mod
 
-        # Isolated HERMES_HOME so we don't read the developer's config.yaml.
+        # Isolated AGENTIC_OS_HOME so we don't read the developer's config.yaml.
         home = tmp_path / ".hermes"
         home.mkdir()
-        monkeypatch.setenv("HERMES_HOME", str(home))
+        monkeypatch.setenv("AGENTIC_OS_HOME", str(home))
         monkeypatch.setattr(Path, "home", lambda: tmp_path)
 
         manager = plugins_mod.PluginManager()

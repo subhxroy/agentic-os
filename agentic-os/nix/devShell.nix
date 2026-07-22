@@ -18,7 +18,7 @@
         map (p: p.passthru.packageJsonPath or null) packages
       );
 
-      # Non-npm packages may have their own devShellHook (e.g. hermes-agent
+      # Non-npm packages may have their own devShellHook (e.g. agentic-os
       # stamps pyproject.toml + uv.lock for Python venv setup).
       nonNpmHooks = map (p: p.passthru.devShellHook or "") packages;
       combinedNonNpm = pkgs.lib.concatStringsSep "\n" (builtins.filter (h: h != "") nonNpmHooks);

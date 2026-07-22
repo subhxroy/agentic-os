@@ -52,7 +52,7 @@ class TestVerboseCommand:
         config_path = hermes_home / "config.yaml"
         config_path.write_text("display:\n  tool_progress: all\n", encoding="utf-8")
 
-        monkeypatch.setattr(gateway_run, "_hermes_home", hermes_home)
+        monkeypatch.setattr(gateway_run, "_agentic_os_home", hermes_home)
 
         runner = _make_runner()
         result = await runner._handle_verbose_command(_make_event())
@@ -71,7 +71,7 @@ class TestVerboseCommand:
             encoding="utf-8",
         )
 
-        monkeypatch.setattr(gateway_run, "_hermes_home", hermes_home)
+        monkeypatch.setattr(gateway_run, "_agentic_os_home", hermes_home)
 
         runner = _make_runner()
         result = await runner._handle_verbose_command(_make_event())
@@ -95,7 +95,7 @@ class TestVerboseCommand:
             encoding="utf-8",
         )
 
-        monkeypatch.setattr(gateway_run, "_hermes_home", hermes_home)
+        monkeypatch.setattr(gateway_run, "_agentic_os_home", hermes_home)
 
         runner = _make_runner()
         result = await runner._handle_verbose_command(_make_event())
@@ -114,7 +114,7 @@ class TestVerboseCommand:
             encoding="utf-8",
         )
 
-        monkeypatch.setattr(gateway_run, "_hermes_home", hermes_home)
+        monkeypatch.setattr(gateway_run, "_agentic_os_home", hermes_home)
         runner = _make_runner()
 
         # off -> new -> all -> verbose -> log -> off
@@ -142,7 +142,7 @@ class TestVerboseCommand:
             encoding="utf-8",
         )
 
-        monkeypatch.setattr(gateway_run, "_hermes_home", hermes_home)
+        monkeypatch.setattr(gateway_run, "_agentic_os_home", hermes_home)
 
         runner = _make_runner()
         result = await runner._handle_verbose_command(_make_event())
@@ -169,7 +169,7 @@ class TestVerboseCommand:
             encoding="utf-8",
         )
 
-        monkeypatch.setattr(gateway_run, "_hermes_home", hermes_home)
+        monkeypatch.setattr(gateway_run, "_agentic_os_home", hermes_home)
         runner = _make_runner()
 
         # Cycle on Telegram
@@ -195,7 +195,7 @@ class TestVerboseCommand:
         hermes_home.mkdir()
         # No config.yaml
 
-        monkeypatch.setattr(gateway_run, "_hermes_home", hermes_home)
+        monkeypatch.setattr(gateway_run, "_agentic_os_home", hermes_home)
 
         runner = _make_runner()
         result = await runner._handle_verbose_command(_make_event())

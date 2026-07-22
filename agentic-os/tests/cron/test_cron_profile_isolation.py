@@ -1,17 +1,17 @@
 """Regression tests for #4707 — cron must be per-profile.
 
 Design intent (Teknium, June 2026): a profile's cron jobs both LIVE in that
-profile's HERMES_HOME and EXECUTE under it.
+profile's AGENTIC_OS_HOME and EXECUTE under it.
 
 - Storage: a job created under profile ``coder`` writes to
-  ``~/.hermes/profiles/coder/cron/jobs.json`` — NOT the shared default root.
+  ``~/.agentic-os/profiles/coder/cron/jobs.json`` — NOT the shared default root.
 - Execution: the profile-scoped gateway's in-process ticker resolves the
-  active HERMES_HOME (profile home) at call time, so jobs run with that
+  active AGENTIC_OS_HOME (profile home) at call time, so jobs run with that
   profile's ``.env`` / ``config.yaml`` / scripts / skills.
 
 This is the opposite direction from the (reverted) #50112/#32091 "anchor at the
 shared root" approach. Anchoring at the root funnels every profile's jobs into
-one store and runs them under whatever HERMES_HOME the ticker happens to have —
+one store and runs them under whatever AGENTIC_OS_HOME the ticker happens to have —
 leaking config/credentials/skills across profiles, the security boundary #4707
 was filed for. These tests pin per-profile isolation so a stale-branch merge or
 a re-anchor "fix" can't silently flip it back.
@@ -22,17 +22,17 @@ from pathlib import Path
 
 def _set_profile_env(monkeypatch, root: Path, profile_home: Path) -> None:
     """Pretend the platform default root is ``root`` and the active
-    HERMES_HOME is a profile under it (``<root>/profiles/<name>``)."""
+    AGENTIC_OS_HOME is a profile under it (``<root>/profiles/<name>``)."""
     import agentic_os_constants
 
     monkeypatch.setattr(
         agentic_os_constants, "_get_platform_default_agentic_os_home", lambda: root
     )
-    monkeypatch.setenv("HERMES_HOME", str(profile_home))
+    monkeypatch.setenv("AGENTIC_OS_HOME", str(profile_home))
 
 
 def test_cron_storage_anchors_at_profile_home(tmp_path, monkeypatch):
-    """Under a profile HERMES_HOME (<root>/profiles/<name>), the cron store
+    """Under a profile AGENTIC_OS_HOME (<root>/profiles/<name>), the cron store
     resolves to <profile>/cron, NOT the shared <root>/cron."""
     root = tmp_path / "hermes_home"
     profile_home = root / "profiles" / "coder"
@@ -97,13 +97,13 @@ def test_cron_execution_home_follows_active_profile(tmp_path, monkeypatch):
     import cron.scheduler as scheduler
 
     # The module-level test override must be clear so the dynamic path runs.
-    monkeypatch.setattr(scheduler, "_hermes_home", None, raising=False)
+    monkeypatch.setattr(scheduler, "_agentic_os_home", None, raising=False)
     assert scheduler._get_agentic_os_home().resolve() == profile_home.resolve()
     assert scheduler._get_agentic_os_home().resolve() != root.resolve()
 
 
 def test_cron_storage_unaffected_when_no_profile(tmp_path, monkeypatch):
-    """With no profile (HERMES_HOME == root), the store is the root's cron dir
+    """With no profile (AGENTIC_OS_HOME == root), the store is the root's cron dir
     — unchanged behavior for single-profile installs."""
     root = tmp_path / "hermes_home"
     root.mkdir(parents=True)
@@ -113,7 +113,7 @@ def test_cron_storage_unaffected_when_no_profile(tmp_path, monkeypatch):
     monkeypatch.setattr(
         agentic_os_constants, "_get_platform_default_agentic_os_home", lambda: root
     )
-    monkeypatch.setenv("HERMES_HOME", str(root))
+    monkeypatch.setenv("AGENTIC_OS_HOME", str(root))
 
     import cron.jobs as jobs
 

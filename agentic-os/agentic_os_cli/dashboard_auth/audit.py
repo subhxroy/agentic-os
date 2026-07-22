@@ -1,6 +1,6 @@
 """Audit log for dashboard-auth events.
 
-Profile-aware location: ``$HERMES_HOME/logs/dashboard-auth.log``.
+Profile-aware location: ``$AGENTIC_OS_HOME/logs/dashboard-auth.log``.
 Format: one JSON object per line. Token-like fields are stripped before
 serialisation to avoid leaking refresh tokens or JWTs to disk.
 
@@ -52,13 +52,13 @@ class AuditEvent(enum.Enum):
 
 
 def _resolve_log_path() -> Path:
-    """``$HERMES_HOME/logs/dashboard-auth.log`` with the standard fallback.
+    """``$AGENTIC_OS_HOME/logs/dashboard-auth.log`` with the standard fallback.
 
     Mirrors ``agentic_os_constants.get_agentic_os_home`` semantics: env var wins,
-    else ``~/.hermes``. A local copy avoids an import cycle with the
+    else ``~/.agentic-os``. A local copy avoids an import cycle with the
     middleware which lives below ``agentic_os_cli``.
     """
-    home = os.environ.get("HERMES_HOME") or str(Path.home() / ".hermes")
+    home = os.environ.get("AGENTIC_OS_HOME") or str(Path.home() / ".hermes")
     return Path(home) / "logs" / "dashboard-auth.log"
 
 

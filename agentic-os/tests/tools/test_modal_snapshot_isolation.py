@@ -29,7 +29,7 @@ def _reset_modules(prefixes: tuple[str, ...]):
 
 @pytest.fixture(autouse=True)
 def _restore_tool_modules():
-    original_hermes_home = os.environ.get("HERMES_HOME")
+    original_agentic_os_home = os.environ.get("AGENTIC_OS_HOME")
     original_modules = {
         name: module
         for name, module in sys.modules.items()
@@ -43,10 +43,10 @@ def _restore_tool_modules():
     try:
         yield
     finally:
-        if original_hermes_home is None:
-            os.environ.pop("HERMES_HOME", None)
+        if original_agentic_os_home is None:
+            os.environ.pop("AGENTIC_OS_HOME", None)
         else:
-            os.environ["HERMES_HOME"] = original_hermes_home
+            os.environ["AGENTIC_OS_HOME"] = original_agentic_os_home
         _reset_modules(("tools", "agentic_os_cli", "modal"))
         sys.modules.update(original_modules)
 
@@ -63,7 +63,7 @@ def _install_modal_test_modules(
     agentic_os_cli.__path__ = []  # type: ignore[attr-defined]
     sys.modules["agentic_os_cli"] = agentic_os_cli
     hermes_home = tmp_path / "hermes-home"
-    os.environ["HERMES_HOME"] = str(hermes_home)
+    os.environ["AGENTIC_OS_HOME"] = str(hermes_home)
     sys.modules["agentic_os_cli.config"] = types.SimpleNamespace(
         get_agentic_os_home=lambda: hermes_home,
     )

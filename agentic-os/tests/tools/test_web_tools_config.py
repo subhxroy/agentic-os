@@ -138,7 +138,7 @@ class TestFirecrawlClientConfig:
                 )
 
     def test_nous_auth_token_respects_AGENTIC_OS_HOME_OVERRIDE(self, tmp_path):
-        """Auth lookup should read from HERMES_HOME/auth.json, not ~/.hermes/auth.json."""
+        """Auth lookup should read from AGENTIC_OS_HOME/auth.json, not ~/.agentic-os/auth.json."""
         real_home = tmp_path / "real-home"
         (real_home / ".hermes").mkdir(parents=True)
 
@@ -154,7 +154,7 @@ class TestFirecrawlClientConfig:
 
         with patch.dict(os.environ, {
             "HOME": str(real_home),
-            "HERMES_HOME": str(hermes_home),
+            "AGENTIC_OS_HOME": str(hermes_home),
         }, clear=False):
             import tools.web_tools
             importlib.reload(tools.web_tools)
@@ -640,7 +640,7 @@ class TestCheckWebApiKey:
         monkeypatch,
     ):
         monkeypatch.delenv("TOOL_GATEWAY_USER_TOKEN", raising=False)
-        monkeypatch.setenv("HERMES_HOME", str(tmp_path))
+        monkeypatch.setenv("AGENTIC_OS_HOME", str(tmp_path))
         expired_at = "2000-01-01T00:00:00+00:00"
         (tmp_path / "auth.json").write_text(json.dumps({
             "providers": {
@@ -816,7 +816,7 @@ class TestNonBuiltinProviderAvailability:
 class TestFirecrawlEnvResolution:
     """Verify Firecrawl reads env values from agentic_os_cli.config.get_env_value,
     not just os.getenv.  This catches the regression reported in #40190 where
-    values stored in ~/.hermes/.env were invisible to the provider."""
+    values stored in ~/.agentic-os/.env were invisible to the provider."""
 
     def test_direct_config_reads_via_get_env_value(self, monkeypatch: pytest.MonkeyPatch) -> None:
         """_get_direct_firecrawl_config() must use get_env_value, not os.getenv."""
@@ -857,7 +857,7 @@ class TestFirecrawlEnvResolution:
 class TestSiblingProvidersEnvResolution:
     """The same #40190 bug class widened: every keyed web provider must
     resolve its credential through the config-aware lookup (os.environ OR
-    ~/.hermes/.env), not bare os.getenv. Parametrized over the four
+    ~/.agentic-os/.env), not bare os.getenv. Parametrized over the four
     providers that previously read only the process environment."""
 
     _CASES = [

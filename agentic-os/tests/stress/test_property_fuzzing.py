@@ -234,7 +234,7 @@ def main():
         seed = random.randint(0, 10**9)
         rng = random.Random(seed)
         home = tempfile.mkdtemp(prefix=f"hermes_fuzz_{seq_idx}_")
-        os.environ["HERMES_HOME"] = home
+        os.environ["AGENTIC_OS_HOME"] = home
         os.environ["HOME"] = home
         sys.path.insert(0, WT)
 

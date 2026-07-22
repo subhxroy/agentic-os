@@ -129,8 +129,8 @@ def main():
     p.add_argument("--model", default="")
     args = p.parse_args()
 
-    os.environ["HERMES_SESSION_KEY"] = args.session_key
-    os.environ["HERMES_INTERACTIVE"] = "1"
+    os.environ["AGENTIC_OS_SESSION_KEY"] = args.session_key
+    os.environ["AGENTIC_OS_INTERACTIVE"] = "1"
 
     # Start before the (hundreds-of-ms) HermesCLI build — that window is itself
     # an orphan risk if the gateway dies mid-spawn.

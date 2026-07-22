@@ -8,7 +8,7 @@ def _load_with_yaml_dict(yaml_dict: dict):
     """Patch filesystem so load_gateway_config() sees *yaml_dict* as config.yaml."""
     from gateway.config import load_gateway_config
 
-    fake_home = Path("/tmp/fake_hermes_home_25676")
+    fake_home = Path("/tmp/fake_agentic_os_home_25676")
 
     def fake_exists(self):
         return str(self).endswith("config.yaml")

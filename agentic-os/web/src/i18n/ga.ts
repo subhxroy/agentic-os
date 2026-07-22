@@ -345,8 +345,8 @@ export const ga: Translations = {
     providersHint:
       "Scríobhann memory.provider (folamh = ionsuite) agus context.engine chuig config.yaml. Beidh éifeacht aige sa chéad seisiún eile.",
     refreshDashboard: "Athscan síntí an dashboard",
-    removeConfirm: "Bain an plugin seo ó ~/.hermes/plugins/?",
-    removeHint: "Ní féidir ach plugins atá suiteáilte ag an úsáideoir faoi ~/.hermes/plugins a bhaint.",
+    removeConfirm: "Bain an plugin seo ó ~/.agentic-os/plugins/?",
+    removeHint: "Ní féidir ach plugins atá suiteáilte ag an úsáideoir faoi ~/.agentic-os/plugins a bhaint.",
     rescanHeading: "Clár plugin SPA",
     rescanHint: "Athscan tar éis comhaid a chur leis an diosca ionas go n-aimseoidh barra taoibh an dashboard manifests nua.",
     runtimeHeading: "Runtime gateway (plugins YAML)",
@@ -368,7 +368,7 @@ export const ga: Translations = {
     all: "Gach ceann",
     categories: "Catagóirí",
     filters: "Scagairí",
-    noSkills: "Níor aimsíodh scileanna. Luchtaítear scileanna ó ~/.hermes/skills/",
+    noSkills: "Níor aimsíodh scileanna. Luchtaítear scileanna ó ~/.agentic-os/skills/",
     noSkillsMatch: "Níl scil ar bith ag teacht le do chuardach nó scagaire.",
     skillCount: "{count} scil{s}",
     resultCount: "{count} torad{s}",
@@ -382,7 +382,7 @@ export const ga: Translations = {
   },
 
   config: {
-    configPath: "~/.hermes/config.yaml",
+    configPath: "~/.agentic-os/config.yaml",
     filters: "Scagairí",
     sections: "Ranna",
     exportConfig: "Easpórtáil cumraíocht mar JSON",

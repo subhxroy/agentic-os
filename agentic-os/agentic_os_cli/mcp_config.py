@@ -5,7 +5,7 @@ Implements ``hermes mcp add/remove/list/test/configure`` for interactive
 MCP server lifecycle management (issue #690 Phase 2).
 
 Relies on tools/mcp_tool.py for connection/discovery and keeps
-configuration in ~/.hermes/config.yaml under the ``mcp_servers`` key.
+configuration in ~/.agentic-os/config.yaml under the ``mcp_servers`` key.
 """
 
 import asyncio
@@ -255,7 +255,7 @@ def _resolve_mcp_server_config(config: dict) -> dict:
     """Resolve ``${ENV}`` placeholders in a server config before connecting.
 
     Mirrors ``_load_mcp_config()`` in ``tools/mcp_tool.py``: load
-    ``~/.hermes/.env`` into ``os.environ`` and recursively interpolate any
+    ``~/.agentic-os/.env`` into ``os.environ`` and recursively interpolate any
     ``${VAR}`` placeholders. The CLI builds header templates like
     ``Authorization: Bearer ${MCP_X_API_KEY}`` but the probe path never
     resolved them, so the discovery probe sent the literal placeholder and

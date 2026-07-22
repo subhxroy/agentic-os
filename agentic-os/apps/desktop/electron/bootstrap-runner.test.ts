@@ -55,7 +55,7 @@ test('installedAgentInstallScript resolves the installer in the agent checkout',
   try {
     assert.equal(installedAgentInstallScript(home), null, 'absent before the checkout exists')
 
-    const scriptsDir = path.join(home, 'hermes-agent', 'scripts')
+    const scriptsDir = path.join(home, 'agentic-os', 'scripts')
     fs.mkdirSync(scriptsDir, { recursive: true })
     const scriptPath = path.join(scriptsDir, SCRIPT_NAME)
     fs.writeFileSync(scriptPath, '#!/bin/sh\necho hi\n')
@@ -71,7 +71,7 @@ test('existing checkout detection requires git metadata', () => {
   const home = mkTmpHome()
 
   try {
-    const activeRoot = path.join(home, 'hermes-agent')
+    const activeRoot = path.join(home, 'agentic-os')
     assert.equal(hasExistingGitCheckout(activeRoot), false)
 
     fs.mkdirSync(path.join(activeRoot, '.git'), { recursive: true })
@@ -88,10 +88,10 @@ test('fresh bootstrap args include the packaged commit pin', () => {
   assert.deepEqual(
     buildPosixPinArgs({
       installStamp,
-      activeRoot: '/tmp/hermes-agent',
+      activeRoot: '/tmp/agentic-os',
       hermesHome: '/tmp/hermes'
     }),
-    ['--dir', '/tmp/hermes-agent', '--hermes-home', '/tmp/hermes', '--branch', 'main', '--commit', installStamp.commit]
+    ['--dir', '/tmp/agentic-os', '--hermes-home', '/tmp/hermes', '--branch', 'main', '--commit', installStamp.commit]
   )
 })
 
@@ -102,11 +102,11 @@ test('existing-checkout bootstrap args keep branch but skip the packaged commit 
   assert.deepEqual(
     buildPosixPinArgs({
       installStamp,
-      activeRoot: '/tmp/hermes-agent',
+      activeRoot: '/tmp/agentic-os',
       hermesHome: '/tmp/hermes',
       pinCommit: false
     }),
-    ['--dir', '/tmp/hermes-agent', '--hermes-home', '/tmp/hermes', '--branch', 'main']
+    ['--dir', '/tmp/agentic-os', '--hermes-home', '/tmp/hermes', '--branch', 'main']
   )
 })
 
@@ -219,7 +219,7 @@ test('resolveInstallScript falls back to the installed agent checkout on a 404',
   try {
     const commit = 'a'.repeat(40)
     // Seed the installed agent checkout so the fallback has something to resolve.
-    const scriptsDir = path.join(home, 'hermes-agent', 'scripts')
+    const scriptsDir = path.join(home, 'agentic-os', 'scripts')
     fs.mkdirSync(scriptsDir, { recursive: true })
     const installed = path.join(scriptsDir, SCRIPT_NAME)
     fs.writeFileSync(installed, '#!/bin/sh\necho fallback\n')

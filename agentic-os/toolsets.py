@@ -576,7 +576,7 @@ TOOLSETS = {
         "includes": []
     },
 
-    "hermes-gateway": {
+    "agentic-os-gateway": {
         "description": "Gateway toolset - union of all messaging platform tools",
         "tools": [],
         "includes": ["hermes-telegram", "hermes-discord", "hermes-whatsapp", "hermes-slack", "hermes-signal", "hermes-bluebubbles", "hermes-homeassistant", "hermes-email", "hermes-sms", "hermes-mattermost", "hermes-matrix", "hermes-dingtalk", "hermes-feishu", "hermes-wecom", "hermes-wecom-callback", "hermes-weixin", "hermes-qqbot", "hermes-webhook", "hermes-yuanbao"]
@@ -669,7 +669,7 @@ def bundle_non_core_tools(toolset_name: str) -> Set[str]:
     one-level ``includes``), so disabling a bundle removes its platform tools
     while leaving core intact.
 
-    Bundle nesting is one level deep in practice (only ``hermes-gateway``
+    Bundle nesting is one level deep in practice (only ``agentic-os-gateway``
     includes other bundles, and those leaves don't nest further), so a single
     ``includes`` pass is sufficient. Unknown/garbage names fall back to the
     full resolution minus core — never re-introducing the core wipe.

@@ -2629,7 +2629,7 @@ export const zh: Translations = {
       reject: '拒绝',
       alwaysTitle: '始终允许此命令？',
       alwaysDescription: pattern =>
-        `这会将“${pattern}”模式加入永久允许列表 (~/.hermes/config.yaml)。Hermes 对类似命令将不再询问，包括当前会话和未来会话。`,
+        `这会将“${pattern}”模式加入永久允许列表 (~/.agentic-os/config.yaml)。Hermes 对类似命令将不再询问，包括当前会话和未来会话。`,
       alwaysAllow: '始终允许'
     },
     clarify: {

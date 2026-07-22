@@ -2,7 +2,7 @@
  * Hermes Kanban — Dashboard Plugin
  *
  * Board view for the multi-agent collaboration board backed by
- * ~/.hermes/kanban.db. Calls the plugin's backend at /api/plugins/kanban/
+ * ~/.agentic-os/kanban.db. Calls the plugin's backend at /api/plugins/kanban/
  * and tails task_events over a WebSocket for live updates.
  *
  * Plain IIFE, no build step. Uses window.__HERMES_PLUGIN_SDK__ for React +
@@ -198,8 +198,8 @@
   // Docs link — surfaced as a `?` icon next to the board switcher and as
   // `title=` hints on unlabelled controls. Kept in one place so rebrands or
   // path changes are a single edit.
-  const DOCS_URL = "https://hermes-agent.nousresearch.com/docs/user-guide/features/kanban";
-  const DOCS_TUTORIAL_URL = "https://hermes-agent.nousresearch.com/docs/user-guide/features/kanban-tutorial";
+  const DOCS_URL = "https://agentic-os.nousresearch.com/docs/user-guide/features/kanban";
+  const DOCS_TUTORIAL_URL = "https://agentic-os.nousresearch.com/docs/user-guide/features/kanban-tutorial";
 
   // localStorage key for the user's selected board. Independent of the
   // CLI's on-disk ``<root>/kanban/current`` pointer so browser users

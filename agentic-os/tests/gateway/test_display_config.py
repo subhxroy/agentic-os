@@ -357,8 +357,8 @@ class TestConfigMigration:
         }
         config_path.write_text(yaml.dump(config), encoding="utf-8")
 
-        monkeypatch.setenv("HERMES_HOME", str(tmp_path))
-        # Re-import to pick up the new HERMES_HOME
+        monkeypatch.setenv("AGENTIC_OS_HOME", str(tmp_path))
+        # Re-import to pick up the new AGENTIC_OS_HOME
         import importlib
         import agentic_os_cli.config as cfg_mod
         importlib.reload(cfg_mod)
@@ -384,7 +384,7 @@ class TestConfigMigration:
         }
         config_path.write_text(yaml.dump(config), encoding="utf-8")
 
-        monkeypatch.setenv("HERMES_HOME", str(tmp_path))
+        monkeypatch.setenv("AGENTIC_OS_HOME", str(tmp_path))
         import importlib
         import agentic_os_cli.config as cfg_mod
         importlib.reload(cfg_mod)

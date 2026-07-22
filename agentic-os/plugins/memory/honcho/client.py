@@ -1,7 +1,7 @@
 """Honcho client initialization and configuration.
 
 Resolution order for config file:
-  1. $HERMES_HOME/honcho.json  (instance-local, enables isolated Hermes instances)
+  1. $AGENTIC_OS_HOME/honcho.json  (instance-local, enables isolated Hermes instances)
   2. ~/.honcho/config.json     (global, shared across all Honcho-enabled apps)
   3. Environment variables     (HONCHO_API_KEY, HONCHO_ENVIRONMENT)
 
@@ -23,7 +23,7 @@ from pathlib import Path
 from urllib.parse import urlparse
 
 from agentic_os_constants import get_agentic_os_home
-from agentic_os_cli.profiles import _get_default_hermes_home
+from agentic_os_cli.profiles import _get_default_agentic_os_home
 from plugins.plugin_utils import SingletonSlot
 from typing import Any, TYPE_CHECKING
 
@@ -100,8 +100,8 @@ def resolve_config_path() -> Path:
     """Return the active Honcho config path.
 
     Resolution order:
-      1. $HERMES_HOME/honcho.json      (profile-local, if it exists)
-      2. ~/.hermes/honcho.json          (default profile — shared host blocks live here)
+      1. $AGENTIC_OS_HOME/honcho.json      (profile-local, if it exists)
+      2. ~/.agentic-os/honcho.json          (default profile — shared host blocks live here)
       3. ~/.honcho/config.json          (global, cross-app interop)
 
     Returns the global path if none exist (for first-time setup writes).
@@ -111,7 +111,7 @@ def resolve_config_path() -> Path:
         return local_path
 
     # Default profile's config — host blocks accumulate here via setup/clone
-    default_path = _get_default_hermes_home() / "honcho.json"
+    default_path = _get_default_agentic_os_home() / "honcho.json"
     if default_path != local_path and default_path.exists():
         return default_path
 
@@ -491,7 +491,7 @@ class HonchoClientConfig:
     ) -> HonchoClientConfig:
         """Create config from the resolved Honcho config path.
 
-        Resolution: $HERMES_HOME/honcho.json -> ~/.honcho/config.json -> env vars.
+        Resolution: $AGENTIC_OS_HOME/honcho.json -> ~/.honcho/config.json -> env vars.
         When host is None, derives it from the active Hermes profile.
         """
         resolved_host = host or resolve_active_host()

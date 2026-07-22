@@ -61,12 +61,12 @@ except ImportError:
 # ---------------------------------------------------------------------------
 
 def _get_sessions_dir() -> Path:
-    """Return the sessions directory using HERMES_HOME."""
+    """Return the sessions directory using AGENTIC_OS_HOME."""
     try:
         from agentic_os_constants import get_agentic_os_home
         return get_agentic_os_home() / "sessions"
     except ImportError:
-        return Path(os.environ.get("HERMES_HOME", Path.home() / ".hermes")) / "sessions"
+        return Path(os.environ.get("AGENTIC_OS_HOME", Path.home() / ".hermes")) / "sessions"
 
 
 def _get_session_db():
@@ -199,7 +199,7 @@ def _load_channel_directory() -> dict:
         directory_file = get_agentic_os_home() / "channel_directory.json"
     except ImportError:
         directory_file = Path(
-            os.environ.get("HERMES_HOME", Path.home() / ".hermes")
+            os.environ.get("AGENTIC_OS_HOME", Path.home() / ".hermes")
         ) / "channel_directory.json"
 
     if not directory_file.exists():
@@ -454,7 +454,7 @@ class EventBridge:
             from agentic_os_constants import get_agentic_os_home
             db_file = get_agentic_os_home() / "state.db"
         except ImportError:
-            db_file = Path(os.environ.get("HERMES_HOME", Path.home() / ".hermes")) / "state.db"
+            db_file = Path(os.environ.get("AGENTIC_OS_HOME", Path.home() / ".hermes")) / "state.db"
 
         try:
             db_mtime = db_file.stat().st_mtime if db_file.exists() else 0.0

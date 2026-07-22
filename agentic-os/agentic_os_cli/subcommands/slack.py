@@ -39,7 +39,7 @@ def build_slack_parser(subparsers, *, cmd_slack: Callable) -> None:
         default=None,
         metavar="PATH",
         help="Write manifest to a file instead of stdout. With no PATH "
-        "writes to $HERMES_HOME/slack-manifest.json.",
+        "writes to $AGENTIC_OS_HOME/slack-manifest.json.",
     )
     slack_manifest.add_argument(
         "--name",

@@ -8,7 +8,7 @@ platforms: [linux, macos, windows]
 metadata:
   hermes:
     tags: [Coding-Agent, Antigravity, CLI, Auth, Plugins, Sandbox]
-    related_skills: [grok, codex, claude-code, hermes-agent]
+    related_skills: [grok, codex, claude-code, agentic-os]
 ---
 
 # Antigravity CLI (`agy`)

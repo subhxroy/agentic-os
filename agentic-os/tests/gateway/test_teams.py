@@ -380,7 +380,7 @@ class TestTeamsInteractiveSetup:
         credentials to .env without crashing.
         """
         hermes_home = tmp_path / "hermes"
-        monkeypatch.setenv("HERMES_HOME", str(hermes_home))
+        monkeypatch.setenv("AGENTIC_OS_HOME", str(hermes_home))
 
         import agentic_os_cli.cli_output as cli_output_mod
 

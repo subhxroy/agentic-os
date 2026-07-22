@@ -46,7 +46,7 @@ interface HermesConfigOptions {
   refreshProjectBranch: (cwd: string) => Promise<void>
 }
 
-export function useHermesConfig({ activeSessionIdRef, refreshProjectBranch }: HermesConfigOptions) {
+export function useAgenticOSConfig({ activeSessionIdRef, refreshProjectBranch }: HermesConfigOptions) {
   const [voiceMaxRecordingSeconds, setVoiceMaxRecordingSeconds] = useState(DEFAULT_VOICE_SECONDS)
   const [sttEnabled, setSttEnabled] = useState(true)
   const profileRefreshEpochRef = useRef(0)

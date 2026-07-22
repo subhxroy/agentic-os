@@ -2,7 +2,7 @@
 
 Resolve provider credentials from 1Password ``op://vault/item/field``
 references at process startup so they don't have to live in plaintext in
-``~/.hermes/.env``.
+``~/.agentic-os/.env``.
 
 Design summary
 --------------
@@ -105,7 +105,7 @@ _OP_ENV_ALLOWLIST = (
 # Cache
 # ---------------------------------------------------------------------------
 
-# In-process cache.  The key folds in str(home_path) so a HERMES_HOME switch
+# In-process cache.  The key folds in str(home_path) so a AGENTIC_OS_HOME switch
 # inside one long-lived process (e.g. the gateway) can't return another
 # profile's secrets from L1.  The disk layer omits home from its serialized
 # key because the file already lives under the home dir (see _disk_key_str).

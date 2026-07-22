@@ -966,7 +966,7 @@ class TestRunJobSessionPersistence:
         }
         fake_db = MagicMock()
 
-        with patch("cron.scheduler._hermes_home", tmp_path), \
+        with patch("cron.scheduler._agentic_os_home", tmp_path), \
              patch("cron.scheduler._resolve_origin", return_value=None), \
              patch("agentic_os_cli.env_loader.load_hermes_dotenv"), \
              patch("agentic_os_cli.env_loader.reset_secret_source_cache"), \
@@ -1013,7 +1013,7 @@ class TestRunJobSessionPersistence:
         job = {"id": "test-job", "name": "test", "prompt": "hello"}
         fake_db = MagicMock()
 
-        with patch("cron.scheduler._hermes_home", tmp_path), \
+        with patch("cron.scheduler._agentic_os_home", tmp_path), \
              patch("cron.scheduler._resolve_origin", return_value=None), \
              patch("agentic_os_cli.env_loader.load_hermes_dotenv"), \
              patch("agentic_os_cli.env_loader.reset_secret_source_cache"), \
@@ -1057,7 +1057,7 @@ class TestRunJobSessionPersistence:
         job = {"id": "test-job", "name": "test", "prompt": "hello"}
         fake_db = MagicMock()
 
-        with patch("cron.scheduler._hermes_home", tmp_path), \
+        with patch("cron.scheduler._agentic_os_home", tmp_path), \
              patch("cron.scheduler._resolve_origin", return_value=None), \
              patch("agentic_os_cli.env_loader.load_hermes_dotenv"), \
              patch("agentic_os_cli.env_loader.reset_secret_source_cache"), \
@@ -1098,7 +1098,7 @@ class TestRunJobSessionPersistence:
         }
         fake_db = MagicMock()
 
-        with patch("cron.scheduler._hermes_home", tmp_path), \
+        with patch("cron.scheduler._agentic_os_home", tmp_path), \
              patch("cron.scheduler._resolve_origin", return_value=None), \
              patch("agentic_os_cli.env_loader.load_hermes_dotenv"), \
              patch("agentic_os_cli.env_loader.reset_secret_source_cache"), \
@@ -1136,7 +1136,7 @@ class TestRunJobSessionPersistence:
         }
         fake_db = MagicMock()
 
-        with patch("cron.scheduler._hermes_home", tmp_path), \
+        with patch("cron.scheduler._agentic_os_home", tmp_path), \
              patch("cron.scheduler._resolve_origin", return_value=None), \
              patch("agentic_os_cli.env_loader.load_hermes_dotenv"), \
              patch("agentic_os_cli.env_loader.reset_secret_source_cache"), \
@@ -1174,7 +1174,7 @@ class TestRunJobSessionPersistence:
         }
         fake_db = MagicMock()
 
-        with patch("cron.scheduler._hermes_home", tmp_path), \
+        with patch("cron.scheduler._agentic_os_home", tmp_path), \
              patch("cron.scheduler._resolve_origin", return_value=None), \
              patch("agentic_os_cli.env_loader.load_hermes_dotenv"), \
              patch("agentic_os_cli.env_loader.reset_secret_source_cache"), \
@@ -1217,7 +1217,7 @@ class TestRunJobSessionPersistence:
         mock_agent = MagicMock()
         mock_agent.run_conversation.return_value = {"final_response": "ok"}
         base = [
-            patch("cron.scheduler._hermes_home", tmp_path),
+            patch("cron.scheduler._agentic_os_home", tmp_path),
             patch("cron.scheduler._resolve_origin", return_value=None),
             patch("agentic_os_cli.env_loader.load_hermes_dotenv"),
             patch("agentic_os_cli.env_loader.reset_secret_source_cache"),
@@ -1341,7 +1341,7 @@ class TestRunJobSessionPersistence:
         }
         fake_db = MagicMock()
 
-        with patch("cron.scheduler._hermes_home", tmp_path), \
+        with patch("cron.scheduler._agentic_os_home", tmp_path), \
              patch("cron.scheduler._resolve_origin", return_value=None), \
              patch("agentic_os_cli.env_loader.load_hermes_dotenv"), \
              patch("agentic_os_cli.env_loader.reset_secret_source_cache"), \
@@ -1418,7 +1418,7 @@ class TestRunJobSessionPersistence:
         }
         fake_db = MagicMock()
 
-        with patch("cron.scheduler._hermes_home", tmp_path), \
+        with patch("cron.scheduler._agentic_os_home", tmp_path), \
              patch("cron.scheduler._resolve_origin", return_value=None), \
              patch("agentic_os_cli.env_loader.load_hermes_dotenv"), \
              patch("agentic_os_cli.env_loader.reset_secret_source_cache"), \
@@ -1458,7 +1458,7 @@ class TestRunJobSessionPersistence:
         }
         fake_db = MagicMock()
 
-        with patch("cron.scheduler._hermes_home", tmp_path), \
+        with patch("cron.scheduler._agentic_os_home", tmp_path), \
              patch("cron.scheduler._resolve_origin", return_value=None), \
              patch("agentic_os_cli.env_loader.load_hermes_dotenv"), \
              patch("agentic_os_cli.env_loader.reset_secret_source_cache"), \
@@ -1501,7 +1501,7 @@ class TestRunJobSessionPersistence:
         }
         fake_db = MagicMock()
 
-        with patch("cron.scheduler._hermes_home", tmp_path), \
+        with patch("cron.scheduler._agentic_os_home", tmp_path), \
              patch("cron.scheduler._resolve_origin", return_value=None), \
              patch("agentic_os_cli.env_loader.load_hermes_dotenv"), \
              patch("agentic_os_cli.env_loader.reset_secret_source_cache"), \
@@ -1572,7 +1572,7 @@ class TestRunJobSessionPersistence:
 
         fake_db = MagicMock()
 
-        with patch("cron.scheduler._hermes_home", tmp_path), \
+        with patch("cron.scheduler._agentic_os_home", tmp_path), \
              patch("cron.scheduler.get_due_jobs", return_value=[job]), \
              patch("cron.scheduler.advance_next_run"), \
              patch("cron.scheduler.mark_job_run") as mock_mark, \
@@ -1615,7 +1615,7 @@ class TestRunJobSessionPersistence:
                 seen["thread_id"] = get_session_env("HERMES_CRON_AUTO_DELIVER_THREAD_ID") or None
                 return {"final_response": "ok"}
 
-        with patch("cron.scheduler._hermes_home", tmp_path), \
+        with patch("cron.scheduler._agentic_os_home", tmp_path), \
              patch("agentic_os_state.SessionDB", return_value=fake_db), \
              patch(
                  "agentic_os_cli.runtime_provider.resolve_runtime_provider",
@@ -1675,7 +1675,7 @@ class TestRunJobSessionPersistence:
         monotonic_ticks = itertools.count(step=61.0)
         monkeypatch.setenv("HERMES_CRON_TIMEOUT", timeout_value)
 
-        with patch("cron.scheduler._hermes_home", tmp_path), \
+        with patch("cron.scheduler._agentic_os_home", tmp_path), \
              patch("agentic_os_state.SessionDB", return_value=fake_db), \
              patch(
                  "agentic_os_cli.runtime_provider.resolve_runtime_provider",
@@ -1706,7 +1706,7 @@ class TestRunJobSessionPersistence:
         instead of leaving the startup .env placeholder in place (#33465).
 
         A bare ``load_dotenv`` re-load can't do this: startup already recorded
-        this HERMES_HOME in ``_APPLIED_HOMES``, so the external-secret pull
+        this AGENTIC_OS_HOME in ``_APPLIED_HOMES``, so the external-secret pull
         no-ops and only the placeholder is re-applied. The scheduler must call
         ``reset_secret_source_cache()`` (forcing the re-pull) and route through
         ``load_hermes_dotenv`` (which then re-applies external secret sources).
@@ -1722,7 +1722,7 @@ class TestRunJobSessionPersistence:
             call_order.append("load")
             return []
 
-        with patch("cron.scheduler._hermes_home", tmp_path), \
+        with patch("cron.scheduler._agentic_os_home", tmp_path), \
              patch("cron.scheduler._resolve_origin", return_value=None), \
              patch("agentic_os_cli.env_loader.reset_secret_source_cache", _record_reset), \
              patch("agentic_os_cli.env_loader.load_hermes_dotenv", _record_load), \
@@ -1785,7 +1785,7 @@ class TestRunJobSessionPersistence:
                 )
                 return {"final_response": "ok"}
 
-        with patch("cron.scheduler._hermes_home", tmp_path), \
+        with patch("cron.scheduler._agentic_os_home", tmp_path), \
              patch("agentic_os_state.SessionDB", return_value=fake_db), \
              patch(
                  "agentic_os_cli.runtime_provider.resolve_runtime_provider",
@@ -1841,7 +1841,7 @@ class TestRunJobConfigLogging:
         # resolution and MCP discovery, both of which can spawn subprocesses
         # / hit the network and have caused this test to time out on CI
         # (>30s wall clock) under load. See PR #33661 follow-up.
-        with patch("cron.scheduler._hermes_home", tmp_path), \
+        with patch("cron.scheduler._agentic_os_home", tmp_path), \
              patch("cron.scheduler._resolve_origin", return_value=None), \
              patch("agentic_os_cli.env_loader.load_hermes_dotenv"), \
              patch("agentic_os_cli.env_loader.reset_secret_source_cache"), \
@@ -1876,7 +1876,7 @@ class TestRunJobConfigLogging:
             "prompt": "hello",
         }
 
-        with patch("cron.scheduler._hermes_home", tmp_path), \
+        with patch("cron.scheduler._agentic_os_home", tmp_path), \
              patch("cron.scheduler._resolve_origin", return_value=None), \
              patch("agentic_os_cli.env_loader.load_hermes_dotenv"), \
              patch("agentic_os_cli.env_loader.reset_secret_source_cache"), \
@@ -1915,7 +1915,7 @@ class TestRunJobConfigEnvVarExpansion:
         job = {"id": "env-job", "name": "env test", "prompt": "hi"}
         fake_db = MagicMock()
 
-        with patch("cron.scheduler._hermes_home", tmp_path), \
+        with patch("cron.scheduler._agentic_os_home", tmp_path), \
              patch("cron.scheduler._resolve_origin", return_value=None), \
              patch("agentic_os_cli.env_loader.load_hermes_dotenv"), \
              patch("agentic_os_cli.env_loader.reset_secret_source_cache"), \
@@ -1949,7 +1949,7 @@ class TestRunJobConfigEnvVarExpansion:
         job = {"id": "prefill-job", "name": "prefill test", "prompt": "hi"}
         fake_db = MagicMock()
 
-        with patch("cron.scheduler._hermes_home", tmp_path), \
+        with patch("cron.scheduler._agentic_os_home", tmp_path), \
              patch("cron.scheduler._resolve_origin", return_value=None), \
              patch("agentic_os_cli.env_loader.load_hermes_dotenv"), \
              patch("agentic_os_cli.env_loader.reset_secret_source_cache"), \
@@ -1980,7 +1980,7 @@ class TestRunJobConfigEnvVarExpansion:
         job = {"id": "fb-job", "name": "fallback test", "prompt": "hi"}
         fake_db = MagicMock()
 
-        with patch("cron.scheduler._hermes_home", tmp_path), \
+        with patch("cron.scheduler._agentic_os_home", tmp_path), \
              patch("cron.scheduler._resolve_origin", return_value=None), \
              patch("agentic_os_cli.env_loader.load_hermes_dotenv"), \
              patch("agentic_os_cli.env_loader.reset_secret_source_cache"), \
@@ -2036,7 +2036,7 @@ class TestRunJobConfigEnvVarExpansion:
             assert kwargs["target_model"] == "z-ai/glm-5.2"
             return {**self._RUNTIME, "provider": "openrouter"}
 
-        with patch("cron.scheduler._hermes_home", tmp_path), \
+        with patch("cron.scheduler._agentic_os_home", tmp_path), \
              patch("cron.scheduler._resolve_origin", return_value=None), \
              patch("agentic_os_cli.env_loader.load_hermes_dotenv"), \
              patch("agentic_os_cli.env_loader.reset_secret_source_cache"), \
@@ -2071,7 +2071,7 @@ class TestRunJobConfigEnvVarExpansion:
         job = {"id": "fb-merge", "name": "fallback merge", "prompt": "hi"}
         fake_db = MagicMock()
 
-        with patch("cron.scheduler._hermes_home", tmp_path), \
+        with patch("cron.scheduler._agentic_os_home", tmp_path), \
              patch("cron.scheduler._resolve_origin", return_value=None), \
              patch("dotenv.load_dotenv"), \
              patch("agentic_os_state.SessionDB", return_value=fake_db), \
@@ -2095,7 +2095,7 @@ class TestRunJobConfigEnvVarExpansion:
         job = {"id": "unset-job", "name": "unset var test", "prompt": "hi"}
         fake_db = MagicMock()
 
-        with patch("cron.scheduler._hermes_home", tmp_path), \
+        with patch("cron.scheduler._agentic_os_home", tmp_path), \
              patch("cron.scheduler._resolve_origin", return_value=None), \
              patch("agentic_os_cli.env_loader.load_hermes_dotenv"), \
              patch("agentic_os_cli.env_loader.reset_secret_source_cache"), \
@@ -2140,7 +2140,7 @@ class TestRunJobModelResolution:
         job = {"id": "null-model-job", "name": "null model", "prompt": "hi", "model": None}
         fake_db = MagicMock()
 
-        with patch("cron.scheduler._hermes_home", tmp_path), \
+        with patch("cron.scheduler._agentic_os_home", tmp_path), \
              patch("cron.scheduler._resolve_origin", return_value=None), \
              patch("agentic_os_cli.env_loader.load_hermes_dotenv"), \
              patch("agentic_os_cli.env_loader.reset_secret_source_cache"), \
@@ -2165,7 +2165,7 @@ class TestRunJobModelResolution:
         job = {"id": "cfg-default-job", "name": "cfg default", "prompt": "hi", "model": None}
         fake_db = MagicMock()
 
-        with patch("cron.scheduler._hermes_home", tmp_path), \
+        with patch("cron.scheduler._agentic_os_home", tmp_path), \
              patch("cron.scheduler._resolve_origin", return_value=None), \
              patch("agentic_os_cli.env_loader.load_hermes_dotenv"), \
              patch("agentic_os_cli.env_loader.reset_secret_source_cache"), \
@@ -2198,7 +2198,7 @@ class TestRunJobModelResolution:
         job = {"id": "null-default-job", "name": "null default", "prompt": "hi", "model": None}
         fake_db = MagicMock()
 
-        with patch("cron.scheduler._hermes_home", tmp_path), \
+        with patch("cron.scheduler._agentic_os_home", tmp_path), \
              patch("cron.scheduler._resolve_origin", return_value=None), \
              patch("agentic_os_cli.env_loader.load_hermes_dotenv"), \
              patch("agentic_os_cli.env_loader.reset_secret_source_cache"), \
@@ -2222,7 +2222,7 @@ class TestRunJobModelResolution:
         job = {"id": "no-model-job", "name": "no model anywhere", "prompt": "hi", "model": None}
         fake_db = MagicMock()
 
-        with patch("cron.scheduler._hermes_home", tmp_path), \
+        with patch("cron.scheduler._agentic_os_home", tmp_path), \
              patch("cron.scheduler._resolve_origin", return_value=None), \
              patch("agentic_os_cli.env_loader.load_hermes_dotenv"), \
              patch("agentic_os_cli.env_loader.reset_secret_source_cache"), \
@@ -2252,7 +2252,7 @@ class TestRunJobModelResolution:
         job = {"id": "updated-model-job", "name": "updated", "prompt": "hi", "model": "first-model"}
         fake_db = MagicMock()
 
-        with patch("cron.scheduler._hermes_home", tmp_path), \
+        with patch("cron.scheduler._agentic_os_home", tmp_path), \
              patch("cron.scheduler._resolve_origin", return_value=None), \
              patch("agentic_os_cli.env_loader.load_hermes_dotenv"), \
              patch("agentic_os_cli.env_loader.reset_secret_source_cache"), \
@@ -2279,7 +2279,7 @@ class TestRunJobModelResolution:
         job = {"id": "string-cfg-job", "name": "string cfg", "prompt": "hi", "model": None}
         fake_db = MagicMock()
 
-        with patch("cron.scheduler._hermes_home", tmp_path), \
+        with patch("cron.scheduler._agentic_os_home", tmp_path), \
              patch("cron.scheduler._resolve_origin", return_value=None), \
              patch("agentic_os_cli.env_loader.load_hermes_dotenv"), \
              patch("agentic_os_cli.env_loader.reset_secret_source_cache"), \
@@ -2310,7 +2310,7 @@ class TestRunJobModelResolution:
         job = {"id": "alias-job", "name": "alias", "prompt": "hi", "model": None}
         fake_db = MagicMock()
 
-        with patch("cron.scheduler._hermes_home", tmp_path), \
+        with patch("cron.scheduler._agentic_os_home", tmp_path), \
              patch("cron.scheduler._resolve_origin", return_value=None), \
              patch("agentic_os_cli.env_loader.load_hermes_dotenv"), \
              patch("agentic_os_cli.env_loader.reset_secret_source_cache"), \
@@ -2335,7 +2335,7 @@ class TestRunJobModelResolution:
         job = {"id": "corrupt-job", "name": "corrupt", "prompt": "hi", "model": "explicit-model"}
         fake_db = MagicMock()
 
-        with patch("cron.scheduler._hermes_home", tmp_path), \
+        with patch("cron.scheduler._agentic_os_home", tmp_path), \
              patch("cron.scheduler._resolve_origin", return_value=None), \
              patch("agentic_os_cli.env_loader.load_hermes_dotenv"), \
              patch("agentic_os_cli.env_loader.reset_secret_source_cache"), \
@@ -2378,7 +2378,7 @@ class TestRunJobSkillBacked:
             assert "NOTION_API_KEY" in get_all_passthrough()
             return {"final_response": "ok"}
 
-        with patch("cron.scheduler._hermes_home", tmp_path), \
+        with patch("cron.scheduler._agentic_os_home", tmp_path), \
              patch("cron.scheduler._resolve_origin", return_value=None), \
              patch("agentic_os_cli.env_loader.load_hermes_dotenv"), \
              patch("agentic_os_cli.env_loader.reset_secret_source_cache"), \
@@ -2438,9 +2438,9 @@ class TestRunJobSkillBacked:
             assert any("google_token.json" in v for v in registered.values())
             return {"final_response": "ok"}
 
-        with patch("cron.scheduler._hermes_home", tmp_path), \
+        with patch("cron.scheduler._agentic_os_home", tmp_path), \
              patch("cron.scheduler._resolve_origin", return_value=None), \
-             patch("tools.credential_files._resolve_hermes_home", return_value=tmp_path), \
+             patch("tools.credential_files._resolve_agentic_os_home", return_value=tmp_path), \
              patch("agentic_os_cli.env_loader.load_hermes_dotenv"), \
              patch("agentic_os_cli.env_loader.reset_secret_source_cache"), \
              patch("agentic_os_state.SessionDB", return_value=fake_db), \
@@ -2478,7 +2478,7 @@ class TestRunJobSkillBacked:
 
         fake_db = MagicMock()
 
-        with patch("cron.scheduler._hermes_home", tmp_path), \
+        with patch("cron.scheduler._agentic_os_home", tmp_path), \
              patch("cron.scheduler._resolve_origin", return_value=None), \
              patch("agentic_os_cli.env_loader.load_hermes_dotenv"), \
              patch("agentic_os_cli.env_loader.reset_secret_source_cache"), \
@@ -2525,7 +2525,7 @@ class TestRunJobSkillBacked:
         def _skill_view(name):
             return json.dumps({"success": True, "content": f"# {name}\nInstructions for {name}."})
 
-        with patch("cron.scheduler._hermes_home", tmp_path), \
+        with patch("cron.scheduler._agentic_os_home", tmp_path), \
              patch("cron.scheduler._resolve_origin", return_value=None), \
              patch("agentic_os_cli.env_loader.load_hermes_dotenv"), \
              patch("agentic_os_cli.env_loader.reset_secret_source_cache"), \

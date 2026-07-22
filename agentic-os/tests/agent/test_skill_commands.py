@@ -529,7 +529,7 @@ class TestBuildPreloadedSkillsPrompt:
 
     def test_skips_disabled_skill(self, tmp_path, monkeypatch):
         """A globally-disabled skill must not be force-loaded via -s /
-        HERMES_TUI_SKILLS preloading (mirrors the bundle gate, #59156)."""
+        AGENTIC_OS_TUI_SKILLS preloading (mirrors the bundle gate, #59156)."""
         with patch("tools.skills_tool.SKILLS_DIR", tmp_path):
             _make_skill(tmp_path, "enabled-skill", body="Enabled content.")
             _make_skill(tmp_path, "disabled-skill", body="SECRET DISABLED CONTENT.")

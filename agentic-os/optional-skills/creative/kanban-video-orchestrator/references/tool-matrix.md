@@ -1,13 +1,13 @@
 # Tool Matrix — Skills + Toolsets per Role
 
 Maps each role archetype to the Hermes skills it should `always_load` and the
-toolsets it needs. Only references skills that ship in the public hermes-agent
+toolsets it needs. Only references skills that ship in the public agentic-os
 repository (under `skills/` or `optional-skills/`). External APIs and CLIs are
 called from the terminal toolset; they don't appear in `always_load`.
 
 ## Hermes skills relevant to video production
 
-### Visual / rendering skills (`hermes-agent/skills/creative/`)
+### Visual / rendering skills (`agentic-os/skills/creative/`)
 
 | Skill | What it does | Best fit for |
 |-------|--------------|--------------|
@@ -23,7 +23,7 @@ called from the terminal toolset; they don't appear in `always_load`.
 | `baoyu-infographic` | Infographic generation | Renderer for data-driven explainer scenes |
 | `meme-generation` *(optional)* | Generate meme images by overlaying text on templates | Generator for satirical/social content; meme-style stills |
 
-### Design / pre-production skills (`hermes-agent/skills/creative/`)
+### Design / pre-production skills (`agentic-os/skills/creative/`)
 
 | Skill | What it does | Best fit for |
 |-------|--------------|--------------|
@@ -38,7 +38,7 @@ called from the terminal toolset; they don't appear in `always_load`.
 | `creative-ideation` | Constraint-driven project ideation | Director / cinematographer when the brief is wide-open and needs framing |
 | `humanizer` | Strip AI-isms from text, add real voice | Writer / copywriter post-process to avoid AI-tells in scripts and VO copy |
 
-### Audio / media skills (`hermes-agent/skills/creative/` + `skills/media/`)
+### Audio / media skills (`agentic-os/skills/creative/` + `skills/media/`)
 
 | Skill | What it does | Best fit for |
 |-------|--------------|--------------|
@@ -269,7 +269,7 @@ skills:
 ## API key requirements
 
 Track these in the project setup. The setup script should verify each required
-key is present in `${HERMES_HOME:-~/.hermes}/.env` (or macOS Keychain) before firing the kanban.
+key is present in `${AGENTIC_OS_HOME:-~/.agentic-os}/.env` (or macOS Keychain) before firing the kanban.
 
 | Service | Env var | Used by |
 |---------|---------|---------|
@@ -286,7 +286,7 @@ key is present in `${HERMES_HOME:-~/.hermes}/.env` (or macOS Keychain) before fi
 | Anthropic | `ANTHROPIC_API_KEY` | every Hermes profile (Claude) |
 
 If a key is missing, prompt the user to add it. Storage methods, in order of
-preference: macOS Keychain → `${HERMES_HOME:-~/.hermes}/.env` → environment variable.
+preference: macOS Keychain → `${AGENTIC_OS_HOME:-~/.agentic-os}/.env` → environment variable.
 
 ## Skill version pinning
 

@@ -32,7 +32,7 @@ DEFAULT_DATASETS = [
     "subhxroy/agentic-os-megascience-sft1",
     "subhxroy/agentic-os-Thinking-GLM-4.7-SFT2",
     "subhxroy/agentic-os-Thinking-GLM-4.7-SFT1",
-    "NousResearch/terminal-tasks-glm-hermes-agent"
+    "NousResearch/terminal-tasks-glm-agentic-os"
 ]
 
 

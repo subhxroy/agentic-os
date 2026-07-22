@@ -85,13 +85,13 @@ def _assert_windows() -> None:
         raise RuntimeError("gateway_windows is Windows-only")
 
 
-def _preserve_hermes_home_path(path: str | Path) -> str:
-    """Render Hermes-owned paths under the configured HERMES_HOME spelling.
+def _preserve_agentic_os_home_path(path: str | Path) -> str:
+    """Render Hermes-owned paths under the configured AGENTIC_OS_HOME spelling.
 
     Windows installs may keep ``%LOCALAPPDATA%\\hermes`` as a symlink/junction to
     another drive. Runtime state should still identify itself by the configured
     AppData path, so launcher files must not bake in the resolved target when a
-    path lives under HERMES_HOME.
+    path lives under AGENTIC_OS_HOME.
     """
     candidate = Path(path)
     try:
@@ -307,7 +307,7 @@ def get_task_script_path() -> Path:
     """The generated ``gateway.cmd`` wrapper kept beside the VBS launcher.
 
     Lives under ``%LOCALAPPDATA%\\hermes\\gateway-service\\<task_name>.cmd``
-    (or ``<HERMES_HOME>/gateway-service/<task_name>.cmd`` so per-profile
+    (or ``<AGENTIC_OS_HOME>/gateway-service/<task_name>.cmd`` so per-profile
     Hermes installs stay self-contained).
     """
     _assert_windows()
@@ -354,10 +354,10 @@ def _legacy_startup_entry_path() -> Path:
 def _stable_gateway_working_dir(project_root: Path) -> str:
     """Return a stable cwd for detached/startup gateway runs.
 
-    Mirror the POSIX service invariant: anchor at ``HERMES_HOME`` whenever it
+    Mirror the POSIX service invariant: anchor at ``AGENTIC_OS_HOME`` whenever it
     exists so Scheduled Task / Startup launches do not fail at the ``cd`` step
     after a transient checkout or worktree is moved away. Fall back to the
-    source checkout only if ``HERMES_HOME`` cannot be used yet. Preserve the
+    source checkout only if ``AGENTIC_OS_HOME`` cannot be used yet. Preserve the
     configured spelling instead of resolving symlinks so AppData installs backed
     by a junction/symlink still identify themselves as AppData.
     """
@@ -388,7 +388,7 @@ def _build_gateway_cmd_script(
 
     The script:
       - cd's into a stable working directory
-      - exports HERMES_HOME, PYTHONIOENCODING, VIRTUAL_ENV
+      - exports AGENTIC_OS_HOME, PYTHONIOENCODING, VIRTUAL_ENV
       - invokes ``pythonw -m agentic_os_cli.main [--profile X] gateway run``
         directly so the wrapper cmd.exe exits without a visible gateway console
 
@@ -398,16 +398,16 @@ def _build_gateway_cmd_script(
     """
     lines = ["@echo off", f"rem {_TASK_DESCRIPTION}"]
     lines.append(f"cd /d {_quote_cmd_script_arg(working_dir)}")
-    lines.append(f'set "HERMES_HOME={hermes_home}"')
+    lines.append(f'set "AGENTIC_OS_HOME={hermes_home}"')
     lines.append('set "PYTHONIOENCODING=utf-8"')
     lines.append('set "HERMES_GATEWAY_DETACHED=1"')
     pythonw_path, venv_dir, extra_pythonpath = _resolve_detached_python(python_path)
     # VIRTUAL_ENV lets the gateway's own python detection find the venv
     # if someone imports agentic_os_constants-based logic during startup.
-    lines.append(f'set "VIRTUAL_ENV={_preserve_hermes_home_path(venv_dir)}"')
+    lines.append(f'set "VIRTUAL_ENV={_preserve_agentic_os_home_path(venv_dir)}"')
     pythonpath_entries = [
-        _preserve_hermes_home_path(Path(__file__).resolve().parent.parent),
-        *[_preserve_hermes_home_path(entry) for entry in extra_pythonpath],
+        _preserve_agentic_os_home_path(Path(__file__).resolve().parent.parent),
+        *[_preserve_agentic_os_home_path(entry) for entry in extra_pythonpath],
     ]
     lines.append(f'set "PYTHONPATH={";".join([*pythonpath_entries, "%PYTHONPATH%"])}"')
 
@@ -469,9 +469,9 @@ def _build_gateway_vbs_script(
     # list2cmdline gives CreateProcess-correct quoting for WScript.Shell.Run.
     command_line = subprocess.list2cmdline(prog_args)
 
-    repo_root = _preserve_hermes_home_path(Path(__file__).resolve().parent.parent)
+    repo_root = _preserve_agentic_os_home_path(Path(__file__).resolve().parent.parent)
     static_pythonpath = os.pathsep.join(
-        [repo_root, *[_preserve_hermes_home_path(entry) for entry in extra_pythonpath]]
+        [repo_root, *[_preserve_agentic_os_home_path(entry) for entry in extra_pythonpath]]
     )
 
     lines = [
@@ -480,10 +480,10 @@ def _build_gateway_vbs_script(
         "Dim sh, env, existing_pp",
         'Set sh = CreateObject("WScript.Shell")',
         'Set env = sh.Environment("PROCESS")',
-        f"env.Item({_quote_vbs_string('HERMES_HOME')}) = {_quote_vbs_string(hermes_home)}",
+        f"env.Item({_quote_vbs_string('AGENTIC_OS_HOME')}) = {_quote_vbs_string(hermes_home)}",
         f"env.Item({_quote_vbs_string('PYTHONIOENCODING')}) = {_quote_vbs_string('utf-8')}",
         f"env.Item({_quote_vbs_string('HERMES_GATEWAY_DETACHED')}) = {_quote_vbs_string('1')}",
-        f"env.Item({_quote_vbs_string('VIRTUAL_ENV')}) = {_quote_vbs_string(_preserve_hermes_home_path(venv_dir))}",
+        f"env.Item({_quote_vbs_string('VIRTUAL_ENV')}) = {_quote_vbs_string(_preserve_agentic_os_home_path(venv_dir))}",
         # Mirror the cmd wrapper's ``PYTHONPATH=<static>;%PYTHONPATH%``: chain onto
         # whatever PYTHONPATH the task environment already carries, at runtime.
         f"existing_pp = env.Item({_quote_vbs_string('PYTHONPATH')})",
@@ -535,7 +535,7 @@ def _write_task_script() -> Path:
         get_python_path,
     )
 
-    python_path = _preserve_hermes_home_path(get_python_path())
+    python_path = _preserve_agentic_os_home_path(get_python_path())
     working_dir = _stable_gateway_working_dir(PROJECT_ROOT)
     hermes_home = str(Path(get_agentic_os_home()))
     profile_arg = _profile_arg(hermes_home)
@@ -782,9 +782,9 @@ def _build_gateway_argv() -> tuple[list[str], str, dict[str, str]]:
     )
 
     python_exe, venv_dir, extra_pythonpath = _resolve_detached_python(
-        _preserve_hermes_home_path(get_python_path())
+        _preserve_agentic_os_home_path(get_python_path())
     )
-    project_root = _preserve_hermes_home_path(PROJECT_ROOT)
+    project_root = _preserve_agentic_os_home_path(PROJECT_ROOT)
     working_dir = _stable_gateway_working_dir(PROJECT_ROOT)
     hermes_home = str(Path(get_agentic_os_home()))
     profile_arg = _profile_arg(hermes_home)
@@ -795,14 +795,14 @@ def _build_gateway_argv() -> tuple[list[str], str, dict[str, str]]:
     argv.extend(["gateway", "run"])
 
     env_overlay = {
-        "HERMES_HOME": hermes_home,
+        "AGENTIC_OS_HOME": hermes_home,
         "PYTHONIOENCODING": "utf-8",
         "HERMES_GATEWAY_DETACHED": "1",
-        "VIRTUAL_ENV": _preserve_hermes_home_path(venv_dir),
+        "VIRTUAL_ENV": _preserve_agentic_os_home_path(venv_dir),
     }
     _prepend_pythonpath(
         env_overlay,
-        [project_root, *[_preserve_hermes_home_path(entry) for entry in extra_pythonpath]]
+        [project_root, *[_preserve_agentic_os_home_path(entry) for entry in extra_pythonpath]]
         if extra_pythonpath
         else [project_root],
     )
@@ -872,7 +872,7 @@ def windowless_gateway_restart_spec(
         "VIRTUAL_ENV": str(venv_dir),
     }
     if hermes_home:
-        env_overlay["HERMES_HOME"] = hermes_home
+        env_overlay["AGENTIC_OS_HOME"] = hermes_home
     _prepend_pythonpath(
         env_overlay,
         [project_root, *extra_pythonpath] if extra_pythonpath else [project_root],

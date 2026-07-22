@@ -19,7 +19,7 @@ same flag means exactly one process touches the kanban DBs.
 ## Configuration
 
 On the dispatch-owning gateway (typically the `default` profile), no change is
-needed. On every other profile gateway, add to `~/.hermes/config.yaml`:
+needed. On every other profile gateway, add to `~/.agentic-os/config.yaml`:
 
 ```yaml
 kanban:

@@ -26,7 +26,7 @@ be online at the same time. Common reasons:
 
 Every profile already gets its own per-platform LaunchAgent
 (`ai.hermes.gateway-<name>.plist`) or systemd user service
-(`hermes-gateway-<name>.service`). This guide adds the patterns for managing
+(`agentic-os-gateway-<name>.service`). This guide adds the patterns for managing
 them collectively.
 
 ## Quick start
@@ -89,7 +89,7 @@ hermes config set gateway.multiplex_profiles true
 hermes gateway restart
 ```
 
-Equivalently, in the default profile's `~/.hermes/config.yaml`:
+Equivalently, in the default profile's `~/.agentic-os/config.yaml`:
 
 ```yaml
 gateway:
@@ -245,7 +245,7 @@ falls back to the default home.
 
 The CLI ships with single-profile lifecycle commands. To act across every
 profile, wrap them in a shell loop. Put the snippet below in
-`~/.local/bin/hermes-gateways` and `chmod +x` it:
+`~/.local/bin/agentic-os-gateways` and `chmod +x` it:
 
 ```sh
 #!/bin/sh
@@ -255,7 +255,7 @@ set -eu
 profiles="default coder personal-bot research"
 
 usage() {
-  echo "Usage: hermes-gateways {start|stop|restart|status|list}"
+  echo "Usage: agentic-os-gateways {start|stop|restart|status|list}"
 }
 
 run_for_profile() {
@@ -289,11 +289,11 @@ esac
 Then:
 
 ```bash
-hermes-gateways start      # start every configured profile
-hermes-gateways stop       # stop every configured profile
-hermes-gateways restart    # restart all
-hermes-gateways status     # status across all
-hermes-gateways list       # delegates to `hermes gateway list`
+agentic-os-gateways start      # start every configured profile
+agentic-os-gateways stop       # stop every configured profile
+agentic-os-gateways restart    # restart all
+agentic-os-gateways status     # status across all
+agentic-os-gateways list       # delegates to `hermes gateway list`
 ```
 
 :::tip
@@ -327,10 +327,10 @@ never clash:
 | Platform | Path                                                              |
 | -------- | ----------------------------------------------------------------- |
 | macOS    | `~/Library/LaunchAgents/ai.hermes.gateway-<profile>.plist`        |
-| Linux    | `~/.config/systemd/user/hermes-gateway-<profile>.service`         |
+| Linux    | `~/.config/systemd/user/agentic-os-gateway-<profile>.service`         |
 
 The default profile keeps the historical names: `ai.hermes.gateway.plist` /
-`hermes-gateway.service`.
+`agentic-os-gateway.service`.
 
 ## Viewing logs
 
@@ -338,18 +338,18 @@ Each profile writes to its own log files:
 
 ```bash
 # Default profile
-tail -f ~/.hermes/logs/gateway.log
-tail -f ~/.hermes/logs/gateway.error.log
+tail -f ~/.agentic-os/logs/gateway.log
+tail -f ~/.agentic-os/logs/gateway.error.log
 
 # Named profile
-tail -f ~/.hermes/profiles/<name>/logs/gateway.log
-tail -f ~/.hermes/profiles/<name>/logs/gateway.error.log
+tail -f ~/.agentic-os/profiles/<name>/logs/gateway.log
+tail -f ~/.agentic-os/profiles/<name>/logs/gateway.error.log
 ```
 
 Stream every profile's log simultaneously:
 
 ```bash
-tail -f ~/.hermes/logs/gateway.log ~/.hermes/profiles/*/logs/gateway.log
+tail -f ~/.agentic-os/logs/gateway.log ~/.agentic-os/profiles/*/logs/gateway.log
 ```
 
 The CLI also has a structured log viewer:
@@ -364,9 +364,9 @@ hermes logs --help              # filters, levels, JSON output
 
 ```bash
 hermes profile list             # profiles + model + gateway state
-hermes-gateways status          # full status across every profile
+agentic-os-gateways status          # full status across every profile
 launchctl list | grep hermes    # macOS — PIDs and labels
-systemctl --user list-units 'hermes-gateway-*'   # Linux — units
+systemctl --user list-units 'agentic-os-gateway-*'   # Linux — units
 ```
 
 ## Editing configuration
@@ -374,13 +374,13 @@ systemctl --user list-units 'hermes-gateway-*'   # Linux — units
 Every profile keeps its config inside its own directory:
 
 ```
-~/.hermes/profiles/<name>/
+~/.agentic-os/profiles/<name>/
 ├── .env              # API keys, bot tokens (chmod 600)
 ├── config.yaml       # model, provider, toolsets, gateway settings
 └── SOUL.md           # personality / system prompt
 ```
 
-The default profile uses `~/.hermes/` directly with the same three files.
+The default profile uses `~/.agentic-os/` directly with the same three files.
 
 Edit them with any editor or via the CLI:
 
@@ -394,7 +394,7 @@ After editing `.env` or `config.yaml`, restart the affected gateway:
 ```bash
 coder gateway restart
 # or, for everything:
-hermes-gateways restart
+agentic-os-gateways restart
 ```
 
 ## Keeping the host awake
@@ -409,7 +409,7 @@ to sleep when idle. Two patterns:
 ```bash
 caffeinate -dis                    # block display, idle, and system sleep
 caffeinate -dis -t 28800           # same, auto-exit after 8 hours
-caffeinate -i -w $(cat ~/.hermes/gateway.pid) &   # awake while default gateway runs
+caffeinate -i -w $(cat ~/.agentic-os/gateway.pid) &   # awake while default gateway runs
 
 # Persistent: run in background and forget
 nohup caffeinate -dis >/dev/null 2>&1 &
@@ -448,7 +448,7 @@ sudo loginctl enable-linger "$USER"
 ```
 
 After enabling lingering, your systemd user units (including
-`hermes-gateway-<profile>.service`) continue running across SSH disconnects
+`agentic-os-gateway-<profile>.service`) continue running across SSH disconnects
 and reboots.
 
 ## Token-conflict safety
@@ -461,7 +461,7 @@ To audit:
 
 ```bash
 grep -H 'TELEGRAM_BOT_TOKEN\|DISCORD_BOT_TOKEN' \
-     ~/.hermes/.env ~/.hermes/profiles/*/.env
+     ~/.agentic-os/.env ~/.agentic-os/profiles/*/.env
 ```
 
 ## Updating the code
@@ -471,7 +471,7 @@ every profile:
 
 ```bash
 hermes update
-hermes-gateways restart
+agentic-os-gateways restart
 ```
 
 User-modified skills are never overwritten.
@@ -491,8 +491,8 @@ service definition`). The service starts normally. Nothing to fix.
 If a profile's gateway shows `not running` but a process is still alive:
 
 ```bash
-ps -ef | grep "hermes_cli.*-p <profile>"
-cat ~/.hermes/profiles/<profile>/gateway.pid
+ps -ef | grep "agentic_os_cli.*-p <profile>"
+cat ~/.agentic-os/profiles/<profile>/gateway.pid
 kill -TERM <pid>          # graceful
 kill -KILL <pid>          # if that fails after a few seconds
 <profile> gateway start
@@ -506,7 +506,7 @@ launchctl unload ~/Library/LaunchAgents/ai.hermes.gateway-<profile>.plist
 launchctl load   ~/Library/LaunchAgents/ai.hermes.gateway-<profile>.plist
 
 # Linux
-systemctl --user restart hermes-gateway-<profile>.service
+systemctl --user restart agentic-os-gateway-<profile>.service
 ```
 
 ### Health check

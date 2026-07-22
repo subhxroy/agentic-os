@@ -291,7 +291,7 @@ class TestCmdStatus:
         honcho_cli.cmd_status(SimpleNamespace(all=False))
 
         out = capsys.readouterr().out
-        assert "Auth:           OAuth (hermes-agent" in out
+        assert "Auth:           OAuth (agentic-os" in out
         assert "API key:" not in out
 
 

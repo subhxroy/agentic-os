@@ -15,14 +15,14 @@ import sys
 import tempfile
 from pathlib import Path
 
-# Resolve the skill's scripts dir across layouts: standalone dev repo (tests/) and hermes-agent
+# Resolve the skill's scripts dir across layouts: standalone dev repo (tests/) and agentic-os
 # (tests/skills/ -> optional-skills/security/unbroker/scripts).
 _HERE = Path(__file__).resolve()
 _REL = ("optional-skills", "security", "unbroker", "scripts")
 _CANDIDATES = [
     _HERE.parent.parent / "skill" / "scripts",           # standalone dev repo
     _HERE.parent.parent.joinpath(*_REL),                 # standalone layout
-    _HERE.parent.parent.parent.joinpath(*_REL),          # hermes-agent (tests/skills/)
+    _HERE.parent.parent.parent.joinpath(*_REL),          # agentic-os (tests/skills/)
 ]
 SCRIPTS = next((c for c in _CANDIDATES if (c / "pdd.py").exists()), _CANDIDATES[0])
 sys.path.insert(0, str(SCRIPTS))
@@ -503,17 +503,17 @@ def test_cdp_launch_command_has_debug_flags():
     assert "--no-first-run" in cmd
 
 
-def test_cdp_default_profile_uses_hermes_home():
-    prev = os.environ.get("HERMES_HOME")
+def test_cdp_default_profile_uses_agentic_os_home():
+    prev = os.environ.get("AGENTIC_OS_HOME")
     with tempfile.TemporaryDirectory() as d:
-        os.environ["HERMES_HOME"] = d
+        os.environ["AGENTIC_OS_HOME"] = d
         try:
             assert cdp.default_profile() == Path(d) / "chrome-debug"
         finally:
             if prev is None:
-                os.environ.pop("HERMES_HOME", None)
+                os.environ.pop("AGENTIC_OS_HOME", None)
             else:
-                os.environ["HERMES_HOME"] = prev
+                os.environ["AGENTIC_OS_HOME"] = prev
 
 
 def test_cdp_endpoint_status_parses_live_and_handles_down():
@@ -1367,10 +1367,10 @@ def test_show_reads_back_case_state_and_evidence():
 
 
 def test_dotenv_env_fills_missing_creds_and_shell_wins():
-    prev_home = os.environ.get("HERMES_HOME")
+    prev_home = os.environ.get("AGENTIC_OS_HOME")
     prev_key = os.environ.get("BROWSERBASE_API_KEY")
     with tempfile.TemporaryDirectory() as d:
-        os.environ["HERMES_HOME"] = d
+        os.environ["AGENTIC_OS_HOME"] = d
         (Path(d) / ".env").write_text(
             '# comment\nBROWSERBASE_API_KEY="from_dotenv"\nFIRECRAWL_API_KEY=fc_123\n', encoding="utf-8")
         try:
@@ -1381,7 +1381,7 @@ def test_dotenv_env_fills_missing_creds_and_shell_wins():
             os.environ["BROWSERBASE_API_KEY"] = "from_shell"
             assert config.dotenv_env()["BROWSERBASE_API_KEY"] == "from_shell"  # shell wins
         finally:
-            for k, v in (("HERMES_HOME", prev_home), ("BROWSERBASE_API_KEY", prev_key)):
+            for k, v in (("AGENTIC_OS_HOME", prev_home), ("BROWSERBASE_API_KEY", prev_key)):
                 if v is None:
                     os.environ.pop(k, None)
                 else:

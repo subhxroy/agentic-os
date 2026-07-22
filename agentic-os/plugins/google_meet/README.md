@@ -57,7 +57,7 @@ Without v2: the "realtime" path is skipped; transcribe runs alone.
 | `audio_bridge.py` | v2: PulseAudio null-sink (Linux) + BlackHole probe (macOS) |
 | `realtime/openai_client.py` | v2: `RealtimeSession` + `RealtimeSpeaker` (file-queue → OpenAI Realtime WS → PCM) |
 | `node/protocol.py` | v3: message envelope + validation |
-| `node/registry.py` | v3: `$HERMES_HOME/workspace/meetings/nodes.json` |
+| `node/registry.py` | v3: `$AGENTIC_OS_HOME/workspace/meetings/nodes.json` |
 | `node/server.py` | v3: `NodeServer` (runs on host machine) |
 | `node/client.py` | v3: `NodeClient` (used by tool handlers + CLI on gateway) |
 | `node/cli.py` | v3: `hermes meet node {run,list,approve,remove,status,ping}` |
@@ -78,7 +78,7 @@ hermes meet join https://meet.google.com/abc-defg-hij    # transcribe
 Linux (preferred, most automated):
 ```bash
 hermes meet install --realtime                     # installs pulseaudio-utils
-echo 'OPENAI_API_KEY=sk-...' >> ~/.hermes/.env
+echo 'OPENAI_API_KEY=sk-...' >> ~/.agentic-os/.env
 hermes meet join https://meet.google.com/abc-defg-hij --mode realtime
 # then from the agent or CLI:
 hermes meet say "Good morning everyone, I'm the note-taker bot."
@@ -88,7 +88,7 @@ macOS:
 ```bash
 hermes meet install --realtime     # runs: brew install blackhole-2ch ffmpeg
 # then — manually! — open System Settings → Sound → Input → BlackHole 2ch
-echo 'OPENAI_API_KEY=sk-...' >> ~/.hermes/.env
+echo 'OPENAI_API_KEY=sk-...' >> ~/.agentic-os/.env
 hermes meet join https://meet.google.com/abc-defg-hij --mode realtime
 ```
 

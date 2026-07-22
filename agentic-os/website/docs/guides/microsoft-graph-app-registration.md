@@ -15,7 +15,7 @@ This guide walks through:
 4. Admin-consenting those permissions
 5. (Optional) Scoping the app to specific users with an Application Access Policy
 
-You need **tenant admin rights** (or an admin to grant consent on your behalf) to finish this. Bookmark the values you collect — they go into `~/.hermes/.env` at the end.
+You need **tenant admin rights** (or an admin to grant consent on your behalf) to finish this. Bookmark the values you collect — they go into `~/.agentic-os/.env` at the end.
 
 ## Prerequisites
 
@@ -121,7 +121,7 @@ Without the policy, **any** user's meetings are readable — that's what the per
 
 ## Step 5: Write the Credentials to Your Env File
 
-Put the three values you collected into `~/.hermes/.env`:
+Put the three values you collected into `~/.agentic-os/.env`:
 
 ```bash
 MSGRAPH_TENANT_ID=<directory-tenant-id>
@@ -132,7 +132,7 @@ MSGRAPH_CLIENT_SECRET=<client-secret-value>
 Set file permissions so only you can read the secret:
 
 ```bash
-chmod 600 ~/.hermes/.env
+chmod 600 ~/.agentic-os/.env
 ```
 
 ## Step 6: Verify the Token Flow
@@ -164,7 +164,7 @@ A successful run prints a long token string and a health dict showing `cached: T
 Azure client secrets have a hard expiry. Before yours expires:
 
 1. Create a second client secret in step 2 without deleting the first one.
-2. Update `MSGRAPH_CLIENT_SECRET` in `~/.hermes/.env` with the new value.
+2. Update `MSGRAPH_CLIENT_SECRET` in `~/.agentic-os/.env` with the new value.
 3. Restart the gateway so the new secret is picked up: `hermes gateway restart`.
 4. Verify with the smoke test above.
 5. Delete the old secret from the Azure portal.

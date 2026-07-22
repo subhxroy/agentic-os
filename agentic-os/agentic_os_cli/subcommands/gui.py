@@ -44,7 +44,7 @@ def build_gui_parser(subparsers, *, cmd_gui: Callable) -> None:
     )
     gui_parser.add_argument(
         "--hermes-root",
-        help="Override the Hermes source root used by Desktop (sets HERMES_DESKTOP_HERMES_ROOT)",
+        help="Override the Hermes source root used by Desktop (sets HERMES_DESKTOP_AGENTIC_ROOT)",
     )
     gui_parser.add_argument(
         "--cwd",

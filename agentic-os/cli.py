@@ -213,7 +213,7 @@ from agentic_os_cli.banner import _format_context_length, format_banner_version_
 _COMMAND_SPINNER_FRAMES = ("⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏")
 
 
-# Load .env from ~/.hermes/.env first, then project root as dev fallback.
+# Load .env from ~/.agentic-os/.env first, then project root as dev fallback.
 # User-managed env files should override stale shell exports on restart.
 from agentic_os_constants import get_agentic_os_home, display_agentic_os_home
 from agentic_os_cli.browser_connect import (
@@ -225,9 +225,9 @@ from agentic_os_cli.browser_connect import (
 from agentic_os_cli.env_loader import load_hermes_dotenv
 from utils import base_url_host_matches, fast_safe_load
 
-_hermes_home = get_agentic_os_home()
+_agentic_os_home = get_agentic_os_home()
 _project_env = Path(__file__).parent / '.env'
-load_hermes_dotenv(hermes_home=_hermes_home, project_env=_project_env)
+load_hermes_dotenv(hermes_home=_agentic_os_home, project_env=_project_env)
 
 
 _REASONING_TAGS = (
@@ -340,14 +340,14 @@ def _load_prefill_messages(file_path: str) -> List[Dict[str, Any]]:
     The file should contain a JSON array of {role, content} dicts, e.g.:
         [{"role": "user", "content": "Hi"}, {"role": "assistant", "content": "Hello!"}]
     
-    Relative paths are resolved from ~/.hermes/.
+    Relative paths are resolved from ~/.agentic-os/.
     Returns an empty list if the path is empty or the file doesn't exist.
     """
     if not file_path:
         return []
     path = Path(file_path).expanduser()
     if not path.is_absolute():
-        path = _hermes_home / path
+        path = _agentic_os_home / path
     if not path.exists():
         logger.warning("Prefill messages file not found: %s", path)
         return []
@@ -410,20 +410,20 @@ def load_cli_config() -> Dict[str, Any]:
     Load CLI configuration from config files.
     
     Config lookup order:
-    1. ~/.hermes/config.yaml (user config - preferred)
+    1. ~/.agentic-os/config.yaml (user config - preferred)
     2. ./cli-config.yaml (project config - fallback)
     
     Environment variables take precedence over config file values.
     Returns default values if no config file exists.
 
     If HERMES_IGNORE_USER_CONFIG=1 is set (via ``hermes chat --ignore-user-config``),
-    the user config at ``~/.hermes/config.yaml`` is skipped entirely and only the
+    the user config at ``~/.agentic-os/config.yaml`` is skipped entirely and only the
     built-in defaults plus the project-level ``cli-config.yaml`` (if any) are used.
     Credentials in ``.env`` are still loaded — this flag only suppresses
     behavioral/config settings.
     """
-    # Check user config first ({HERMES_HOME}/config.yaml)
-    user_config_path = _hermes_home / 'config.yaml'
+    # Check user config first ({AGENTIC_OS_HOME}/config.yaml)
+    user_config_path = _agentic_os_home / 'config.yaml'
     project_config_path = Path(__file__).parent / 'cli-config.yaml'
 
     # --ignore-user-config: force-skip the user config.yaml (still honor project
@@ -778,7 +778,7 @@ def load_cli_config() -> Dict[str, Any]:
 CLI_CONFIG = load_cli_config()
 
 
-# Initialize centralized logging early — agent.log + errors.log in ~/.hermes/logs/.
+# Initialize centralized logging early — agent.log + errors.log in ~/.agentic-os/logs/.
 # This ensures CLI sessions produce a log trail even before AIAgent is instantiated.
 try:
     from agentic_os_logging import setup_logging
@@ -1443,7 +1443,7 @@ def _resolve_worktree_base(repo_root: str) -> tuple:
     """Resolve the freshest base ref to branch a new worktree from.
 
     The standalone clone's ``HEAD`` can lag the remote by hundreds of commits
-    (the ``~/.hermes/hermes-agent`` clone is updated only by ``hermes update``,
+    (the ``~/.agentic-os/agentic-os`` clone is updated only by ``hermes update``,
     not on every session). Branching a worktree from that stale ``HEAD`` roots
     every new branch on an old base — so the PR diff GitHub computes against
     current ``main`` balloons with unrelated changes, and the agent has to
@@ -1874,13 +1874,13 @@ def _run_state_db_auto_maintenance(session_db) -> None:
     try:
         from agentic_os_cli.config import load_config as _load_full_config
         from agentic_os_constants import get_agentic_os_home as _get_agentic_os_home
-        _hermes_home_maint = _get_agentic_os_home()
+        _agentic_os_home_maint = _get_agentic_os_home()
 
         # One-time prune of empty TUI ghost sessions.
         try:
             if not session_db.get_meta("ghost_session_prune_v1"):
                 pruned = session_db.prune_empty_ghost_sessions(
-                    sessions_dir=_hermes_home_maint / "sessions"
+                    sessions_dir=_agentic_os_home_maint / "sessions"
                 )
                 session_db.set_meta("ghost_session_prune_v1", "1")
                 if pruned:
@@ -1907,7 +1907,7 @@ def _run_state_db_auto_maintenance(session_db) -> None:
             retention_days=int(cfg.get("retention_days", 90)),
             min_interval_hours=int(cfg.get("min_interval_hours", 24)),
             vacuum=bool(cfg.get("vacuum_after_prune", True)),
-            sessions_dir=_hermes_home_maint / "sessions",
+            sessions_dir=_agentic_os_home_maint / "sessions",
         )
     except Exception as exc:
         logger.debug("state.db auto-maintenance skipped: %s", exc)
@@ -2161,9 +2161,9 @@ def _hex_to_ansi(hex_color: str, *, bold: bool = False) -> str:
 # Terminal.app / iTerm2 background.
 #
 # Detection priority:
-#   1. HERMES_LIGHT / HERMES_TUI_LIGHT env (true/false) — explicit override
-#   2. HERMES_TUI_THEME=light|dark — explicit theme
-#   3. HERMES_TUI_BACKGROUND=#RRGGBB — explicit bg hint
+#   1. HERMES_LIGHT / AGENTIC_OS_TUI_LIGHT env (true/false) — explicit override
+#   2. AGENTIC_OS_TUI_THEME=light|dark — explicit theme
+#   3. AGENTIC_OS_TUI_BACKGROUND=#RRGGBB — explicit bg hint
 #   4. COLORFGBG env (set by xterm/Konsole/urxvt) — bg slot 7/15 = light
 #   5. OSC 11 query (\x1b]11;?\x1b\\) — ask the terminal directly
 #   6. Default: assume dark (matches the legacy Hermes assumption)
@@ -2269,7 +2269,7 @@ def _detect_light_mode() -> bool:
     result = False
     try:
         # 1. Explicit env override
-        for var in ("HERMES_LIGHT", "HERMES_TUI_LIGHT"):
+        for var in ("HERMES_LIGHT", "AGENTIC_OS_TUI_LIGHT"):
             v = (os.environ.get(var) or "").strip().lower()
             if _TRUE_RE.match(v):
                 result = True
@@ -2279,7 +2279,7 @@ def _detect_light_mode() -> bool:
                 _LIGHT_MODE_CACHE = result
                 return result
         # 2. Theme hint
-        theme = (os.environ.get("HERMES_TUI_THEME") or "").strip().lower()
+        theme = (os.environ.get("AGENTIC_OS_TUI_THEME") or "").strip().lower()
         if theme == "light":
             result = True
             _LIGHT_MODE_CACHE = result
@@ -2288,7 +2288,7 @@ def _detect_light_mode() -> bool:
             _LIGHT_MODE_CACHE = result
             return result
         # 3. Explicit bg hex
-        bg_hint = os.environ.get("HERMES_TUI_BACKGROUND") or ""
+        bg_hint = os.environ.get("AGENTIC_OS_TUI_BACKGROUND") or ""
         bg_lum = _luminance_from_hex(bg_hint)
         if bg_lum is not None:
             result = bg_lum >= 0.5
@@ -3705,7 +3705,7 @@ def save_config_value(key_path: str, value: any) -> bool:
     Save a value to the active config file at the specified key path.
     
     Respects the same lookup order as load_cli_config():
-    1. ~/.hermes/config.yaml (user config - preferred, used if it exists)
+    1. ~/.agentic-os/config.yaml (user config - preferred, used if it exists)
     2. ./cli-config.yaml (project config - fallback)
     
     Args:
@@ -3716,12 +3716,12 @@ def save_config_value(key_path: str, value: any) -> bool:
         True if successful, False otherwise
     """
     # Use the same precedence as load_cli_config: user config first, then project config
-    user_config_path = _hermes_home / 'config.yaml'
+    user_config_path = _agentic_os_home / 'config.yaml'
     project_config_path = Path(__file__).parent / 'cli-config.yaml'
     config_path = user_config_path if user_config_path.exists() else project_config_path
     
     try:
-        # Ensure parent directory exists (for ~/.hermes/config.yaml on first use)
+        # Ensure parent directory exists (for ~/.agentic-os/config.yaml on first use)
         config_path.parent.mkdir(parents=True, exist_ok=True)
         
         # Save back atomically while preserving comments, ordering, quotes, and
@@ -4081,12 +4081,12 @@ class HermesCLI(CLIAgentSetupMixin, CLICommandsMixin, CLIBillingMixin):
 
         # Opportunistic state.db maintenance — runs at most once per
         # min_interval_hours, tracked via state_meta in state.db itself so
-        # it's shared across all Hermes processes for this HERMES_HOME.
+        # it's shared across all Hermes processes for this AGENTIC_OS_HOME.
         # Never blocks startup on failure.
         _run_state_db_auto_maintenance(self._session_db)
 
         # Opportunistic shadow-repo cleanup — deletes orphan/stale
-        # checkpoint repos under ~/.hermes/checkpoints/.  Opt-in via
+        # checkpoint repos under ~/.agentic-os/checkpoints/.  Opt-in via
         # checkpoints.auto_prune, idempotent via .last_prune marker.
         _run_checkpoint_auto_maintenance()
 
@@ -4103,7 +4103,7 @@ class HermesCLI(CLIAgentSetupMixin, CLICommandsMixin, CLIBillingMixin):
             self.session_id = f"{timestamp_str}_{short_uuid}"
         
         # History file for persistent input recall across sessions
-        self._history_file = _hermes_home / ".hermes_history"
+        self._history_file = _agentic_os_home / ".hermes_history"
         self._last_invalidate: float = 0.0  # throttle UI repaints
         self._app = None
 
@@ -6423,7 +6423,7 @@ class HermesCLI(CLIAgentSetupMixin, CLICommandsMixin, CLIBillingMixin):
     def _try_attach_clipboard_image(self) -> bool:
         """Check clipboard for an image and attach it if found.
 
-        Saves the image to ~/.hermes/images/ and appends the path to
+        Saves the image to ~/.agentic-os/images/ and appends the path to
         ``_attached_images``.  Returns True if an image was attached.
         """
         from agentic_os_cli.clipboard import save_clipboard_image
@@ -6848,7 +6848,7 @@ class HermesCLI(CLIAgentSetupMixin, CLICommandsMixin, CLIBillingMixin):
         terminal_cwd = os.getenv("TERMINAL_CWD", os.getcwd())
         terminal_timeout = os.getenv("TERMINAL_TIMEOUT", "60")
         
-        user_config_path = _hermes_home / 'config.yaml'
+        user_config_path = _agentic_os_home / 'config.yaml'
         project_config_path = Path(__file__).parent / 'cli-config.yaml'
         if user_config_path.exists():
             config_path = user_config_path
@@ -7368,7 +7368,7 @@ class HermesCLI(CLIAgentSetupMixin, CLICommandsMixin, CLIBillingMixin):
 
 
     def save_conversation(self):
-        """Save the current conversation to a JSON snapshot under ~/.hermes/sessions/saved/.
+        """Save the current conversation to a JSON snapshot under ~/.agentic-os/sessions/saved/.
 
         The snapshot is a convenience export for sharing or off-line inspection;
         every message is already persisted incrementally to the SQLite session
@@ -10549,7 +10549,7 @@ class HermesCLI(CLIAgentSetupMixin, CLICommandsMixin, CLIBillingMixin):
             print(f"  ❌ MCP reload failed: {e}")
 
     def _reload_skills(self) -> None:
-        """Reload skills: rescan ~/.hermes/skills/ and queue a note for the
+        """Reload skills: rescan ~/.agentic-os/skills/ and queue a note for the
         next user turn.
 
         Skills don't need to live in the system prompt for the model to use
@@ -10755,7 +10755,7 @@ class HermesCLI(CLIAgentSetupMixin, CLICommandsMixin, CLIBillingMixin):
                         if not is_seen(CLI_CONFIG, TOOL_PROGRESS_FLAG):
                             self._long_tool_hint_fired = True
                             _cprint(f"  {_DIM}{tool_progress_hint_cli()}{_RST}")
-                            mark_seen(_hermes_home / "config.yaml", TOOL_PROGRESS_FLAG)
+                            mark_seen(_agentic_os_home / "config.yaml", TOOL_PROGRESS_FLAG)
                             CLI_CONFIG.setdefault("onboarding", {}).setdefault("seen", {})[TOOL_PROGRESS_FLAG] = True
                 except Exception:
                     pass
@@ -12201,7 +12201,7 @@ class HermesCLI(CLIAgentSetupMixin, CLICommandsMixin, CLIBillingMixin):
                             self._clear_active_overlays_for_interrupt()
                             # Debug: log to file (stdout may be devnull from redirect_stdout)
                             try:
-                                _dbg = _hermes_home / "interrupt_debug.log"
+                                _dbg = _agentic_os_home / "interrupt_debug.log"
                                 with open(_dbg, "a", encoding="utf-8") as _f:
                                     _f.write(f"{time.strftime('%H:%M:%S')} interrupt fired: msg={str(interrupt_msg)[:60]!r}, "
                                              f"children={len(self.agent._active_children)}, "
@@ -12702,7 +12702,7 @@ class HermesCLI(CLIAgentSetupMixin, CLICommandsMixin, CLIBillingMixin):
             # include `-p <profile>` for non-default profiles. Without this,
             # copying the hint from a non-default profile fails to find the
             # session on the next invocation. The "default" and "custom"
-            # profile names use the standard HERMES_HOME, so no -p needed.
+            # profile names use the standard AGENTIC_OS_HOME, so no -p needed.
             try:
                 from agentic_os_cli.profiles import get_active_profile_name
                 _active_profile = get_active_profile_name()
@@ -13361,7 +13361,7 @@ class HermesCLI(CLIAgentSetupMixin, CLICommandsMixin, CLIBillingMixin):
                         self._interrupt_queue.put(payload)
                         # Debug: log to file when message enters interrupt queue
                         try:
-                            _dbg = _hermes_home / "interrupt_debug.log"
+                            _dbg = _agentic_os_home / "interrupt_debug.log"
                             with open(_dbg, "a", encoding="utf-8") as _f:
                                 _f.write(f"{time.strftime('%H:%M:%S')} ENTER: queued interrupt msg={str(payload)[:60]!r}, "
                                          f"agent_running={self._agent_running}\n")
@@ -13381,7 +13381,7 @@ class HermesCLI(CLIAgentSetupMixin, CLICommandsMixin, CLIBillingMixin):
                         )
                         if not is_seen(CLI_CONFIG, BUSY_INPUT_FLAG):
                             _cprint(f"  {_DIM}{busy_input_hint_cli(self.busy_input_mode)}{_RST}")
-                            mark_seen(_hermes_home / "config.yaml", BUSY_INPUT_FLAG)
+                            mark_seen(_agentic_os_home / "config.yaml", BUSY_INPUT_FLAG)
                             CLI_CONFIG.setdefault("onboarding", {}).setdefault("seen", {})[BUSY_INPUT_FLAG] = True
                     except Exception:
                         pass
@@ -14002,7 +14002,7 @@ class HermesCLI(CLIAgentSetupMixin, CLICommandsMixin, CLIBillingMixin):
                 chars_hit = char_threshold > 0 and len(pasted_text) >= char_threshold
                 if (lines_hit or chars_hit) and not buf.text.strip().startswith('/'):
                     _paste_counter[0] += 1
-                    paste_dir = _hermes_home / "pastes"
+                    paste_dir = _agentic_os_home / "pastes"
                     paste_dir.mkdir(parents=True, exist_ok=True)
                     paste_file = paste_dir / f"paste_{_paste_counter[0]}_{datetime.now().strftime('%H%M%S')}.txt"
                     paste_file.write_text(pasted_text, encoding="utf-8")
@@ -14173,7 +14173,7 @@ class HermesCLI(CLIAgentSetupMixin, CLICommandsMixin, CLIBillingMixin):
             chars_hit = char_threshold > 0 and len(text) >= char_threshold
             if (lines_hit or chars_hit) and is_paste and not text.startswith('/'):
                 _paste_counter[0] += 1
-                paste_dir = _hermes_home / "pastes"
+                paste_dir = _agentic_os_home / "pastes"
                 paste_dir.mkdir(parents=True, exist_ok=True)
                 paste_file = paste_dir / f"paste_{_paste_counter[0]}_{datetime.now().strftime('%H%M%S')}.txt"
                 paste_file.write_text(text, encoding="utf-8")
@@ -15666,7 +15666,7 @@ def main(
 
     # Signal to terminal_tool that we're in interactive mode
     # This enables interactive sudo password prompts with timeout
-    os.environ["HERMES_INTERACTIVE"] = "1"
+    os.environ["AGENTIC_OS_INTERACTIVE"] = "1"
     
     # Handle gateway mode (messaging + cron)
     if gateway:

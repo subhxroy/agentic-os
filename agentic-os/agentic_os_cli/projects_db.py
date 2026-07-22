@@ -11,7 +11,7 @@ persisted entity the user creates and names. It anchors:
   under the project's primary repo with a deterministic branch name, instead
   of the random ``wt/<task-id>`` fallback.
 
-Scope: **per-profile**, stored at ``$HERMES_HOME/projects.db`` (resolved via
+Scope: **per-profile**, stored at ``$AGENTIC_OS_HOME/projects.db`` (resolved via
 ``get_agentic_os_home()``), mirroring sessions / config / cron. This deliberately
 differs from kanban, whose board DB is root-anchored and shared across
 profiles. A Project may *bind* a kanban board (``board_slug``) so the two
@@ -42,7 +42,7 @@ from agentic_os_constants import get_agentic_os_home
 
 
 def projects_db_path() -> Path:
-    """The per-profile projects DB path (``$HERMES_HOME/projects.db``).
+    """The per-profile projects DB path (``$AGENTIC_OS_HOME/projects.db``).
 
     Profile-aware: ``get_agentic_os_home()`` already points at the active profile's
     home. Tests pass an explicit ``db_path`` to :func:`connect`.
@@ -102,7 +102,7 @@ CREATE TABLE IF NOT EXISTS discovered_repos (
 
 # Lowercase alphanumerics, hyphens, underscores; 1-64 chars; no leading
 # separator. Strict enough to stop traversal and path separators, loose enough
-# for kebab-case names like ``hermes-agent``. Display formatting (spaces,
+# for kebab-case names like ``agentic-os``. Display formatting (spaces,
 # emoji, capitalisation) lives in ``name``; the slug is just a stable handle.
 _SLUG_RE = re.compile(r"^[a-z0-9][a-z0-9\-_]{0,63}$")
 

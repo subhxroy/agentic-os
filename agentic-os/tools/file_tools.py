@@ -587,7 +587,7 @@ def _get_hermes_config_resolved() -> str | None:
         _hermes_config_resolved = str(get_config_path().resolve())
     except Exception:
         try:
-            _hermes_config_resolved = str(Path(_expand_tilde("~/.hermes/config.yaml")).resolve())
+            _hermes_config_resolved = str(Path(_expand_tilde("~/.agentic-os/config.yaml")).resolve())
         except Exception:
             _hermes_config_resolved = None
     return _hermes_config_resolved
@@ -618,7 +618,7 @@ def _check_sensitive_path(filepath: str, task_id: str = "default") -> str | None
         return (
             f"Refusing to write to Hermes config file: {filepath}\n"
             "Agent cannot modify security-sensitive configuration. "
-            "Edit ~/.hermes/config.yaml directly or use 'hermes config' instead."
+            "Edit ~/.agentic-os/config.yaml directly or use 'hermes config' instead."
         )
     return None
 
@@ -696,7 +696,7 @@ def _check_cross_profile_path(filepath: str, task_id: str = "default") -> str | 
         return None
 
     # Resolve via the task's cwd so a relative ``skills/foo/SKILL.md``
-    # in a session that cd'd into ``~/.hermes/profiles/other/`` is
+    # in a session that cd'd into ``~/.agentic-os/profiles/other/`` is
     # classified against the right base.
     try:
         resolved = str(_resolve_path_for_task(filepath, task_id))
@@ -1197,9 +1197,9 @@ def read_file_tool(path: str, offset: int = 1, limit: int = 500, task_id: str = 
 
         # ── Hermes internal path guard ────────────────────────────────
         # Prevent prompt injection via catalog or hub metadata files,
-        # and block credential stores under HERMES_HOME.  Pass the
+        # and block credential stores under AGENTIC_OS_HOME.  Pass the
         # already-resolved path so a relative-path read against
-        # TERMINAL_CWD == HERMES_HOME (e.g. "auth.json") still hits the
+        # TERMINAL_CWD == AGENTIC_OS_HOME (e.g. "auth.json") still hits the
         # denylist — get_read_block_error's own resolve() runs against
         # the Python process cwd, which can differ.
         block_error = get_read_block_error(str(_resolved))

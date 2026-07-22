@@ -144,7 +144,7 @@ impl Drop for UpdateMarkerGuard {
 
 async fn run_update(app: AppHandle) -> Result<()> {
     let hermes_home = crate::paths::hermes_home();
-    let install_root = hermes_home.join("hermes-agent");
+    let install_root = hermes_home.join("agentic-os");
 
     // Mutual exclusion (#50238): publish an "update in progress" marker for the
     // entire duration of this update. A desktop instance the user relaunches
@@ -734,7 +734,7 @@ fn resolve_hermes(install_root: &Path) -> Option<PathBuf> {
 fn update_child_env(install_root: &Path) -> Vec<(String, OsString)> {
     let hermes_home = crate::paths::hermes_home();
     let mut envs = vec![(
-        "HERMES_HOME".to_string(),
+        "AGENTIC_OS_HOME".to_string(),
         hermes_home.as_os_str().to_os_string(),
     )];
     // `hermes update` is a Python CLI writing to a pipe here, so CPython
@@ -1046,7 +1046,7 @@ mod tests {
 
     #[test]
     fn venv_hermes_is_under_install_root() {
-        let root = Path::new("/x/hermes-agent");
+        let root = Path::new("/x/agentic-os");
         let shim = venv_hermes(root);
         assert!(shim.starts_with(root));
         assert!(shim.to_string_lossy().contains("venv"));
@@ -1059,7 +1059,7 @@ mod tests {
 
     #[test]
     fn update_child_env_forces_unbuffered_python() {
-        let envs = update_child_env(Path::new("/x/hermes-agent"));
+        let envs = update_child_env(Path::new("/x/agentic-os"));
         assert!(
             envs.iter()
                 .any(|(k, v)| k == "PYTHONUNBUFFERED" && v.to_str() == Some("1")),
@@ -1069,7 +1069,7 @@ mod tests {
 
     #[test]
     fn lock_probe_paths_include_desktop_app_payload() {
-        let root = Path::new("/x/hermes-agent");
+        let root = Path::new("/x/agentic-os");
         let probes = install_lock_probe_paths(root);
 
         assert!(
@@ -1089,7 +1089,7 @@ mod tests {
 
     #[test]
     fn locked_paths_ignores_missing_payloads() {
-        let root = Path::new("/nonexistent/hermes-agent");
+        let root = Path::new("/nonexistent/agentic-os");
         let probes = install_lock_probe_paths(root);
 
         assert!(locked_paths(&probes).is_empty());

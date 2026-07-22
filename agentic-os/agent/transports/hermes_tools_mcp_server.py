@@ -22,7 +22,7 @@ Scope (what we expose):
   - text_to_speech                       — TTS
   - kanban_* (complete/block/comment/    — kanban worker + orchestrator
     heartbeat/show/list/create/            handoff (stateless: read env var,
-    unblock/link)                          write ~/.hermes/kanban.db)
+    unblock/link)                          write ~/.agentic-os/kanban.db)
 
 What we DO NOT expose:
   - terminal / shell                     — codex's own shell tool
@@ -37,7 +37,7 @@ What we DO NOT expose:
                                            drive them. See the inline
                                            comment on EXPOSED_TOOLS below.
 
-Run with: python -m agent.transports.hermes_tools_mcp_server
+Run with: python -m agent.transports.agentic_os_tools_mcp_server
 Spawned by: CodexAppServerSession.ensure_started() when the runtime is
             active and config opts in.
 """
@@ -132,7 +132,7 @@ EXPOSED_TOOLS: tuple[str, ...] = (
     # in the callback, a worker spawned with openai_runtime=codex_app_server
     # could do the work but couldn't report completion back to the kernel,
     # making it hang until timeout. Stateless dispatch — they just read
-    # the env var and write to ~/.hermes/kanban.db.
+    # the env var and write to ~/.agentic-os/kanban.db.
     "kanban_complete",
     "kanban_block",
     "kanban_comment",
@@ -246,7 +246,7 @@ def _build_server() -> Any:
 
 
 def main(argv: Optional[list[str]] = None) -> int:
-    """Entry point for `python -m agent.transports.hermes_tools_mcp_server`."""
+    """Entry point for `python -m agent.transports.agentic_os_tools_mcp_server`."""
     argv = argv or sys.argv[1:]
     verbose = "--verbose" in argv or "-v" in argv
 

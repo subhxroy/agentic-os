@@ -199,21 +199,21 @@ def test_write_json_skips_flush_when_disable_flush_true(monkeypatch):
 
 
 def test_disable_flush_env_var_actually_wires_to_module_constant(monkeypatch):
-    """End-to-end: setting `HERMES_TUI_GATEWAY_NO_FLUSH=1` and importing
+    """End-to-end: setting `AGENTIC_OS_TUI_GATEWAY_NO_FLUSH=1` and importing
     `tui_gateway.transport` fresh actually flips `_DISABLE_FLUSH` true.
 
     Reloads only the transport module — server.py is untouched so its
     atexit hooks/worker pool stay intact."""
     import importlib
 
-    monkeypatch.setenv("HERMES_TUI_GATEWAY_NO_FLUSH", "1")
+    monkeypatch.setenv("AGENTIC_OS_TUI_GATEWAY_NO_FLUSH", "1")
     transport_mod = importlib.reload(importlib.import_module("tui_gateway.transport"))
 
     try:
         assert transport_mod._DISABLE_FLUSH is True
     finally:
         # Restore the env-disabled state so other tests see the default.
-        monkeypatch.delenv("HERMES_TUI_GATEWAY_NO_FLUSH", raising=False)
+        monkeypatch.delenv("AGENTIC_OS_TUI_GATEWAY_NO_FLUSH", raising=False)
         importlib.reload(transport_mod)
 
 
@@ -1038,7 +1038,7 @@ def test_sync_session_key_after_compress_reanchors_active_session_lease(
     server, monkeypatch, tmp_path
 ):
     home = tmp_path / ".hermes"
-    monkeypatch.setenv("HERMES_HOME", str(home))
+    monkeypatch.setenv("AGENTIC_OS_HOME", str(home))
 
     from agentic_os_cli.active_sessions import (
         active_session_registry_snapshot,
@@ -1323,12 +1323,12 @@ def test_make_agent_accepts_list_system_prompt(server, monkeypatch):
 
 
 def test_config_load_missing(server, tmp_path):
-    server._hermes_home = tmp_path
+    server._agentic_os_home = tmp_path
     assert server._load_cfg() == {}
 
 
 def test_config_roundtrip(server, tmp_path):
-    server._hermes_home = tmp_path
+    server._agentic_os_home = tmp_path
     server._save_cfg({"model": "test/model"})
     assert server._load_cfg()["model"] == "test/model"
 

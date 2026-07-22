@@ -43,15 +43,15 @@ familiar with that flow can read this without surprises.
 Token storage layout
 --------------------
 - Per-user tokens (keyed by sender email):
-    ``${HERMES_HOME}/google_chat_user_tokens/<sanitized_email>.json``
+    ``${AGENTIC_OS_HOME}/google_chat_user_tokens/<sanitized_email>.json``
 - Legacy single-user token (fallback, untouched for backward compat):
-    ``${HERMES_HOME}/google_chat_user_token.json``
+    ``${AGENTIC_OS_HOME}/google_chat_user_token.json``
 - Per-user pending OAuth state during /setup-files start → exchange:
-    ``${HERMES_HOME}/google_chat_user_oauth_pending/<sanitized_email>.json``
+    ``${AGENTIC_OS_HOME}/google_chat_user_oauth_pending/<sanitized_email>.json``
 - Legacy pending state:
-    ``${HERMES_HOME}/google_chat_user_oauth_pending.json``
+    ``${AGENTIC_OS_HOME}/google_chat_user_oauth_pending.json``
 - OAuth client secret (profile-scoped — each profile registers its own):
-    ``${HERMES_HOME}/google_chat_user_client_secret.json``
+    ``${AGENTIC_OS_HOME}/google_chat_user_client_secret.json``
 """
 
 from __future__ import annotations
@@ -72,16 +72,16 @@ from typing import Any, List, Optional, Tuple
 # after the in-tree → plugin migration. See adapter.py for context.
 logger = logging.getLogger("gateway.platforms.google_chat_user_oauth")
 
-# Use the project's HERMES_HOME helper so the token follows the user's
-# profile (e.g. tests can override via HERMES_HOME=/tmp/...).
+# Use the project's AGENTIC_OS_HOME helper so the token follows the user's
+# profile (e.g. tests can override via AGENTIC_OS_HOME=/tmp/...).
 try:
     from agentic_os_constants import display_agentic_os_home, get_agentic_os_home
 except (ModuleNotFoundError, ImportError):
     # Fallback for environments where agentic_os_constants isn't importable
     # (mirrors the same fallback used by the google-workspace skill's
-    # _hermes_home.py shim).
+    # _agentic_os_home.py shim).
     def get_agentic_os_home() -> Path:
-        val = os.environ.get("HERMES_HOME", "").strip()
+        val = os.environ.get("AGENTIC_OS_HOME", "").strip()
         return Path(val) if val else Path.home() / ".hermes"
 
     def display_agentic_os_home() -> str:
@@ -94,10 +94,10 @@ except (ModuleNotFoundError, ImportError):
 from utils import atomic_replace
 
 
-def _hermes_home() -> Path:
-    """Resolve HERMES_HOME at call time (NOT module import).
+def _agentic_os_home() -> Path:
+    """Resolve AGENTIC_OS_HOME at call time (NOT module import).
 
-    Tests and ``HERMES_HOME=...`` env overrides need this to be late-
+    Tests and ``AGENTIC_OS_HOME=...`` env overrides need this to be late-
     binding. If we cached the path at import time, switching profiles
     or tweaking env vars in tests would silently keep using the old
     path."""
@@ -107,7 +107,7 @@ def _hermes_home() -> Path:
 # Filesystem-safe key: lowercase, allow ``[a-z0-9._-@]``, replace anything
 # else with ``_``. ``ramon.fernandez@nttdata.com`` stays human-readable
 # (``ramon.fernandez@nttdata.com.json``) which makes admin debugging by
-# ``ls ~/.hermes/google_chat_user_tokens/`` trivial.
+# ``ls ~/.agentic-os/google_chat_user_tokens/`` trivial.
 _EMAIL_FS_RE = re.compile(r"[^a-z0-9._@-]+")
 
 
@@ -117,19 +117,19 @@ def _sanitize_email(email: str) -> str:
 
 
 def _legacy_token_path() -> Path:
-    return _hermes_home() / "google_chat_user_token.json"
+    return _agentic_os_home() / "google_chat_user_token.json"
 
 
 def _user_tokens_dir() -> Path:
-    return _hermes_home() / "google_chat_user_tokens"
+    return _agentic_os_home() / "google_chat_user_tokens"
 
 
 def _legacy_pending_path() -> Path:
-    return _hermes_home() / "google_chat_user_oauth_pending.json"
+    return _agentic_os_home() / "google_chat_user_oauth_pending.json"
 
 
 def _user_pending_dir() -> Path:
-    return _hermes_home() / "google_chat_user_oauth_pending"
+    return _agentic_os_home() / "google_chat_user_oauth_pending"
 
 
 def _token_path(email: Optional[str] = None) -> Path:
@@ -140,7 +140,7 @@ def _token_path(email: Optional[str] = None) -> Path:
 
 
 def _client_secret_path() -> Path:
-    return _hermes_home() / "google_chat_user_client_secret.json"
+    return _agentic_os_home() / "google_chat_user_client_secret.json"
 
 
 def _pending_auth_path(email: Optional[str] = None) -> Path:
@@ -199,7 +199,7 @@ def load_user_credentials(email: Optional[str] = None) -> Optional[Any]:
     except ImportError:
         logger.warning(
             "[google_chat_user_oauth] google-auth not installed; user-OAuth "
-            "attachment delivery is disabled. Install hermes-agent[google_chat]."
+            "attachment delivery is disabled. Install agentic-os[google_chat]."
         )
         return None
 
@@ -389,7 +389,7 @@ def install_deps() -> bool:
     except Exception as exc:
         print(f"ERROR: Failed to install dependencies: {exc}")
         print("Or install via the optional extra:")
-        print("  pip install 'hermes-agent[google_chat]'")
+        print("  pip install 'agentic-os[google_chat]'")
         return False
 
 
@@ -413,7 +413,7 @@ def check_auth(email: Optional[str] = None) -> bool:
 
 
 def store_client_secret(path: str) -> None:
-    """Validate and copy the user's OAuth client_secret.json into HERMES_HOME."""
+    """Validate and copy the user's OAuth client_secret.json into AGENTIC_OS_HOME."""
     src = Path(path).expanduser().resolve()
     if not src.exists():
         print(f"ERROR: File not found: {src}")

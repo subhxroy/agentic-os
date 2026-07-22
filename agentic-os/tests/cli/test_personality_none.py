@@ -98,7 +98,7 @@ class TestGatewayPersonalityNone:
         config_file = tmp_path / "config.yaml"
         config_file.write_text(yaml.dump(config_data))
 
-        with patch("gateway.run._hermes_home", tmp_path):
+        with patch("gateway.run._agentic_os_home", tmp_path):
             event = self._make_event("none")
             result = await runner._handle_personality_command(event)
 
@@ -112,7 +112,7 @@ class TestGatewayPersonalityNone:
         config_file = tmp_path / "config.yaml"
         config_file.write_text(yaml.dump(config_data))
 
-        with patch("gateway.run._hermes_home", tmp_path):
+        with patch("gateway.run._agentic_os_home", tmp_path):
             event = self._make_event("default")
             result = await runner._handle_personality_command(event)
 
@@ -125,7 +125,7 @@ class TestGatewayPersonalityNone:
         config_file = tmp_path / "config.yaml"
         config_file.write_text(yaml.dump(config_data))
 
-        with patch("gateway.run._hermes_home", tmp_path):
+        with patch("gateway.run._agentic_os_home", tmp_path):
             event = self._make_event("")
             result = await runner._handle_personality_command(event)
 
@@ -138,7 +138,7 @@ class TestGatewayPersonalityNone:
         config_file = tmp_path / "config.yaml"
         config_file.write_text(yaml.dump(config_data))
 
-        with patch("gateway.run._hermes_home", tmp_path):
+        with patch("gateway.run._agentic_os_home", tmp_path):
             event = self._make_event("nonexistent")
             result = await runner._handle_personality_command(event)
 
@@ -149,12 +149,12 @@ class TestGatewayPersonalityNone:
         runner = self._make_runner(personalities={})
         (tmp_path / "config.yaml").write_text(yaml.dump({"agent": {"personalities": {}}}))
 
-        with patch("gateway.run._hermes_home", tmp_path), \
-             patch("agentic_os_constants.display_agentic_os_home", return_value="~/.hermes/profiles/coder"):
+        with patch("gateway.run._agentic_os_home", tmp_path), \
+             patch("agentic_os_constants.display_agentic_os_home", return_value="~/.agentic-os/profiles/coder"):
             event = self._make_event("")
             result = await runner._handle_personality_command(event)
 
-        assert result == "No personalities configured in `~/.hermes/profiles/coder/config.yaml`"
+        assert result == "No personalities configured in `~/.agentic-os/profiles/coder/config.yaml`"
 
 
 class TestPersonalityDictFormat:

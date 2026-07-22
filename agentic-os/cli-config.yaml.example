@@ -104,7 +104,7 @@ model:
   #     extra_headers:
   #       CF-Access-Client-Id: "xxxx.access"
   #       CF-Access-Client-Secret: "${CF_ACCESS_SECRET}"
-  #       X-Client-Name: "hermes-agent"
+  #       X-Client-Name: "agentic-os"
 
 # Named provider overrides (optional)
 # Use this for per-provider request timeouts, non-stream stale timeouts,
@@ -215,9 +215,9 @@ terminal:
   cwd: "."  # For local backend: "." = current directory. Ignored for remote backends unless a backend documents otherwise.
   timeout: 180
   # HOME policy for tool subprocesses:
-  #   auto    - default: host uses your real HOME; containers use HERMES_HOME/home
+  #   auto    - default: host uses your real HOME; containers use AGENTIC_OS_HOME/home
   #   real    - force your real OS-user HOME
-  #   profile - force HERMES_HOME/home for strict per-profile CLI config isolation
+  #   profile - force AGENTIC_OS_HOME/home for strict per-profile CLI config isolation
   home_mode: "auto"
   docker_mount_cwd_to_workspace: false  # SECURITY: off by default. Opt in to mount the launch cwd into Docker /workspace.
   lifetime_seconds: 300
@@ -257,7 +257,7 @@ terminal:
 #   # chosen docker_image expects to start as root.
 #   docker_run_as_host_user: true
 #   # Optional: explicitly forward selected env vars into Docker.
-#   # These values come from your current shell first, then ~/.hermes/.env.
+#   # These values come from your current shell first, then ~/.agentic-os/.env.
 #   # Warning: anything forwarded here is visible to commands run in the container.
 #   docker_forward_env:
 #     - "GITHUB_TOKEN"
@@ -682,9 +682,9 @@ skills:
   creation_nudge_interval: 15
 
   # External skill directories — share skills across tools/agents without
-  # copying them into ~/.hermes/skills/.  Each path is expanded (~ and ${VAR})
+  # copying them into ~/.agentic-os/skills/.  Each path is expanded (~ and ${VAR})
   # and resolved to an absolute path.  External dirs are read-only: skill
-  # creation always writes to ~/.hermes/skills/.  Local skills take precedence
+  # creation always writes to ~/.agentic-os/skills/.  Local skills take precedence
   # when names collide.
   # external_dirs:
   #   - ~/.agents/skills
@@ -1010,7 +1010,7 @@ platform_toolsets:
 # =============================================================================
 # Text-to-Speech
 # =============================================================================
-# TTS defaults to Edge TTS unless changed in ~/.hermes/config.yaml.
+# TTS defaults to Edge TTS unless changed in ~/.agentic-os/config.yaml.
 # Gemini TTS supports persona/director prompt files, and Gemini 3.1 Flash TTS
 # can use a hidden auxiliary rewrite pass to insert expressive square-bracket
 # audio tags into the TTS script without showing tags in chat.
@@ -1021,7 +1021,7 @@ platform_toolsets:
 #     model: "gemini-3.1-flash-tts-preview"
 #     voice: "Kore"
 #     audio_tags: false
-#     persona_prompt_file: ""  # e.g. ~/.hermes/tts/radio-host.md
+#     persona_prompt_file: ""  # e.g. ~/.agentic-os/tts/radio-host.md
 
 # =============================================================================
 # Voice Transcription (Speech-to-Text)
@@ -1133,7 +1133,7 @@ delegation:
 #
 # Requires: pip install honcho-ai
 # Config: ~/.honcho/config.json (shared with Claude Code, Cursor, etc.)
-# API key: HONCHO_API_KEY in ~/.hermes/.env or ~/.honcho/config.json
+# API key: HONCHO_API_KEY in ~/.agentic-os/.env or ~/.honcho/config.json
 #
 # Hermes-specific overrides (optional — most config comes from ~/.honcho/config.json):
 # honcho: {}
@@ -1152,7 +1152,7 @@ display:
   #   new:     Show a tool indicator only when the tool changes (skip repeats)
   #   all:     Show every tool call with a short preview (default)
   #   verbose: Full args, results, and debug logs (same as /verbose)
-  #   log:     Silent in chat; append every tool call to ~/.hermes/logs/tool_calls.log (gateway only)
+  #   log:     Silent in chat; append every tool call to ~/.agentic-os/logs/tool_calls.log (gateway only)
   # Toggle at runtime with /verbose in the CLI
   tool_progress: all
 
@@ -1269,7 +1269,7 @@ display:
   #   sisyphus       — Earthy stone-and-moss theme
   #   charizard      — Fiery orange dragon theme
   #
-  # Custom skins: drop a YAML file in ~/.hermes/skins/<name>.yaml
+  # Custom skins: drop a YAML file in ~/.agentic-os/skins/<name>.yaml
   # Schema (all fields optional, missing values inherit from default):
   #
   #   name: my-theme
@@ -1338,13 +1338,13 @@ display:
 # stdout the script may return JSON that either blocks the tool call or
 # injects context into the next LLM call.
 #
-# Valid events (mirror hermes_cli.plugins.VALID_HOOKS):
+# Valid events (mirror agentic_os_cli.plugins.VALID_HOOKS):
 #   pre_tool_call, post_tool_call, pre_llm_call, post_llm_call,
 #   pre_api_request, post_api_request, on_session_start, on_session_end,
 #   on_session_finalize, on_session_reset, subagent_stop
 #
 # First-use consent: each (event, command) pair prompts once on a TTY, then
-# is persisted to ~/.hermes/shell-hooks-allowlist.json.  Non-interactive
+# is persisted to ~/.agentic-os/shell-hooks-allowlist.json.  Non-interactive
 # runs (gateway, cron) need --accept-hooks, HERMES_ACCEPT_HOOKS=1, or the
 # hooks_auto_accept key below.
 #
@@ -1354,15 +1354,15 @@ display:
 # hooks:
 #   pre_tool_call:
 #     - matcher: "terminal"
-#       command: "~/.hermes/agent-hooks/block-rm-rf.sh"
+#       command: "~/.agentic-os/agent-hooks/block-rm-rf.sh"
 #       timeout: 10
 #   post_tool_call:
 #     - matcher: "write_file|patch"
-#       command: "~/.hermes/agent-hooks/auto-format.sh"
+#       command: "~/.agentic-os/agent-hooks/auto-format.sh"
 #   pre_llm_call:
-#     - command: "~/.hermes/agent-hooks/inject-cwd-context.sh"
+#     - command: "~/.agentic-os/agent-hooks/inject-cwd-context.sh"
 #   subagent_stop:
-#     - command: "~/.hermes/agent-hooks/log-orchestration.sh"
+#     - command: "~/.agentic-os/agent-hooks/log-orchestration.sh"
 #
 # hooks_auto_accept: false
 
@@ -1371,8 +1371,8 @@ display:
 # Update Behavior
 # =============================================================================
 updates:
-  # Create a full HERMES_HOME zip before every `hermes update`.
-  # Backups land in ~/.hermes/backups/ and can be restored with `hermes import`.
+  # Create a full AGENTIC_OS_HOME zip before every `hermes update`.
+  # Backups land in ~/.agentic-os/backups/ and can be restored with `hermes import`.
   # Off by default because large homes can add minutes to every update.
   pre_update_backup: false
 
@@ -1405,7 +1405,7 @@ updates:
 # so a provisioned-but-not-populated secret can't shadow a valid entry here.
 #
 # Local dev / on-prem deploys should typically set these via config.yaml
-# (the ~/.hermes/.env file is reserved for API keys and secrets).
+# (the ~/.agentic-os/.env file is reserved for API keys and secrets).
 #
 # dashboard:
 #   oauth:
@@ -1457,14 +1457,14 @@ updates:
 #       # (PKCE-only) client — the common case.
 #       #
 #       # This is a CREDENTIAL: prefer setting HERMES_DASHBOARD_OIDC_CLIENT_SECRET
-#       # in ~/.hermes/.env over putting it here in config.yaml.
+#       # in ~/.agentic-os/.env over putting it here in config.yaml.
 #       #   client_secret: ""
 
 # =============================================================================
 # External secret sources
 # =============================================================================
 # Pull provider credentials from external secret managers at process startup
-# instead of storing them in ~/.hermes/.env. Only the manager's bootstrap
+# instead of storing them in ~/.agentic-os/.env. Only the manager's bootstrap
 # credential (e.g. BWS_ACCESS_TOKEN / OP_SERVICE_ACCOUNT_TOKEN) lives in .env
 # (or your shell / desktop session); everything else rotates centrally.
 # Failures never block startup — Hermes warns once and continues with
@@ -1477,7 +1477,7 @@ updates:
 #     are skipped with a startup warning (never a silent clobber)
 #   - a source's override_existing lets it beat .env/shell values, but
 #     never another secret source's claim
-# Docs: https://hermes-agent.nousresearch.com/docs/user-guide/secrets/
+# Docs: https://agentic-os.nousresearch.com/docs/user-guide/secrets/
 #
 # secrets:
 #   # Optional explicit ordering of enabled sources.
@@ -1491,7 +1491,7 @@ updates:
 #     server_url: ""                       # "" = US Cloud; EU/self-hosted URL otherwise
 #     cache_ttl_seconds: 300               # 0 disables caching
 #     override_existing: true              # BSM values win over existing env
-#     auto_install: true                   # lazy-download bws into ~/.hermes/bin
+#     auto_install: true                   # lazy-download bws into ~/.agentic-os/bin
 #
 #   # ---- 1Password (op CLI) -------------------------------------------------
 #   onepassword:

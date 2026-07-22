@@ -46,7 +46,7 @@ if command -v gh &>/dev/null && gh auth status &>/dev/null; then
 else
   AUTH="git"
   if [ -z "$GITHUB_TOKEN" ]; then
-    if _hermes_env="${HERMES_HOME:-$HOME/.hermes}/.env"; [ -f "$_hermes_env" ] && grep -q "^GITHUB_TOKEN=" "$_hermes_env"; then
+    if _hermes_env="${AGENTIC_OS_HOME:-$HOME/.hermes}/.env"; [ -f "$_hermes_env" ] && grep -q "^GITHUB_TOKEN=" "$_hermes_env"; then
       GITHUB_TOKEN=$(grep "^GITHUB_TOKEN=" "$_hermes_env" | head -1 | cut -d= -f2 | tr -d '\n\r')
     elif grep -q "github.com" ~/.git-credentials 2>/dev/null; then
       GITHUB_TOKEN=$(grep "github.com" ~/.git-credentials 2>/dev/null | head -1 | sed 's|https://[^:]*:\([^@]*\)@.*|\1|')
@@ -353,7 +353,7 @@ When the user asks you to "review PR #N", "look at this PR", or gives you a PR U
 ### Step 1: Set up environment
 
 ```bash
-source "${HERMES_HOME:-$HOME/.hermes}/skills/github/github-auth/scripts/gh-env.sh"
+source "${AGENTIC_OS_HOME:-$HOME/.hermes}/skills/github/github-auth/scripts/gh-env.sh"
 # Or run the inline setup block from the top of this skill
 ```
 

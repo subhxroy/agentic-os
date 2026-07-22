@@ -6,7 +6,7 @@ Usage:
     hermes webhook remove <name>
     hermes webhook test <name> [--payload '{"key": "value"}']
 
-Subscriptions persist to ~/.hermes/webhook_subscriptions.json and are
+Subscriptions persist to ~/.agentic-os/webhook_subscriptions.json and are
 hot-reloaded by the webhook adapter without a gateway restart.
 """
 
@@ -28,13 +28,13 @@ _SUBSCRIPTIONS_FILENAME = "webhook_subscriptions.json"
 _SUBSCRIPTIONS_FILE_MODE = 0o600
 
 
-def _hermes_home() -> Path:
+def _agentic_os_home() -> Path:
     from agentic_os_constants import get_agentic_os_home
     return get_agentic_os_home()
 
 
 def _subscriptions_path() -> Path:
-    return _hermes_home() / _SUBSCRIPTIONS_FILENAME
+    return _agentic_os_home() / _SUBSCRIPTIONS_FILENAME
 
 
 def _load_subscriptions() -> Dict[str, dict]:

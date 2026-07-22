@@ -476,30 +476,30 @@ def test_x_goog_api_client_header_is_set():
     headers = client._headers()
 
     assert "X-Goog-Api-Client" in headers, "X-Goog-Api-Client header missing"
-    assert "hermes-agent/" in headers["X-Goog-Api-Client"], (
-        "hermes-agent not found in X-Goog-Api-Client header"
+    assert "agentic-os/" in headers["X-Goog-Api-Client"], (
+        "agentic-os not found in X-Goog-Api-Client header"
     )
 
 
 def test_x_goog_api_client_header_format():
-    """Header value should be 'hermes-agent/<version>' matching the package version."""
+    """Header value should be 'agentic-os/<version>' matching the package version."""
     from agent.gemini_native_adapter import GeminiNativeClient, _HERMES_VERSION
 
     client = GeminiNativeClient(api_key="fake-key", model="gemini-2.0-flash")
     headers = client._headers()
 
-    expected = f"hermes-agent/{_HERMES_VERSION}"
+    expected = f"agentic-os/{_HERMES_VERSION}"
     assert headers["X-Goog-Api-Client"] == expected
 
 
 def test_user_agent_contains_version():
-    """User-Agent should include the hermes-agent version."""
+    """User-Agent should include the agentic-os version."""
     from agent.gemini_native_adapter import GeminiNativeClient, _HERMES_VERSION
 
     client = GeminiNativeClient(api_key="fake-key", model="gemini-2.0-flash")
     headers = client._headers()
 
-    assert f"hermes-agent/{_HERMES_VERSION}" in headers["User-Agent"]
+    assert f"agentic-os/{_HERMES_VERSION}" in headers["User-Agent"]
 
 
 def test_hermes_version_is_valid():

@@ -134,14 +134,14 @@ _USER_SKIPPED_SENTINEL = "__hermes_user_skipped__"
 def _get_token_dir(hermes_home: str | Path | None = None) -> Path:
     """Return the directory for MCP OAuth token files.
 
-    Uses HERMES_HOME so each profile gets its own OAuth tokens.
-    Layout: ``HERMES_HOME/mcp-tokens/``
+    Uses AGENTIC_OS_HOME so each profile gets its own OAuth tokens.
+    Layout: ``AGENTIC_OS_HOME/mcp-tokens/``
     """
     try:
         from agentic_os_constants import get_agentic_os_home
         base = Path(hermes_home) if hermes_home is not None else Path(get_agentic_os_home())
     except ImportError:
-        base = Path(os.environ.get("HERMES_HOME", str(Path.home() / ".hermes")))
+        base = Path(os.environ.get("AGENTIC_OS_HOME", str(Path.home() / ".hermes")))
     return base / "mcp-tokens"
 
 
@@ -383,23 +383,23 @@ class HermesTokenStorage:
 
     File layout::
 
-        HERMES_HOME/mcp-tokens/<server_name>.json         -- tokens
-        HERMES_HOME/mcp-tokens/<server_name>.client.json   -- client info
-        HERMES_HOME/mcp-tokens/<server_name>.meta.json     -- oauth server metadata
+        AGENTIC_OS_HOME/mcp-tokens/<server_name>.json         -- tokens
+        AGENTIC_OS_HOME/mcp-tokens/<server_name>.client.json   -- client info
+        AGENTIC_OS_HOME/mcp-tokens/<server_name>.meta.json     -- oauth server metadata
     """
 
     def __init__(self, server_name: str, *, hermes_home: str | Path | None = None):
         self._server_name = _safe_filename(server_name)
-        self._hermes_home = Path(hermes_home) if hermes_home is not None else None
+        self._agentic_os_home = Path(hermes_home) if hermes_home is not None else None
 
     def _tokens_path(self) -> Path:
-        return _get_token_dir(self._hermes_home) / f"{self._server_name}.json"
+        return _get_token_dir(self._agentic_os_home) / f"{self._server_name}.json"
 
     def _client_info_path(self) -> Path:
-        return _get_token_dir(self._hermes_home) / f"{self._server_name}.client.json"
+        return _get_token_dir(self._agentic_os_home) / f"{self._server_name}.client.json"
 
     def _meta_path(self) -> Path:
-        return _get_token_dir(self._hermes_home) / f"{self._server_name}.meta.json"
+        return _get_token_dir(self._agentic_os_home) / f"{self._server_name}.meta.json"
 
     # -- tokens ------------------------------------------------------------
 
@@ -536,7 +536,7 @@ class HermesTokenStorage:
         self.remove()
         if not snapshot:
             return
-        token_dir = _get_token_dir(self._hermes_home)
+        token_dir = _get_token_dir(self._agentic_os_home)
         token_dir.mkdir(parents=True, exist_ok=True)
         for fname, data in snapshot.items():
             path = token_dir / fname

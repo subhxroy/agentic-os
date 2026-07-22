@@ -14,7 +14,7 @@ import argparse
 
 
 # `--profile` / `-p` is consumed by ``main._apply_profile_override`` before
-# argparse runs (it sets ``HERMES_HOME`` and strips itself from ``sys.argv``),
+# argparse runs (it sets ``AGENTIC_OS_HOME`` and strips itself from ``sys.argv``),
 # so it isn't on the parser. Listed here so all "carry over on relaunch"
 # metadata lives in one file.
 PRE_ARGPARSE_INHERITED_FLAGS: list[tuple[str, bool]] = [
@@ -222,7 +222,7 @@ def build_top_level_parser():
         "--ignore-user-config",
         action="store_true",
         default=False,
-        help="Ignore ~/.hermes/config.yaml and fall back to built-in defaults (credentials in .env are still loaded)",
+        help="Ignore ~/.agentic-os/config.yaml and fall back to built-in defaults (credentials in .env are still loaded)",
     )
     _inherited_flag(
         parser,
@@ -403,7 +403,7 @@ def build_top_level_parser():
         "--ignore-user-config",
         action="store_true",
         default=argparse.SUPPRESS,
-        help="Ignore ~/.hermes/config.yaml and fall back to built-in defaults (credentials in .env are still loaded). Useful for isolated CI runs, reproduction, and third-party integrations.",
+        help="Ignore ~/.agentic-os/config.yaml and fall back to built-in defaults (credentials in .env are still loaded). Useful for isolated CI runs, reproduction, and third-party integrations.",
     )
     _inherited_flag(
         chat_parser,

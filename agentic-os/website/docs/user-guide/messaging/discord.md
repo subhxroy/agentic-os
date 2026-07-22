@@ -257,7 +257,7 @@ Select **Discord** when prompted, then paste your bot token and user ID when ask
 
 ### Option B: Manual Configuration
 
-Add the following to your `~/.hermes/.env` file:
+Add the following to your `~/.agentic-os/.env` file:
 
 ```bash
 # Required
@@ -282,7 +282,7 @@ You can run `hermes gateway` in the background or as a systemd service for persi
 
 ## Configuration Reference
 
-Discord behavior is controlled through two files: **`~/.hermes/.env`** for credentials and env-level toggles, and **`~/.hermes/config.yaml`** for structured settings. Environment variables always take precedence over config.yaml values when both are set.
+Discord behavior is controlled through two files: **`~/.agentic-os/.env`** for credentials and env-level toggles, and **`~/.agentic-os/config.yaml`** for structured settings. Environment variables always take precedence over config.yaml values when both are set.
 
 ### Environment Variables (`.env`)
 
@@ -327,7 +327,7 @@ Wiring multiple Hermes profiles to reply to one another in a shared channel — 
 
 ### Config File (`config.yaml`)
 
-The `discord` section in `~/.hermes/config.yaml` mirrors the env vars above. Config.yaml settings are applied as defaults — if the equivalent env var is already set, the env var wins.
+The `discord` section in `~/.agentic-os/config.yaml` mirrors the env vars above. Config.yaml settings are applied as defaults — if the equivalent env var is already set, the env var wins.
 
 ```yaml
 # Discord-specific settings
@@ -667,7 +667,7 @@ Discord's per-upload size limit depends on the server's boost tier (25 MB free, 
 
 ## Receiving Arbitrary File Types
 
-Any file type a user uploads is accepted. Authorization to message the agent is the gate — not the file extension. Every upload is downloaded, cached under `~/.hermes/cache/documents/`, and surfaced to the agent as a `DOCUMENT`-typed message event so it can inspect the file with `terminal` (`ffprobe`, `unzip`, `file`, `strings`, etc.) or `read_file`.
+Any file type a user uploads is accepted. Authorization to message the agent is the gate — not the file extension. Every upload is downloaded, cached under `~/.agentic-os/cache/documents/`, and surfaced to the agent as a `DOCUMENT`-typed message event so it can inspect the file with `terminal` (`ffprobe`, `unzip`, `file`, `strings`, etc.) or `read_file`.
 
 - Known types (PDF, docx/xlsx/pptx, zip, images/audio/video, etc.) keep their precise MIME.
 - Unknown types fall back to the upload's reported content type, or `application/octet-stream` when none is given.
@@ -701,7 +701,7 @@ When the agent calls the `clarify` tool — to ask which approach you prefer, ge
 
 Click a numbered button to answer, or click **Other** to type a free-form response (the next message you send in that channel becomes the answer). Open-ended `clarify` calls (no preset choices) skip the buttons and just capture your next message.
 
-The buttons disable themselves once a choice is made so duplicate clicks don't double-resolve the prompt. Configure the response timeout via `agent.clarify_timeout` in `~/.hermes/config.yaml` (default `600` seconds). If you don't respond within the timeout, the agent unblocks with a sentinel message and adapts rather than hanging.
+The buttons disable themselves once a choice is made so duplicate clicks don't double-resolve the prompt. Configure the response timeout via `agent.clarify_timeout` in `~/.agentic-os/config.yaml` (default `600` seconds). If you don't respond within the timeout, the agent unblocks with a sentinel message and adapts rather than hanging.
 
 ## Home Channel
 
@@ -713,7 +713,7 @@ Type `/sethome` in any Discord channel where the bot is present. That channel be
 
 ### Manual Configuration
 
-Add these to your `~/.hermes/.env`:
+Add these to your `~/.agentic-os/.env`:
 
 ```bash
 DISCORD_HOME_CHANNEL=123456789012345678
@@ -801,7 +801,7 @@ Refreshing the directory (`/channels refresh` on platforms that expose it, or a 
    hermes gateway restart
    ```
 
-If the gateway log says Discord is connected and REST API checks work, but every inbound message is silent, look for this warning in `~/.hermes/logs/gateway.log`:
+If the gateway log says Discord is connected and REST API checks work, but every inbound message is silent, look for this warning in `~/.agentic-os/logs/gateway.log`:
 
 ```text
 No Discord access policy configured; inbound Discord messages will be denied by default.
@@ -837,13 +837,13 @@ Hermes 0.18 intentionally fails closed on externally reachable adapters. A Disco
 
 **Cause**: Your User ID isn't in `DISCORD_ALLOWED_USERS`.
 
-**Fix**: Add your User ID to `DISCORD_ALLOWED_USERS` in `~/.hermes/.env` and restart the gateway.
+**Fix**: Add your User ID to `DISCORD_ALLOWED_USERS` in `~/.agentic-os/.env` and restart the gateway.
 
 ### People in the same channel are sharing context unexpectedly
 
 **Cause**: `group_sessions_per_user` is disabled, or the platform cannot provide a user ID for the messages in that context.
 
-**Fix**: Set this in `~/.hermes/config.yaml` and restart the gateway:
+**Fix**: Set this in `~/.agentic-os/config.yaml` and restart the gateway:
 
 ```yaml
 group_sessions_per_user: true
@@ -862,7 +862,7 @@ Always set `DISCORD_ALLOWED_USERS` (or `DISCORD_ALLOWED_ROLES`) to restrict who 
 For servers where access is managed by roles instead of individual user lists (moderator teams, support staff, internal tooling), use `DISCORD_ALLOWED_ROLES` — a comma-separated list of role IDs. Any member with one of those roles is authorized.
 
 ```bash
-# ~/.hermes/.env — works alongside or instead of DISCORD_ALLOWED_USERS
+# ~/.agentic-os/.env — works alongside or instead of DISCORD_ALLOWED_USERS
 DISCORD_ALLOWED_ROLES=987654321098765432,876543210987654321
 ```
 
@@ -882,7 +882,7 @@ By default, Hermes blocks the bot from pinging `@everyone`, `@here`, and role me
 You can relax these defaults via either env vars or `config.yaml`:
 
 ```yaml
-# ~/.hermes/config.yaml
+# ~/.agentic-os/config.yaml
 discord:
   allow_mentions:
     everyone: false      # allow the bot to ping @everyone / @here
@@ -892,7 +892,7 @@ discord:
 ```
 
 ```bash
-# ~/.hermes/.env — env vars win over config.yaml
+# ~/.agentic-os/.env — env vars win over config.yaml
 DISCORD_ALLOW_MENTION_EVERYONE=false
 DISCORD_ALLOW_MENTION_ROLES=false
 DISCORD_ALLOW_MENTION_USERS=true

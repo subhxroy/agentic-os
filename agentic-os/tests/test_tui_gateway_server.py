@@ -1148,13 +1148,13 @@ def test_voice_toggle_tts_branch_also_carries_record_key(monkeypatch):
 
 
 def test_load_enabled_toolsets_prefers_tui_env(monkeypatch):
-    monkeypatch.setenv("HERMES_TUI_TOOLSETS", "web, terminal, ,memory")
+    monkeypatch.setenv("AGENTIC_OS_TUI_TOOLSETS", "web, terminal, ,memory")
 
     assert server._load_enabled_toolsets() == ["web", "terminal", "memory"]
 
 
 def test_load_enabled_toolsets_filters_invalid_tui_env(monkeypatch, capsys):
-    monkeypatch.setenv("HERMES_TUI_TOOLSETS", "web, nope")
+    monkeypatch.setenv("AGENTIC_OS_TUI_TOOLSETS", "web, nope")
     monkeypatch.setitem(
         sys.modules,
         "agentic_os_cli.plugins",
@@ -1166,7 +1166,7 @@ def test_load_enabled_toolsets_filters_invalid_tui_env(monkeypatch, capsys):
 
 
 def test_load_enabled_toolsets_accepts_plugin_env_after_discovery(monkeypatch):
-    monkeypatch.setenv("HERMES_TUI_TOOLSETS", "plugin_demo")
+    monkeypatch.setenv("AGENTIC_OS_TUI_TOOLSETS", "plugin_demo")
 
     import toolsets
 
@@ -1192,7 +1192,7 @@ def test_load_enabled_toolsets_folds_project_into_focus_posture(monkeypatch):
     # Focus-mode coding posture returns before the config fallback, but it's
     # still a GUI-only resolver — `project` must come along so the desktop keeps
     # the project tools while sitting in a repo.
-    monkeypatch.delenv("HERMES_TUI_TOOLSETS", raising=False)
+    monkeypatch.delenv("AGENTIC_OS_TUI_TOOLSETS", raising=False)
 
     import agent.coding_context as cc
 
@@ -1202,7 +1202,7 @@ def test_load_enabled_toolsets_folds_project_into_focus_posture(monkeypatch):
 
 
 def test_load_enabled_toolsets_rejects_disabled_mcp_env(monkeypatch, capsys):
-    monkeypatch.setenv("HERMES_TUI_TOOLSETS", "mcp-off")
+    monkeypatch.setenv("AGENTIC_OS_TUI_TOOLSETS", "mcp-off")
     monkeypatch.setitem(
         sys.modules,
         "agentic_os_cli.plugins",
@@ -1231,7 +1231,7 @@ def test_load_enabled_toolsets_rejects_disabled_mcp_env(monkeypatch, capsys):
 
 
 def test_load_enabled_toolsets_falls_back_when_tui_env_invalid(monkeypatch, capsys):
-    monkeypatch.setenv("HERMES_TUI_TOOLSETS", "nope")
+    monkeypatch.setenv("AGENTIC_OS_TUI_TOOLSETS", "nope")
     monkeypatch.setitem(
         sys.modules,
         "agentic_os_cli.plugins",
@@ -1249,7 +1249,7 @@ def test_load_enabled_toolsets_falls_back_when_tui_env_invalid(monkeypatch, caps
 
 
 def test_load_enabled_toolsets_warns_when_config_fallback_fails(monkeypatch, capsys):
-    monkeypatch.setenv("HERMES_TUI_TOOLSETS", "nope")
+    monkeypatch.setenv("AGENTIC_OS_TUI_TOOLSETS", "nope")
     monkeypatch.setitem(
         sys.modules,
         "agentic_os_cli.plugins",
@@ -1267,7 +1267,7 @@ def test_load_enabled_toolsets_warns_when_config_fallback_fails(monkeypatch, cap
 
 
 def test_load_enabled_toolsets_honors_builtin_env_if_config_fails(monkeypatch):
-    monkeypatch.setenv("HERMES_TUI_TOOLSETS", "web")
+    monkeypatch.setenv("AGENTIC_OS_TUI_TOOLSETS", "web")
 
     import agentic_os_cli.config as config_mod
 
@@ -1279,7 +1279,7 @@ def test_load_enabled_toolsets_honors_builtin_env_if_config_fails(monkeypatch):
 
 
 def test_load_enabled_toolsets_all_env_means_all(monkeypatch):
-    monkeypatch.setenv("HERMES_TUI_TOOLSETS", "all")
+    monkeypatch.setenv("AGENTIC_OS_TUI_TOOLSETS", "all")
 
     assert server._load_enabled_toolsets() is None
 
@@ -1287,14 +1287,14 @@ def test_load_enabled_toolsets_all_env_means_all(monkeypatch):
 def test_load_enabled_toolsets_all_env_warns_about_ignored_extra_entries(
     monkeypatch, capsys
 ):
-    monkeypatch.setenv("HERMES_TUI_TOOLSETS", "all,nope")
+    monkeypatch.setenv("AGENTIC_OS_TUI_TOOLSETS", "all,nope")
 
     assert server._load_enabled_toolsets() is None
     assert "ignoring additional entries: nope" in capsys.readouterr().err
 
 
 def test_load_enabled_toolsets_reports_disabled_mcp_separately(monkeypatch, capsys):
-    monkeypatch.setenv("HERMES_TUI_TOOLSETS", "web,mcp-off,nope")
+    monkeypatch.setenv("AGENTIC_OS_TUI_TOOLSETS", "web,mcp-off,nope")
     monkeypatch.setitem(
         sys.modules,
         "agentic_os_cli.plugins",
@@ -1311,7 +1311,7 @@ def test_load_enabled_toolsets_reports_disabled_mcp_separately(monkeypatch, caps
 
     assert server._load_enabled_toolsets() == ["web"]
     err = capsys.readouterr().err
-    assert "ignoring unknown HERMES_TUI_TOOLSETS entries: nope" in err
+    assert "ignoring unknown AGENTIC_OS_TUI_TOOLSETS entries: nope" in err
     assert "ignoring disabled MCP servers" in err
     assert "mcp-off" in err
 
@@ -2121,7 +2121,7 @@ def test_apply_model_switch_persist_override_false_never_persists(monkeypatch):
 
 def test_startup_runtime_uses_tui_provider_env(monkeypatch):
     monkeypatch.setenv("HERMES_MODEL", "nous/hermes-test")
-    monkeypatch.setenv("HERMES_TUI_PROVIDER", "nous")
+    monkeypatch.setenv("AGENTIC_OS_TUI_PROVIDER", "nous")
     monkeypatch.delenv("HERMES_INFERENCE_PROVIDER", raising=False)
 
     assert server._resolve_startup_runtime() == ("nous/hermes-test", "nous")
@@ -2129,7 +2129,7 @@ def test_startup_runtime_uses_tui_provider_env(monkeypatch):
 
 def test_startup_runtime_does_not_treat_inference_provider_as_explicit(monkeypatch):
     monkeypatch.setenv("HERMES_MODEL", "nous/hermes-test")
-    monkeypatch.delenv("HERMES_TUI_PROVIDER", raising=False)
+    monkeypatch.delenv("AGENTIC_OS_TUI_PROVIDER", raising=False)
     monkeypatch.setenv("HERMES_INFERENCE_PROVIDER", "nous")
     monkeypatch.setattr(
         "agentic_os_cli.models.detect_static_provider_for_model",
@@ -2141,7 +2141,7 @@ def test_startup_runtime_does_not_treat_inference_provider_as_explicit(monkeypat
 
 def test_startup_runtime_detects_provider_for_model_env(monkeypatch):
     monkeypatch.setenv("HERMES_MODEL", "sonnet")
-    monkeypatch.delenv("HERMES_TUI_PROVIDER", raising=False)
+    monkeypatch.delenv("AGENTIC_OS_TUI_PROVIDER", raising=False)
     monkeypatch.delenv("HERMES_INFERENCE_PROVIDER", raising=False)
     monkeypatch.setattr(server, "_load_cfg", lambda: {"model": {"provider": "auto"}})
 
@@ -2196,7 +2196,7 @@ def test_make_agent_passes_configured_fallback_chain(monkeypatch):
 
     monkeypatch.delenv("HERMES_MODEL", raising=False)
     monkeypatch.delenv("HERMES_INFERENCE_MODEL", raising=False)
-    monkeypatch.delenv("HERMES_TUI_PROVIDER", raising=False)
+    monkeypatch.delenv("AGENTIC_OS_TUI_PROVIDER", raising=False)
     monkeypatch.setattr(
         server,
         "_load_cfg",
@@ -2271,7 +2271,7 @@ def test_background_agent_kwargs_preserves_empty_fallback_chain(monkeypatch):
 
 def test_startup_runtime_resolves_short_alias_without_network(monkeypatch):
     monkeypatch.setenv("HERMES_MODEL", "sonnet")
-    monkeypatch.delenv("HERMES_TUI_PROVIDER", raising=False)
+    monkeypatch.delenv("AGENTIC_OS_TUI_PROVIDER", raising=False)
     monkeypatch.delenv("HERMES_INFERENCE_PROVIDER", raising=False)
     monkeypatch.setattr(server, "_load_cfg", lambda: {"model": {"provider": "auto"}})
     monkeypatch.setattr(
@@ -2289,7 +2289,7 @@ def test_startup_runtime_resolves_short_alias_without_network(monkeypatch):
 
 def test_startup_runtime_does_not_call_network_detector(monkeypatch):
     monkeypatch.setenv("HERMES_MODEL", "sonnet")
-    monkeypatch.delenv("HERMES_TUI_PROVIDER", raising=False)
+    monkeypatch.delenv("AGENTIC_OS_TUI_PROVIDER", raising=False)
     monkeypatch.delenv("HERMES_INFERENCE_PROVIDER", raising=False)
     monkeypatch.setattr(server, "_load_cfg", lambda: {"model": {"provider": "auto"}})
     monkeypatch.setattr(
@@ -3928,7 +3928,7 @@ def test_config_set_yolo_global_scope_writes_approvals_mode(tmp_path, monkeypatc
 
     cfg_path = tmp_path / "config.yaml"
     cfg_path.write_text(yaml.safe_dump({"approvals": {"mode": "manual"}}))
-    monkeypatch.setattr(server, "_hermes_home", tmp_path)
+    monkeypatch.setattr(server, "_agentic_os_home", tmp_path)
 
     resp_on = server.handle_request(
         {
@@ -3957,7 +3957,7 @@ def test_config_get_approval_mode_uses_smart_default_when_key_is_missing(
 ):
     import yaml
 
-    monkeypatch.setattr(server, "_hermes_home", tmp_path)
+    monkeypatch.setattr(server, "_agentic_os_home", tmp_path)
     (tmp_path / "config.yaml").write_text(
         yaml.safe_dump({"approvals": {"timeout": 15}})
     )
@@ -3973,7 +3973,7 @@ def test_config_get_approval_mode_fails_safe_to_manual_for_invalid_explicit_valu
 ):
     import yaml
 
-    monkeypatch.setattr(server, "_hermes_home", tmp_path)
+    monkeypatch.setattr(server, "_agentic_os_home", tmp_path)
     (tmp_path / "config.yaml").write_text(
         yaml.safe_dump({"approvals": {"mode": "sometimes"}})
     )
@@ -3987,7 +3987,7 @@ def test_config_get_approval_mode_fails_safe_to_manual_for_invalid_explicit_valu
 def test_config_get_approval_mode_normalizes_yaml_off(tmp_path, monkeypatch):
     import yaml
 
-    monkeypatch.setattr(server, "_hermes_home", tmp_path)
+    monkeypatch.setattr(server, "_agentic_os_home", tmp_path)
     (tmp_path / "config.yaml").write_text(
         yaml.safe_dump({"approvals": {"mode": False}})
     )
@@ -4003,7 +4003,7 @@ def test_config_set_approval_mode_persists_three_way_value_and_emits_live_status
 ):
     import yaml
 
-    monkeypatch.setattr(server, "_hermes_home", tmp_path)
+    monkeypatch.setattr(server, "_agentic_os_home", tmp_path)
     emitted = []
     monkeypatch.setattr(server, "_emit", lambda *args: emitted.append(args))
     server._sessions["sid"] = {"agent": object(), "session_key": "profile-session"}
@@ -4047,7 +4047,7 @@ def test_config_set_yolo_global_scope_honors_explicit_value(tmp_path, monkeypatc
 
     cfg_path = tmp_path / "config.yaml"
     cfg_path.write_text(yaml.safe_dump({"approvals": {"mode": "manual"}}))
-    monkeypatch.setattr(server, "_hermes_home", tmp_path)
+    monkeypatch.setattr(server, "_agentic_os_home", tmp_path)
 
     resp = server.handle_request(
         {
@@ -4291,7 +4291,7 @@ def test_config_set_statusbar_survives_non_dict_display(tmp_path, monkeypatch):
 
     cfg_path = tmp_path / "config.yaml"
     cfg_path.write_text(yaml.safe_dump({"display": "broken"}))
-    monkeypatch.setattr(server, "_hermes_home", tmp_path)
+    monkeypatch.setattr(server, "_agentic_os_home", tmp_path)
 
     resp = server.handle_request(
         {
@@ -4315,7 +4315,7 @@ def test_config_set_details_mode_pins_all_sections(tmp_path, monkeypatch):
             {"display": {"sections": {"tools": "expanded", "activity": "hidden"}}}
         )
     )
-    monkeypatch.setattr(server, "_hermes_home", tmp_path)
+    monkeypatch.setattr(server, "_agentic_os_home", tmp_path)
 
     resp = server.handle_request(
         {
@@ -4340,7 +4340,7 @@ def test_config_set_section_writes_per_section_override(tmp_path, monkeypatch):
     import yaml
 
     cfg_path = tmp_path / "config.yaml"
-    monkeypatch.setattr(server, "_hermes_home", tmp_path)
+    monkeypatch.setattr(server, "_agentic_os_home", tmp_path)
 
     resp = server.handle_request(
         {
@@ -4364,7 +4364,7 @@ def test_config_set_section_clears_override_on_empty_value(tmp_path, monkeypatch
             {"display": {"sections": {"activity": "hidden", "tools": "expanded"}}}
         )
     )
-    monkeypatch.setattr(server, "_hermes_home", tmp_path)
+    monkeypatch.setattr(server, "_agentic_os_home", tmp_path)
 
     resp = server.handle_request(
         {
@@ -4380,7 +4380,7 @@ def test_config_set_section_clears_override_on_empty_value(tmp_path, monkeypatch
 
 
 def test_config_set_section_rejects_unknown_section_or_mode(tmp_path, monkeypatch):
-    monkeypatch.setattr(server, "_hermes_home", tmp_path)
+    monkeypatch.setattr(server, "_agentic_os_home", tmp_path)
 
     bad_section = server.handle_request(
         {
@@ -4481,15 +4481,15 @@ def test_config_mouse_accepts_preset_strings_and_aliases(monkeypatch):
 
 
 def test_enable_gateway_prompts_sets_gateway_env(monkeypatch):
-    monkeypatch.delenv("HERMES_EXEC_ASK", raising=False)
-    monkeypatch.delenv("HERMES_GATEWAY_SESSION", raising=False)
-    monkeypatch.delenv("HERMES_INTERACTIVE", raising=False)
+    monkeypatch.delenv("AGENTIC_OS_EXEC_ASK", raising=False)
+    monkeypatch.delenv("AGENTIC_OS_GATEWAY_SESSION", raising=False)
+    monkeypatch.delenv("AGENTIC_OS_INTERACTIVE", raising=False)
 
     server._enable_gateway_prompts()
 
-    assert server.os.environ["HERMES_GATEWAY_SESSION"] == "1"
-    assert server.os.environ["HERMES_EXEC_ASK"] == "1"
-    assert server.os.environ["HERMES_INTERACTIVE"] == "1"
+    assert server.os.environ["AGENTIC_OS_GATEWAY_SESSION"] == "1"
+    assert server.os.environ["AGENTIC_OS_EXEC_ASK"] == "1"
+    assert server.os.environ["AGENTIC_OS_INTERACTIVE"] == "1"
 
 
 def test_setup_status_reports_provider_config(monkeypatch):
@@ -4668,7 +4668,7 @@ def test_complete_slash_reasoning_includes_current_efforts_and_global_scope():
 
 
 def test_config_set_reasoning_updates_live_session_and_agent(tmp_path, monkeypatch):
-    monkeypatch.setattr(server, "_hermes_home", tmp_path)
+    monkeypatch.setattr(server, "_agentic_os_home", tmp_path)
     (tmp_path / "config.yaml").write_text("agent:\n  reasoning_effort: medium\n", encoding="utf-8")
     agent = types.SimpleNamespace(reasoning_config=None)
     server._sessions["sid"] = _session(agent=agent)
@@ -4765,7 +4765,7 @@ def test_config_set_reasoning_updates_live_session_and_agent(tmp_path, monkeypat
 
 
 def test_config_set_reasoning_global_scope_clears_session_override(tmp_path, monkeypatch):
-    monkeypatch.setattr(server, "_hermes_home", tmp_path)
+    monkeypatch.setattr(server, "_agentic_os_home", tmp_path)
     (tmp_path / "config.yaml").write_text("agent:\n  reasoning_effort: medium\n", encoding="utf-8")
     agent = types.SimpleNamespace(reasoning_config=None)
     server._sessions["sid"] = _session(agent=agent)
@@ -4795,7 +4795,7 @@ def test_config_set_reasoning_global_scope_clears_session_override(tmp_path, mon
 
 
 def test_config_set_verbose_updates_session_mode_and_agent(tmp_path, monkeypatch):
-    monkeypatch.setattr(server, "_hermes_home", tmp_path)
+    monkeypatch.setattr(server, "_agentic_os_home", tmp_path)
     agent = types.SimpleNamespace(verbose_logging=False)
     server._sessions["sid"] = _session(agent=agent)
 
@@ -5177,7 +5177,7 @@ def test_config_set_model_records_per_session_override_not_env(monkeypatch):
 
     session = _session(agent=_Agent())
     server._sessions["sid"] = session
-    monkeypatch.delenv("HERMES_TUI_PROVIDER", raising=False)
+    monkeypatch.delenv("AGENTIC_OS_TUI_PROVIDER", raising=False)
     monkeypatch.delenv("HERMES_INFERENCE_PROVIDER", raising=False)
     monkeypatch.setattr(
         "agentic_os_cli.model_switch.switch_model", lambda **_kwargs: result
@@ -5199,7 +5199,7 @@ def test_config_set_model_records_per_session_override_not_env(monkeypatch):
         )
 
         # No process-global env mutation.
-        assert "HERMES_TUI_PROVIDER" not in os.environ
+        assert "AGENTIC_OS_TUI_PROVIDER" not in os.environ
         assert "HERMES_INFERENCE_PROVIDER" not in os.environ
         # The user's explicit provider + resolved endpoint live on the session,
         # carried into the next /new rebuild by _make_agent.
@@ -5215,7 +5215,7 @@ def test_config_set_model_records_per_session_override_not_env(monkeypatch):
 
 def test_config_set_model_switches_agent_without_touching_env(monkeypatch):
     """A /model switch mutates the target session's agent in place and records
-    a per-session override; it does NOT write HERMES_MODEL / HERMES_TUI_PROVIDER
+    a per-session override; it does NOT write HERMES_MODEL / AGENTIC_OS_TUI_PROVIDER
     etc. into the shared process environment.
 
     (Was test_config_set_model_syncs_tui_provider_env.)
@@ -5261,7 +5261,7 @@ def test_config_set_model_switches_agent_without_touching_env(monkeypatch):
     agent._session_db = db
     session = _session(agent=agent)
     server._sessions["sid"] = session
-    monkeypatch.setenv("HERMES_TUI_PROVIDER", "openai-codex")
+    monkeypatch.setenv("AGENTIC_OS_TUI_PROVIDER", "openai-codex")
     monkeypatch.delenv("HERMES_MODEL", raising=False)
     monkeypatch.delenv("HERMES_INFERENCE_MODEL", raising=False)
     monkeypatch.setattr(server, "_restart_slash_worker", lambda sid, session: None)
@@ -5316,7 +5316,7 @@ def test_config_set_model_switches_agent_without_touching_env(monkeypatch):
             "content": session["history"][-1]["content"],
         }
         # ...and the shared process env was NOT touched.
-        assert os.environ["HERMES_TUI_PROVIDER"] == "openai-codex"
+        assert os.environ["AGENTIC_OS_TUI_PROVIDER"] == "openai-codex"
         assert "HERMES_MODEL" not in os.environ
         assert "HERMES_INFERENCE_MODEL" not in os.environ
     finally:
@@ -7721,8 +7721,8 @@ def test_session_delete_success_returns_deleted_id(monkeypatch):
     assert resp["result"] == {"deleted": "old-1"}
     assert captured["sid"] == "old-1"
     # sessions_dir must be forwarded so transcript files get cleaned up
-    # too — not just the SQLite row.  The autouse _isolate_hermes_home
-    # fixture pins HERMES_HOME to a temp dir; the handler should append
+    # too — not just the SQLite row.  The autouse _isolate_agentic_os_home
+    # fixture pins AGENTIC_OS_HOME to a temp dir; the handler should append
     # /sessions to it.
     assert captured["sessions_dir"] is not None
     assert str(captured["sessions_dir"]).endswith("sessions")
@@ -9308,7 +9308,7 @@ def test_config_set_indicator_none_keeps_blank_repr(monkeypatch):
 
 
 def test_reload_env_rpc_calls_agentic_os_cli_reload_env(monkeypatch):
-    """reload.env mirrors classic CLI's `/reload` — re-reads ~/.hermes/.env
+    """reload.env mirrors classic CLI's `/reload` — re-reads ~/.agentic-os/.env
     into the gateway process and reports the count of vars updated."""
     calls = {"n": 0}
 
@@ -9707,7 +9707,7 @@ def test_notification_poller_requeues_when_busy(monkeypatch):
             process_registry.completion_queue.get_nowait()
 
 
-def test_session_save_writes_under_hermes_home_with_system_prompt(monkeypatch, tmp_path):
+def test_session_save_writes_under_agentic_os_home_with_system_prompt(monkeypatch, tmp_path):
     """TUI /save (session.save RPC) must snapshot under the Hermes profile
     home — not the project/workspace CWD — and include the system prompt,
     mirroring the classic CLI /save and the dashboard save export.
@@ -9718,7 +9718,7 @@ def test_session_save_writes_under_hermes_home_with_system_prompt(monkeypatch, t
     """
     home = tmp_path / ".hermes"
     home.mkdir()
-    monkeypatch.setenv("HERMES_HOME", str(home))
+    monkeypatch.setenv("AGENTIC_OS_HOME", str(home))
 
     # Run from a different CWD to prove the snapshot does NOT leak there.
     work = tmp_path / "workspace"
@@ -9878,7 +9878,7 @@ def _attach_bytes_cli(monkeypatch):
 def test_image_attach_bytes_writes_to_gateway_dir(monkeypatch, tmp_path):
     """Remote client uploads base64 bytes; gateway writes them to its own disk."""
     _attach_bytes_cli(monkeypatch)
-    monkeypatch.setattr(server, "_hermes_home", tmp_path)
+    monkeypatch.setattr(server, "_agentic_os_home", tmp_path)
     server._sessions["abx"] = _session()
 
     resp = server.handle_request(
@@ -9905,7 +9905,7 @@ def test_image_attach_bytes_writes_to_gateway_dir(monkeypatch, tmp_path):
 
 def test_image_attach_bytes_accepts_data_url_prefix(monkeypatch, tmp_path):
     _attach_bytes_cli(monkeypatch)
-    monkeypatch.setattr(server, "_hermes_home", tmp_path)
+    monkeypatch.setattr(server, "_agentic_os_home", tmp_path)
     server._sessions["abx2"] = _session()
 
     resp = server.handle_request(
@@ -9924,7 +9924,7 @@ def test_image_attach_bytes_accepts_data_url_prefix(monkeypatch, tmp_path):
 def test_image_attach_bytes_data_alias_and_magic_sniff(monkeypatch, tmp_path):
     """Older desktop builds send `data` (not content_base64); ext sniffed from bytes."""
     _attach_bytes_cli(monkeypatch)
-    monkeypatch.setattr(server, "_hermes_home", tmp_path)
+    monkeypatch.setattr(server, "_agentic_os_home", tmp_path)
     server._sessions["abx3"] = _session()
 
     resp = server.handle_request(
@@ -9941,7 +9941,7 @@ def test_image_attach_bytes_data_alias_and_magic_sniff(monkeypatch, tmp_path):
 
 def test_image_attach_bytes_rejects_invalid_base64(monkeypatch, tmp_path):
     _attach_bytes_cli(monkeypatch)
-    monkeypatch.setattr(server, "_hermes_home", tmp_path)
+    monkeypatch.setattr(server, "_agentic_os_home", tmp_path)
     server._sessions["abx4"] = _session()
 
     resp = server.handle_request(
@@ -9959,7 +9959,7 @@ def test_image_attach_bytes_rejects_oversize(monkeypatch, tmp_path):
     import base64 as _b64
 
     _attach_bytes_cli(monkeypatch)
-    monkeypatch.setattr(server, "_hermes_home", tmp_path)
+    monkeypatch.setattr(server, "_agentic_os_home", tmp_path)
     monkeypatch.setattr(server, "_ATTACH_BYTES_MAX_BYTES", 10)
     server._sessions["abx5"] = _session()
 
@@ -9977,7 +9977,7 @@ def test_image_attach_bytes_rejects_oversize(monkeypatch, tmp_path):
 
 def test_image_attach_bytes_rejects_unsupported_extension(monkeypatch, tmp_path):
     _attach_bytes_cli(monkeypatch)
-    monkeypatch.setattr(server, "_hermes_home", tmp_path)
+    monkeypatch.setattr(server, "_agentic_os_home", tmp_path)
     server._sessions["abx6"] = _session()
 
     # filename hint forces a non-image extension; magic sniff is bypassed by hint
@@ -9999,7 +9999,7 @@ def test_image_attach_bytes_rejects_unsupported_extension(monkeypatch, tmp_path)
 def test_pdf_attach_requires_poppler(monkeypatch, tmp_path):
     """Without pdftoppm on PATH, pdf.attach returns a clear 5028."""
     _attach_bytes_cli(monkeypatch)
-    monkeypatch.setattr(server, "_hermes_home", tmp_path)
+    monkeypatch.setattr(server, "_agentic_os_home", tmp_path)
     monkeypatch.setattr("shutil.which", lambda _name: None)
     server._sessions["pdf1"] = _session()
 
@@ -10018,7 +10018,7 @@ def test_pdf_attach_rejects_non_pdf_bytes(monkeypatch, tmp_path):
     import base64 as _b64
 
     _attach_bytes_cli(monkeypatch)
-    monkeypatch.setattr(server, "_hermes_home", tmp_path)
+    monkeypatch.setattr(server, "_agentic_os_home", tmp_path)
     monkeypatch.setattr("shutil.which", lambda _name: "/usr/bin/pdftoppm")
     server._sessions["pdf2"] = _session()
 
@@ -10036,7 +10036,7 @@ def test_pdf_attach_rejects_non_pdf_bytes(monkeypatch, tmp_path):
 
 def test_pdf_attach_requires_path_or_bytes(monkeypatch, tmp_path):
     _attach_bytes_cli(monkeypatch)
-    monkeypatch.setattr(server, "_hermes_home", tmp_path)
+    monkeypatch.setattr(server, "_agentic_os_home", tmp_path)
     monkeypatch.setattr("shutil.which", lambda _name: "/usr/bin/pdftoppm")
     server._sessions["pdf3"] = _session()
 
@@ -10810,10 +10810,10 @@ def test_persist_model_switch_preserves_sibling_model_keys(tmp_path, monkeypatch
         "agent:\n"
         "  system_prompt: keepme\n"
     )
-    # save_config_value() resolves the config path from cli._hermes_home, which
+    # save_config_value() resolves the config path from cli._agentic_os_home, which
     # is captured at import time — patch it directly (set_AGENTIC_OS_HOME_OVERRIDE
     # does NOT affect this snapshot).
-    monkeypatch.setattr(cli, "_hermes_home", tmp_path)
+    monkeypatch.setattr(cli, "_agentic_os_home", tmp_path)
 
     result = types.SimpleNamespace(
         new_model="new-model", target_provider="anthropic", base_url=None
@@ -10845,7 +10845,7 @@ def test_persist_model_switch_clears_stale_base_url(tmp_path, monkeypatch):
         "  provider: custom:mylocal\n"
         "  base_url: http://localhost:1234/v1\n"
     )
-    monkeypatch.setattr(cli, "_hermes_home", tmp_path)
+    monkeypatch.setattr(cli, "_agentic_os_home", tmp_path)
 
     # Switch to a native provider with no base_url.
     result = types.SimpleNamespace(
@@ -11058,7 +11058,7 @@ class TestResolveRuntimeWithFallback:
 
         monkeypatch.delenv("HERMES_MODEL", raising=False)
         monkeypatch.delenv("HERMES_INFERENCE_MODEL", raising=False)
-        monkeypatch.delenv("HERMES_TUI_PROVIDER", raising=False)
+        monkeypatch.delenv("AGENTIC_OS_TUI_PROVIDER", raising=False)
         monkeypatch.setattr(
             server,
             "_load_cfg",

@@ -47,7 +47,7 @@ class TestSessionDbInitTimeout:
         job = {"id": "wedged-sessiondb", "name": "test", "prompt": "hello"}
 
         try:
-            with patch("cron.scheduler._hermes_home", tmp_path), \
+            with patch("cron.scheduler._agentic_os_home", tmp_path), \
                  patch("cron.scheduler._resolve_origin", return_value=None), \
                  patch("agentic_os_cli.env_loader.load_hermes_dotenv"), \
                  patch("agentic_os_cli.env_loader.reset_secret_source_cache"), \
@@ -88,7 +88,7 @@ class TestSessionDbInitTimeout:
         fake_db = MagicMock()
         job = {"id": "bad-timeout-env", "name": "test", "prompt": "hello"}
 
-        with patch("cron.scheduler._hermes_home", tmp_path), \
+        with patch("cron.scheduler._agentic_os_home", tmp_path), \
              patch("cron.scheduler._resolve_origin", return_value=None), \
              patch("agentic_os_cli.env_loader.load_hermes_dotenv"), \
              patch("agentic_os_cli.env_loader.reset_secret_source_cache"), \
@@ -127,7 +127,7 @@ class TestSessionDbInitTimeout:
         import yaml
 
         monkeypatch.delenv("HERMES_CRON_SESSION_DB_TIMEOUT", raising=False)
-        monkeypatch.setenv("HERMES_HOME", str(tmp_path))
+        monkeypatch.setenv("AGENTIC_OS_HOME", str(tmp_path))
         (tmp_path / "config.yaml").write_text(
             yaml.safe_dump({"cron": {"session_db_timeout_seconds": 0.2}})
         )
@@ -135,7 +135,7 @@ class TestSessionDbInitTimeout:
         job = {"id": "config-timeout", "name": "test", "prompt": "hello"}
 
         try:
-            with patch("cron.scheduler._hermes_home", tmp_path), \
+            with patch("cron.scheduler._agentic_os_home", tmp_path), \
                  patch("cron.scheduler._resolve_origin", return_value=None), \
                  patch("agentic_os_cli.env_loader.load_hermes_dotenv"), \
                  patch("agentic_os_cli.env_loader.reset_secret_source_cache"), \
@@ -190,7 +190,7 @@ class TestDispatchGuardReleasedAfterHang:
         }
 
         try:
-            with patch("cron.scheduler._hermes_home", tmp_path), \
+            with patch("cron.scheduler._agentic_os_home", tmp_path), \
                  patch("cron.scheduler._resolve_origin", return_value=None), \
                  patch("agentic_os_cli.env_loader.load_hermes_dotenv"), \
                  patch("agentic_os_cli.env_loader.reset_secret_source_cache"), \

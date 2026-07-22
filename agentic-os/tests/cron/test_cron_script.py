@@ -4,7 +4,7 @@ Tests cover:
 - Script field in job creation / storage / update
 - Script execution and output injection into prompts
 - Error handling (missing script, timeout, non-zero exit)
-- Path resolution (absolute, relative to HERMES_HOME/scripts/)
+- Path resolution (absolute, relative to AGENTIC_OS_HOME/scripts/)
 """
 
 import json
@@ -23,13 +23,13 @@ sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
 @pytest.fixture
 def cron_env(tmp_path, monkeypatch):
-    """Isolated cron environment with temp HERMES_HOME."""
+    """Isolated cron environment with temp AGENTIC_OS_HOME."""
     hermes_home = tmp_path / ".hermes"
     hermes_home.mkdir()
     (hermes_home / "cron").mkdir()
     (hermes_home / "cron" / "output").mkdir()
     (hermes_home / "scripts").mkdir()
-    monkeypatch.setenv("HERMES_HOME", str(hermes_home))
+    monkeypatch.setenv("AGENTIC_OS_HOME", str(hermes_home))
 
     # Clear cached module-level paths
     import cron.jobs as jobs_mod
@@ -361,7 +361,7 @@ class TestCronjobToolScript:
     """Test the cronjob tool's script parameter."""
 
     def test_create_with_script(self, cron_env, monkeypatch):
-        monkeypatch.setenv("HERMES_INTERACTIVE", "1")
+        monkeypatch.setenv("AGENTIC_OS_INTERACTIVE", "1")
         from tools.cronjob_tools import cronjob
 
         result = json.loads(cronjob(
@@ -374,7 +374,7 @@ class TestCronjobToolScript:
         assert result["job"]["script"] == "monitor.py"
 
     def test_update_script(self, cron_env, monkeypatch):
-        monkeypatch.setenv("HERMES_INTERACTIVE", "1")
+        monkeypatch.setenv("AGENTIC_OS_INTERACTIVE", "1")
         from tools.cronjob_tools import cronjob
 
         create_result = json.loads(cronjob(
@@ -393,7 +393,7 @@ class TestCronjobToolScript:
         assert update_result["job"]["script"] == "new_script.py"
 
     def test_clear_script(self, cron_env, monkeypatch):
-        monkeypatch.setenv("HERMES_INTERACTIVE", "1")
+        monkeypatch.setenv("AGENTIC_OS_INTERACTIVE", "1")
         from tools.cronjob_tools import cronjob
 
         create_result = json.loads(cronjob(
@@ -413,7 +413,7 @@ class TestCronjobToolScript:
         assert "script" not in update_result["job"]
 
     def test_list_shows_script(self, cron_env, monkeypatch):
-        monkeypatch.setenv("HERMES_INTERACTIVE", "1")
+        monkeypatch.setenv("AGENTIC_OS_INTERACTIVE", "1")
         from tools.cronjob_tools import cronjob
 
         cronjob(
@@ -438,7 +438,7 @@ class TestScriptPathContainment:
     """
 
     def test_absolute_path_outside_scripts_dir_blocked(self, cron_env):
-        """Absolute paths outside ~/.hermes/scripts/ must be rejected."""
+        """Absolute paths outside ~/.agentic-os/scripts/ must be rejected."""
         from cron.scheduler import _run_job_script
 
         # Create a script outside the scripts dir
@@ -541,7 +541,7 @@ class TestCronjobToolScriptValidation:
     """Test API-boundary validation of cron script paths in cronjob_tools."""
 
     def test_create_with_absolute_script_rejected(self, cron_env, monkeypatch):
-        monkeypatch.setenv("HERMES_INTERACTIVE", "1")
+        monkeypatch.setenv("AGENTIC_OS_INTERACTIVE", "1")
         from tools.cronjob_tools import cronjob
 
         result = json.loads(cronjob(
@@ -554,7 +554,7 @@ class TestCronjobToolScriptValidation:
         assert "relative" in result["error"].lower() or "absolute" in result["error"].lower()
 
     def test_create_with_tilde_script_rejected(self, cron_env, monkeypatch):
-        monkeypatch.setenv("HERMES_INTERACTIVE", "1")
+        monkeypatch.setenv("AGENTIC_OS_INTERACTIVE", "1")
         from tools.cronjob_tools import cronjob
 
         result = json.loads(cronjob(
@@ -567,7 +567,7 @@ class TestCronjobToolScriptValidation:
         assert "relative" in result["error"].lower() or "absolute" in result["error"].lower()
 
     def test_create_with_traversal_script_rejected(self, cron_env, monkeypatch):
-        monkeypatch.setenv("HERMES_INTERACTIVE", "1")
+        monkeypatch.setenv("AGENTIC_OS_INTERACTIVE", "1")
         from tools.cronjob_tools import cronjob
 
         result = json.loads(cronjob(
@@ -580,7 +580,7 @@ class TestCronjobToolScriptValidation:
         assert "escapes" in result["error"].lower() or "traversal" in result["error"].lower()
 
     def test_create_with_relative_script_allowed(self, cron_env, monkeypatch):
-        monkeypatch.setenv("HERMES_INTERACTIVE", "1")
+        monkeypatch.setenv("AGENTIC_OS_INTERACTIVE", "1")
         from tools.cronjob_tools import cronjob
 
         result = json.loads(cronjob(
@@ -593,7 +593,7 @@ class TestCronjobToolScriptValidation:
         assert result["job"]["script"] == "monitor.py"
 
     def test_update_with_absolute_script_rejected(self, cron_env, monkeypatch):
-        monkeypatch.setenv("HERMES_INTERACTIVE", "1")
+        monkeypatch.setenv("AGENTIC_OS_INTERACTIVE", "1")
         from tools.cronjob_tools import cronjob
 
         create_result = json.loads(cronjob(
@@ -613,7 +613,7 @@ class TestCronjobToolScriptValidation:
 
     def test_update_clear_script_allowed(self, cron_env, monkeypatch):
         """Clearing a script (empty string) should always be permitted."""
-        monkeypatch.setenv("HERMES_INTERACTIVE", "1")
+        monkeypatch.setenv("AGENTIC_OS_INTERACTIVE", "1")
         from tools.cronjob_tools import cronjob
 
         create_result = json.loads(cronjob(
@@ -633,7 +633,7 @@ class TestCronjobToolScriptValidation:
         assert "script" not in update_result["job"]
 
     def test_windows_absolute_path_rejected(self, cron_env, monkeypatch):
-        monkeypatch.setenv("HERMES_INTERACTIVE", "1")
+        monkeypatch.setenv("AGENTIC_OS_INTERACTIVE", "1")
         from tools.cronjob_tools import cronjob
 
         result = json.loads(cronjob(

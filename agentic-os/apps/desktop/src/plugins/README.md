@@ -10,5 +10,5 @@ gateway-pill 1:1 rebuild, the runtime-loader hello world) live in the companion
 repo so the shipped app stays uncluttered.
 
 User- and agent-authored plugins load at runtime from
-`$HERMES_HOME/desktop-plugins/<name>/plugin.js` (the disk door) — see the
-`hermes-desktop-plugins` skill.
+`$AGENTIC_OS_HOME/desktop-plugins/<name>/plugin.js` (the disk door) — see the
+`agentic-os-desktop-plugins` skill.

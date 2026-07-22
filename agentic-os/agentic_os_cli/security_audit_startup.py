@@ -13,7 +13,7 @@ and simply yields no finding):
 1. Running as root (POSIX uid 0).
 2. SSH daemon present with password authentication enabled.
 3. Running inside a container with no persistent volume mount over the
-   HERMES_HOME data dir (state is ephemeral — lost on container restart).
+   AGENTIC_OS_HOME data dir (state is ephemeral — lost on container restart).
 4. A network-accessible gateway listener (dashboard / API server) with no
    authentication configured.
 
@@ -169,7 +169,7 @@ def _container_no_volume_mount(hermes_home: Optional[Path]) -> Optional[str]:
     if not _in_container():
         return None
     home = hermes_home or Path(
-        os.environ.get("HERMES_HOME", os.path.expanduser("~/.hermes"))
+        os.environ.get("AGENTIC_OS_HOME", os.path.expanduser("~/.agentic-os"))
     )
     try:
         if _path_is_mounted(home):
@@ -180,7 +180,7 @@ def _container_no_volume_mount(hermes_home: Optional[Path]) -> Optional[str]:
         f"Running in a container but the data dir ({home}) is NOT on a "
         "persistent volume mount — sessions, memory, skills, and API keys are "
         "ephemeral and lost on container restart. Mount a host volume over the "
-        "HERMES_HOME data directory."
+        "AGENTIC_OS_HOME data directory."
     )
 
 

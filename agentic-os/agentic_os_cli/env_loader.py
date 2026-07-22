@@ -37,7 +37,7 @@ _WARNED_UTF32_PATHS: set[str] = set()
 # the .env case and they don't know Bitwarden is wired up).
 _SECRET_SOURCES: dict[str, str] = {}
 
-# HERMES_HOME paths we've already pulled external secrets for during this
+# AGENTIC_OS_HOME paths we've already pulled external secrets for during this
 # process.  ``load_hermes_dotenv()`` is called at module-import time from
 # several hot modules (cli.py, agentic_os_cli/main.py, run_agent.py,
 # trajectory_compressor.py, gateway/run.py, ...), so without this guard the
@@ -61,7 +61,7 @@ def get_secret_source(env_var: str) -> str | None:
 
 
 def reset_secret_source_cache() -> None:
-    """Forget which HERMES_HOME paths have already had external secrets applied.
+    """Forget which AGENTIC_OS_HOME paths have already had external secrets applied.
 
     The first call to ``_apply_external_secret_sources(home_path)`` in a
     process pulls from Bitwarden (or other configured backend), records the
@@ -293,14 +293,14 @@ def load_hermes_dotenv(
     """Load Hermes environment files with user config taking precedence.
 
     Behavior:
-    - `~/.hermes/.env` overrides stale shell-exported values when present.
+    - `~/.agentic-os/.env` overrides stale shell-exported values when present.
     - project `.env` acts as a dev fallback and only fills missing values when
       the user env exists.
     - if no user env exists, the project `.env` also overrides stale shell vars.
     """
     loaded: list[Path] = []
 
-    home_path = Path(hermes_home or os.getenv("HERMES_HOME", Path.home() / ".hermes"))
+    home_path = Path(hermes_home or os.getenv("AGENTIC_OS_HOME", Path.home() / ".hermes"))
     user_env = home_path / ".env"
     project_env_path = Path(project_env) if project_env else None
 
@@ -341,7 +341,7 @@ def load_hermes_dotenv(
 def _apply_managed_env() -> None:
     """Apply the managed-scope .env last, with override, so it beats user/shell.
 
-    Managed scope is machine-global (independent of HERMES_HOME / profile). v1
+    Managed scope is machine-global (independent of AGENTIC_OS_HOME / profile). v1
     enforcement is "applied last with override=True" — at the end of startup load
     ``os.environ`` holds the managed value for every managed key, beating both the
     user ``.env`` and any pre-existing shell export. This deliberately inverts the
@@ -381,7 +381,7 @@ def _apply_external_secret_sources(home_path: Path) -> None:
     The heavy lifting (source ordering, mapped-beats-bulk precedence,
     first-claim-wins conflict handling, override semantics, provenance)
     lives in ``agent.secret_sources.registry.apply_all``; this wrapper
-    owns the once-per-HERMES_HOME guard, the post-apply ASCII
+    owns the once-per-AGENTIC_OS_HOME guard, the post-apply ASCII
     sanitization sweep, the ``_SECRET_SOURCES`` provenance map that
     UI surfaces read, and the startup status lines.
 

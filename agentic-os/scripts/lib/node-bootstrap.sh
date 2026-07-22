@@ -7,10 +7,10 @@
 #
 # Strategy (first hit wins — respects the user's existing tooling):
 #   1. modern `node` already on PATH
-#   2. ~/.hermes/node/ from a prior Hermes-managed install
+#   2. ~/.agentic-os/node/ from a prior Hermes-managed install
 #   3. fnm, proto, nvm (in that order) if the user already uses a version manager
 #   4. Termux `pkg`, macOS Homebrew
-#   5. pinned nodejs.org tarball into ~/.hermes/node/ (always works, zero shell rc edits)
+#   5. pinned nodejs.org tarball into ~/.agentic-os/node/ (always works, zero shell rc edits)
 #
 # Usage:
 #   source scripts/lib/node-bootstrap.sh
@@ -20,12 +20,12 @@
 # Env inputs (set before sourcing to override defaults):
 #   HERMES_NODE_MIN_VERSION   (default: 20)   — accepted on PATH
 #   HERMES_NODE_TARGET_MAJOR  (default: 22)   — installed when we install
-#   HERMES_HOME               (default: $HOME/.hermes)
+#   AGENTIC_OS_HOME               (default: $HOME/.hermes)
 # ============================================================================
 
 HERMES_NODE_MIN_VERSION="${HERMES_NODE_MIN_VERSION:-20}"
 HERMES_NODE_TARGET_MAJOR="${HERMES_NODE_TARGET_MAJOR:-22}"
-HERMES_HOME="${HERMES_HOME:-$HOME/.hermes}"
+AGENTIC_OS_HOME="${AGENTIC_OS_HOME:-$HOME/.hermes}"
 HERMES_NODE_AVAILABLE=false
 
 # ---------------------------------------------------------------------------
@@ -58,16 +58,16 @@ _nb_get_link_dir() {
 }
 
 # Redirect a Hermes-managed Node's `npm install -g` to the command link dir
-# (already on PATH) instead of the default $HERMES_HOME/node/bin, which is off
+# (already on PATH) instead of the default $AGENTIC_OS_HOME/node/bin, which is off
 # PATH and wiped on every Node upgrade. Scoped to the managed Node via its
 # prefix-local global npmrc; the user's other Node installs / ~/.npmrc are
 # untouched. Idempotent no-op when there's no managed npm.
 _nb_configure_npm_prefix() {
-    [ -x "$HERMES_HOME/node/bin/npm" ] || return 0
+    [ -x "$AGENTIC_OS_HOME/node/bin/npm" ] || return 0
     local _link_dir
     _link_dir="$(_nb_get_link_dir)"
-    mkdir -p "$HERMES_HOME/node/etc"
-    printf 'prefix=%s\n' "$(dirname "$_link_dir")" > "$HERMES_HOME/node/etc/npmrc"
+    mkdir -p "$AGENTIC_OS_HOME/node/etc"
+    printf 'prefix=%s\n' "$(dirname "$_link_dir")" > "$AGENTIC_OS_HOME/node/etc/npmrc"
 }
 
 _nb_node_major() {
@@ -193,7 +193,7 @@ _nb_install_bundled_node() {
         _nb_warn "Download failed"; rm -rf "$tmp"; return 1
     }
 
-    _nb_log "Extracting to $HERMES_HOME/node/..."
+    _nb_log "Extracting to $AGENTIC_OS_HOME/node/..."
     if [[ "$tarball" == *.tar.xz ]]; then
         tar xf  "$tmp/$tarball" -C "$tmp" || { rm -rf "$tmp"; return 1; }
     else
@@ -208,24 +208,24 @@ _nb_install_bundled_node() {
         return 1
     fi
 
-    mkdir -p "$HERMES_HOME"
-    rm -rf "$HERMES_HOME/node"
-    mv "$extracted" "$HERMES_HOME/node"
+    mkdir -p "$AGENTIC_OS_HOME"
+    rm -rf "$AGENTIC_OS_HOME/node"
+    mv "$extracted" "$AGENTIC_OS_HOME/node"
     rm -rf "$tmp"
 
     local _link_dir
     _link_dir="$(_nb_get_link_dir)"
     mkdir -p "$_link_dir"
-    ln -sf "$HERMES_HOME/node/bin/node" "$_link_dir/node"
-    ln -sf "$HERMES_HOME/node/bin/npm"  "$_link_dir/npm"
-    ln -sf "$HERMES_HOME/node/bin/npx"  "$_link_dir/npx"
+    ln -sf "$AGENTIC_OS_HOME/node/bin/node" "$_link_dir/node"
+    ln -sf "$AGENTIC_OS_HOME/node/bin/npm"  "$_link_dir/npm"
+    ln -sf "$AGENTIC_OS_HOME/node/bin/npx"  "$_link_dir/npx"
 
     _nb_configure_npm_prefix
 
-    export PATH="$HERMES_HOME/node/bin:$PATH"
+    export PATH="$AGENTIC_OS_HOME/node/bin:$PATH"
 
     _nb_have_modern_node || return 1
-    _nb_ok "Node $(node --version) installed to $HERMES_HOME/node/"
+    _nb_ok "Node $(node --version) installed to $AGENTIC_OS_HOME/node/"
     return 0
 }
 
@@ -237,9 +237,9 @@ _nb_managed_tool_broken() {
     local tool="$1"
     local probe
     for probe in \
-        "$HERMES_HOME/node/bin/$tool" \
-        "$HERMES_HOME/node/${tool}.exe" \
-        "$HERMES_HOME/node/$tool"; do
+        "$AGENTIC_OS_HOME/node/bin/$tool" \
+        "$AGENTIC_OS_HOME/node/${tool}.exe" \
+        "$AGENTIC_OS_HOME/node/$tool"; do
         if [ -x "$probe" ] || [ -f "$probe" ]; then
             if ! "$probe" --version >/dev/null 2>&1; then
                 return 0
@@ -261,14 +261,14 @@ _nb_managed_node_needs_heal() {
 
 # Redownload the pinned nodejs.org tarball when a managed tree exists but
 # node/npm/npx fail a --version probe. No-op when the tree is healthy or
-# absent. Used by hermes_constants.find_hermes_node_executable() and safe
+# absent. Used by agentic_os_constants.find_hermes_node_executable() and safe
 # to call from install reruns.
 heal_managed_node() {
-    [ -d "$HERMES_HOME/node" ] || return 1
+    [ -d "$AGENTIC_OS_HOME/node" ] || return 1
     if ! _nb_managed_node_needs_heal; then
         return 0
     fi
-    _nb_log "Hermes-managed Node is broken — redownloading to $HERMES_HOME/node/..."
+    _nb_log "Hermes-managed Node is broken — redownloading to $AGENTIC_OS_HOME/node/..."
     _nb_install_bundled_node
 }
 
@@ -289,8 +289,8 @@ ensure_node() {
         return 0
     fi
 
-    if [ -x "$HERMES_HOME/node/bin/node" ]; then
-        export PATH="$HERMES_HOME/node/bin:$PATH"
+    if [ -x "$AGENTIC_OS_HOME/node/bin/node" ]; then
+        export PATH="$AGENTIC_OS_HOME/node/bin:$PATH"
         if _nb_have_modern_node; then
             _nb_ok "Node $(node --version) found (Hermes-managed)"
             HERMES_NODE_AVAILABLE=true

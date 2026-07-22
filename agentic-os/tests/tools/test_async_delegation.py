@@ -246,7 +246,7 @@ def test_completed_records_pruned_to_cap():
 
 def test_completion_is_persisted_and_delivery_can_be_acknowledged(tmp_path, monkeypatch):
     """A finished child remains pending on disk until its queue consumer acks it."""
-    monkeypatch.setenv("HERMES_HOME", str(tmp_path))
+    monkeypatch.setenv("AGENTIC_OS_HOME", str(tmp_path))
     dispatched = ad.dispatch_async_delegation(
         goal="durable", context="ctx", toolsets=["terminal"], role="leaf",
         model="m", session_key="owner", parent_session_id="parent",
@@ -272,7 +272,7 @@ def test_completion_is_persisted_and_delivery_can_be_acknowledged(tmp_path, monk
 def test_real_process_restart_restores_owned_completion_once(tmp_path):
     """Real-import E2E: a fresh interpreter restores a prior process's result."""
     repo = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
-    env = {**os.environ, "HERMES_HOME": str(tmp_path), "PYTHONPATH": repo}
+    env = {**os.environ, "AGENTIC_OS_HOME": str(tmp_path), "PYTHONPATH": repo}
     producer = r'''
 import time
 from tools import async_delegation as ad
@@ -324,7 +324,7 @@ assert ad.mark_completion_delivered({delegation_id!r})
 
 
 def test_submit_failure_removes_durable_running_record(tmp_path, monkeypatch):
-    monkeypatch.setenv("HERMES_HOME", str(tmp_path))
+    monkeypatch.setenv("AGENTIC_OS_HOME", str(tmp_path))
 
     class _BrokenExecutor:
         def submit(self, *_args, **_kwargs):
@@ -342,7 +342,7 @@ def test_submit_failure_removes_durable_running_record(tmp_path, monkeypatch):
 
 
 def test_pending_retention_prunes_delivered_before_undelivered(tmp_path, monkeypatch):
-    monkeypatch.setenv("HERMES_HOME", str(tmp_path))
+    monkeypatch.setenv("AGENTIC_OS_HOME", str(tmp_path))
     monkeypatch.setattr(ad, "_MAX_RETAINED_COMPLETED", 2)
     for index, delivery_state in enumerate(("pending", "delivered", "pending")):
         delegation_id = f"deleg_{index}"
@@ -373,7 +373,7 @@ def test_pending_retention_prunes_delivered_before_undelivered(tmp_path, monkeyp
 
 
 def test_recover_marks_abandoned_running_record_unknown(tmp_path, monkeypatch):
-    monkeypatch.setenv("HERMES_HOME", str(tmp_path))
+    monkeypatch.setenv("AGENTIC_OS_HOME", str(tmp_path))
     record = {
         "delegation_id": "deleg_abandoned",
         "session_key": "owner",
@@ -398,7 +398,7 @@ def test_recover_marks_abandoned_running_record_unknown(tmp_path, monkeypatch):
 
 
 def test_durable_delivery_claim_is_exclusive_and_retryable(tmp_path, monkeypatch):
-    monkeypatch.setenv("HERMES_HOME", str(tmp_path))
+    monkeypatch.setenv("AGENTIC_OS_HOME", str(tmp_path))
     record = {
         "delegation_id": "deleg_claim", "session_key": "owner",
         "origin_ui_session_id": "", "parent_session_id": None,

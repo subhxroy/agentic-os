@@ -185,11 +185,11 @@ function writeEmptyConfig(hermesHome: string): void {
  * Build the environment for the Electron app process.
  *
  * Key env vars:
- *  - HERMES_HOME → sandbox hermes-home (isolated config/sessions)
+ *  - AGENTIC_OS_HOME → sandbox hermes-home (isolated config/sessions)
  *  - HERMES_DESKTOP_USER_DATA_DIR → sandbox electron-user-data
  *  - HERMES_DESKTOP_IGNORE_EXISTING=1 → don't pick up `hermes` from PATH
  *    (we want the dev checkout at REPO_ROOT)
- *  - HERMES_DESKTOP_HERMES_ROOT → REPO_ROOT (dev checkout resolution)
+ *  - HERMES_DESKTOP_AGENTIC_ROOT → REPO_ROOT (dev checkout resolution)
  *  - HERMES_DESKTOP_APP_NAME → unique-ish per test (avoids single-instance lock)
  *  - XDG_RUNTIME_DIR → ensure Electron has a writable runtime dir on Linux
  */
@@ -209,10 +209,10 @@ function buildAppEnv(sandbox: Sandbox, extra: Record<string, string> = {}): Reco
 
   return {
     ...clean,
-    HERMES_HOME: sandbox.hermesHome,
+    AGENTIC_OS_HOME: sandbox.hermesHome,
     HERMES_DESKTOP_USER_DATA_DIR: sandbox.userDataDir,
     HERMES_DESKTOP_IGNORE_EXISTING: '1',
-    HERMES_DESKTOP_HERMES_ROOT: REPO_ROOT,
+    HERMES_DESKTOP_AGENTIC_ROOT: REPO_ROOT,
     HERMES_DESKTOP_APP_NAME: `HermesE2E-${Date.now()}`,
     // Clear dev-server override — we want the built dist/, not a vite server.
     // The dev-server check in main.ts looks for this env var; if it's set,
@@ -279,8 +279,8 @@ function findElectron(): string {
 /**
  * Launch the desktop app in dev mode.
  *
- * @param sandbox  - isolated HERMES_HOME + userData
- * @param env      - the process environment (already has HERMES_HOME etc.)
+ * @param sandbox  - isolated AGENTIC_OS_HOME + userData
+ * @param env      - the process environment (already has AGENTIC_OS_HOME etc.)
  * @returns the ElectronApplication + first Page
  */
 async function launchDesktop(
@@ -480,7 +480,7 @@ export interface PackagedAppFixture {
  * progress without spawning a real Hermes backend.
  *
  * Uses the same sandbox isolation (credential stripping, isolated
- * HERMES_HOME + userData, unique app name) as the dev-mode fixtures.
+ * AGENTIC_OS_HOME + userData, unique app name) as the dev-mode fixtures.
  *
  * Skips if the packaged binary doesn't exist — run `npm run pack` first.
  */
@@ -505,7 +505,7 @@ export async function setupPackagedApp(): Promise<PackagedAppFixture> {
   // should use its own bundled renderer, not the dev checkout.
   delete (env as Record<string, string | undefined>).HERMES_DESKTOP_DEV_SERVER
   delete (env as Record<string, string | undefined>).HERMES_DESKTOP_HERMES
-  delete (env as Record<string, string | undefined>).HERMES_DESKTOP_HERMES_ROOT
+  delete (env as Record<string, string | undefined>).HERMES_DESKTOP_AGENTIC_ROOT
 
   const app = await _electron.launch({
     executablePath: PACKAGED_BINARY_PATH,

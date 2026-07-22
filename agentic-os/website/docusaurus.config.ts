@@ -7,11 +7,11 @@ const config: Config = {
   tagline: 'The self-improving AI agent',
   favicon: 'img/favicon.ico',
 
-  url: 'https://hermes-agent.nousresearch.com',
+  url: 'https://agentic-os.nousresearch.com',
   baseUrl: '/docs/',
 
   organizationName: 'NousResearch',
-  projectName: 'hermes-agent',
+  projectName: 'agentic-os',
 
   onBrokenLinks: 'warn',
 
@@ -115,7 +115,7 @@ const config: Config = {
   ],
 
   themeConfig: {
-    image: 'img/hermes-agent-banner.png',
+    image: 'img/agentic-os-banner.png',
     colorMode: {
       defaultMode: 'dark',
       respectPrefersColorScheme: true,
@@ -145,7 +145,7 @@ const config: Config = {
           position: 'left',
         },
         {
-          href: 'https://hermes-agent.nousresearch.com/',
+          href: 'https://agentic-os.nousresearch.com/',
           label: 'Download',
           position: 'left',
         },
@@ -154,7 +154,7 @@ const config: Config = {
           position: 'right',
         },
         {
-          href: 'https://hermes-agent.nousresearch.com',
+          href: 'https://agentic-os.nousresearch.com',
           label: 'Home',
           position: 'right',
         },
@@ -193,7 +193,7 @@ const config: Config = {
         {
           title: 'More',
           items: [
-            { label: 'Desktop Download', href: 'https://hermes-agent.nousresearch.com/' },
+            { label: 'Desktop Download', href: 'https://agentic-os.nousresearch.com/' },
             { label: 'GitHub', href: 'https://github.com/subhxroy/agentic-os' },
             { label: 'Nous Research', href: 'https://nousresearch.com' },
           ],

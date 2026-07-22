@@ -32,7 +32,7 @@ re-checks defensively).
 
 Providers live in ``<repo>/plugins/transcription/<name>/`` (built-in
 plugins, none shipped today) or
-``~/.hermes/plugins/transcription/<name>/`` (user-installed).
+``~/.agentic-os/plugins/transcription/<name>/`` (user-installed).
 
 Response contract
 -----------------

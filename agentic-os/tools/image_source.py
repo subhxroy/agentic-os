@@ -208,7 +208,7 @@ def _is_local_terminal_backend() -> bool:
 
 
 def _media_cache_roots() -> list:
-    """Agent-managed media cache directories under HERMES_HOME (host side).
+    """Agent-managed media cache directories under AGENTIC_OS_HOME (host side).
 
     The only host paths vision may read under a non-local backend: gateway-
     downloaded inbound media and the tools' own URL-download temp dirs. Covers

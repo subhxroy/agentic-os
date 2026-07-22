@@ -224,7 +224,7 @@ def test_cli_close_persist_real_db_survives_history_alias(tmp_path, monkeypatch)
     every message as already durable and write zero rows.  The close safety-net
     should use marker-based dedup instead.
     """
-    monkeypatch.setenv("HERMES_HOME", str(tmp_path / ".hermes"))
+    monkeypatch.setenv("AGENTIC_OS_HOME", str(tmp_path / ".hermes"))
 
     import cli as cli_mod
     from agentic_os_state import SessionDB
@@ -260,7 +260,7 @@ def test_cli_close_preflush_resumed_prefix_is_not_duplicated(tmp_path, monkeypat
     The pause is after ``_persist_session`` records its live snapshot but before
     its normal DB flush. The close helper must retain the distinct CLI baseline.
     """
-    monkeypatch.setenv("HERMES_HOME", str(tmp_path / ".hermes"))
+    monkeypatch.setenv("AGENTIC_OS_HOME", str(tmp_path / ".hermes"))
 
     import cli as cli_mod
     from agentic_os_state import SessionDB
@@ -349,7 +349,7 @@ def test_cli_close_preflush_resumed_prefix_is_not_duplicated(tmp_path, monkeypat
 
 def test_cli_close_preserves_unflushed_tail_after_prior_prefix_flush(tmp_path, monkeypatch):
     """Marker-only alias close writes only a new tail after a prior flush."""
-    monkeypatch.setenv("HERMES_HOME", str(tmp_path / ".hermes"))
+    monkeypatch.setenv("AGENTIC_OS_HOME", str(tmp_path / ".hermes"))
 
     import cli as cli_mod
     from agentic_os_state import SessionDB
@@ -383,7 +383,7 @@ def test_cli_close_preserves_unflushed_tail_after_prior_prefix_flush(tmp_path, m
 
 def test_cli_close_hands_staged_user_marker_to_turn_start(tmp_path, monkeypatch):
     """A close before turn setup does not duplicate the CLI-staged user row."""
-    monkeypatch.setenv("HERMES_HOME", str(tmp_path / ".hermes"))
+    monkeypatch.setenv("AGENTIC_OS_HOME", str(tmp_path / ".hermes"))
 
     import cli as cli_mod
     from agentic_os_state import SessionDB
@@ -453,7 +453,7 @@ def test_cli_chat_staging_does_not_mutate_live_agent_snapshot():
 
 def test_cli_close_persists_pending_user_when_agent_snapshot_is_empty(tmp_path, monkeypatch):
     """Close before worker startup persists only the CLI-staged user input."""
-    monkeypatch.setenv("HERMES_HOME", str(tmp_path / ".hermes"))
+    monkeypatch.setenv("AGENTIC_OS_HOME", str(tmp_path / ".hermes"))
 
     import cli as cli_mod
     from agentic_os_state import SessionDB
@@ -494,7 +494,7 @@ def test_cli_close_persists_pending_user_when_agent_snapshot_is_empty(tmp_path, 
 
 def test_cli_close_uses_clean_override_for_shortened_pending_snapshot(tmp_path, monkeypatch):
     """Close retains the clean user text when its snapshot omits the prefix."""
-    monkeypatch.setenv("HERMES_HOME", str(tmp_path / ".hermes"))
+    monkeypatch.setenv("AGENTIC_OS_HOME", str(tmp_path / ".hermes"))
 
     import cli as cli_mod
     from agentic_os_state import SessionDB
@@ -539,7 +539,7 @@ def test_cli_close_uses_clean_override_for_shortened_pending_snapshot(tmp_path, 
 
 def test_cli_close_preserves_clean_staged_user_across_noted_worker_turn(tmp_path, monkeypatch):
     """A noted API-only turn reuses the close-marked clean staged user row."""
-    monkeypatch.setenv("HERMES_HOME", str(tmp_path / ".hermes"))
+    monkeypatch.setenv("AGENTIC_OS_HOME", str(tmp_path / ".hermes"))
 
     import cli as cli_mod
     from agentic_os_state import SessionDB
@@ -631,7 +631,7 @@ def test_cli_close_preserves_clean_staged_user_across_noted_worker_turn(tmp_path
 
 def test_cli_close_builds_prompt_before_creating_first_session_row(tmp_path, monkeypatch):
     """First-turn close persistence must not leave a NULL prompt snapshot."""
-    monkeypatch.setenv("HERMES_HOME", str(tmp_path / ".hermes"))
+    monkeypatch.setenv("AGENTIC_OS_HOME", str(tmp_path / ".hermes"))
 
     import agent.conversation_loop as loop_mod
     import cli as cli_mod

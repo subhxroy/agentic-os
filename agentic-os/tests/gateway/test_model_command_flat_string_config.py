@@ -66,7 +66,7 @@ def _setup_isolated_home(tmp_path, monkeypatch, model_yaml_value):
         encoding="utf-8",
     )
 
-    monkeypatch.setattr(gateway_run, "_hermes_home", hermes_home)
+    monkeypatch.setattr(gateway_run, "_agentic_os_home", hermes_home)
     monkeypatch.setattr("agent.models_dev.fetch_models_dev", lambda: {})
     monkeypatch.setattr(
         "agentic_os_cli.model_switch.switch_model",
@@ -117,7 +117,7 @@ async def test_model_global_persists_when_config_has_missing_model(tmp_path, mon
     cfg_path = hermes_home / "config.yaml"
     cfg_path.write_text(yaml.safe_dump({"providers": {}}), encoding="utf-8")
 
-    monkeypatch.setattr(gateway_run, "_hermes_home", hermes_home)
+    monkeypatch.setattr(gateway_run, "_agentic_os_home", hermes_home)
     monkeypatch.setattr("agent.models_dev.fetch_models_dev", lambda: {})
     monkeypatch.setattr(
         "agentic_os_cli.model_switch.switch_model",

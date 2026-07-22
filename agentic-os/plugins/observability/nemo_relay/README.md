@@ -44,26 +44,26 @@ hermes plugins enable observability/nemo_relay
 The `HERMES_NEMO_RELAY_*` environment variables below only configure an
 already-enabled plugin. They do not enable plugin discovery by themselves.
 
-For isolated test homes, enable the plugin in the same `HERMES_HOME` that the
+For isolated test homes, enable the plugin in the same `AGENTIC_OS_HOME` that the
 agent run will use:
 
 ```bash
-env HERMES_HOME=/tmp/hermes-nemo-relay-test \
+env AGENTIC_OS_HOME=/tmp/hermes-nemo-relay-test \
   hermes plugins enable observability/nemo_relay
 ```
 
 Runs started with `--ignore_user_config` skip the enabled-plugin state from
-`HERMES_HOME`, so local E2E tests should omit that flag unless the test harness
+`AGENTIC_OS_HOME`, so local E2E tests should omit that flag unless the test harness
 loads `observability/nemo_relay` explicitly another way.
 
-`HERMES_HOME` is the Hermes profile/config home used by both
+`AGENTIC_OS_HOME` is the Hermes profile/config home used by both
 `hermes plugins enable ...` and the later `hermes chat ...` run. If unset,
-Hermes uses the user's default home, usually `~/.hermes`. For isolated smoke
+Hermes uses the user's default home, usually `~/.agentic-os`. For isolated smoke
 tests, choose any writable temporary directory and use the same value for every
 command in that test:
 
 ```bash
-export HERMES_HOME=/tmp/hermes-nemo-relay-test
+export AGENTIC_OS_HOME=/tmp/hermes-nemo-relay-test
 hermes plugins enable observability/nemo_relay
 hermes chat --query 'Reply exactly ok' --provider custom --model qwen3.6:35b
 ```
@@ -260,10 +260,10 @@ OpenAI-compatible API.
 ```bash
 pip install "nemo-relay>=0.5,<1.0"
 
-export HERMES_HOME=/tmp/hermes-nemo-relay-docs/hermes-home
-mkdir -p "$HERMES_HOME"
+export AGENTIC_OS_HOME=/tmp/hermes-nemo-relay-docs/hermes-home
+mkdir -p "$AGENTIC_OS_HOME"
 
-cat > "$HERMES_HOME/config.yaml" <<'YAML'
+cat > "$AGENTIC_OS_HOME/config.yaml" <<'YAML'
 model:
   provider: custom
   default: qwen3.6:35b
@@ -508,10 +508,10 @@ supports `[components.config.tool_parallelism]`, as provided by the supported
 0.x release range beginning with 0.5.
 
 ```bash
-export HERMES_HOME=/tmp/hermes-middleware-test/hermes-home
-mkdir -p "$HERMES_HOME" /tmp/hermes-middleware-test/nemo-relay
+export AGENTIC_OS_HOME=/tmp/hermes-middleware-test/hermes-home
+mkdir -p "$AGENTIC_OS_HOME" /tmp/hermes-middleware-test/nemo-relay
 
-cat > "$HERMES_HOME/config.yaml" <<'YAML'
+cat > "$AGENTIC_OS_HOME/config.yaml" <<'YAML'
 model:
   provider: custom
   default: qwen3.6:35b

@@ -21,7 +21,7 @@ not exist.
 Or manually:
 ```bash
 hermes config set memory.provider openviking
-echo "OPENVIKING_ENDPOINT=http://localhost:1933" >> ~/.hermes/.env
+echo "OPENVIKING_ENDPOINT=http://localhost:1933" >> ~/.agentic-os/.env
 ```
 
 ## Config

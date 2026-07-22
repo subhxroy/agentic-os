@@ -18,7 +18,7 @@ the agent's behavior** — the sprite is a display concern only. The feature is
 ## How it works
 
 - Pets are installed into your profile's `pets/` directory
-  (`<HERMES_HOME>/pets/<slug>/`), so each [profile](../profiles.md) keeps its
+  (`<AGENTIC_OS_HOME>/pets/<slug>/`), so each [profile](../profiles.md) keeps its
   own set.
 - Selecting a pet writes `display.pet.slug` and `display.pet.enabled` to
   `config.yaml` — nothing is stored as a secret or env var.
@@ -202,7 +202,7 @@ Common gotchas:
 - A pet only shows once one is **installed AND selected** (`enabled: true`).
 - Inside a pipe/redirect (no TTY), terminal rendering is disabled by design.
 - The petdex npm CLI installs to `~/.codex/pets`; Hermes uses its own
-  profile-scoped `<HERMES_HOME>/pets/` instead — install through `hermes pets`.
+  profile-scoped `<AGENTIC_OS_HOME>/pets/` instead — install through `hermes pets`.
 
 ## See also
 

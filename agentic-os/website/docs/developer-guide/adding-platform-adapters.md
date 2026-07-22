@@ -8,7 +8,7 @@ This guide covers adding a new messaging platform to the Hermes gateway. A platf
 
 :::tip
 There are two ways to add a platform:
-- **Plugin** (recommended for community/third-party): Drop a plugin directory into `~/.hermes/plugins/` — zero core code changes needed. See [Plugin Path](#plugin-path-recommended) below.
+- **Plugin** (recommended for community/third-party): Drop a plugin directory into `~/.agentic-os/plugins/` — zero core code changes needed. See [Plugin Path](#plugin-path-recommended) below.
 - **Built-in**: Modify 20+ files across code, config, and docs. Use the [Built-in Checklist](#step-by-step-checklist-built-in-path) below.
 :::
 
@@ -33,7 +33,7 @@ Inbound messages are received by the adapter and forwarded via `self.handle_mess
 The plugin system lets you add a platform adapter without modifying any core Hermes code. Your plugin is a directory with two files:
 
 ```
-~/.hermes/plugins/my-platform/
+~/.agentic-os/plugins/my-platform/
   plugin.yaml      # Plugin metadata
   adapter.py       # Adapter class + register() entry point
 ```
@@ -200,7 +200,7 @@ When you call `ctx.register_platform()`, the following integration points are ha
 
 ## Env-Driven Auto-Configuration
 
-Most users set up a platform by dropping env vars into `~/.hermes/.env` rather than editing `config.yaml`. The `env_enablement_fn` hook lets your plugin pick those env vars up **before** the adapter is constructed, so `hermes gateway status`, `get_connected_platforms()`, and cron delivery see the correct state without instantiating the platform SDK.
+Most users set up a platform by dropping env vars into `~/.agentic-os/.env` rather than editing `config.yaml`. The `env_enablement_fn` hook lets your plugin pick those env vars up **before** the adapter is constructed, so `hermes gateway status`, `get_connected_platforms()`, and cron delivery see the correct state without instantiating the platform SDK.
 
 ```python
 def _env_enablement() -> dict | None:
@@ -572,7 +572,7 @@ Five touchpoints:
 ### 8. Toolsets
 
 1. **`toolsets.py`** — Add `"hermes-newplat"` toolset definition with `_HERMES_CORE_TOOLS`
-2. **`toolsets.py`** — Add `"hermes-newplat"` to the `"hermes-gateway"` includes list
+2. **`toolsets.py`** — Add `"hermes-newplat"` to the `"agentic-os-gateway"` includes list
 
 ### 9. Optional: Platform Hints
 

@@ -59,7 +59,7 @@ def _run_with_env(extra_os_env=None, self_env=None):
 
 
 class TestProviderEnvBlocklist:
-    """Provider env vars loaded from ~/.hermes/.env must not leak."""
+    """Provider env vars loaded from ~/.agentic-os/.env must not leak."""
 
     def test_blocked_vars_are_stripped(self):
         """OPENAI_BASE_URL and other provider vars must not appear in subprocess env."""
@@ -276,7 +276,7 @@ class TestActiveVenvMarkerStripping:
 
     def test_virtualenv_marker_stripped_end_to_end(self):
         result_env = _run_with_env(extra_os_env={
-            "VIRTUAL_ENV": "/home/user/.hermes/hermes-agent/venv",
+            "VIRTUAL_ENV": "/home/user/.hermes/agentic-os/venv",
         })
         assert "VIRTUAL_ENV" not in result_env
 
@@ -665,7 +665,7 @@ class TestHermesInternalDynamicSecrets:
 
     ``_is_hermes_internal_secret`` is the single source of truth; every spawn
     path (``_sanitize_subprocess_env``, ``_make_run_env``,
-    ``hermes_subprocess_env``, Docker forward filter, ``env_passthrough``)
+    ``agentic_os_subprocess_env``, Docker forward filter, ``env_passthrough``)
     consults it. These tests exercise the terminal execute path + predicate.
     """
 

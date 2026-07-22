@@ -30,7 +30,7 @@ In Raft, open the Agents menu, create an External Agent, and follow the setup ca
 
 ## Setup
 
-Add to `~/.hermes/.env`:
+Add to `~/.agentic-os/.env`:
 
 ```bash
 RAFT_PROFILE=your-agent-profile

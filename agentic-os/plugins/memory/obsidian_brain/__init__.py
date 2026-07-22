@@ -5,10 +5,10 @@ searchable, linkable markdown notes for persistent knowledge management.
 
 Configuration
 -------------
-Secret (lives in $HERMES_HOME/.env or the environment):
+Secret (lives in $AGENTIC_OS_HOME/.env or the environment):
   OBSIDIAN_BRAIN_VAULT_PATH  — Path to the Obsidian vault (required)
 
-Behavioral settings (live in $HERMES_HOME/obsidian-brain.json):
+Behavioral settings (live in $AGENTIC_OS_HOME/obsidian-brain.json):
   vault_path       — Vault directory path (overrides env var)
   auto_sync        — Auto-sync memories on every turn (default: true)
   journal_enabled  — Write daily journal entries (default: true)

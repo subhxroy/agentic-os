@@ -56,7 +56,7 @@ def _make_agent():
         ),
         patch("run_agent.check_toolset_requirements", return_value={}),
         patch("run_agent.OpenAI"),
-        patch("run_agent._hermes_home", hermes_home),
+        patch("run_agent._agentic_os_home", hermes_home),
         patch("agent.model_metadata.fetch_model_metadata", return_value={}),
     ):
         agent = AIAgent(

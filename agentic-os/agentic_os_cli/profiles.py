@@ -1,11 +1,11 @@
 """
 Profile management for multiple isolated Hermes instances.
 
-Each profile is a fully independent HERMES_HOME directory with its own
+Each profile is a fully independent AGENTIC_OS_HOME directory with its own
 config.yaml, .env, memory, sessions, skills, gateway, cron, and logs.
-Profiles live under ``~/.hermes/profiles/<name>/`` by default.
+Profiles live under ``~/.agentic-os/profiles/<name>/`` by default.
 
-The "default" profile is ``~/.hermes`` itself — backward compatible,
+The "default" profile is ``~/.agentic-os`` itself — backward compatible,
 zero migration needed.
 
 Usage::
@@ -78,12 +78,12 @@ _CLONE_ALL_STRIP: list[str] = [
 ]
 
 # Infrastructure artifacts excluded from --clone-all when the source is the
-# default profile (``~/.hermes``).  Named profiles never contain these
+# default profile (``~/.agentic-os``).  Named profiles never contain these
 # directories at root, so the exclusion is gated to avoid silently dropping
 # user data from a named-profile source.
 #
 # Rationale per item:
-#   hermes-agent  — git repo checkout (~84 MB source + ~3 GB venv)
+#   agentic-os  — git repo checkout (~84 MB source + ~3 GB venv)
 #   .worktrees    — git worktrees
 #   profiles      — sibling named profiles (recursive copy never intended)
 #   bin           — installed binaries (tirith etc., ~10 MB) shared per-host
@@ -151,7 +151,7 @@ def _clone_all_copytree_ignore(source_dir: Path):
          and should never carry into a fresh clone.  Applies to any source.
       2. Root-level entries in ``_CLONE_ALL_DEFAULT_EXCLUDE_ROOT`` — known
          Hermes infrastructure directories that only the default profile
-         (``~/.hermes``) ever contains.  Gated on ``source_dir`` actually
+         (``~/.agentic-os``) ever contains.  Gated on ``source_dir`` actually
          being the default profile so a named-profile source never has its
          own data silently dropped.
       3. Universal exclusions at any depth — Python bytecode caches that
@@ -164,7 +164,7 @@ def _clone_all_copytree_ignore(source_dir: Path):
     clone.
     """
     source_resolved = source_dir.resolve()
-    is_default_source = source_resolved == _get_default_hermes_home().resolve()
+    is_default_source = source_resolved == _get_default_agentic_os_home().resolve()
 
     def _ignore(directory: str, names: List[str]) -> List[str]:
         ignored: list[str] = []
@@ -196,7 +196,7 @@ def _clone_all_copytree_ignore(source_dir: Path):
     return _ignore
 
 
-# Directories/files to exclude when exporting the default (~/.hermes) profile.
+# Directories/files to exclude when exporting the default (~/.agentic-os) profile.
 # The default profile contains infrastructure (repo checkout, worktrees, DBs,
 # caches, binaries) that named profiles don't have.  We exclude those so the
 # export is a portable, reasonable-size archive of actual profile data.
@@ -224,11 +224,11 @@ _DEFAULT_EXPORT_EXCLUDE_ROOT = frozenset({
     "logs",                 # gateway logs
 })
 
-# Allow-list for ``export_profile("default")``: when HERMES_HOME equals the
+# Allow-list for ``export_profile("default")``: when AGENTIC_OS_HOME equals the
 # cwd (Docker/custom deployments), the default profile home is the working
 # directory and contains arbitrary user files that should NOT be bundled
 # into the export. The set below identifies the *known Hermes profile
-# artifacts* at the root of HERMES_HOME; everything else is excluded.
+# artifacts* at the root of AGENTIC_OS_HOME; everything else is excluded.
 # Sensitive runtime infrastructure (``state.db``, ``logs/``, ``auth.*``,
 # other profiles) is intentionally *not* in this list so the export stays
 # a portable, credential-free snapshot of the user-facing surface
@@ -264,23 +264,23 @@ _HERMES_SUBCOMMANDS = frozenset({
 def _get_profiles_root() -> Path:
     """Return the directory where named profiles are stored.
 
-    Anchored to the hermes root, NOT to the current HERMES_HOME
+    Anchored to the hermes root, NOT to the current AGENTIC_OS_HOME
     (which may itself be a profile).  This ensures ``coder profile list``
     can see all profiles.
 
-    In Docker/custom deployments where HERMES_HOME points outside
-    ``~/.hermes``, profiles live under ``HERMES_HOME/profiles/`` so
+    In Docker/custom deployments where AGENTIC_OS_HOME points outside
+    ``~/.agentic-os``, profiles live under ``AGENTIC_OS_HOME/profiles/`` so
     they persist on the mounted volume.
     """
-    return _get_default_hermes_home() / "profiles"
+    return _get_default_agentic_os_home() / "profiles"
 
 
-def _get_default_hermes_home() -> Path:
-    """Return the default (pre-profile) HERMES_HOME path.
+def _get_default_agentic_os_home() -> Path:
+    """Return the default (pre-profile) AGENTIC_OS_HOME path.
 
-    In standard deployments this is ``~/.hermes``.
-    In Docker/custom deployments where HERMES_HOME is outside ``~/.hermes``
-    (e.g. ``/opt/data``), returns HERMES_HOME directly.
+    In standard deployments this is ``~/.agentic-os``.
+    In Docker/custom deployments where AGENTIC_OS_HOME is outside ``~/.agentic-os``
+    (e.g. ``/opt/data``), returns AGENTIC_OS_HOME directly.
     """
     from agentic_os_constants import get_default_agentic_os_root
     return get_default_agentic_os_root()
@@ -288,7 +288,7 @@ def _get_default_hermes_home() -> Path:
 
 def _get_active_profile_path() -> Path:
     """Return the path to the sticky active_profile file."""
-    return _get_default_hermes_home() / "active_profile"
+    return _get_default_agentic_os_home() / "active_profile"
 
 
 def _get_wrapper_dir() -> Path:
@@ -329,12 +329,12 @@ def validate_profile_name(name: str) -> None:
 
     Also rejects names in :data:`_RESERVED_NAMES` (``hermes``, ``test``,
     ``tmp``, ``root``, ``sudo``) that would create confusing on-disk
-    collisions (a ``hermes`` profile inside ``~/.hermes/``) or get refused
+    collisions (a ``hermes`` profile inside ``~/.agentic-os/``) or get refused
     at alias-creation time anyway. ``default`` is a special pass-through —
     it's a valid alias for the built-in root profile.
     """
     if name == "default":
-        return  # special alias for ~/.hermes
+        return  # special alias for ~/.agentic-os
     if not _PROFILE_ID_RE.match(name):
         raise ValueError(
             f"Invalid profile name {name!r}. Must match "
@@ -365,10 +365,10 @@ def validate_alias_name(name: str) -> None:
 
 
 def get_profile_dir(name: str) -> Path:
-    """Resolve a profile name to its HERMES_HOME directory."""
+    """Resolve a profile name to its AGENTIC_OS_HOME directory."""
     canon = normalize_profile_name(name)
     if canon == "default":
-        return _get_default_hermes_home()
+        return _get_default_agentic_os_home()
     return _get_profiles_root() / canon
 
 
@@ -707,7 +707,7 @@ def _check_gateway_running(profile_dir: Path) -> bool:
     no live PID file.  In those cases fall back to validating the PID recorded
     in the profile's own ``gateway_state.json`` against the live process table,
     mirroring the ``/api/status`` sidebar's liveness logic so the two surfaces
-    agree.  Parameterized by ``profile_dir`` so it never mutates ``HERMES_HOME``.
+    agree.  Parameterized by ``profile_dir`` so it never mutates ``AGENTIC_OS_HOME``.
     """
     try:
         from gateway.status import get_running_pid
@@ -880,7 +880,7 @@ def list_profiles() -> List[ProfileInfo]:
     wrapper_dir = _get_wrapper_dir()
 
     # Default profile
-    default_home = _get_default_hermes_home()
+    default_home = _get_default_agentic_os_home()
     if default_home.is_dir():
         model, provider = _read_config_model(default_home)
         dist_name, dist_version, dist_source = _read_distribution_meta(default_home)
@@ -957,7 +957,7 @@ def profiles_to_serve(multiplex: bool) -> List[Tuple[str, Path]]:
       always had. The name is ``"default"`` for the default profile or the
       active named profile's id.
     - ``multiplex=True``: returns the default profile plus every valid named
-      profile under ``profiles/``, each paired with its own HERMES_HOME.
+      profile under ``profiles/``, each paired with its own AGENTIC_OS_HOME.
 
     Intentionally lightweight (a directory scan + name validation only): no
     per-profile config reads, gateway-running probes, or skill counts like
@@ -970,7 +970,7 @@ def profiles_to_serve(multiplex: bool) -> List[Tuple[str, Path]]:
     if not multiplex:
         return [(active, get_profile_dir(active))]
 
-    serve: List[Tuple[str, Path]] = [("default", _get_default_hermes_home())]
+    serve: List[Tuple[str, Path]] = [("default", _get_default_agentic_os_home())]
 
     profiles_root = _get_profiles_root()
     if profiles_root.is_dir():
@@ -1033,7 +1033,7 @@ def create_profile(
 
     if canon == "default":
         raise ValueError(
-            "Cannot create a profile named 'default' — it is the built-in profile (~/.hermes)."
+            "Cannot create a profile named 'default' — it is the built-in profile (~/.agentic-os)."
         )
 
     profile_dir = get_profile_dir(canon)
@@ -1057,7 +1057,7 @@ def create_profile(
             )
 
     if clone_all and source_dir:
-        # Full copy of source profile (exclude sibling ~/.hermes/profiles/)
+        # Full copy of source profile (exclude sibling ~/.agentic-os/profiles/)
         shutil.copytree(
             source_dir,
             profile_dir,
@@ -1183,7 +1183,7 @@ def create_profile(
 def seed_profile_skills(profile_dir: Path, quiet: bool = False) -> Optional[dict]:
     """Seed bundled skills into a profile via subprocess.
 
-    Uses subprocess because sync_skills() caches HERMES_HOME at module level.
+    Uses subprocess because sync_skills() caches AGENTIC_OS_HOME at module level.
     Returns the sync result dict, or None on failure.
 
     Profiles that opted out of bundled skills (via ``hermes profile create
@@ -1204,7 +1204,7 @@ def seed_profile_skills(profile_dir: Path, quiet: bool = False) -> Optional[dict
             [sys.executable, "-c",
              "import json; from tools.skills_sync import sync_skills; "
              "r = sync_skills(quiet=True); print(json.dumps(r))"],
-            env={**os.environ, "HERMES_HOME": str(profile_dir)},
+            env={**os.environ, "AGENTIC_OS_HOME": str(profile_dir)},
             cwd=str(project_root),
             capture_output=True, text=True, timeout=60,
         )
@@ -1248,7 +1248,7 @@ def backfill_profile_envs(quiet: bool = False) -> List[str]:
     if not profiles_root.is_dir():
         return backfilled
 
-    default_env = _get_default_hermes_home() / ".env"
+    default_env = _get_default_agentic_os_home() / ".env"
 
     for entry in sorted(profiles_root.iterdir()):
         if not entry.is_dir() or not _PROFILE_ID_RE.match(entry.name):
@@ -1287,7 +1287,7 @@ def _profile_bound_backend_pids(canon: str, profile_dir: Path) -> list[int]:
     ``ENOTEMPTY`` (and, pre-fix, resurrected the tree).  ``gateway.pid`` never
     names it, so find it by inspection: a Hermes backend subcommand
     (``serve``/``dashboard``/``gateway``) that is bound to *this* profile either
-    by a ``--profile <canon>`` / ``-p <canon>`` selector or by a ``HERMES_HOME``
+    by a ``--profile <canon>`` / ``-p <canon>`` selector or by a ``AGENTIC_OS_HOME``
     that resolves to ``profile_dir``.
 
     Best-effort and tightly scoped: current-user processes only, backend
@@ -1322,7 +1322,7 @@ def _profile_bound_backend_pids(canon: str, profile_dir: Path) -> list[int]:
         current_user = None
 
     backend_tokens = {"serve", "dashboard", "gateway"}
-    hermes_markers = ("agentic_os_cli.main", "hermes-gateway", "tui_gateway")
+    hermes_markers = ("agentic_os_cli.main", "agentic-os-gateway", "tui_gateway")
     pids: list[int] = []
 
     for proc in psutil.process_iter(["pid", "name", "username", "cmdline"]):
@@ -1368,10 +1368,10 @@ def _profile_bound_backend_pids(canon: str, profile_dir: Path) -> list[int]:
                         bound = True
                         break
 
-            # ...or by HERMES_HOME env pointing at this profile dir.
+            # ...or by AGENTIC_OS_HOME env pointing at this profile dir.
             if not bound:
                 try:
-                    env_home = (proc.environ() or {}).get("HERMES_HOME", "")
+                    env_home = (proc.environ() or {}).get("AGENTIC_OS_HOME", "")
                     if env_home and Path(env_home).resolve() == resolved_dir:
                         bound = True
                 except Exception:
@@ -1473,7 +1473,7 @@ def delete_profile(name: str, yes: bool = False) -> Path:
 
     if canon == "default":
         raise ValueError(
-            "Cannot delete the default profile (~/.hermes).\n"
+            "Cannot delete the default profile (~/.agentic-os).\n"
             "To remove everything, use: hermes uninstall"
         )
 
@@ -1540,7 +1540,7 @@ def delete_profile(name: str, yes: bool = False) -> Path:
     # 2b. Stop any other backends bound to this profile (Desktop-spawned
     # serve/dashboard processes the gateway.pid file never names). They hold
     # the profile's SQLite connection open and keep writing files, which makes
-    # the rmtree below fail with ENOTEMPTY and — before the ensure_hermes_home
+    # the rmtree below fail with ENOTEMPTY and — before the ensure_agentic_os_home
     # guard — resurrected the deleted tree.
     _stop_profile_backends(canon, profile_dir)
 
@@ -1625,7 +1625,7 @@ def _maybe_register_gateway_service(profile_name: str) -> None:
     which goes through the same dispatch path.
 
     Port selection: each supervised profile gateway loads its own
-    ``HERMES_HOME`` and binds the port resolved by ``gateway/config.py``
+    ``AGENTIC_OS_HOME`` and binds the port resolved by ``gateway/config.py``
     from that profile's environment — ``API_SERVER_PORT`` (or
     ``platforms.api_server.extra.port`` in the profile's
     ``config.yaml``), defaulting to 8642. There is no ``[gateway] port``
@@ -1703,10 +1703,10 @@ def _cleanup_gateway_service(name: str, profile_dir: Path) -> None:
     import platform as _platform
 
     # Derive service name for this profile
-    # Temporarily set HERMES_HOME so _profile_suffix resolves correctly
-    old_home = os.environ.get("HERMES_HOME")
+    # Temporarily set AGENTIC_OS_HOME so _profile_suffix resolves correctly
+    old_home = os.environ.get("AGENTIC_OS_HOME")
     try:
-        os.environ["HERMES_HOME"] = str(profile_dir)
+        os.environ["AGENTIC_OS_HOME"] = str(profile_dir)
         from agentic_os_cli.gateway import get_service_name, get_launchd_plist_path
 
         if _platform.system() == "Linux":
@@ -1741,9 +1741,9 @@ def _cleanup_gateway_service(name: str, profile_dir: Path) -> None:
         print(f"⚠ Service cleanup: {e}")
     finally:
         if old_home is not None:
-            os.environ["HERMES_HOME"] = old_home
-        elif "HERMES_HOME" in os.environ:
-            del os.environ["HERMES_HOME"]
+            os.environ["AGENTIC_OS_HOME"] = old_home
+        elif "AGENTIC_OS_HOME" in os.environ:
+            del os.environ["AGENTIC_OS_HOME"]
 
 
 def _stop_gateway_process(profile_dir: Path) -> None:
@@ -1807,7 +1807,7 @@ def get_active_profile() -> str:
 def set_active_profile(name: str) -> None:
     """Set the sticky active profile.
 
-    Writes to ``~/.hermes/active_profile``. Use ``"default"`` to clear.
+    Writes to ``~/.agentic-os/active_profile``. Use ``"default"`` to clear.
     """
     canon = normalize_profile_name(name)
     validate_profile_name(canon)
@@ -1830,17 +1830,17 @@ def set_active_profile(name: str) -> None:
 
 
 def get_active_profile_name() -> str:
-    """Infer the current profile name from HERMES_HOME.
+    """Infer the current profile name from AGENTIC_OS_HOME.
 
-    Returns ``"default"`` if HERMES_HOME is not set or points to ``~/.hermes``.
-    Returns the profile name if HERMES_HOME points into ``~/.hermes/profiles/<name>``.
-    Returns ``"custom"`` if HERMES_HOME is set to an unrecognized path.
+    Returns ``"default"`` if AGENTIC_OS_HOME is not set or points to ``~/.agentic-os``.
+    Returns the profile name if AGENTIC_OS_HOME points into ``~/.agentic-os/profiles/<name>``.
+    Returns ``"custom"`` if AGENTIC_OS_HOME is set to an unrecognized path.
     """
     from agentic_os_constants import get_agentic_os_home
     hermes_home = get_agentic_os_home()
     resolved = hermes_home.resolve()
 
-    default_resolved = _get_default_hermes_home().resolve()
+    default_resolved = _get_default_agentic_os_home().resolve()
     if resolved == default_resolved:
         return "default"
 
@@ -1868,9 +1868,9 @@ def _default_export_ignore(root_dir: Path):
     * **Root-level allow-list** — only entries whose name appears in
       ``_DEFAULT_EXPORT_INCLUDE_ROOT`` survive. Everything else (such as
       an unrelated ``x11-dev/`` directory in a Docker deployment where
-      HERMES_HOME equals the cwd) is excluded. Blacklisting was tried
+      AGENTIC_OS_HOME equals the cwd) is excluded. Blacklisting was tried
       first and proved unable to anticipate every non-Hermes file the
-      user may have lying alongside HERMES_HOME (#58394).
+      user may have lying alongside AGENTIC_OS_HOME (#58394).
     * **Universal exclusions at any depth** — ``__pycache__``, sockets,
       temp files; plus npm lockfiles, which may appear at the root.
 
@@ -1915,7 +1915,7 @@ def export_profile(name: str, output_path: str) -> Path:
     base = str(output).removesuffix(".tar.gz").removesuffix(".tgz")
 
     if canon == "default":
-        # The default profile IS ~/.hermes itself — its parent is ~/ and its
+        # The default profile IS ~/.agentic-os itself — its parent is ~/ and its
         # directory name is ".hermes", not "default".  We stage a clean copy
         # under a temp dir so the archive contains ``default/...``.
         with tempfile.TemporaryDirectory() as tmpdir:
@@ -2046,13 +2046,13 @@ def import_profile(archive_path: str, name: Optional[str] = None) -> Path:
         )
 
     # Archives exported from the default profile have "default/" as top-level
-    # dir.  Importing as "default" would target ~/.hermes itself — disallow
+    # dir.  Importing as "default" would target ~/.agentic-os itself — disallow
     # that and guide the user toward a named profile.
     canon = normalize_profile_name(inferred_name)
     validate_profile_name(canon)
     if canon == "default":
         raise ValueError(
-            "Cannot import as 'default' — that is the built-in root profile (~/.hermes). "
+            "Cannot import as 'default' — that is the built-in root profile (~/.agentic-os). "
             "Specify a different name: hermes profile import <archive> --name <name>"
         )
 
@@ -2095,7 +2095,7 @@ def _migrate_honcho_profile_host(old_name: str, new_name: str, new_dir: Path) ->
 
     candidates = [
         new_dir / "honcho.json",
-        _get_default_hermes_home() / "honcho.json",
+        _get_default_agentic_os_home() / "honcho.json",
         Path.home() / ".honcho" / "config.json",
     ]
 
@@ -2207,10 +2207,10 @@ def rename_profile(old_name: str, new_name: str) -> Path:
 # ---------------------------------------------------------------------------
 
 def resolve_profile_env(profile_name: str) -> str:
-    """Resolve a profile name to a HERMES_HOME path string.
+    """Resolve a profile name to a AGENTIC_OS_HOME path string.
 
     Called early in the CLI entry point, before any hermes modules
-    are imported, to set the HERMES_HOME environment variable.
+    are imported, to set the AGENTIC_OS_HOME environment variable.
     """
     canon = normalize_profile_name(profile_name)
     validate_profile_name(canon)

@@ -6,8 +6,8 @@ depth, NOT a security boundary — but it prevents the agent from silently
 corrupting a profile that belongs to a different session.
 
 Reference: May 2026 incident — a hermes-security profile session
-accidentally edited skills under both ~/.hermes/profiles/hermes-security/skills/
-AND ~/.hermes/skills/ (the default profile's skills), realizing only
+accidentally edited skills under both ~/.agentic-os/profiles/hermes-security/skills/
+AND ~/.agentic-os/skills/ (the default profile's skills), realizing only
 afterwards that the second path belonged to a different profile.
 """
 from __future__ import annotations
@@ -73,9 +73,9 @@ def fake_hermes(tmp_path, monkeypatch):
 
 
 def _set_active_home(monkeypatch, hermes_home: Path):
-    """Point file_safety._hermes_home_path at a specific profile dir."""
+    """Point file_safety._agentic_os_home_path at a specific profile dir."""
     import agent.file_safety as fs
-    monkeypatch.setattr(fs, "_hermes_home_path", lambda: hermes_home)
+    monkeypatch.setattr(fs, "_agentic_os_home_path", lambda: hermes_home)
 
 
 # ---------------------------------------------------------------------------
@@ -95,13 +95,13 @@ class TestResolveActiveProfileName:
         assert _resolve_active_profile_name() == "hermes-security"
 
     def test_falls_back_to_default_on_resolution_failure(self, fake_hermes, monkeypatch):
-        """If HERMES_HOME resolution raises, return 'default' rather than crashing the tool."""
+        """If AGENTIC_OS_HOME resolution raises, return 'default' rather than crashing the tool."""
         import agent.file_safety as fs
 
         def _boom():
             raise RuntimeError("simulated")
 
-        monkeypatch.setattr(fs, "_hermes_home_path", _boom)
+        monkeypatch.setattr(fs, "_agentic_os_home_path", _boom)
         # Should not raise — falls back to "default"
         assert fs._resolve_active_profile_name() == "default"
 

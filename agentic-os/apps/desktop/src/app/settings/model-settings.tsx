@@ -29,7 +29,7 @@ import { cn } from '@/lib/utils'
 import { notifyError } from '@/store/notifications'
 import { startManualLocalEndpoint, startManualOnboarding, startManualProviderOAuth } from '@/store/onboarding'
 
-import { invalidateHermesConfig, setHermesConfigCache, useHermesConfigRecord } from '../hooks/use-config-record'
+import { invalidateHermesConfig, setHermesConfigCache, useAgenticOSConfigRecord } from '../hooks/use-config-record'
 import { useOnProfileSwitch } from '../hooks/use-on-profile-switch'
 
 import { CONTROL_TEXT } from './constants'
@@ -203,7 +203,7 @@ export function ModelSettings({ onMainModelChanged }: ModelSettingsProps) {
   const [newMoaPresetName, setNewMoaPresetName] = useState('')
   // agent.* defaults round-trip through the shared config cache (read → write
   // back the whole record), so a save here shows in the MCP/config surfaces.
-  const { data: config } = useHermesConfigRecord()
+  const { data: config } = useAgenticOSConfigRecord()
   const setConfig = setHermesConfigCache
   const [applying, setApplying] = useState(false)
   const [editingAuxTask, setEditingAuxTask] = useState<null | string>(null)

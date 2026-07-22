@@ -88,7 +88,7 @@ Why these packages?
 
 ```bash
 git clone https://github.com/subhxroy/agentic-os.git
-cd hermes-agent
+cd agentic-os
 ```
 
 ### 3. Create a virtual environment
@@ -145,7 +145,7 @@ hermes
 hermes model
 ```
 
-Or set keys directly in `~/.hermes/.env`.
+Or set keys directly in `~/.agentic-os/.env`.
 
 ### Re-run the full interactive setup wizard later
 

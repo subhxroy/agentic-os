@@ -138,7 +138,7 @@ def _make_hermes_provider_class() -> Optional[type]:
         ):
             super().__init__(*args, **kwargs)
             self._hermes_server_name = server_name
-            self._hermes_home = ""
+            self._agentic_os_home = ""
             # When the client_id comes from config.yaml (pre-registered), an
             # invalid_client rejection means the *config* is wrong — deleting
             # client.json would just be re-seeded from config and re-running
@@ -394,7 +394,7 @@ def _make_hermes_provider_class() -> Optional[type]:
             try:
                 await get_manager().invalidate_if_disk_changed(
                     self._hermes_server_name,
-                    hermes_home=self._hermes_home,
+                    hermes_home=self._agentic_os_home,
                 )
             except Exception as exc:  # pragma: no cover — defensive
                 logger.debug(
@@ -495,7 +495,7 @@ class MCPOAuthManager:
             if entry.provider is None:
                 entry.provider = self._build_provider(server_name, entry)
                 if entry.provider is not None:
-                    entry.provider._hermes_home = key[0]
+                    entry.provider._agentic_os_home = key[0]
 
             return entry.provider
 

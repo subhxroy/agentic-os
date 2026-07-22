@@ -32,7 +32,7 @@ a regression.
 
 Run from the PR worktree (it auto-resolves ``MAIN_DIR`` from the parent
 of the worktree directory, or falls back to a sibling
-``hermes-agent-main`` checkout)::
+``agentic-os-main`` checkout)::
 
     python tests/plugins/tts/check_parity_vs_main.py
 """
@@ -52,7 +52,7 @@ def _resolve_main_dir() -> Path:
     candidate = REPO_ROOT.parent.parent
     if (candidate / "tools" / "tts_tool.py").exists() and candidate != REPO_ROOT:
         return candidate
-    sibling = REPO_ROOT.parent / "hermes-agent-main"
+    sibling = REPO_ROOT.parent / "agentic-os-main"
     if (sibling / "tools" / "tts_tool.py").exists():
         return sibling
     return REPO_ROOT
@@ -61,7 +61,7 @@ def _resolve_main_dir() -> Path:
 MAIN_DIR = _resolve_main_dir()
 PR_DIR = REPO_ROOT
 assert (PR_DIR / "tools" / "tts_tool.py").exists(), (
-    f"PR_DIR={PR_DIR} doesn't look like a hermes-agent checkout"
+    f"PR_DIR={PR_DIR} doesn't look like a agentic-os checkout"
 )
 
 
@@ -74,9 +74,9 @@ SUBPROCESS_SCRIPT = r"""
 import json, os, sys, tempfile
 sys.path.insert(0, sys.argv[1])
 
-# Isolated HERMES_HOME so the config write is hermetic.
+# Isolated AGENTIC_OS_HOME so the config write is hermetic.
 home = tempfile.mkdtemp()
-os.environ["HERMES_HOME"] = home
+os.environ["AGENTIC_OS_HOME"] = home
 
 # Clear TTS-related env so dispatch decisions are config-driven.
 for k in (
@@ -261,7 +261,7 @@ def main() -> int:
     if MAIN_DIR == PR_DIR:
         print(
             "WARN: MAIN_DIR == PR_DIR — diffs will be trivially identical.\n"
-            "      Set up a sibling 'hermes-agent-main' checkout pinned to "
+            "      Set up a sibling 'agentic-os-main' checkout pinned to "
             "origin/main to get real parity coverage."
         )
         print()

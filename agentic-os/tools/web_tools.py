@@ -144,7 +144,7 @@ def _has_env(name: str) -> bool:
     return bool(_env_value(name))
 
 def _load_web_config() -> dict:
-    """Load the ``web:`` section from ~/.hermes/config.yaml."""
+    """Load the ``web:`` section from ~/.agentic-os/config.yaml."""
     try:
         from agentic_os_cli.config import load_config
         # ``or {}``: a present-but-null ``web:`` section (YAML ``web:`` with no

@@ -24,7 +24,7 @@ ACCEPT = [
     "python -m agentic_os_cli.main gateway run --replace",
     "python -m agentic_os_cli/main.py gateway run",
     "python gateway/run.py",
-    "hermes-gateway.exe",
+    "agentic-os-gateway.exe",
     "hermes gateway",          # bare `hermes gateway` defaults to run
     "hermes gateway run",
     # profile selector AFTER the `gateway` token (argv is profile-position
@@ -36,7 +36,7 @@ ACCEPT = [
     "hermes -p gateway gateway run",
     "python -m agentic_os_cli.main --profile gateway gateway run",
     # quoted Windows paths with spaces (shlex-aware tokenization)
-    r'"C:\Program Files\Hermes\hermes-gateway.exe"',
+    r'"C:\Program Files\Hermes\agentic-os-gateway.exe"',
     r'"C:\Program Files\Hermes\gateway\run.py" run',
     r'"C:\Program Files\Py\pythonw.exe" -m agentic_os_cli.main gateway run',
 ]

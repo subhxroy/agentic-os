@@ -54,15 +54,15 @@ You MUST run `maintain-subscriptions` on a schedule. Pick one of these three opt
 
 #### Option 1: Hermes cron (recommended if you already run the Hermes gateway)
 
-Hermes ships a built-in cron scheduler. The `--no-agent` mode runs a script as the job (rather than using an LLM), and `--script` must point at a file under `~/.hermes/scripts/`. First create the script:
+Hermes ships a built-in cron scheduler. The `--no-agent` mode runs a script as the job (rather than using an LLM), and `--script` must point at a file under `~/.agentic-os/scripts/`. First create the script:
 
 ```bash
-mkdir -p ~/.hermes/scripts
-cat > ~/.hermes/scripts/maintain-teams-subscriptions.sh <<'EOF'
+mkdir -p ~/.agentic-os/scripts
+cat > ~/.agentic-os/scripts/maintain-teams-subscriptions.sh <<'EOF'
 #!/usr/bin/env bash
 exec hermes teams-pipeline maintain-subscriptions
 EOF
-chmod +x ~/.hermes/scripts/maintain-teams-subscriptions.sh
+chmod +x ~/.agentic-os/scripts/maintain-teams-subscriptions.sh
 ```
 
 Then register a script-only cron job that runs every 12 hours (gives 6x headroom against the 72h expiry window):
@@ -127,7 +127,7 @@ systemctl list-timers hermes-teams-pipeline-maintain.timer
 0 */12 * * * /usr/local/bin/hermes teams-pipeline maintain-subscriptions >> /var/log/hermes/teams-pipeline-maintain.log 2>&1
 ```
 
-Make sure the cron environment has the `MSGRAPH_*` credentials. Simplest fix: source `~/.hermes/.env` at the top of a wrapper script that crontab calls.
+Make sure the cron environment has the `MSGRAPH_*` credentials. Simplest fix: source `~/.agentic-os/.env` at the top of a wrapper script that crontab calls.
 
 #### Verifying renewal is working
 

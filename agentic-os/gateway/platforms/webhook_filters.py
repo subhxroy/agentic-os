@@ -27,7 +27,7 @@ def _stringify_filter_value(value: Any) -> str:
 
 
 def _resolve_profile_path(path_value: Any) -> Optional[Path]:
-    """Resolve a user path, mapping ~/.hermes to the active profile home."""
+    """Resolve a user path, mapping ~/.agentic-os to the active profile home."""
     if not isinstance(path_value, str):
         return None
     raw = os.path.expandvars(path_value.strip())
@@ -36,10 +36,10 @@ def _resolve_profile_path(path_value: Any) -> Optional[Path]:
     from agentic_os_constants import get_agentic_os_home
 
     hermes_home = get_agentic_os_home()
-    if raw == "~/.hermes":
+    if raw == "~/.agentic-os":
         return hermes_home
-    if raw.startswith("~/.hermes/"):
-        return hermes_home / raw.removeprefix("~/.hermes/")
+    if raw.startswith("~/.agentic-os/"):
+        return hermes_home / raw.removeprefix("~/.agentic-os/")
     path = Path(raw).expanduser()
     if path.is_absolute():
         return path
@@ -47,14 +47,14 @@ def _resolve_profile_path(path_value: Any) -> Optional[Path]:
 
 
 def _resolve_script_path(script_value: Any) -> tuple[Optional[Path], Optional[str]]:
-    """Resolve a route script under HERMES_HOME/scripts."""
+    """Resolve a route script under AGENTIC_OS_HOME/scripts."""
     if not isinstance(script_value, str) or not script_value.strip():
         return None, "script path is empty"
     from agentic_os_constants import get_agentic_os_home
 
     scripts_root = (get_agentic_os_home() / "scripts").resolve()
     raw_text = os.path.expandvars(script_value.strip())
-    if raw_text == "~/.hermes" or raw_text.startswith("~/.hermes/"):
+    if raw_text == "~/.agentic-os" or raw_text.startswith("~/.agentic-os/"):
         mapped = _resolve_profile_path(raw_text)
         candidate = mapped.resolve() if mapped is not None else scripts_root
     else:

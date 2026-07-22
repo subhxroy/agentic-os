@@ -52,7 +52,7 @@ async def test_handle_model_command_lists_saved_custom_provider(tmp_path, monkey
 
     import gateway.run as gateway_run
 
-    monkeypatch.setattr(gateway_run, "_hermes_home", hermes_home)
+    monkeypatch.setattr(gateway_run, "_agentic_os_home", hermes_home)
     monkeypatch.setattr("agent.models_dev.fetch_models_dev", lambda: {})
 
     result = await _make_runner()._handle_model_command(_make_event())
@@ -83,7 +83,7 @@ async def test_direct_model_switch_offloads_to_thread(tmp_path, monkeypatch):
 
     import gateway.run as gateway_run
 
-    monkeypatch.setattr(gateway_run, "_hermes_home", hermes_home)
+    monkeypatch.setattr(gateway_run, "_agentic_os_home", hermes_home)
 
     # Fail the switch so the handler returns before _finish_switch (which needs
     # full runner state) — we only care that the offload happened.

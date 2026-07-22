@@ -27,7 +27,7 @@ uv pip install git+https://github.com/subhxroy/agentic-os.git
 You can also pin it in your `requirements.txt`:
 
 ```text
-hermes-agent @ git+https://github.com/subhxroy/agentic-os.git
+agentic-os @ git+https://github.com/subhxroy/agentic-os.git
 ```
 
 :::tip

@@ -311,7 +311,7 @@ def test_post_setup_existing_profile_picker_validates_and_links_saved_profile(tm
         json.dumps({"url": "https://vps.example", "api_key": "user-key"}),
         encoding="utf-8",
     )
-    monkeypatch.setenv("HERMES_HOME", str(hermes_home))
+    monkeypatch.setenv("AGENTIC_OS_HOME", str(hermes_home))
     monkeypatch.setattr(openviking_module.Path, "home", staticmethod(lambda: tmp_path))
 
     from agentic_os_cli import memory_setup
@@ -356,7 +356,7 @@ def test_post_setup_create_remote_user_profile_can_mirror_to_openviking_store(tm
     _clear_openviking_env(monkeypatch)
     hermes_home = tmp_path / "hermes"
     hermes_home.mkdir()
-    monkeypatch.setenv("HERMES_HOME", str(hermes_home))
+    monkeypatch.setenv("AGENTIC_OS_HOME", str(hermes_home))
     monkeypatch.setattr(openviking_module.Path, "home", staticmethod(lambda: tmp_path))
     _allow_setup_validation(monkeypatch)
 
@@ -399,7 +399,7 @@ def test_post_setup_create_remote_user_can_keep_hermes_only(tmp_path, monkeypatc
     _clear_openviking_env(monkeypatch)
     hermes_home = tmp_path / "hermes"
     hermes_home.mkdir()
-    monkeypatch.setenv("HERMES_HOME", str(hermes_home))
+    monkeypatch.setenv("AGENTIC_OS_HOME", str(hermes_home))
     _allow_setup_validation(monkeypatch)
 
     from agentic_os_cli import memory_setup
@@ -432,7 +432,7 @@ def test_post_setup_create_openviking_service_validates_after_api_key(tmp_path, 
     _clear_openviking_env(monkeypatch)
     hermes_home = tmp_path / "hermes"
     hermes_home.mkdir()
-    monkeypatch.setenv("HERMES_HOME", str(hermes_home))
+    monkeypatch.setenv("AGENTIC_OS_HOME", str(hermes_home))
 
     from agentic_os_cli import memory_setup
 
@@ -487,7 +487,7 @@ def test_post_setup_remote_blank_api_key_cancels_without_saving(tmp_path, monkey
     _clear_openviking_env(monkeypatch)
     hermes_home = tmp_path / "hermes"
     hermes_home.mkdir()
-    monkeypatch.setenv("HERMES_HOME", str(hermes_home))
+    monkeypatch.setenv("AGENTIC_OS_HOME", str(hermes_home))
     monkeypatch.setattr(openviking_module, "_validate_openviking_reachability", lambda endpoint: (True, ""))
 
     from agentic_os_cli import config as hermes_config
@@ -518,7 +518,7 @@ def test_post_setup_user_key_path_can_route_detected_root_key_to_root_setup(tmp_
     _clear_openviking_env(monkeypatch)
     hermes_home = tmp_path / "hermes"
     hermes_home.mkdir()
-    monkeypatch.setenv("HERMES_HOME", str(hermes_home))
+    monkeypatch.setenv("AGENTIC_OS_HOME", str(hermes_home))
 
     from agentic_os_cli import memory_setup
 
@@ -562,7 +562,7 @@ def test_post_setup_root_key_path_can_route_detected_user_key_to_user_setup(tmp_
     _clear_openviking_env(monkeypatch)
     hermes_home = tmp_path / "hermes"
     hermes_home.mkdir()
-    monkeypatch.setenv("HERMES_HOME", str(hermes_home))
+    monkeypatch.setenv("AGENTIC_OS_HOME", str(hermes_home))
 
     from agentic_os_cli import memory_setup
 
@@ -652,7 +652,7 @@ def test_start_local_openviking_server_uses_endpoint_host_and_port(monkeypatch):
 
 def test_start_local_openviking_server_writes_output_to_log(tmp_path, monkeypatch):
     hermes_home = tmp_path / "hermes"
-    monkeypatch.setenv("HERMES_HOME", str(hermes_home))
+    monkeypatch.setenv("AGENTIC_OS_HOME", str(hermes_home))
     popen_calls = []
 
     class FakeProcess:
@@ -1070,7 +1070,7 @@ def test_post_setup_local_server_down_can_offer_autostart(tmp_path, monkeypatch)
     _clear_openviking_env(monkeypatch)
     hermes_home = tmp_path / "hermes"
     hermes_home.mkdir()
-    monkeypatch.setenv("HERMES_HOME", str(hermes_home))
+    monkeypatch.setenv("AGENTIC_OS_HOME", str(hermes_home))
     monkeypatch.setattr(openviking_module, "_validate_openviking_setup_values", lambda values, *, require_api_key=False: (True, "", None))
 
     from agentic_os_cli import memory_setup
@@ -1113,7 +1113,7 @@ def test_post_setup_invalid_env_profile_can_create_new_config(tmp_path, monkeypa
     ovcli_path = tmp_path / "broken" / "ovcli.conf"
     ovcli_path.parent.mkdir()
     ovcli_path.write_text("{", encoding="utf-8")
-    monkeypatch.setenv("HERMES_HOME", str(hermes_home))
+    monkeypatch.setenv("AGENTIC_OS_HOME", str(hermes_home))
     monkeypatch.setenv("OPENVIKING_CLI_CONFIG_FILE", str(ovcli_path))
     _allow_setup_validation(monkeypatch)
 
@@ -1305,7 +1305,7 @@ def test_tool_add_resource_rejects_hermes_credential_file_upload(tmp_path, monke
     hermes_home.mkdir()
     auth_json = hermes_home / "auth.json"
     auth_json.write_text('{"OPENROUTER_API_KEY":"sk-test-secret"}', encoding="utf-8")
-    monkeypatch.setattr(fs, "_hermes_home_path", lambda: hermes_home)
+    monkeypatch.setattr(fs, "_agentic_os_home_path", lambda: hermes_home)
 
     provider = OpenVikingMemoryProvider()
     provider._client = MagicMock()
@@ -1402,7 +1402,7 @@ def test_tool_add_resource_directory_zip_skips_hermes_credential_files(tmp_path,
         '{"OPENROUTER_API_KEY":"sk-test-secret"}',
         encoding="utf-8",
     )
-    monkeypatch.setattr(fs, "_hermes_home_path", lambda: hermes_home)
+    monkeypatch.setattr(fs, "_agentic_os_home_path", lambda: hermes_home)
 
     provider = OpenVikingMemoryProvider()
     provider._client = MagicMock()
@@ -1415,7 +1415,7 @@ def test_tool_add_resource_directory_zip_skips_hermes_credential_files(tmp_path,
                 name: archive.read(name)
                 for name in archive.namelist()
             }
-        return "upload_hermes_home.zip"
+        return "upload_agentic_os_home.zip"
 
     provider._client.upload_temp_file.side_effect = inspect_upload
     provider._client.post.return_value = {
@@ -2182,7 +2182,7 @@ def test_validate_openviking_identity_value_matches_cli_rules(value, field, ok):
     assert valid is ok
     assert bool(normalized) is ok
 # ---------------------------------------------------------------------------
-# on_session_switch — flush + commit + rotate behavior (hermes-agent#28296)
+# on_session_switch — flush + commit + rotate behavior (agentic-os#28296)
 # ---------------------------------------------------------------------------
 
 def _make_provider_with_session(session_id: str, turn_count: int):
@@ -2562,7 +2562,7 @@ def test_end_then_switch_with_pending_tokens_does_not_double_commit():
 
 
 def test_session_needs_commit_guard_wins_over_stale_turn_count():
-    """Regression for hermes-agent#28296 review (M3): once a session is marked
+    """Regression for agentic-os#28296 review (M3): once a session is marked
     committed, _session_needs_commit must return False even if turn_count is
     still positive. A racing sync_turn can re-increment _turn_count after the
     commit+reset; without the guard ordering, a follow-up finalizer would
@@ -2665,7 +2665,7 @@ def test_on_session_switch_waits_for_all_writers_not_just_latest():
 
 
 def test_on_session_switch_does_not_block_caller_on_slow_drain():
-    """Regression for hermes-agent#28296 review (H1): on_session_switch must
+    """Regression for agentic-os#28296 review (H1): on_session_switch must
     NOT run the old-session drain/commit on the caller's thread. /new, /branch,
     /resume, /undo call this synchronously on the command thread, so a slow
     writer drain (up to _SESSION_DRAIN_TIMEOUT/_DEFERRED_COMMIT_TIMEOUT) or a
@@ -2713,7 +2713,7 @@ def test_on_session_switch_defers_old_commit_to_finalizer_thread():
     """The switch path rotates session state synchronously (cheap, in-memory)
     but offloads the old-session drain + commit onto a daemon finalizer so the
     caller's command thread (/new, /branch, /resume) never blocks on the up-to
-    -_DEFERRED_COMMIT_TIMEOUT drain or the commit POST. See hermes-agent#28296
+    -_DEFERRED_COMMIT_TIMEOUT drain or the commit POST. See agentic-os#28296
     review (the #41945 'do not block the turn thread' contract)."""
     import threading
 

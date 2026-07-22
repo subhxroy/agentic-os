@@ -16,7 +16,7 @@ self-heal that by retrying without ``reply_to`` (see the Telegram adapter's
 reply-target-deleted path), and a deleted topic does not mean the parent chat is
 dead.
 
-The store is a small JSON file under the active profile's HERMES_HOME so each
+The store is a small JSON file under the active profile's AGENTIC_OS_HOME so each
 profile keeps its own dead set.  Reads/writes are best-effort: a corrupt or
 unwritable file degrades to an in-memory-only registry rather than raising on
 the delivery path.

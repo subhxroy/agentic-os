@@ -833,7 +833,7 @@ class TestLocalEnvironmentWindowsTempDir:
                 f"POSIX temp dir must start with '/'; got {tmp_dir!r}"
             )
 
-    def test_source_has_windows_branch_using_hermes_home(self):
+    def test_source_has_windows_branch_using_agentic_os_home(self):
         root = Path(__file__).resolve().parents[2]
         source = (root / "tools" / "environments" / "local.py").read_text(encoding="utf-8")
         assert "if _IS_WINDOWS:" in source
@@ -1049,7 +1049,7 @@ class TestGatewayDetachedWatcherWindowsFlags:
         )
         assert '_popen_kwargs["env"]' in block, (
             "Inlined respawn must overlay env (VIRTUAL_ENV / PYTHONPATH / "
-            "HERMES_HOME) so the windowless base pythonw resolves agentic_os_cli."
+            "AGENTIC_OS_HOME) so the windowless base pythonw resolves agentic_os_cli."
         )
 
 

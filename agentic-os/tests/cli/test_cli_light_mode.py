@@ -32,38 +32,38 @@ class TestLightModeDetection:
     def test_hermes_light_env_false_forces_dark(self, cli_mod, monkeypatch):
         monkeypatch.setenv("HERMES_LIGHT", "0")
         # Also blank out other signals so nothing else flips it light.
-        monkeypatch.delenv("HERMES_TUI_LIGHT", raising=False)
-        monkeypatch.delenv("HERMES_TUI_THEME", raising=False)
-        monkeypatch.delenv("HERMES_TUI_BACKGROUND", raising=False)
+        monkeypatch.delenv("AGENTIC_OS_TUI_LIGHT", raising=False)
+        monkeypatch.delenv("AGENTIC_OS_TUI_THEME", raising=False)
+        monkeypatch.delenv("AGENTIC_OS_TUI_BACKGROUND", raising=False)
         monkeypatch.delenv("COLORFGBG", raising=False)
         assert cli_mod._detect_light_mode() is False
 
     def test_theme_hint_light(self, cli_mod, monkeypatch):
         monkeypatch.delenv("HERMES_LIGHT", raising=False)
-        monkeypatch.delenv("HERMES_TUI_LIGHT", raising=False)
-        monkeypatch.setenv("HERMES_TUI_THEME", "light")
+        monkeypatch.delenv("AGENTIC_OS_TUI_LIGHT", raising=False)
+        monkeypatch.setenv("AGENTIC_OS_TUI_THEME", "light")
         assert cli_mod._detect_light_mode() is True
 
     def test_background_hex_hint_light(self, cli_mod, monkeypatch):
         monkeypatch.delenv("HERMES_LIGHT", raising=False)
-        monkeypatch.delenv("HERMES_TUI_LIGHT", raising=False)
-        monkeypatch.delenv("HERMES_TUI_THEME", raising=False)
-        monkeypatch.setenv("HERMES_TUI_BACKGROUND", "#FFFFFF")
+        monkeypatch.delenv("AGENTIC_OS_TUI_LIGHT", raising=False)
+        monkeypatch.delenv("AGENTIC_OS_TUI_THEME", raising=False)
+        monkeypatch.setenv("AGENTIC_OS_TUI_BACKGROUND", "#FFFFFF")
         assert cli_mod._detect_light_mode() is True
 
     def test_background_hex_hint_dark(self, cli_mod, monkeypatch):
         monkeypatch.delenv("HERMES_LIGHT", raising=False)
-        monkeypatch.delenv("HERMES_TUI_LIGHT", raising=False)
-        monkeypatch.delenv("HERMES_TUI_THEME", raising=False)
-        monkeypatch.setenv("HERMES_TUI_BACKGROUND", "#1a1a2e")
+        monkeypatch.delenv("AGENTIC_OS_TUI_LIGHT", raising=False)
+        monkeypatch.delenv("AGENTIC_OS_TUI_THEME", raising=False)
+        monkeypatch.setenv("AGENTIC_OS_TUI_BACKGROUND", "#1a1a2e")
         monkeypatch.delenv("COLORFGBG", raising=False)
         assert cli_mod._detect_light_mode() is False
 
     def test_colorfgbg_light_bg_slot(self, cli_mod, monkeypatch):
         monkeypatch.delenv("HERMES_LIGHT", raising=False)
-        monkeypatch.delenv("HERMES_TUI_LIGHT", raising=False)
-        monkeypatch.delenv("HERMES_TUI_THEME", raising=False)
-        monkeypatch.delenv("HERMES_TUI_BACKGROUND", raising=False)
+        monkeypatch.delenv("AGENTIC_OS_TUI_LIGHT", raising=False)
+        monkeypatch.delenv("AGENTIC_OS_TUI_THEME", raising=False)
+        monkeypatch.delenv("AGENTIC_OS_TUI_BACKGROUND", raising=False)
         monkeypatch.setenv("COLORFGBG", "0;15")  # bg slot 15 = light
         assert cli_mod._detect_light_mode() is True
 

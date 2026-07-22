@@ -7,13 +7,13 @@ Original PR #2933 by kartik-mem0, adapted to MemoryProvider ABC.
 
 Configuration
 -------------
-Secret (lives in $HERMES_HOME/.env or the environment):
+Secret (lives in $AGENTIC_OS_HOME/.env or the environment):
   MEM0_API_KEY       — Mem0 Platform API key (required for platform mode)
   MEM0_HOST          — Base URL of a self-hosted Mem0 server. When set, the
                        plugin talks to that server directly over HTTP
                        (X-API-Key auth) instead of the cloud API.
 
-Behavioral settings (live in $HERMES_HOME/mem0.json, set via `hermes memory
+Behavioral settings (live in $AGENTIC_OS_HOME/mem0.json, set via `hermes memory
 setup`):
   mode               — Backend mode: "platform" (default) or "oss"
   host               — Self-hosted Mem0 server URL (alt: MEM0_HOST env var).
@@ -75,7 +75,7 @@ def _is_client_error(exc: Exception) -> bool:
 # ---------------------------------------------------------------------------
 
 def _load_config() -> dict:
-    """Load config from env vars, with $HERMES_HOME/mem0.json overrides.
+    """Load config from env vars, with $AGENTIC_OS_HOME/mem0.json overrides.
 
     Environment variables provide defaults; mem0.json (if present) overrides
     individual keys.  This avoids a silent failure when the JSON file exists
@@ -233,7 +233,7 @@ class Mem0MemoryProvider(MemoryProvider):
         return bool(cfg.get("api_key") or cfg.get("host"))
 
     def save_config(self, values, hermes_home):
-        """Write config to $HERMES_HOME/mem0.json."""
+        """Write config to $AGENTIC_OS_HOME/mem0.json."""
         import json
         from pathlib import Path
         config_path = Path(hermes_home) / "mem0.json"
@@ -339,7 +339,7 @@ class Mem0MemoryProvider(MemoryProvider):
         self._api_key = self._config.get("api_key", "")
         self._host = self._config.get("host", "")
         # Resolution order for user_id:
-        #   1. Operator-configured MEM0_USER_ID (env or $HERMES_HOME/mem0.json) —
+        #   1. Operator-configured MEM0_USER_ID (env or $AGENTIC_OS_HOME/mem0.json) —
         #      the canonical principal, applied across every gateway so the same
         #      human gets one merged memory store.
         #   2. Gateway-native id from kwargs (Telegram numeric id, Discord

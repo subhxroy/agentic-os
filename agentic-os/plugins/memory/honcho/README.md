@@ -25,7 +25,7 @@ next to the memory-provider dropdown.
 Or manually:
 ```bash
 hermes config set memory.provider honcho
-echo "HONCHO_API_KEY=***" >> ~/.hermes/.env
+echo "HONCHO_API_KEY=***" >> ~/.agentic-os/.env
 ```
 
 > `hermes honcho setup` also works, but only **after** Honcho is the active
@@ -139,8 +139,8 @@ Config is read from the first file that exists:
 
 | Priority | Path | Scope |
 |----------|------|-------|
-| 1 | `$HERMES_HOME/honcho.json` | Profile-local (isolated Hermes instances) |
-| 2 | `~/.hermes/honcho.json` | Default profile (shared host blocks) |
+| 1 | `$AGENTIC_OS_HOME/honcho.json` | Profile-local (isolated Hermes instances) |
+| 2 | `~/.agentic-os/honcho.json` | Default profile (shared host blocks) |
 | 3 | `~/.honcho/config.json` | Global (cross-app interop) |
 
 Host key is derived from the active Hermes profile: `hermes` (default) or `hermes_<profile>`.
@@ -233,13 +233,13 @@ The Honcho session name determines which conversation bucket memory lands in. Re
 | 2 | `/title` command (mid-session rename) | `"refactor-auth"` |
 | 3 | Gateway session key (Telegram, Discord, etc.) | `"agent-main-telegram-dm-8439114563"` |
 | 4 | `per-session` strategy | Hermes session ID (`20260415_a3f2b1`) |
-| 5 | `per-repo` strategy | Git root directory name (`hermes-agent`) |
+| 5 | `per-repo` strategy | Git root directory name (`agentic-os`) |
 | 6 | `per-directory` strategy | Current directory basename (`src`) |
 | 7 | `global` strategy | Workspace name (`hermes`) |
 
 Gateway platforms always resolve via priority 3 (per-chat isolation) regardless of `sessionStrategy`. The strategy setting only affects CLI sessions.
 
-If `sessionPeerPrefix` is `true`, the peer name is prepended: `alice-hermes-agent`.
+If `sessionPeerPrefix` is `true`, the peer name is prepended: `alice-agentic-os`.
 
 #### What each strategy produces
 
@@ -347,7 +347,7 @@ Presets:
 | `HONCHO_OAUTH_DASHBOARD` | OAuth authorize origin (default: cloud dashboard; local-dev `localhost:3000`) |
 | `HONCHO_OAUTH_AUTHORIZE_URL` | Full authorize URL (overrides the dashboard origin) |
 | `HONCHO_OAUTH_TOKEN_URL` | Token endpoint (default: cloud API; local-dev `localhost:8000`) |
-| `HONCHO_OAUTH_CLIENT_ID` | OAuth client (default `hermes-agent`) |
+| `HONCHO_OAUTH_CLIENT_ID` | OAuth client (default `agentic-os`) |
 | `HONCHO_OAUTH_SCOPE` | Requested scope (default `write`) |
 
 ## CLI Commands

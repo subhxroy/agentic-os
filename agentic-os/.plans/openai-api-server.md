@@ -15,14 +15,14 @@ usable as a backend for all of them — no custom adapters needed.
 │  Open WebUI      │──┐
 │  LobeChat        │  │    POST /v1/chat/completions
 │  LibreChat       │  ├──► Authorization: Bearer <key>     ┌─────────────────┐
-│  AnythingLLM     │  │    {"messages": [...]}             │  hermes-agent   │
+│  AnythingLLM     │  │    {"messages": [...]}             │  agentic-os   │
 │  NextChat        │  │                                    │  gateway        │
 │  Any OAI client  │──┘    ◄── SSE streaming response      │  (API server)   │
 └──────────────────┘                                        └─────────────────┘
 ```
 
 A user would:
-1. Set `API_SERVER_ENABLED=true` in `~/.hermes/.env`
+1. Set `API_SERVER_ENABLED=true` in `~/.agentic-os/.env`
 2. Run `hermes gateway` (API server starts alongside Telegram/Discord/etc.)
 3. Point Open WebUI (or any frontend) at `http://localhost:8642/v1`
 4. Chat with agentic-os through any OpenAI-compatible UI
@@ -32,7 +32,7 @@ A user would:
 | Method | Path | Purpose |
 |--------|------|---------|
 | POST | `/v1/chat/completions` | Chat with the agent (streaming + non-streaming) |
-| GET | `/v1/models` | List available "models" (returns hermes-agent as a model) |
+| GET | `/v1/models` | List available "models" (returns agentic-os as a model) |
 | GET | `/health` | Health check |
 
 ## Architecture
@@ -189,7 +189,7 @@ Two modes:
 
 Frontends send `"model": "agentic-os"` (or whatever). The actual LLM model
 used is configured server-side in config.yaml. The API server maps any
-requested model name to the configured hermes-agent model.
+requested model name to the configured agentic-os model.
 
 Optionally, allow model passthrough: if the frontend sends
 `"model": "anthropic/claude-sonnet-4"`, the agent uses that model. Controlled
@@ -232,7 +232,7 @@ API_SERVER_KEY=your-secret-key
    - Responses API: server-side conversation storage via previous_response_id
      - Store full internal conversation (including tool calls) keyed by response ID
      - On subsequent requests, reconstruct full context from stored chain
-   - Frontend system prompt layered on top of hermes-agent's core prompt
+   - Frontend system prompt layered on top of agentic-os's core prompt
 
 2. `gateway/config.py` — add `Platform.API_SERVER` enum + config
 

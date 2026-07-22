@@ -182,7 +182,7 @@ def build_system_prompt_parts(agent: Any, system_message: Optional[str] = None) 
     stable_parts: List[str] = []
 
     # Try SOUL.md as primary identity unless the caller explicitly skipped it.
-    # Some execution modes (cron) still want HERMES_HOME persona while keeping
+    # Some execution modes (cron) still want AGENTIC_OS_HOME persona while keeping
     # cwd project instructions disabled.
     _soul_loaded = False
     if agent.load_soul_identity or not agent.skip_context_files:
@@ -195,7 +195,7 @@ def build_system_prompt_parts(agent: Any, system_message: Optional[str] = None) 
         # Fallback to hardcoded identity
         stable_parts.append(DEFAULT_AGENT_IDENTITY)
 
-    # Pointer to the hermes-agent skill + docs for user questions about Hermes itself.
+    # Pointer to the agentic-os skill + docs for user questions about Hermes itself.
     stable_parts.append(HERMES_AGENT_HELP_GUIDANCE)
 
     # Universal task-completion / no-fabrication guidance.  Applied to ALL
@@ -382,8 +382,8 @@ def build_system_prompt_parts(agent: Any, system_message: Optional[str] = None) 
             pass
 
     # Active-profile hint — names the Hermes profile the agent is running
-    # under so it doesn't conflate ~/.hermes/skills/ (default profile) with
-    # ~/.hermes/profiles/<active>/skills/ (this profile's). Deterministic
+    # under so it doesn't conflate ~/.agentic-os/skills/ (default profile) with
+    # ~/.agentic-os/profiles/<active>/skills/ (this profile's). Deterministic
     # for the lifetime of the agent — profile name doesn't change
     # mid-session, so this doesn't break the prompt cache.
     # See file_safety._resolve_active_profile_name + classify_cross_profile_target

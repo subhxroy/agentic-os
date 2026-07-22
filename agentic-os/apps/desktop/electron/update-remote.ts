@@ -1,7 +1,7 @@
 /**
  * Pure helpers for choosing a remote URL during passive update checks.
  *
- * A public install can end up with `origin=git@github.com:NousResearch/hermes-agent.git`.
+ * A public install can end up with `origin=git@github.com:subhxroy/agentic-os.git`.
  * If the user's GitHub SSH key is FIDO2/passkey-backed, a background `git fetch
  * origin` triggers an unexplained hardware-touch prompt. For passive checks
  * against the official repo we substitute the public HTTPS `ls-remote` path,

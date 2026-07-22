@@ -30,7 +30,7 @@ Hermes has several distinct pluggable interfaces — some use Python `register_*
 | A **TTS backend** (any CLI — Piper, VoxCPM, Kokoro, voice cloning, …) | [TTS custom command providers](/user-guide/features/tts#custom-command-providers) — config-driven, no Python needed |
 | An **STT backend** (custom whisper / ASR CLI) | [Voice Message Transcription](/user-guide/features/tts#voice-message-transcription-stt) — set `HERMES_LOCAL_STT_COMMAND` to a shell template |
 | **External tools via MCP** (filesystem, GitHub, Linear, any MCP server) | [MCP](/user-guide/features/mcp) — declare `mcp_servers.<name>` in `config.yaml` |
-| **Gateway event hooks** (fire on startup, session events, commands) | [Event Hooks](/user-guide/features/hooks#gateway-event-hooks) — drop `HOOK.yaml` + `handler.py` into `~/.hermes/hooks/<name>/` |
+| **Gateway event hooks** (fire on startup, session events, commands) | [Event Hooks](/user-guide/features/hooks#gateway-event-hooks) — drop `HOOK.yaml` + `handler.py` into `~/.agentic-os/hooks/<name>/` |
 | **Shell hooks** (run a shell command on events) | [Shell Hooks](/user-guide/features/hooks#shell-hooks) — declare under `hooks:` in `config.yaml` |
 | **Additional skill sources** (custom GitHub repos, private skill indexes) | [Skills](/user-guide/features/skills) — `hermes skills tap add <repo>` · [Publishing a tap](/user-guide/features/skills#publishing-a-custom-skill-tap) |
 | A first-class **core** inference provider (not a plugin) | [Adding Providers](/developer-guide/adding-providers) |
@@ -39,7 +39,7 @@ See the full [Pluggable interfaces table](/user-guide/features/plugins#pluggable
 :::
 
 :::caution Third-party-product plugins ship standalone — not into the core tree
-Plugins that integrate **someone else's product or project** — observability/metrics backends, vendor SaaS connectors, analytics dashboards, paid-service tie-ins — are built and distributed as **standalone plugin repos**, not merged into `subhxroy/agentic-os`. Users install them into `~/.hermes/plugins/` or via a pip entry point; everything in this guide works the same way from a standalone repo. This is a coupling-and-maintenance decision (the core moves fast and we don't own your backend), not a quality bar — a plugin can be excellent and still belong in its own repo. Promote it in the Nous Research Discord `#plugins-skills-and-skins` channel. See [CONTRIBUTING.md](https://github.com/subhxroy/agentic-os/blob/main/CONTRIBUTING.md) for the policy.
+Plugins that integrate **someone else's product or project** — observability/metrics backends, vendor SaaS connectors, analytics dashboards, paid-service tie-ins — are built and distributed as **standalone plugin repos**, not merged into `subhxroy/agentic-os`. Users install them into `~/.agentic-os/plugins/` or via a pip entry point; everything in this guide works the same way from a standalone repo. This is a coupling-and-maintenance decision (the core moves fast and we don't own your backend), not a quality bar — a plugin can be excellent and still belong in its own repo. Promote it in the Nous Research Discord `#plugins-skills-and-skins` channel. See [CONTRIBUTING.md](https://github.com/subhxroy/agentic-os/blob/main/CONTRIBUTING.md) for the policy.
 :::
 
 ## What you're building
@@ -53,8 +53,8 @@ Plus a hook that logs every tool call, and a bundled skill file.
 ## Step 1: Create the plugin directory
 
 ```bash
-mkdir -p ~/.hermes/plugins/calculator
-cd ~/.hermes/plugins/calculator
+mkdir -p ~/.agentic-os/plugins/calculator
+cd ~/.agentic-os/plugins/calculator
 ```
 
 ## Step 2: Write the manifest
@@ -344,7 +344,7 @@ You'll see, for every plugin source (bundled, user, project, entry-points):
 - on parse failure: a full traceback for the exception (YAML scanner errors, etc.)
 - on `register()` failure: a full traceback pointing at the line in your `__init__.py` that raised
 
-The same logs are always written to `~/.hermes/logs/agent.log` at WARNING level (failures only) and DEBUG level (everything) when the env var is set. So if you can't run with the env var (e.g. from inside the gateway), tail the log file instead:
+The same logs are always written to `~/.agentic-os/logs/agent.log` at WARNING level (failures only) and DEBUG level (everything) when the env var is set. So if you can't run with the env var (e.g. from inside the gateway), tail the log file instead:
 
 ```bash
 hermes logs --level WARNING | grep -i plugin
@@ -353,14 +353,14 @@ hermes logs --level WARNING | grep -i plugin
 Common reasons a plugin doesn't appear:
 
 - **Not enabled in config** — plugins are opt-in. Run `hermes plugins enable <name>` (the name comes from the `plugins list` output, which can be `<category>/<plugin>` for nested layouts).
-- **Wrong directory layout** — must be `~/.hermes/plugins/<plugin-name>/plugin.yaml` (flat) or `~/.hermes/plugins/<category>/<plugin-name>/plugin.yaml` (one level of category nesting, max). Anything deeper is ignored.
+- **Wrong directory layout** — must be `~/.agentic-os/plugins/<plugin-name>/plugin.yaml` (flat) or `~/.agentic-os/plugins/<category>/<plugin-name>/plugin.yaml` (one level of category nesting, max). Anything deeper is ignored.
 - **Missing `__init__.py`** — the plugin directory needs both `plugin.yaml` and `__init__.py` with a `register(ctx)` function.
 - **Wrong `kind`** — gateway adapters need `kind: platform` in their manifest. Memory providers are auto-detected as `kind: exclusive` and routed through the `memory.provider` config instead of `plugins.enabled`.
 
 ## Your plugin's final structure
 
 ```
-~/.hermes/plugins/calculator/
+~/.agentic-os/plugins/calculator/
 ├── plugin.yaml      # "I'm calculator, I provide tools and hooks"
 ├── __init__.py      # Wiring: schemas → handlers, register hooks
 ├── schemas.py       # What the LLM reads (descriptions + parameter specs)
@@ -395,7 +395,7 @@ with open(_DATA_FILE) as f:
 Plugins can ship skill files that the agent loads via `skill_view("plugin:skill")`. Register them in your `__init__.py`:
 
 ```
-~/.hermes/plugins/my-plugin/
+~/.agentic-os/plugins/my-plugin/
 ├── __init__.py
 ├── plugin.yaml
 └── skills/
@@ -424,13 +424,13 @@ skill_view("my-workflow")              # → built-in version (unchanged)
 ```
 
 **Key properties:**
-- Plugin skills are **read-only** — they don't enter `~/.hermes/skills/` and can't be edited via `skill_manage`.
+- Plugin skills are **read-only** — they don't enter `~/.agentic-os/skills/` and can't be edited via `skill_manage`.
 - Plugin skills are **not** listed in the system prompt's `<available_skills>` index — they're opt-in explicit loads.
 - Bare skill names are unaffected — the namespace prevents collisions with built-in skills.
 - When the agent loads a plugin skill, a bundle context banner is prepended listing sibling skills from the same plugin.
 
 :::tip Legacy pattern
-The old `shutil.copy2` pattern (copying a skill into `~/.hermes/skills/`) still works but creates name collision risk with built-in skills. Prefer `ctx.register_skill()` for new plugins.
+The old `shutil.copy2` pattern (copying a skill into `~/.agentic-os/skills/`) still works but creates name collision risk with built-in skills. Prefer `ctx.register_skill()` for new plugins.
 :::
 
 ### Gate on environment variables
@@ -578,7 +578,7 @@ def register(ctx):
 Without `override=True`, the registry rejects any registration that would
 shadow an existing tool from a different toolset — this prevents
 accidental overwrites. The override is logged at INFO level so it's
-auditable in `~/.hermes/logs/agent.log`. Plugins load after built-in
+auditable in `~/.agentic-os/logs/agent.log`. Plugins load after built-in
 tools, so the registration order is correct: your handler replaces the
 built-in one.
 
@@ -625,7 +625,7 @@ This is the only hook whose return value matters. When a `pre_llm_call` callback
 
 ```python
 # Dict with context key
-return {"context": "Recalled memories:\n- User prefers dark mode\n- Last project: hermes-agent"}
+return {"context": "Recalled memories:\n- User prefers dark mode\n- Last project: agentic-os"}
 
 # Plain string (equivalent to the dict form above)
 return "Recalled memories:\n- User prefers dark mode"
@@ -638,7 +638,7 @@ Any non-None, non-empty return with a `"context"` key (or a plain non-empty stri
 
 #### Oversized-context spill
 
-Per-hook context is capped at `10,000` characters by default. Anything above the cap is written to `$HERMES_HOME/hook_outputs/<session_id>/<uuid>.txt` and replaced with a head/tail preview plus the saved path. The model can read the full content via `read_file` or `terminal` if it genuinely needs it. This keeps a runaway plugin from inflating every subsequent turn's prompt and blowing out the prompt cache prefix. Tune in `config.yaml`:
+Per-hook context is capped at `10,000` characters by default. Anything above the cap is written to `$AGENTIC_OS_HOME/hook_outputs/<session_id>/<uuid>.txt` and replaced with a head/tail preview plus the saved path. The model can read the full content via `read_file` or `terminal` if it genuinely needs it. This keeps a runaway plugin from inflating every subsequent turn's prompt and blowing out the prompt cache prefix. Tune in `config.yaml`:
 
 ```yaml
 hooks:
@@ -647,7 +647,7 @@ hooks:
     max_chars: 10000       # default; set higher to opt out of spilling
     preview_head: 500      # chars shown at the top of the preview
     preview_tail: 500      # chars shown at the bottom of the preview
-    # directory: null      # default: $HERMES_HOME/hook_outputs
+    # directory: null      # default: $AGENTIC_OS_HOME/hook_outputs
 ```
 
 #### How injection works
@@ -860,7 +860,7 @@ This is the public, stable interface for tool dispatch from plugin commands. Plu
 
 `ctx._cli_ref` is only populated in an **interactive CLI** session. It is `None` in the gateway, in non-interactive `hermes chat -q` runs, and in **kanban-spawned worker sessions** — so any plugin logic that reaches through `_cli_ref` silently no-ops in exactly those contexts. Two stable, session-agnostic APIs cover what hooks actually need:
 
-- **`ctx.profile_name`** — the active profile name (e.g. `"default"`, or the assignee profile in a kanban worker). Derived from `HERMES_HOME`, so it works everywhere with no `_cli_ref` dependency.
+- **`ctx.profile_name`** — the active profile name (e.g. `"default"`, or the assignee profile in a kanban worker). Derived from `AGENTIC_OS_HOME`, so it works everywhere with no `_cli_ref` dependency.
 - **`ctx.dispatch_tool(name, args)`** — invoke any registered tool (built-in or plugin), including the `kanban_*` tools, `delegate_task`, `terminal`, `read_file`, etc. Works from hook callbacks regardless of which process the hook fires in.
 
 Together these let a kanban lifecycle hook observe a transition and act on the board without touching framework internals:
@@ -917,7 +917,7 @@ This guide covers **general plugins** (tools, hooks, slash commands, CLI command
 
 ## Specialized plugin types
 
-Hermes has five specialized plugin types beyond the general surface. Each ships as a directory under `plugins/<category>/<name>/` (bundled) or `~/.hermes/plugins/<category>/<name>/` (user). The contract differs by category — pick the one you need, then read its full guide.
+Hermes has five specialized plugin types beyond the general surface. Each ships as a directory under `plugins/<category>/<name>/` (bundled) or `~/.agentic-os/plugins/<category>/<name>/` (user). The contract differs by category — pick the one you need, then read its full guide.
 
 ### Model provider plugins — add an LLM backend
 
@@ -1113,7 +1113,7 @@ Hermes also accepts extensions that aren't Python plugins at all. These are show
 
 ### MCP servers — register external tools
 
-Model Context Protocol (MCP) servers register their own tools into Hermes without any Python plugin. Declare them in `~/.hermes/config.yaml`:
+Model Context Protocol (MCP) servers register their own tools into Hermes without any Python plugin. Declare them in `~/.agentic-os/config.yaml`:
 
 ```yaml
 mcp_servers:
@@ -1132,10 +1132,10 @@ Hermes connects to each server at startup, lists its tools, and registers them a
 
 ### Gateway event hooks — fire on lifecycle events
 
-Drop a manifest + handler into `~/.hermes/hooks/<name>/`:
+Drop a manifest + handler into `~/.agentic-os/hooks/<name>/`:
 
 ```yaml
-# ~/.hermes/hooks/long-task-alert/HOOK.yaml
+# ~/.agentic-os/hooks/long-task-alert/HOOK.yaml
 name: long-task-alert
 description: Send a push notification when a long task finishes
 events:
@@ -1143,7 +1143,7 @@ events:
 ```
 
 ```python
-# ~/.hermes/hooks/long-task-alert/handler.py
+# ~/.agentic-os/hooks/long-task-alert/handler.py
 async def handle(event_type: str, context: dict) -> None:
     if context.get("duration_seconds", 0) > 120:
         # send notification …
@@ -1229,7 +1229,7 @@ NixOS users can install your plugin declaratively if you provide a `pyproject.to
 **Entry-point plugins** (recommended for distribution):
 ```nix
 # User's configuration.nix
-services.hermes-agent.extraPythonPackages = [
+services.agentic-os.extraPythonPackages = [
   (pkgs.python312Packages.buildPythonPackage {
     pname = "my-plugin";
     version = "1.0.0";
@@ -1247,7 +1247,7 @@ services.hermes-agent.extraPythonPackages = [
 
 **Directory plugins** (no `pyproject.toml` needed):
 ```nix
-services.hermes-agent.extraPlugins = [
+services.agentic-os.extraPlugins = [
   (pkgs.fetchFromGitHub {
     owner = "you";
     repo = "hermes-my-plugin";

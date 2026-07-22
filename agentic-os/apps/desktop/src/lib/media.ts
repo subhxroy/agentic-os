@@ -118,7 +118,7 @@ export function isRemoteGateway(): boolean {
 
 // Fetch gateway-local media as a data URL via the authenticated desktop FS
 // bridge. Remote Desktop artifacts can live anywhere the gateway can read
-// (workspace, skills, ~/.hermes/cache, etc.); /api/media is intentionally
+// (workspace, skills, ~/.agentic-os/cache, etc.); /api/media is intentionally
 // narrower and rejects non-images plus images outside its media roots.
 export async function gatewayMediaDataUrl(path: string): Promise<string> {
   return readDesktopFileDataUrl(filePathFromMediaPath(path))

@@ -60,13 +60,13 @@ def _override(name: str):
     return globals().get(name)
 
 
-def _hermes_home() -> Path:
+def _agentic_os_home() -> Path:
     return get_agentic_os_home()
 
 
 def _skills_dir() -> Path:
     forced = _override("SKILLS_DIR")
-    return Path(forced) if forced is not None else _hermes_home() / "skills"
+    return Path(forced) if forced is not None else _agentic_os_home() / "skills"
 
 
 def _hub_dir() -> Path:
@@ -100,7 +100,7 @@ def _index_cache_dir() -> Path:
 
 
 _DYNAMIC_PATH_RESOLVERS = {
-    "HERMES_HOME": _hermes_home,
+    "AGENTIC_OS_HOME": _agentic_os_home,
     "SKILLS_DIR": _skills_dir,
     "HUB_DIR": _hub_dir,
     "LOCK_FILE": _lock_file,
@@ -3162,7 +3162,7 @@ class OptionalSkillSource(SkillSource):
 
     These skills are official (maintained by Nous Research) but not activated
     by default — they don't appear in the system prompt and aren't copied to
-    ~/.hermes/skills/ during setup.  They are discoverable via the Skills Hub
+    ~/.agentic-os/skills/ during setup.  They are discoverable via the Skills Hub
     (search / install / inspect) and labelled "official" with "builtin" trust.
     """
 

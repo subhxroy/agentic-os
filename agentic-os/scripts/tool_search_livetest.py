@@ -33,7 +33,7 @@ from pathlib import Path
 from typing import Any, Dict, List, Tuple
 
 # Force-isolate the test environment BEFORE any hermes imports.
-ORIGINAL_HOME = os.environ.get("HERMES_HOME")
+ORIGINAL_HOME = os.environ.get("AGENTIC_OS_HOME")
 ORIGINAL_AUTH = Path.home() / ".hermes" / "auth.json"
 
 _THIS_DIR = Path(__file__).resolve().parent
@@ -249,9 +249,9 @@ SCENARIOS: List[Dict[str, Any]] = [
 
 
 def setup_isolated_home(enabled: bool) -> Path:
-    """Create a fresh ~/.hermes/ for one test, copying minimal credentials.
+    """Create a fresh ~/.agentic-os/ for one test, copying minimal credentials.
 
-    Also reads OPENROUTER_API_KEY from the user's real ``~/.hermes/.env`` so
+    Also reads OPENROUTER_API_KEY from the user's real ``~/.agentic-os/.env`` so
     the agent can authenticate against OpenRouter inside the isolated home.
     """
     home_dir = Path(tempfile.mkdtemp(prefix="hermes_ts_live_"))
@@ -341,7 +341,7 @@ def register_fake_tools() -> int:
 
 
 def reset_module_state():
-    """Drop cached modules so the new HERMES_HOME takes effect."""
+    """Drop cached modules so the new AGENTIC_OS_HOME takes effect."""
     keys = [k for k in sys.modules.keys()
             if k.startswith(("tools.", "model_tools", "toolsets",
                              "agentic_os_cli", "agent.", "run_agent"))]
@@ -353,7 +353,7 @@ def run_one_scenario(scenario: Dict[str, Any], enabled: bool, out_dir: Path) -> 
     """Run one (scenario, enabled) combination. Returns the recorded transcript."""
     reset_module_state()
     home = setup_isolated_home(enabled=enabled)
-    os.environ["HERMES_HOME"] = str(home)
+    os.environ["AGENTIC_OS_HOME"] = str(home)
 
     # Pre-create the test file used by scenario D.
     Path("/tmp/livetest").mkdir(exist_ok=True)
@@ -538,11 +538,11 @@ def main():
     summary_path.write_text(json.dumps(summary, indent=2), encoding="utf-8")
     print(f"\nSummary saved to: {summary_path}")
 
-    # Restore original HERMES_HOME
+    # Restore original AGENTIC_OS_HOME
     if ORIGINAL_HOME is not None:
-        os.environ["HERMES_HOME"] = ORIGINAL_HOME
+        os.environ["AGENTIC_OS_HOME"] = ORIGINAL_HOME
     else:
-        os.environ.pop("HERMES_HOME", None)
+        os.environ.pop("AGENTIC_OS_HOME", None)
 
 
 if __name__ == "__main__":

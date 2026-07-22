@@ -306,13 +306,13 @@ def _setup_platform(hermes_home: str, config: dict, flags: dict[str, str]) -> No
     provider_config["host"] = ""
     # The json-file clear above can't help when the host comes from the
     # environment: _load_config() seeds ``host`` from MEM0_HOST, and the
-    # docs tell self-hosted users to put MEM0_HOST in ~/.hermes/.env. Warn
+    # docs tell self-hosted users to put MEM0_HOST in ~/.agentic-os/.env. Warn
     # so the user knows platform mode won't take effect until it's removed.
     if os.environ.get("MEM0_HOST", "").strip():
         print(
             "\n  ⚠ MEM0_HOST is set in your environment "
             f"({os.environ['MEM0_HOST']}). It overrides platform mode — "
-            "remove it from ~/.hermes/.env (or unset it) or Hermes will keep "
+            "remove it from ~/.agentic-os/.env (or unset it) or Hermes will keep "
             "routing to the self-hosted server."
         )
 

@@ -264,7 +264,7 @@ def test_aiagent_reuses_existing_errors_log_handler():
     """Repeated AIAgent init should not accumulate duplicate errors.log handlers."""
     root_logger = logging.getLogger()
     original_handlers = list(root_logger.handlers)
-    error_log_path = (run_agent._hermes_home / "logs" / "errors.log").resolve()
+    error_log_path = (run_agent._agentic_os_home / "logs" / "errors.log").resolve()
 
     try:
         for handler in list(root_logger.handlers):
@@ -2511,7 +2511,7 @@ class TestExecuteToolCalls:
         assert "tool was not executed" in messages[0]["content"].lower()
 
     def test_result_truncation_over_100k(self, agent, tmp_path, monkeypatch):
-        monkeypatch.setenv("HERMES_HOME", str(tmp_path / ".hermes"))
+        monkeypatch.setenv("AGENTIC_OS_HOME", str(tmp_path / ".hermes"))
         (tmp_path / ".hermes").mkdir()
         tc = _mock_tool_call(name="web_search", arguments="{}", call_id="c1")
         mock_msg = _mock_assistant_msg(content="", tool_calls=[tc])
@@ -3051,7 +3051,7 @@ class TestConcurrentToolExecution:
 
     def test_concurrent_truncates_large_results(self, agent, tmp_path, monkeypatch):
         """Concurrent path should save oversized results to file."""
-        monkeypatch.setenv("HERMES_HOME", str(tmp_path / ".hermes"))
+        monkeypatch.setenv("AGENTIC_OS_HOME", str(tmp_path / ".hermes"))
         (tmp_path / ".hermes").mkdir()
         tc1 = _mock_tool_call(name="web_search", arguments='{}', call_id="c1")
         tc2 = _mock_tool_call(name="web_search", arguments='{}', call_id="c2")

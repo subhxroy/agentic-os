@@ -240,7 +240,7 @@ def _config_default_interface_early() -> str:
         return _EARLY_INTERFACE_CACHE[0]
     value = "cli"
     try:
-        home = os.environ.get("HERMES_HOME")
+        home = os.environ.get("AGENTIC_OS_HOME")
         if home:
             cfg_path = os.path.join(home, "config.yaml")
         else:
@@ -267,7 +267,7 @@ def _wants_tui_early(argv: "list[str] | None" = None) -> bool:
     """Earliest TUI decision, usable before argparse/config imports.
 
     Precedence: explicit ``--cli`` wins (forces classic REPL), then
-    explicit ``--tui``/``HERMES_TUI=1``, then a real-TTY gate (a
+    explicit ``--tui``/``AGENTIC_OS_TUI=1``, then a real-TTY gate (a
     non-interactive stdio can't host the Ink UI, so ambient config never
     boots it there), then ``display.interface`` in config.
 
@@ -283,7 +283,7 @@ def _wants_tui_early(argv: "list[str] | None" = None) -> bool:
         argv = sys.argv[1:]
     if "--cli" in argv:
         return False
-    if os.environ.get("HERMES_TUI") == "1" or "--tui" in argv:
+    if os.environ.get("AGENTIC_OS_TUI") == "1" or "--tui" in argv:
         return True
     try:
         if not (sys.stdin.isatty() and sys.stdout.isatty()):
@@ -299,10 +299,10 @@ def _wants_tui_early(argv: "list[str] | None" = None) -> bool:
 # before the Node TUI takes stdin into raw mode). During that window any
 # incoming bytes are echoed straight back to the user's shell scrollback as
 # ``^[[<…M`` text. The TUI itself runs `resetTerminalModes()` again in
-# `entry.tsx`; this is just the earlier cousin. ``HERMES_TUI_NO_EARLY_DISABLE``
+# `entry.tsx`; this is just the earlier cousin. ``AGENTIC_OS_TUI_NO_EARLY_DISABLE``
 # escapes the behaviour for diagnostics.
 def _suppress_mouse_residue_early() -> None:
-    if os.environ.get("HERMES_TUI_NO_EARLY_DISABLE") == "1":
+    if os.environ.get("AGENTIC_OS_TUI_NO_EARLY_DISABLE") == "1":
         return
     if not _wants_tui_early():
         return
@@ -465,14 +465,14 @@ sys.path.insert(0, str(PROJECT_ROOT))
 # ---------------------------------------------------------------------------
 # Profile override — MUST happen before any hermes module import.
 #
-# Many modules cache HERMES_HOME at import time (module-level constants).
+# Many modules cache AGENTIC_OS_HOME at import time (module-level constants).
 # We intercept --profile/-p from sys.argv here and set the env var so that
-# every subsequent ``os.getenv("HERMES_HOME", ...)`` resolves correctly.
+# every subsequent ``os.getenv("AGENTIC_OS_HOME", ...)`` resolves correctly.
 # The flag is stripped from sys.argv so argparse never sees it.
-# Falls back to ~/.hermes/active_profile for sticky default.
+# Falls back to ~/.agentic-os/active_profile for sticky default.
 # ---------------------------------------------------------------------------
 def _apply_profile_override() -> None:
-    """Pre-parse --profile/-p and set HERMES_HOME before imports."""
+    """Pre-parse --profile/-p and set AGENTIC_OS_HOME before imports."""
     argv = sys.argv[1:]
     profile_name = None
     consume = 0
@@ -577,16 +577,16 @@ def _apply_profile_override() -> None:
             consume = 0
             profile_index = None
 
-    # 1.5 If HERMES_HOME is already set and no explicit flag was given, trust it
+    # 1.5 If AGENTIC_OS_HOME is already set and no explicit flag was given, trust it
     # only when it already points to a specific profile directory.  The
     # distinguishing heuristic: a profile path has "profiles" as its immediate
-    # parent directory name (e.g. ~/.hermes/profiles/coder or
-    # /opt/data/profiles/coder).  If HERMES_HOME points to the hermes root
-    # instead (e.g. systemd hardcodes HERMES_HOME=/root/.hermes), we must
+    # parent directory name (e.g. ~/.agentic-os/profiles/coder or
+    # /opt/data/profiles/coder).  If AGENTIC_OS_HOME points to the hermes root
+    # instead (e.g. systemd hardcodes AGENTIC_OS_HOME=/root/.hermes), we must
     # still read active_profile — the user may have switched profiles via
     # `hermes profile use` and the gateway should honour that choice.
     # See issue #22502.
-    hermes_home_env = os.environ.get("HERMES_HOME", "")
+    hermes_home_env = os.environ.get("AGENTIC_OS_HOME", "")
     if profile_name is None and hermes_home_env:
         if Path(hermes_home_env).parent.name == "profiles":
             return
@@ -598,7 +598,7 @@ def _apply_profile_override() -> None:
     # active_profile. Each supervised slot has a fixed profile identity: named
     # slots pass ``-p <name>`` explicitly (handled in step 1 above), and the
     # reserved ``gateway-default`` slot runs bare ``hermes gateway run`` to mean
-    # "the root HERMES_HOME profile". If the reserved default child read
+    # "the root AGENTIC_OS_HOME profile". If the reserved default child read
     # active_profile here, switching the active profile (e.g. via the dashboard)
     # would silently redirect the default gateway into that profile — yielding a
     # duplicate gateway for the active profile and no real default gateway. See
@@ -616,7 +616,7 @@ def _apply_profile_override() -> None:
         except (UnicodeDecodeError, OSError):
             pass  # corrupted file, skip
 
-    # 3. If we found a profile, resolve and set HERMES_HOME
+    # 3. If we found a profile, resolve and set AGENTIC_OS_HOME
     if profile_name is not None:
         try:
             from agentic_os_cli.profiles import resolve_profile_env
@@ -637,7 +637,7 @@ def _apply_profile_override() -> None:
                 file=sys.stderr,
             )
             return
-        os.environ["HERMES_HOME"] = hermes_home
+        os.environ["AGENTIC_OS_HOME"] = hermes_home
         # Strip the flag from argv so argparse doesn't choke
         if consume > 0 and profile_index is not None:
             start = profile_index + 1  # +1 because argv is sys.argv[1:]
@@ -646,7 +646,7 @@ def _apply_profile_override() -> None:
 
 _apply_profile_override()
 
-# Load .env from ~/.hermes/.env first, then project root as dev fallback.
+# Load .env from ~/.agentic-os/.env first, then project root as dev fallback.
 # User-managed env files should override stale shell exports on restart.
 from agentic_os_cli.config import get_agentic_os_home
 from agentic_os_cli.env_loader import load_hermes_dotenv
@@ -1664,7 +1664,7 @@ def _tui_need_npm_install(root: Path) -> bool:
 
 _TUI_BUILD_INPUT_DIRS = (
     "src",
-    "packages/hermes-ink/src",
+    "packages/agentic-os-ink/src",
 )
 
 _TUI_BUILD_INPUT_FILES = (
@@ -1674,9 +1674,9 @@ _TUI_BUILD_INPUT_FILES = (
     "tsconfig.build.json",
     "babel.compiler.config.cjs",
     "scripts/build.mjs",
-    "packages/hermes-ink/package.json",
-    "packages/hermes-ink/index.js",
-    "packages/hermes-ink/text-input.js",
+    "packages/agentic-os-ink/package.json",
+    "packages/agentic-os-ink/index.js",
+    "packages/agentic-os-ink/text-input.js",
 )
 
 _TUI_BUILD_INPUT_SUFFIXES = frozenset(
@@ -1706,9 +1706,9 @@ def _tui_need_rebuild(root: Path) -> bool:
     The TUI bundle is self-contained. Rebuilding it on every launch adds a
     visible cold-start tax on slow Termux CPUs, while a simple mtime freshness
     check still rebuilds immediately after source updates, dependency updates,
-    or local edits. Set ``HERMES_TUI_FORCE_BUILD=1`` to force the old behaviour.
+    or local edits. Set ``AGENTIC_OS_TUI_FORCE_BUILD=1`` to force the old behaviour.
     """
-    force = (os.environ.get("HERMES_TUI_FORCE_BUILD") or "").strip().lower()
+    force = (os.environ.get("AGENTIC_OS_TUI_FORCE_BUILD") or "").strip().lower()
     if force in {"1", "true", "yes", "on"}:
         return True
 
@@ -1749,7 +1749,7 @@ def _ensure_tui_node() -> None:
     if not helper.is_file():
         return
 
-    hermes_home = os.environ.get("HERMES_HOME") or str(Path.home() / ".hermes")
+    hermes_home = os.environ.get("AGENTIC_OS_HOME") or str(Path.home() / ".hermes")
     try:
         # Helper writes logs to stderr; we ask bash to print `command -v node`
         # on stdout once ensure_node succeeds. Subshell PATH edits don't leak
@@ -1760,7 +1760,7 @@ def _ensure_tui_node() -> None:
                 "-c",
                 f'source "{helper}" >&2 && ensure_node >&2 && command -v node',
             ],
-            env={**os.environ, "HERMES_HOME": hermes_home},
+            env={**os.environ, "AGENTIC_OS_HOME": hermes_home},
             capture_output=True,
             text=True,
             encoding="utf-8",
@@ -1853,7 +1853,7 @@ def _ensure_tui_workspace(tui_dir: Path) -> None:
 
 
 def _make_tui_argv(tui_dir: Path, tui_dev: bool) -> tuple[list[str], Path]:
-    """TUI: --dev → tsx src; else node dist (HERMES_TUI_DIR prebuilt or esbuild)."""
+    """TUI: --dev → tsx src; else node dist (AGENTIC_OS_TUI_DIR prebuilt or esbuild)."""
     _ensure_tui_node()
 
     def _node_bin(bin: str) -> str:
@@ -1875,12 +1875,12 @@ def _make_tui_argv(tui_dir: Path, tui_dev: bool) -> tuple[list[str], Path]:
         return path
 
     # Footgun: --dev against a prebuilt bundle that has no source/node_modules.
-    ext_dir = os.environ.get("HERMES_TUI_DIR")
+    ext_dir = os.environ.get("AGENTIC_OS_TUI_DIR")
     if tui_dev and ext_dir:
         print(
-            f"Error: --dev is incompatible with HERMES_TUI_DIR={ext_dir}\n"
+            f"Error: --dev is incompatible with AGENTIC_OS_TUI_DIR={ext_dir}\n"
             f"The prebuilt TUI has no source code to hot-reload.\n"
-            f"Unset HERMES_TUI_DIR (e.g. `unset HERMES_TUI_DIR`) to use --dev from a checkout.",
+            f"Unset AGENTIC_OS_TUI_DIR (e.g. `unset AGENTIC_OS_TUI_DIR`) to use --dev from a checkout.",
             file=sys.stderr,
         )
         sys.exit(1)
@@ -1981,11 +1981,11 @@ def _make_tui_argv(tui_dir: Path, tui_dev: bool) -> tuple[list[str], Path]:
     if tui_dev:
         # Keep the local @hermes/ink package exports in sync with source.
         # --dev runs src/entry.tsx directly, but @hermes/ink resolves through
-        # packages/hermes-ink/dist/entry-exports.js. If that dist bundle is
+        # packages/agentic-os-ink/dist/entry-exports.js. If that dist bundle is
         # stale after a pull, newer hooks/components can exist in src while
         # being missing at runtime (e.g. useCursorAdvance). Prebuild it here.
         npm = _node_bin("npm")
-        ink_dir = tui_dir / "packages" / "hermes-ink"
+        ink_dir = tui_dir / "packages" / "agentic-os-ink"
         result = subprocess.run(
             [npm, "run", "build"],
             cwd=str(ink_dir),
@@ -2196,7 +2196,7 @@ def _launch_tui(
         prefix="hermes-tui-active-session-", suffix=".json"
     )
     os.close(active_session_fd)
-    env["HERMES_TUI_ACTIVE_SESSION_FILE"] = active_session_file
+    env["AGENTIC_OS_TUI_ACTIVE_SESSION_FILE"] = active_session_file
     env.setdefault("NODE_ENV", "development" if tui_dev else "production")
 
     wt_info = None
@@ -2227,11 +2227,11 @@ def _launch_tui(
         env["HERMES_MODEL"] = model
         env["HERMES_INFERENCE_MODEL"] = model
     if provider:
-        env["HERMES_TUI_PROVIDER"] = provider
+        env["AGENTIC_OS_TUI_PROVIDER"] = provider
         env["HERMES_INFERENCE_PROVIDER"] = provider
     tui_toolsets = _normalize_tui_toolsets(toolsets)
     if tui_toolsets:
-        env["HERMES_TUI_TOOLSETS"] = ",".join(tui_toolsets)
+        env["AGENTIC_OS_TUI_TOOLSETS"] = ",".join(tui_toolsets)
     if skills:
         if isinstance(skills, (list, tuple)):
             flattened = []
@@ -2240,25 +2240,25 @@ def _launch_tui(
                     part.strip() for part in str(item).split(",") if part.strip()
                 )
             if flattened:
-                env["HERMES_TUI_SKILLS"] = ",".join(flattened)
+                env["AGENTIC_OS_TUI_SKILLS"] = ",".join(flattened)
         else:
             value = str(skills).strip()
             if value:
-                env["HERMES_TUI_SKILLS"] = value
+                env["AGENTIC_OS_TUI_SKILLS"] = value
     if query:
-        env["HERMES_TUI_QUERY"] = query
+        env["AGENTIC_OS_TUI_QUERY"] = query
     if image:
-        env["HERMES_TUI_IMAGE"] = image
+        env["AGENTIC_OS_TUI_IMAGE"] = image
     if checkpoints:
-        env["HERMES_TUI_CHECKPOINTS"] = "1"
+        env["AGENTIC_OS_TUI_CHECKPOINTS"] = "1"
     if pass_session_id:
-        env["HERMES_TUI_PASS_SESSION_ID"] = "1"
+        env["AGENTIC_OS_TUI_PASS_SESSION_ID"] = "1"
     if max_turns is not None:
-        env["HERMES_TUI_MAX_TURNS"] = str(max_turns)
+        env["AGENTIC_OS_TUI_MAX_TURNS"] = str(max_turns)
     if verbose:
-        env["HERMES_TUI_TOOL_PROGRESS"] = "verbose"
+        env["AGENTIC_OS_TUI_TOOL_PROGRESS"] = "verbose"
     elif quiet:
-        env["HERMES_TUI_TOOL_PROGRESS"] = "off"
+        env["AGENTIC_OS_TUI_TOOL_PROGRESS"] = "off"
     if accept_hooks:
         env["HERMES_ACCEPT_HOOKS"] = "1"
     # Guarantee a generous V8 heap for the TUI. Default node cap is ~1.5–4GB
@@ -2279,16 +2279,16 @@ def _launch_tui(
     if not any(t.startswith("--max-old-space-size=") for t in _tokens):
         _tokens.append(f"--max-old-space-size={_resolve_tui_heap_mb()}")
     env["NODE_OPTIONS"] = " ".join(_tokens)
-    # HERMES_TUI_RESUME is an internal hand-off from the Python wrapper to the
+    # AGENTIC_OS_TUI_RESUME is an internal hand-off from the Python wrapper to the
     # Ink app.  Because we start from os.environ.copy(), an exported/stale value
     # in the user's shell would otherwise make a plain `hermes --tui` try to
     # resume a non-existent session and leave the UI at "error: session not
     # found" with no live session.  Only forward a resume id that argparse
     # resolved for this invocation; direct `node ui-tui/dist/entry.js` users can
-    # still set HERMES_TUI_RESUME themselves.
-    env.pop("HERMES_TUI_RESUME", None)
+    # still set AGENTIC_OS_TUI_RESUME themselves.
+    env.pop("AGENTIC_OS_TUI_RESUME", None)
     if resume_session_id:
-        env["HERMES_TUI_RESUME"] = resume_session_id
+        env["AGENTIC_OS_TUI_RESUME"] = resume_session_id
 
     argv, cwd = _make_tui_argv(tui_dir, tui_dev)
     code: Optional[int] = None
@@ -2348,7 +2348,7 @@ def _pin_kanban_board_env() -> None:
 
 
 def _sync_bundled_skills_quietly() -> None:
-    """Seed ``~/.hermes/skills/`` with the bundled skill library on first launch.
+    """Seed ``~/.agentic-os/skills/`` with the bundled skill library on first launch.
 
     Called from any CLI entrypoint that the user might use as their first
     interaction with Hermes — chat, dashboard (the desktop GUI's backend),
@@ -2374,7 +2374,7 @@ def _resolve_use_tui(args) -> bool:
       1. ``--cli`` flag         → always classic REPL
       2. ``--tui`` flag         → always TUI (explicit ask)
       3. no TTY                 → always classic (ambient prefs don't apply)
-      4. ``HERMES_TUI=1`` env   → TUI
+      4. ``AGENTIC_OS_TUI=1`` env   → TUI
       5. ``display.interface`` config value ("cli" | "tui")
       6. default → classic REPL
 
@@ -2399,7 +2399,7 @@ def _resolve_use_tui(args) -> bool:
             return False
     except Exception:
         return False
-    if os.environ.get("HERMES_TUI") == "1":
+    if os.environ.get("AGENTIC_OS_TUI") == "1":
         return True
     try:
         from agentic_os_cli.config import load_config
@@ -2552,7 +2552,7 @@ def cmd_chat(args):
         os.environ["HERMES_YOLO_MODE"] = "1"
 
     # --ignore-user-config: make load_cli_config() / load_config() skip the
-    # user's ~/.hermes/config.yaml and return built-in defaults. Set BEFORE
+    # user's ~/.agentic-os/config.yaml and return built-in defaults. Set BEFORE
     # importing cli (which runs `CLI_CONFIG = load_cli_config()` at module
     # import time). Credentials in .env are still loaded — this flag only
     # ignores behavioral/config settings.
@@ -3378,7 +3378,7 @@ def select_provider_and_model(args=None):
 
     # ── Post-switch cleanup: clear stale OPENAI_BASE_URL ──────────────
     # When the user switches to a named provider (anything except "custom"),
-    # a leftover OPENAI_BASE_URL in ~/.hermes/.env can poison auxiliary
+    # a leftover OPENAI_BASE_URL in ~/.agentic-os/.env can poison auxiliary
     # clients that use provider:auto. Clear it proactively.  (#5161)
     if selected_provider not in {
         "custom",
@@ -3389,7 +3389,7 @@ def select_provider_and_model(args=None):
 
 
 def _clear_stale_openai_base_url():
-    """Remove OPENAI_BASE_URL from ~/.hermes/.env if the active provider is not 'custom'.
+    """Remove OPENAI_BASE_URL from ~/.agentic-os/.env if the active provider is not 'custom'.
 
     After a provider switch, a leftover OPENAI_BASE_URL causes auxiliary
     clients (compression, vision, delegation) with provider:auto to route
@@ -4217,7 +4217,7 @@ def _prompt_api_key(pconfig, existing_key: str, provider_id: str = "") -> tuple:
 
     Handles both first-time entry and the already-configured case.  When a key
     is already present, offers [K]eep / [R]eplace / [C]lear so the user can
-    recover from a malformed paste without editing ``~/.hermes/.env`` by hand.
+    recover from a malformed paste without editing ``~/.agentic-os/.env`` by hand.
 
     Returns ``(resolved_key, abort)``.  ``abort=True`` means the caller should
     ``return`` immediately — the user cancelled entry, declined to replace, or
@@ -5219,7 +5219,7 @@ def _desktop_dist_exists(desktop_dir: Path) -> bool:
 #   - ``hermes desktop`` (interactive launch) skips the build when the
 #     stamp matches, making repeated launches fast
 #
-# Stamp file: $HERMES_HOME/desktop-build-stamp.json
+# Stamp file: $AGENTIC_OS_HOME/desktop-build-stamp.json
 # Schema:
 #   {
 #     "contentHash": "<sha256 hex of source files>",
@@ -5288,7 +5288,7 @@ def _compute_desktop_content_hash(project_root: Path) -> str:
 
 
 def _desktop_stamp_path() -> Path:
-    """Return the path to the desktop build stamp file under $HERMES_HOME."""
+    """Return the path to the desktop build stamp file under $AGENTIC_OS_HOME."""
     from agentic_os_constants import get_agentic_os_home
     return get_agentic_os_home() / "desktop-build-stamp.json"
 
@@ -5853,7 +5853,7 @@ def cmd_gui(args: argparse.Namespace):
     if getattr(args, "ignore_existing", False):
         env["HERMES_DESKTOP_IGNORE_EXISTING"] = "1"
     if getattr(args, "hermes_root", None):
-        env["HERMES_DESKTOP_HERMES_ROOT"] = str(Path(args.hermes_root).expanduser().resolve())
+        env["HERMES_DESKTOP_AGENTIC_ROOT"] = str(Path(args.hermes_root).expanduser().resolve())
     if getattr(args, "cwd", None):
         env["HERMES_DESKTOP_CWD"] = str(Path(args.cwd).expanduser().resolve())
     else:
@@ -6503,14 +6503,14 @@ def _update_via_zip(args):
     print("→ Downloading latest version...")
     tmp_dir = tempfile.mkdtemp(prefix="hermes-update-")
     try:
-        zip_path = os.path.join(tmp_dir, f"hermes-agent-{branch}.zip")
+        zip_path = os.path.join(tmp_dir, f"agentic-os-{branch}.zip")
         urlretrieve(zip_url, zip_path)
 
         print("→ Extracting...")
         import stat as _stat
         with zipfile.ZipFile(zip_path, "r") as zf:
             # Validate paths to prevent zip-slip (path traversal) AND reject
-            # symlink members. A GitHub source ZIP for hermes-agent itself
+            # symlink members. A GitHub source ZIP for agentic-os itself
             # should never contain symlinks — they'd point outside the
             # extracted tree and let an attacker who can compromise the
             # update mirror plant arbitrary files via the update path.
@@ -6533,8 +6533,8 @@ def _update_via_zip(args):
                     )
             zf.extractall(tmp_dir)
 
-        # GitHub ZIPs extract to hermes-agent-<branch>/
-        extracted = os.path.join(tmp_dir, f"hermes-agent-{branch}")
+        # GitHub ZIPs extract to agentic-os-<branch>/
+        extracted = os.path.join(tmp_dir, f"agentic-os-{branch}")
         if not os.path.isdir(extracted):
             # Try to find it
             for d in os.listdir(tmp_dir):
@@ -7218,7 +7218,7 @@ def _load_installable_optional_extras(group: str = "all") -> list[str]:
 # kills the update mid-install (Ctrl-C, terminal close, WSL OOM), the marker
 # survives and the next ``hermes`` launch finishes the install instead of
 # limping along on a half-built venv (e.g. pip wiped, a core dep like Pillow
-# never landed).  Lives next to the venv (not under $HERMES_HOME) because the
+# never landed).  Lives next to the venv (not under $AGENTIC_OS_HOME) because the
 # venv is shared across all profiles, so a single marker covers every profile.
 def _update_marker_path() -> Path:
     return PROJECT_ROOT / ".update-incomplete"
@@ -7488,7 +7488,7 @@ def _hermes_exe_shims(scripts_dir: Path) -> list[Path]:
     names = set(_load_console_script_names()) or {"hermes", "agentic-os", "hermes-acp"}
     # The gateway shim is not a [project.scripts] entry point, but older
     # update/install paths still rewrite and quarantine it.
-    names.add("hermes-gateway")
+    names.add("agentic-os-gateway")
     return [scripts_dir / f"{name}.exe" for name in sorted(names)]
 
 
@@ -7505,7 +7505,7 @@ def _detect_concurrent_hermes_instances(
     ``[WinError 32]`` and uv inherits the lock.
 
     This helper enumerates processes whose ``exe`` matches one of the venv's
-    shims (``hermes.exe`` / ``hermes-gateway.exe``) and returns ``(pid,
+    shims (``hermes.exe`` / ``agentic-os-gateway.exe``) and returns ``(pid,
     process_name)`` pairs. The caller's own PID and its entire ancestor
     chain are excluded so the running ``hermes update`` invocation never
     reports itself — this matters on Windows where the setuptools .exe
@@ -7919,7 +7919,7 @@ def _install_python_dependencies_with_optional_fallback(
     By default this targets ``.[all]``; Termux callers can pass
     ``group='termux-all'`` to use the curated Android-compatible profile.
 
-    On Windows, pre-renames live ``hermes.exe`` / ``hermes-gateway.exe`` shims
+    On Windows, pre-renames live ``hermes.exe`` / ``agentic-os-gateway.exe`` shims
     in the venv Scripts dir before each install attempt so uv can write fresh
     copies (Windows blocks REPLACE on a running .exe but allows RENAME). See
     ``_quarantine_running_hermes_exe`` for the rationale.
@@ -8005,7 +8005,7 @@ def _verify_console_scripts_installed(
     On Windows, ``uv pip install -e .`` can register ``hermes.exe`` in the
     wheel RECORD while the file never lands on disk — typically when the live
     ``hermes.exe`` shim is locked during ``hermes update``, or when uv/distlib
-    skips a launcher write. The symptom is ``hermes-agent.exe`` and
+    skips a launcher write. The symptom is ``agentic-os.exe`` and
     ``hermes-acp.exe`` present but ``hermes.exe`` missing, so ``hermes`` drops
     off PATH even though the install reported success (issue #52931).
 
@@ -8323,7 +8323,7 @@ def _ensure_uv_for_termux(pip_cmd: list[str]) -> str | None:
     """Best-effort uv bootstrap on Termux for faster update installs.
 
     The normal path (``ensure_uv()`` in managed_uv) installs the managed
-    standalone uv into ``$HERMES_HOME/bin/uv``, but on Termux the official
+    standalone uv into ``$AGENTIC_OS_HOME/bin/uv``, but on Termux the official
     installer may not work (glibc vs bionic).  Prefer a uv already on PATH
     (e.g. ``pkg install uv``); only if there is none do we fall back to a
     wheel-only ``pip install uv`` so we never source-build the Rust crate.
@@ -8610,7 +8610,7 @@ class _UpdateOutputStream:
     Wraps the process's original stdout/stderr so that:
 
     * Every write is also mirrored to an append-only log file
-      (``~/.hermes/logs/update.log``) that users can inspect after the
+      (``~/.agentic-os/logs/update.log``) that users can inspect after the
       terminal disconnects.
     * Writes to the original stream that fail with ``BrokenPipeError`` /
       ``OSError`` / ``ValueError`` (closed file) no longer cascade into
@@ -8692,7 +8692,7 @@ def _install_hangup_protection(gateway_mode: bool = False):
        across ``exec()``, so pip and git subprocesses also stop dying on
        hangup.
     2. ``sys.stdout`` / ``sys.stderr`` are wrapped to mirror output to
-       ``~/.hermes/logs/update.log`` and to silently absorb
+       ``~/.agentic-os/logs/update.log`` and to silently absorb
        ``BrokenPipeError`` when the terminal vanishes.
 
     ``SIGINT`` (Ctrl-C) and ``SIGTERM`` (systemd shutdown) are
@@ -8759,7 +8759,7 @@ def _install_hangup_protection(gateway_mode: bool = False):
 
 
 def _log_only_write(text: str) -> None:
-    """Write ``text`` to ``~/.hermes/logs/update.log`` only, never the terminal.
+    """Write ``text`` to ``~/.agentic-os/logs/update.log`` only, never the terminal.
 
     During ``hermes update`` ``sys.stdout`` is an ``_UpdateOutputStream`` that
     mirrors to both the terminal and ``update.log``. Loud, low-signal
@@ -9033,7 +9033,7 @@ def _ensure_fhs_path_guard() -> None:
     except AttributeError:
         return
     # Only act when this is actually an FHS-layout install (command link at
-    # /usr/local/bin/hermes, code at /usr/local/lib/hermes-agent).
+    # /usr/local/bin/hermes, code at /usr/local/lib/agentic-os).
     fhs_link = Path("/usr/local/bin/hermes")
     if not fhs_link.is_symlink() and not fhs_link.exists():
         return
@@ -9164,7 +9164,7 @@ def _run_pre_update_backup(args) -> Optional[str]:
       under ``state-snapshots/``. Files over 1 GiB are skipped with a
       warning so a bloated state.db can never stall the update
       (issues #15733, #34600 are the reason this safety net exists).
-    - ``full``  — the quick snapshot PLUS a full zip of HERMES_HOME under
+    - ``full``  — the quick snapshot PLUS a full zip of AGENTIC_OS_HOME under
       ``backups/`` (restorable via ``hermes import``; the #48200 wrong-path
       wipe is the reason this level exists).
 
@@ -9251,7 +9251,7 @@ def _run_pre_update_backup(args) -> Optional[str]:
         size_bytes /= 1024
         size_str = f"{size_bytes:.1f} {unit}"
 
-    # Render path using display_agentic_os_home so the user sees ~/.hermes/...
+    # Render path using display_agentic_os_home so the user sees ~/.agentic-os/...
     try:
         from agentic_os_constants import get_agentic_os_home, display_agentic_os_home
 
@@ -10500,7 +10500,7 @@ def _cmd_update_impl(args, gateway_mode: bool):
         # Seed the model-catalog disk cache from the freshly-pulled checkout.
         # The repo ships the canonical catalog at
         # website/static/api/model-catalog.json, and `git pull` just made it
-        # current — so copy it straight over ~/.hermes/cache/model_catalog.json
+        # current — so copy it straight over ~/.agentic-os/cache/model_catalog.json
         # instead of waiting on a network fetch (which can be bot-gated or hit a
         # Portal hiccup). Keeps the model picker's curated/free lists in sync
         # with the version the user just installed. Non-fatal on failure: the
@@ -10552,10 +10552,10 @@ def _cmd_update_impl(args, gateway_mode: bool):
             logger.debug("Skills sync during update failed: %s", e)
 
         # Sync bundled skills to all profiles (including the active one).
-        # seed_profile_skills() uses subprocess with an explicit HERMES_HOME so
-        # it is not affected by sync_skills()'s module-level HERMES_HOME cache,
+        # seed_profile_skills() uses subprocess with an explicit AGENTIC_OS_HOME so
+        # it is not affected by sync_skills()'s module-level AGENTIC_OS_HOME cache,
         # which means the active profile is reliably synced regardless of whether
-        # the caller's HERMES_HOME env var points at the default or a named profile.
+        # the caller's AGENTIC_OS_HOME env var points at the default or a named profile.
         try:
             from agentic_os_cli.profiles import (
                 list_profiles,
@@ -10967,7 +10967,7 @@ def _cmd_update_impl(args, gateway_mode: bool):
                 non-interactive sudo (``sudo -n``) — first a blanket probe,
                 then a targeted ``systemctl reset-failed`` probe so a
                 least-privilege sudoers entry scoped to
-                ``systemctl ... hermes-gateway*`` also qualifies
+                ``systemctl ... agentic-os-gateway*`` also qualifies
                 (``reset-failed`` is an idempotent no-op we run before every
                 privileged restart anyway).  If neither works, return None —
                 the caller must SKIP the restart (without draining the
@@ -10994,7 +10994,7 @@ def _cmd_update_impl(args, gateway_mode: bool):
                         sudo_ok = _probe.returncode == 0
                         if not sudo_ok:
                             # Blanket sudo refused — a targeted sudoers entry
-                            # (NOPASSWD for systemctl ... hermes-gateway*)
+                            # (NOPASSWD for systemctl ... agentic-os-gateway*)
                             # may still allow the exact commands we need.
                             _probe = subprocess.run(
                                 sudo_cmd + ["reset-failed", svc_name_],
@@ -11046,7 +11046,7 @@ def _cmd_update_impl(args, gateway_mode: bool):
             externally_supervised_profiles = []
 
             # --- Systemd services (Linux) ---
-            # Discover all hermes-gateway* units (default + profiles)
+            # Discover all agentic-os-gateway* units (default + profiles)
             if supports_systemd_services():
                 try:
                     _ensure_user_systemd_env()
@@ -11062,7 +11062,7 @@ def _cmd_update_impl(args, gateway_mode: bool):
                             scope_cmd
                             + [
                                 "list-units",
-                                "hermes-gateway*",
+                                "agentic-os-gateway*",
                                 "--plain",
                                 "--no-legend",
                                 "--no-pager",
@@ -11077,7 +11077,7 @@ def _cmd_update_impl(args, gateway_mode: bool):
                                 continue
                             unit = parts[
                                 0
-                            ]  # e.g. hermes-gateway.service or hermes-gateway-coder.service
+                            ]  # e.g. agentic-os-gateway.service or agentic-os-gateway-coder.service
                             if not unit.endswith(".service"):
                                 continue
                             svc_name = unit.removesuffix(".service")
@@ -11511,7 +11511,7 @@ def _cmd_update_impl(args, gateway_mode: bool):
 
         # Warn if legacy Hermes gateway unit files are still installed.
         # When both hermes.service (from a pre-rename install) and the
-        # current hermes-gateway.service are enabled, they SIGTERM-fight
+        # current agentic-os-gateway.service are enabled, they SIGTERM-fight
         # for the same bot token (see PR #11909). Flagging here means
         # every `hermes update` surfaces the issue until the user migrates.
         try:
@@ -11529,7 +11529,7 @@ def _cmd_update_impl(args, gateway_mode: bool):
                     print(f"    {path}  ({scope} scope)")
                 print()
                 print("  These pre-rename units (hermes.service) fight the current")
-                print("  hermes-gateway.service for the bot token and cause SIGTERM")
+                print("  agentic-os-gateway.service for the bot token and cause SIGTERM")
                 print("  flap loops. Remove them with:")
                 print()
                 print("    hermes gateway migrate-legacy")
@@ -11737,7 +11737,7 @@ def cmd_profile(args):
         try:
             set_active_profile(name)
             if name == "default":
-                print("Switched to: default (~/.hermes)")
+                print("Switched to: default (~/.agentic-os)")
             else:
                 print(f"Switched to: {name}")
         except (ValueError, FileNotFoundError) as e:
@@ -12415,7 +12415,7 @@ def _maybe_setup_dashboard_auth_interactively(args) -> None:
             "the dashboard again:\n"
             "    hermes dashboard register\n"
             "  It provisions a Nous Portal OAuth client and writes "
-            "HERMES_DASHBOARD_OAUTH_CLIENT_ID into ~/.hermes/.env for you.\n"
+            "HERMES_DASHBOARD_OAUTH_CLIENT_ID into ~/.agentic-os/.env for you.\n"
             "  Docs: https://agentic-os.nousresearch.com/docs/"
             "user-guide/features/web-dashboard#authentication-gated-mode"
         )
@@ -12530,7 +12530,7 @@ def cmd_dashboard(args):
     # profile via the per-request ?profile= scoping. Running one dashboard
     # per profile just fragments that (port collisions, N processes, and a
     # "which dashboard am I on?" guessing game). So when a NAMED profile
-    # launches the dashboard (`worker dashboard` → HERMES_HOME points into
+    # launches the dashboard (`worker dashboard` → AGENTIC_OS_HOME points into
     # profiles/), default to the machine dashboard:
     #   - already running → open the browser at ?profile=<name> and exit
     #   - not running     → re-exec as the machine dashboard (pinned to the
@@ -12585,23 +12585,23 @@ def cmd_dashboard(args):
             reexec_argv.append("--skip-build")
         env = os.environ.copy()
         # Pin the child to the machine ROOT, not the launching profile's
-        # HERMES_HOME.  We must resolve the root explicitly instead of just
-        # dropping HERMES_HOME: in the Docker layout the machine root is
-        # /opt/data (set via `ENV HERMES_HOME=/opt/data`), so an unset
-        # HERMES_HOME falls back to $HOME/.hermes = /opt/data/.hermes — an
+        # AGENTIC_OS_HOME.  We must resolve the root explicitly instead of just
+        # dropping AGENTIC_OS_HOME: in the Docker layout the machine root is
+        # /opt/data (set via `ENV AGENTIC_OS_HOME=/opt/data`), so an unset
+        # AGENTIC_OS_HOME falls back to $HOME/.hermes = /opt/data/.hermes — an
         # empty, auto-seeded home where the dashboard sees only the default
         # profile and the install-method stamp is missing (so the Docker
         # update-button guard also misfires).  get_default_agentic_os_root()
-        # returns the root for both layouts: ~/.hermes for a standard install
+        # returns the root for both layouts: ~/.agentic-os for a standard install
         # and /opt/data for Docker (it strips a trailing profiles/<name>).
         # See the support report for the double-mount workaround this avoids.
         try:
             from agentic_os_constants import get_default_agentic_os_root
-            env["HERMES_HOME"] = str(get_default_agentic_os_root())
+            env["AGENTIC_OS_HOME"] = str(get_default_agentic_os_root())
         except Exception:
             # Best-effort: if root resolution fails, fall back to the prior
-            # behaviour (drop HERMES_HOME) rather than block the reroute.
-            env.pop("HERMES_HOME", None)
+            # behaviour (drop AGENTIC_OS_HOME) rather than block the reroute.
+            env.pop("AGENTIC_OS_HOME", None)
         # On Windows, os.execvpe() does not truly replace the process — it
         # spawns via CreateProcess then the parent exits.  Under Python 3.14+
         # this can crash with STATUS_ACCESS_VIOLATION (0xC0000005) when
@@ -12956,7 +12956,7 @@ _AGENT_SUBCOMMANDS = {
 
 
 def _is_tui_chat_launch(args) -> bool:
-    return bool(getattr(args, "tui", False) or os.environ.get("HERMES_TUI") == "1")
+    return bool(getattr(args, "tui", False) or os.environ.get("AGENTIC_OS_TUI") == "1")
 
 
 def _command_has_dedicated_mcp_startup(args) -> bool:
@@ -13452,7 +13452,7 @@ def main():
         help="Manage external secret sources (Bitwarden, 1Password)",
         description=(
             "Pull API keys from an external secret manager at process startup "
-            "instead of storing them in ~/.hermes/.env.  Supports Bitwarden "
+            "instead of storing them in ~/.agentic-os/.env.  Supports Bitwarden "
             "Secrets Manager and 1Password.  See: "
             "https://agentic-os.nousresearch.com/docs/user-guide/secrets/"
         ),
@@ -13679,7 +13679,7 @@ def main():
     # =========================================================================
     checkpoints_parser = subparsers.add_parser(
         "checkpoints",
-        help="Inspect / prune / clear ~/.hermes/checkpoints/",
+        help="Inspect / prune / clear ~/.agentic-os/checkpoints/",
         description="Manage the filesystem checkpoint store — the shadow git "
         "repo hermes uses to snapshot working directories before "
         "write_file/patch/terminal calls. Lets you see how much "

@@ -505,7 +505,7 @@ from agentic_os_constants import get_default_agentic_os_root, get_agentic_os_dir
 
 GATEWAY_SECRET_CAPTURE_UNSUPPORTED_MESSAGE = (
     "Secure secret entry is not supported over messaging. "
-    "Load this skill in the local CLI to be prompted, or add the key to ~/.hermes/.env manually."
+    "Load this skill in the local CLI to be prompted, or add the key to ~/.agentic-os/.env manually."
 )
 
 
@@ -968,8 +968,8 @@ _CACHE_DIR_IMPORT_DEFAULTS = {
     "SCREENSHOT_CACHE_DIR": SCREENSHOT_CACHE_DIR,
 }
 
-_HERMES_HOME = get_agentic_os_home()
-_HERMES_ROOT = get_default_agentic_os_root()
+_AGENTIC_OS_HOME = get_agentic_os_home()
+_AGENTIC_ROOT = get_default_agentic_os_root()
 MEDIA_DELIVERY_ALLOW_DIRS_ENV = "HERMES_MEDIA_ALLOW_DIRS"
 MEDIA_DELIVERY_TRUST_RECENT_ENV = "HERMES_MEDIA_TRUST_RECENT_FILES"
 MEDIA_DELIVERY_TRUST_RECENT_SECONDS_ENV = "HERMES_MEDIA_TRUST_RECENT_SECONDS"
@@ -986,18 +986,18 @@ MEDIA_DELIVERY_SAFE_ROOTS = (
     VIDEO_CACHE_DIR,
     DOCUMENT_CACHE_DIR,
     SCREENSHOT_CACHE_DIR,
-    _HERMES_HOME / "image_cache",
-    _HERMES_HOME / "audio_cache",
-    _HERMES_HOME / "video_cache",
-    _HERMES_HOME / "document_cache",
-    _HERMES_HOME / "browser_screenshots",
+    _AGENTIC_OS_HOME / "image_cache",
+    _AGENTIC_OS_HOME / "audio_cache",
+    _AGENTIC_OS_HOME / "video_cache",
+    _AGENTIC_OS_HOME / "document_cache",
+    _AGENTIC_OS_HOME / "browser_screenshots",
     # Canonical cache layout — listed alongside the legacy *_cache dirs so
     # generated artifacts deliver on installs that have both (#31733).
-    _HERMES_HOME / "cache" / "images",
-    _HERMES_HOME / "cache" / "audio",
-    _HERMES_HOME / "cache" / "videos",
-    _HERMES_HOME / "cache" / "documents",
-    _HERMES_HOME / "cache" / "screenshots",
+    _AGENTIC_OS_HOME / "cache" / "images",
+    _AGENTIC_OS_HOME / "cache" / "audio",
+    _AGENTIC_OS_HOME / "cache" / "videos",
+    _AGENTIC_OS_HOME / "cache" / "documents",
+    _AGENTIC_OS_HOME / "cache" / "screenshots",
 )
 
 # Default recency window for trusting freshly-produced files (seconds).
@@ -1060,16 +1060,16 @@ def _profile_cache_roots() -> List[Path]:
 
     Profile gateways write generated artifacts to
     ``<root>/profiles/<name>/cache/{images,audio,...}``. The static safe-roots
-    list only covers the *active* HERMES_HOME's cache, so a gateway running at
-    the root (e.g. ``HERMES_HOME=/opt/data``) while the model emits a
+    list only covers the *active* AGENTIC_OS_HOME's cache, so a gateway running at
+    the root (e.g. ``AGENTIC_OS_HOME=/opt/data``) while the model emits a
     profile-scoped path silently fails delivery. Enumerated dynamically at
     check time so profiles created after startup are covered, and so the
     resolved profile path is allowlisted *before* the ``/root`` system denylist
-    is consulted (which otherwise wins when HERMES_HOME is symlinked under a
+    is consulted (which otherwise wins when AGENTIC_OS_HOME is symlinked under a
     denied prefix and $HOME is not that prefix). See issue #31733.
     """
     roots: List[Path] = []
-    profiles_dir = _HERMES_ROOT / "profiles"
+    profiles_dir = _AGENTIC_ROOT / "profiles"
     try:
         profile_dirs = [p for p in profiles_dir.iterdir() if p.is_dir()]
     except OSError:
@@ -1086,7 +1086,7 @@ def _kanban_attachment_roots() -> List[Path]:
     if override:
         return [Path(override).expanduser()]
     home_override = os.environ.get("HERMES_KANBAN_HOME", "").strip()
-    root = Path(home_override).expanduser() if home_override else _HERMES_ROOT
+    root = Path(home_override).expanduser() if home_override else _AGENTIC_ROOT
     roots = [root / "kanban" / "attachments"]
     boards_root = root / "kanban" / "boards"
     try:
@@ -1164,12 +1164,12 @@ def _media_delivery_denied_paths() -> List[Path]:
     # validate_media_delivery_path, so generated media still delivers).
     #
     # These are the per-file credential / secret stores that live at the
-    # HERMES_HOME root. The set mirrors the canonical read guard in
+    # AGENTIC_OS_HOME root. The set mirrors the canonical read guard in
     # agent/file_safety.py (get_read_block_error / build_write_denied_*) so the
     # delivery (read/exfil) side can't trail the write side: a credential the
     # agent is forbidden to write or read must also never be auto-attached to a
     # chat reply. Enumerated explicitly per-file rather than denying the whole
-    # tree, so skills/, logs/, and ad-hoc agent-written files under ~/.hermes
+    # tree, so skills/, logs/, and ad-hoc agent-written files under ~/.agentic-os
     # stay deliverable (see #32090, #34425).
     _ROOT_CREDENTIAL_FILES = (
         ".env",
@@ -1203,7 +1203,7 @@ def _media_delivery_denied_paths() -> List[Path]:
         "pairing",
         "mcp-tokens",
     )
-    for hermes_root in (_HERMES_HOME, _HERMES_ROOT):
+    for hermes_root in (_AGENTIC_OS_HOME, _AGENTIC_ROOT):
         for rel in _ROOT_CREDENTIAL_FILES:
             denied.append(hermes_root / rel)
         for rel in _ROOT_CREDENTIAL_DIRS:
@@ -1220,7 +1220,7 @@ def _path_under_denied_prefix(resolved: Path) -> bool:
     on a root-run gateway ``$HOME=/root`` and the operator's own deliverables
     (``/root/work/proposal.docx``) live directly under it. The credential
     sub-directories inside home (``~/.ssh``, ``~/.aws``, ...) and Hermes
-    secrets (``~/.hermes/.env``, ``auth.json``) are *separate, more-specific*
+    secrets (``~/.agentic-os/.env``, ``auth.json``) are *separate, more-specific*
     denied paths, so they stay blocked regardless of this exception — it can
     only un-block a plain file sitting in the running user's home tree, never a
     credential location or another user's home.
@@ -1327,11 +1327,11 @@ def validate_media_delivery_path(path: str) -> Optional[str]:
 
     # Non-strict mode (default): accept anything not on the denylist.
     # The denylist still blocks /etc, /proc, ~/.ssh, ~/.aws, and the
-    # credential/secret stores under the Hermes root (~/.hermes/.env,
+    # credential/secret stores under the Hermes root (~/.agentic-os/.env,
     # auth.json, .anthropic_oauth.json, google_token.json, pairing/, ...) —
     # so the obvious prompt-injection / credential-exfil sites
     # (``MEDIA:/etc/passwd``, ``MEDIA:~/.ssh/id_rsa``,
-    # ``MEDIA:~/.hermes/google_token.json``) remain rejected.
+    # ``MEDIA:~/.agentic-os/google_token.json``) remain rejected.
     if not _media_delivery_strict_mode():
         if _path_under_denied_prefix(resolved):
             return None
@@ -5701,7 +5701,7 @@ class BasePlatformAdapter(ABC):
         resolves the matching profile from guild/chat/thread and stamps it on
         ``source.profile``. Downstream code (``_resolve_profile_home_for_source``
         in run.py) reads that field to enter ``_profile_runtime_scope`` for
-        per-profile HERMES_HOME isolation.
+        per-profile AGENTIC_OS_HOME isolation.
         """
         # Normalize empty topic to None
         if chat_topic is not None and not chat_topic.strip():

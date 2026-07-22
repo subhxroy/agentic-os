@@ -714,17 +714,17 @@ class GoogleChatAdapter(BasePlatformAdapter):
         # Inbound message count per (chat_id, thread_name). Drives the
         # DM main-flow vs side-thread heuristic in _build_message_event
         # and the outbound thread routing in _resolve_thread_id.
-        # Persisted to ${HERMES_HOME}/google_chat_thread_counts.json so
+        # Persisted to ${AGENTIC_OS_HOME}/google_chat_thread_counts.json so
         # active side-threads survive gateway restarts (the bug that
         # made the in-memory version of this heuristic flaky for
         # multi-restart sessions).
         try:
             from agentic_os_constants import get_agentic_os_home as _get_agentic_os_home
-            _hermes_home = _get_agentic_os_home()
+            _agentic_os_home = _get_agentic_os_home()
         except (ModuleNotFoundError, ImportError):
-            _hermes_home = _Path.home() / ".hermes"
+            _agentic_os_home = _Path.home() / ".hermes"
         self._thread_count_store = _ThreadCountStore(
-            _hermes_home / "google_chat_thread_counts.json"
+            _agentic_os_home / "google_chat_thread_counts.json"
         )
         # In-flight typing-card creates per chat_id. send_typing() reserves
         # an Event here BEFORE starting the API call so concurrent calls
@@ -916,7 +916,7 @@ class GoogleChatAdapter(BasePlatformAdapter):
     # ------------------------------------------------------------------
     def _bot_id_cache_path(self) -> _Path:
         """Location where the resolved bot user_id is cached across restarts."""
-        base = os.getenv("HERMES_HOME", str(_Path.home() / ".hermes"))
+        base = os.getenv("AGENTIC_OS_HOME", str(_Path.home() / ".hermes"))
         return _Path(base) / "google_chat_bot_id.json"
 
     def _load_cached_bot_id(self) -> Optional[str]:
@@ -1565,7 +1565,7 @@ class GoogleChatAdapter(BasePlatformAdapter):
             if text.startswith("/setup-files") and event.source is not None:
                 # The sender's email (user_id_alt) is the per-user OAuth
                 # key — the bot stores this user's token at
-                # ${HERMES_HOME}/google_chat_user_tokens/<sanitized>.json
+                # ${AGENTIC_OS_HOME}/google_chat_user_tokens/<sanitized>.json
                 # so when User B asks for a file later in B's DM, B's
                 # token gets used (not the first person who set up files).
                 sender_email = (
@@ -3426,7 +3426,7 @@ def interactive_setup() -> None:
     The setup wizard at ``agentic_os_cli/gateway.py`` calls this for plugin
     platforms instead of using the in-tree ``_PLATFORMS`` data block. The
     flow mirrors the in-tree built-ins: print the GCP setup instructions,
-    prompt for env vars, persist them to ``~/.hermes/.env`` so the next
+    prompt for env vars, persist them to ``~/.agentic-os/.env`` so the next
     gateway restart picks them up.
     """
     from agentic_os_cli.cli_output import (
@@ -3508,7 +3508,7 @@ def interactive_setup() -> None:
         save_env_value("GOOGLE_CHAT_HOME_CHANNEL", home.strip())
 
     print()
-    print_success("Google Chat configuration saved to ~/.hermes/.env")
+    print_success("Google Chat configuration saved to ~/.agentic-os/.env")
     print_info("Restart the gateway: hermes gateway restart")
 
 
@@ -3689,7 +3689,7 @@ def register(ctx) -> None:
         required_env=[
             "GOOGLE_CHAT_SERVICE_ACCOUNT_JSON",
         ],
-        install_hint="pip install 'hermes-agent[google_chat]'",
+        install_hint="pip install 'agentic-os[google_chat]'",
         setup_fn=interactive_setup,
         # Env-driven auto-configuration — the core env-populator hook calls
         # this during ``_apply_env_overrides`` and seeds

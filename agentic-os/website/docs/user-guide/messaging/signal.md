@@ -96,7 +96,7 @@ Select **Signal** from the platform menu. The wizard will:
 
 ### Manual Configuration
 
-Add to `~/.hermes/.env`:
+Add to `~/.agentic-os/.env`:
 
 ```bash
 # Required

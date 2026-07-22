@@ -135,8 +135,8 @@ The gateway reads configuration from multiple sources:
 
 | Source | What it provides |
 |--------|-----------------|
-| `~/.hermes/.env` | API keys, bot tokens, platform credentials |
-| `~/.hermes/config.yaml` | Model settings, tool configuration, display options |
+| `~/.agentic-os/.env` | API keys, bot tokens, platform credentials |
+| `~/.agentic-os/config.yaml` | Model settings, tool configuration, display options |
 | Environment variables | Override any of the above |
 
 Unlike the CLI (which uses `load_cli_config()` with hardcoded defaults), the gateway reads `config.yaml` directly via YAML loader. This means config keys that exist in the CLI's defaults dict but not in the user's config file may behave differently between CLI and gateway.
@@ -215,7 +215,7 @@ Gateway hooks are Python modules that respond to lifecycle events:
 | `agent:end` | Agent finishes and returns response |
 | `command:*` | Any slash command is executed |
 
-Hooks are discovered from `gateway/builtin_hooks/` (an extension point — currently empty in the shipped distribution; `_register_builtin_hooks()` is a no-op stub) and `~/.hermes/hooks/` (user-installed). Each hook is a directory with a `HOOK.yaml` manifest and `handler.py`.
+Hooks are discovered from `gateway/builtin_hooks/` (an extension point — currently empty in the shipped distribution; `_register_builtin_hooks()` is a no-op stub) and `~/.agentic-os/hooks/` (user-installed). Each hook is a directory with a `HOOK.yaml` manifest and `handler.py`.
 
 ## Memory Provider Integration
 
@@ -256,7 +256,7 @@ The gateway runs as a long-lived process, managed via:
 
 - `hermes gateway start` / `hermes gateway stop` — manual control
 - `systemctl` (Linux) or `launchctl` (macOS) — service management
-- PID file at `~/.hermes/gateway.pid` — profile-scoped process tracking
+- PID file at `~/.agentic-os/gateway.pid` — profile-scoped process tracking
 
 **Profile-scoped vs global**: `start_gateway()` uses profile-scoped PID files. `hermes gateway stop` stops only the current profile's gateway. `hermes gateway stop --all` uses global `ps aux` scanning to kill all gateway processes (used during updates).
 

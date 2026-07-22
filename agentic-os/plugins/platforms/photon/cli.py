@@ -164,7 +164,7 @@ def _cmd_setup(args: argparse.Namespace) -> int:
         print("could not resolve a Photon project id", file=sys.stderr)
         return 1
 
-    # 3. Rotate the project secret and persist creds (runtime -> ~/.hermes/.env,
+    # 3. Rotate the project secret and persist creds (runtime -> ~/.agentic-os/.env,
     #    ids -> auth.json). Spectrum is always enabled and provisioned at
     #    create-time, and the dashboard project id *is* the Spectrum project id
     #    (ids unified), so there's nothing to enable — the id we already have is
@@ -335,7 +335,7 @@ def _cmd_install_sidecar(_args: argparse.Namespace) -> int:
 
 
 def _telemetry_enabled() -> bool:
-    """Read PHOTON_TELEMETRY from the env / ~/.hermes/.env.
+    """Read PHOTON_TELEMETRY from the env / ~/.agentic-os/.env.
 
     Mirrors the sidecar's truthy set (index.mjs) so the state shown here
     always matches what the sidecar will actually do.
@@ -360,7 +360,7 @@ def _cmd_telemetry(args: argparse.Namespace) -> int:
     except Exception as e:
         print(f"could not save PHOTON_TELEMETRY: {e}", file=sys.stderr)
         return 1
-    print(f"✓ Spectrum telemetry turned {state} (PHOTON_TELEMETRY in ~/.hermes/.env)")
+    print(f"✓ Spectrum telemetry turned {state} (PHOTON_TELEMETRY in ~/.agentic-os/.env)")
     print("  Restart the gateway for the sidecar to pick it up:  hermes gateway restart")
     return 0
 

@@ -69,7 +69,7 @@ If your skill is specialized, community-contributed, or niche, it's better suite
 
 ## Memory Providers: Ship as a Standalone Plugin
 
-**We are no longer accepting new memory providers into this repo.** The set of built-in providers under `plugins/memory/` (honcho, mem0, supermemory, byterover, hindsight, holographic, openviking, retaindb) is closed. If you want to add a new memory backend, publish it as a **standalone plugin repo** that users install into `~/.hermes/plugins/` (or via a pip entry point).
+**We are no longer accepting new memory providers into this repo.** The set of built-in providers under `plugins/memory/` (honcho, mem0, supermemory, byterover, hindsight, holographic, openviking, retaindb) is closed. If you want to add a new memory backend, publish it as a **standalone plugin repo** that users install into `~/.agentic-os/plugins/` (or via a pip entry point).
 
 Standalone memory plugins:
 
@@ -93,7 +93,7 @@ The reason is maintenance load, not quality. Every external product absorbed int
 
 Publish these as a **standalone plugin repo** instead:
 
-- Implement the relevant ABC and use the existing plugin discovery path (`~/.hermes/plugins/`, project `.hermes/plugins/`, or a pip entry point) — see [Build a Hermes Plugin](https://agentic-os.nousresearch.com/docs/guides/build-a-hermes-plugin)
+- Implement the relevant ABC and use the existing plugin discovery path (`~/.agentic-os/plugins/`, project `.hermes/plugins/`, or a pip entry point) — see [Build a Hermes Plugin](https://agentic-os.nousresearch.com/docs/guides/build-a-hermes-plugin)
 - Register lifecycle hooks (`pre_tool_call`, `post_tool_call`, `pre_llm_call`, `post_llm_call`, `on_session_start`, `on_session_end`), tools (`ctx.register_tool`), and CLI subcommands (`ctx.register_cli_command`) through the surface we already expose — no core changes needed
 - If your plugin needs a capability the framework doesn't expose, that's a feature request to **widen the generic plugin surface** (a new hook or `ctx` method) — never special-case your plugin in core
 - Promote it in the [Nous Research Discord](https://discord.gg/NousResearch) `#plugins-skills-and-skins` channel so users can find and install it
@@ -119,13 +119,13 @@ For most contributors, the best development bootstrap is the same path users
 take: run the standard installer, then work inside the repository it cloned.
 The installer creates the Hermes venv, wires the `hermes` command, stamps the
 install method for `hermes update`, and clones the full git project into
-`$HERMES_HOME/hermes-agent` (usually `~/.hermes/hermes-agent`). That keeps your
+`$AGENTIC_OS_HOME/agentic-os` (usually `~/.agentic-os/agentic-os`). That keeps your
 development environment on the same layout the CLI, updater, lazy dependency
 installer, gateway, and docs assume.
 
 ```bash
 curl -fsSL https://agentic-os.nousresearch.com/install.sh | bash
-cd "${HERMES_HOME:-$HOME/.hermes}/hermes-agent"
+cd "${AGENTIC_OS_HOME:-$HOME/.hermes}/agentic-os"
 
 # Add dev/test extras on top of the standard install.
 uv pip install -e ".[all,dev]"
@@ -146,7 +146,7 @@ scripts/run_tests.sh
 Use this only if you intentionally do not want Hermes' managed install layout
 (for example, a throwaway clone inside a container or CI job). If you install
 this way, make sure you run the `hermes` entrypoint from this venv; running the
-system `python3 -m hermes_cli.main` can pick up unrelated system Python
+system `python3 -m agentic_os_cli.main` can pick up unrelated system Python
 packages.
 
 Create the venv **outside** the cloned source tree. A venv that lives inside
@@ -157,10 +157,10 @@ tree means no relative path from the workspace resolves to it.
 
 ```bash
 git clone https://github.com/subhxroy/agentic-os.git
-cd hermes-agent
+cd agentic-os
 
 # Create venv with Python 3.11, OUTSIDE the source tree
-uv venv ~/.hermes/venvs/hermes-dev --python 3.11
+uv venv ~/.agentic-os/venvs/hermes-dev --python 3.11
 export VIRTUAL_ENV="$HOME/.hermes/venvs/hermes-dev"
 export PATH="$VIRTUAL_ENV/bin:$PATH"
 
@@ -174,12 +174,12 @@ npm install
 ### Configure for development
 
 ```bash
-mkdir -p ~/.hermes/{cron,sessions,logs,memories,skills}
-cp cli-config.yaml.example ~/.hermes/config.yaml
-touch ~/.hermes/.env
+mkdir -p ~/.agentic-os/{cron,sessions,logs,memories,skills}
+cp cli-config.yaml.example ~/.agentic-os/config.yaml
+touch ~/.agentic-os/.env
 
 # Add at minimum an LLM provider key:
-echo "OPENROUTER_API_KEY=***" >> ~/.hermes/.env
+echo "OPENROUTER_API_KEY=***" >> ~/.agentic-os/.env
 ```
 
 ### Run
@@ -214,12 +214,12 @@ pytest tests/ -v
 ## Project Structure
 
 ```
-hermes-agent/
+agentic-os/
 ├── run_agent.py              # AIAgent class — core conversation loop, tool dispatch, session persistence
 ├── cli.py                    # HermesCLI class — interactive TUI, prompt_toolkit integration
 ├── model_tools.py            # Tool orchestration (thin layer over tools/registry.py)
 ├── toolsets.py               # Tool groupings and presets (hermes-cli, hermes-telegram, etc.)
-├── hermes_state.py           # SQLite session database with FTS5 full-text search, session titles
+├── agentic_os_state.py           # SQLite session database with FTS5 full-text search, session titles
 ├── batch_runner.py           # Parallel batch processing for trajectory generation
 │
 ├── agent/                    # Agent internals (extracted modules)
@@ -271,28 +271,28 @@ hermes-agent/
 │   ├── install.ps1               # Windows PowerShell installer
 │   └── whatsapp-bridge/          # Node.js WhatsApp bridge (Baileys)
 │
-├── skills/                   # Bundled skills (copied to ~/.hermes/skills/ on install)
+├── skills/                   # Bundled skills (copied to ~/.agentic-os/skills/ on install)
 ├── optional-skills/          # Official optional skills (discoverable via hub, not activated by default)
 ├── tests/                    # Test suite
 ├── website/                  # Documentation site (agentic-os.nousresearch.com)
 │
-├── cli-config.yaml.example   # Example configuration (copied to ~/.hermes/config.yaml)
+├── cli-config.yaml.example   # Example configuration (copied to ~/.agentic-os/config.yaml)
 └── AGENTS.md                 # Development guide for AI coding assistants
 ```
 
-### User configuration (stored in `~/.hermes/`)
+### User configuration (stored in `~/.agentic-os/`)
 
 | Path | Purpose |
 |------|---------|
-| `~/.hermes/config.yaml` | Settings (model, terminal, toolsets, compression, etc.) |
-| `~/.hermes/.env` | API keys and secrets |
-| `~/.hermes/auth.json` | OAuth credentials (Nous Portal) |
-| `~/.hermes/skills/` | All active skills (bundled + hub-installed + agent-created) |
-| `~/.hermes/memories/` | Persistent memory (MEMORY.md, USER.md) |
-| `~/.hermes/state.db` | SQLite session database |
-| `~/.hermes/sessions/` | Gateway routing index (`sessions.json`), request-dump breadcrumbs, gateway `*.jsonl` transcripts, and (optionally) per-session JSON snapshots when `sessions.write_json_snapshots: true` is set. The per-session snapshots are off by default; state.db is canonical. |
-| `~/.hermes/cron/` | Scheduled job data |
-| `~/.hermes/whatsapp/session/` | WhatsApp bridge credentials |
+| `~/.agentic-os/config.yaml` | Settings (model, terminal, toolsets, compression, etc.) |
+| `~/.agentic-os/.env` | API keys and secrets |
+| `~/.agentic-os/auth.json` | OAuth credentials (Nous Portal) |
+| `~/.agentic-os/skills/` | All active skills (bundled + hub-installed + agent-created) |
+| `~/.agentic-os/memories/` | Persistent memory (MEMORY.md, USER.md) |
+| `~/.agentic-os/state.db` | SQLite session database |
+| `~/.agentic-os/sessions/` | Gateway routing index (`sessions.json`), request-dump breadcrumbs, gateway `*.jsonl` transcripts, and (optionally) per-session JSON snapshots when `sessions.write_json_snapshots: true` is set. The per-session snapshots are off by default; state.db is canonical. |
+| `~/.agentic-os/cron/` | Scheduled job data |
+| `~/.agentic-os/whatsapp/session/` | WhatsApp bridge credentials |
 
 ---
 
@@ -319,7 +319,7 @@ User message → AIAgent._run_agent_loop()
 
 - **Self-registering tools**: Each tool file calls `registry.register()` at import time. `model_tools.py` triggers discovery by importing all tool modules.
 - **Toolset grouping**: Tools are grouped into toolsets (`web`, `terminal`, `file`, `browser`, etc.) that can be enabled/disabled per platform.
-- **Session persistence**: All conversations are stored in SQLite (`hermes_state.py`) with full-text search and unique session titles. Per-session JSON snapshots in `~/.hermes/sessions/` were superseded by the SQLite store and are off by default; opt back in with `sessions.write_json_snapshots: true` if you have external tooling that consumes the JSON files directly.
+- **Session persistence**: All conversations are stored in SQLite (`agentic_os_state.py`) with full-text search and unique session titles. Per-session JSON snapshots in `~/.agentic-os/sessions/` were superseded by the SQLite store and are off by default; opt back in with `sessions.write_json_snapshots: true` if you have external tooling that consumes the JSON files directly.
 - **Ephemeral injection**: System prompts and prefill messages are injected at API call time, never persisted to the database or logs.
 - **Provider abstraction**: The agent works with any OpenAI-compatible API. Provider resolution happens at init time (Nous Portal OAuth, OpenRouter API key, or custom endpoint).
 - **Provider routing**: When using OpenRouter, `provider_routing` in config.yaml controls provider selection (sort by throughput/latency/price, allow/ignore specific providers, data retention policies). These are injected as `extra_body.provider` in API requests.
@@ -549,7 +549,7 @@ prerequisites:
   commands: [curl, jq]            # Advisory CLI checks
 ```
 
-Gateway and messaging sessions never collect secrets in-band; they instruct the user to run `hermes setup` or update `~/.hermes/.env` locally.
+Gateway and messaging sessions never collect secrets in-band; they instruct the user to run `hermes setup` or update `~/.agentic-os/.env` locally.
 
 **When to declare required environment variables:**
 - The skill uses an API key or token that should be collected securely at load time
@@ -628,7 +628,7 @@ Hermes uses a data-driven skin system — no code changes needed to add a new sk
 
 **Option A: User skin (YAML file)**
 
-Create `~/.hermes/skins/<name>.yaml`:
+Create `~/.agentic-os/skins/<name>.yaml`:
 
 ```yaml
 name: mytheme

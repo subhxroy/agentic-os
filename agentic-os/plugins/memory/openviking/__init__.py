@@ -1151,7 +1151,7 @@ def _openviking_server_log_path() -> Path:
         from agentic_os_constants import get_agentic_os_home
         home = get_agentic_os_home()
     except Exception:
-        home = Path(os.environ.get("HERMES_HOME", "")).expanduser() if os.environ.get("HERMES_HOME") else Path.home() / ".hermes"
+        home = Path(os.environ.get("AGENTIC_OS_HOME", "")).expanduser() if os.environ.get("AGENTIC_OS_HOME") else Path.home() / ".hermes"
     return home / _OPENVIKING_SERVER_LOG_RELATIVE_PATH
 
 
@@ -1804,7 +1804,7 @@ class OpenVikingMemoryProvider(MemoryProvider):
         # MemoryManager's background sync executor while on_session_end /
         # on_session_switch run on the caller's thread, so the snapshot+reset
         # of the turn counter and the session-id rotation must be atomic
-        # against a concurrent increment. See hermes-agent#28296 review.
+        # against a concurrent increment. See agentic-os#28296 review.
         self._session_state_lock = threading.Lock()
         # Commit only after session writes drain. The set is keyed by the sid
         # the writer is POSTing under (snapshotted at spawn), so on_session_end
@@ -3193,7 +3193,7 @@ class OpenVikingMemoryProvider(MemoryProvider):
         ``initialize()`` cached, so subsequent ``sync_turn()`` writes land in
         the already-closed old session and ``on_session_end()`` tries to
         commit it a second time. The new session never accumulates messages,
-        and memory extraction never fires for it. See hermes-agent#28296.
+        and memory extraction never fires for it. See agentic-os#28296.
 
         Flushes any in-flight sync under the old session_id, commits the old
         session if it has pending turns (same extraction semantics as

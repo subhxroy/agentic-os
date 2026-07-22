@@ -33,7 +33,7 @@ def test_secondary_profile_pairing_stores_created(tmp_path, monkeypatch):
     Pre-fix this silently did nothing: the ``PairingStore(profile=name)``
     reference raised NameError inside the swallowed try/except.
     """
-    monkeypatch.setenv("HERMES_HOME", str(tmp_path / ".hermes"))
+    monkeypatch.setenv("AGENTIC_OS_HOME", str(tmp_path / ".hermes"))
     (tmp_path / ".hermes").mkdir()
 
     runner = _bare_runner()
@@ -61,7 +61,7 @@ def test_secondary_profile_pairing_stores_created(tmp_path, monkeypatch):
 
 def test_pairing_store_scoped_to_profile_dir(tmp_path, monkeypatch):
     """The created store must live under the profile's pairing directory."""
-    monkeypatch.setenv("HERMES_HOME", str(tmp_path / ".hermes"))
+    monkeypatch.setenv("AGENTIC_OS_HOME", str(tmp_path / ".hermes"))
     (tmp_path / ".hermes").mkdir()
 
     runner = _bare_runner()

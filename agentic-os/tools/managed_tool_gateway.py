@@ -28,7 +28,7 @@ class ManagedToolGatewayConfig:
 
 
 def auth_json_path():
-    """Return the Hermes auth store path, respecting HERMES_HOME overrides."""
+    """Return the Hermes auth store path, respecting AGENTIC_OS_HOME overrides."""
     return get_agentic_os_home() / "auth.json"
 
 

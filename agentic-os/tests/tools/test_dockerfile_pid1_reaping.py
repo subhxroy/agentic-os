@@ -142,7 +142,7 @@ def test_dockerfile_entrypoint_routes_through_the_init(dockerfile_text):
 
 def test_dockerfile_installs_tui_dependencies(dockerfile_text):
     # The TUI workspace manifests must be present so ``npm install`` can
-    # resolve dependencies. The bundled ``hermes-ink`` workspace package is
+    # resolve dependencies. The bundled ``agentic-os-ink`` workspace package is
     # now COPIED into the image as a whole tree (not just its lockfile)
     # because it's referenced as a ``file:`` workspace dependency from
     # ``ui-tui/package.json`` — copying the tree avoids npm stopping at a
@@ -150,7 +150,7 @@ def test_dockerfile_installs_tui_dependencies(dockerfile_text):
     # With a single workspace root lockfile, only the root package-lock.json
     # is copied; per-workspace lockfiles no longer exist.
     assert "ui-tui/package.json" in dockerfile_text
-    assert "ui-tui/packages/hermes-ink/" in dockerfile_text
+    assert "ui-tui/packages/agentic-os-ink/" in dockerfile_text
     assert "package-lock.json" in dockerfile_text
     assert any(
         "npm" in step and (" install" in step or " ci" in step)
@@ -222,7 +222,7 @@ def test_dockerfile_builds_tui_assets(dockerfile_text):
 
 
 def test_dockerfile_materializes_local_tui_ink_package(dockerfile_text):
-    # ``hermes-ink`` is a bundled workspace package referenced from
+    # ``agentic-os-ink`` is a bundled workspace package referenced from
     # ``ui-tui/package.json`` via ``file:`` — not pulled from the npm
     # registry. The contract this test pins is just that the image
     # actually carries the package source so ``await import('@hermes/ink')``
@@ -230,8 +230,8 @@ def test_dockerfile_materializes_local_tui_ink_package(dockerfile_text):
     # ``rm -rf`` + ``npm install --omit=dev --prefix node_modules/@hermes/ink``)
     # baked in implementation details of an older materialisation flow that
     # was simplified once npm workspaces handled the resolution natively.
-    assert "ui-tui/packages/hermes-ink/" in dockerfile_text, (
-        "Dockerfile must COPY the bundled hermes-ink workspace package "
+    assert "ui-tui/packages/agentic-os-ink/" in dockerfile_text, (
+        "Dockerfile must COPY the bundled agentic-os-ink workspace package "
         "so ``await import('@hermes/ink')`` resolves at runtime."
     )
 

@@ -1,13 +1,13 @@
-"""Tests for HERMES_HOME credential-file read blocking in file_safety.
+"""Tests for AGENTIC_OS_HOME credential-file read blocking in file_safety.
 
 Regression for https://github.com/subhxroy/agentic-os/issues/17656 —
-``read_file`` was previously only sandboxed against ``HERMES_HOME`` itself,
+``read_file`` was previously only sandboxed against ``AGENTIC_OS_HOME`` itself,
 which left ``auth.json`` and ``.anthropic_oauth.json`` (plaintext provider
 keys + OAuth tokens) readable by the agent. A prompt-injection reaching
 ``read_file`` could exfiltrate active credentials.
 
 These tests verify that ``get_read_block_error`` returns a denial message
-for the credential stores while leaving arbitrary ``HERMES_HOME`` files
+for the credential stores while leaving arbitrary ``AGENTIC_OS_HOME`` files
 readable, and that the existing ``skills/.hub`` deny still applies.
 """
 
@@ -21,12 +21,12 @@ import pytest
 
 @pytest.fixture()
 def fake_home(tmp_path, monkeypatch):
-    """Point ``_hermes_home_path()`` at a tmp dir for isolated checks."""
+    """Point ``_agentic_os_home_path()`` at a tmp dir for isolated checks."""
     import agent.file_safety as fs
 
     home = tmp_path / "hermes_home"
     home.mkdir()
-    monkeypatch.setattr(fs, "_hermes_home_path", lambda: home)
+    monkeypatch.setattr(fs, "_agentic_os_home_path", lambda: home)
     return home
 
 
@@ -76,8 +76,8 @@ def test_google_oauth_json_blocked(fake_home):
     assert "credential store" in err
 
 
-def test_arbitrary_hermes_home_file_not_blocked(fake_home):
-    """Non-credential files inside HERMES_HOME stay readable."""
+def test_arbitrary_agentic_os_home_file_not_blocked(fake_home):
+    """Non-credential files inside AGENTIC_OS_HOME stay readable."""
     from agent.file_safety import get_read_block_error
 
     safe = _create(fake_home, "session_log.txt")
@@ -104,7 +104,7 @@ def test_skills_hub_block_still_applies(fake_home):
 
 
 def test_path_traversal_resolves_to_blocked(fake_home, tmp_path):
-    """A path that traverses through a sibling dir back into HERMES_HOME's
+    """A path that traverses through a sibling dir back into AGENTIC_OS_HOME's
     auth.json must still be caught — the check resolves through realpath."""
     from agent.file_safety import get_read_block_error
 
@@ -118,7 +118,7 @@ def test_path_traversal_resolves_to_blocked(fake_home, tmp_path):
 
 
 def test_symlink_to_auth_json_blocked(fake_home, tmp_path):
-    """A symlink pointing at HERMES_HOME/auth.json from outside the home
+    """A symlink pointing at AGENTIC_OS_HOME/auth.json from outside the home
     must be blocked — readlink-resolution catches the indirection."""
     from agent.file_safety import get_read_block_error
 
@@ -137,7 +137,7 @@ def test_read_file_tool_blocks_relative_path_under_terminal_cwd(
     fake_home, tmp_path, monkeypatch
 ):
     """Bypass guard: a relative path like ``"auth.json"`` resolved by
-    ``read_file_tool`` against ``TERMINAL_CWD == HERMES_HOME`` must still
+    ``read_file_tool`` against ``TERMINAL_CWD == AGENTIC_OS_HOME`` must still
     be blocked, even though ``get_read_block_error``'s own ``resolve()``
     is anchored at the (different) Python process cwd.
     """
@@ -147,7 +147,7 @@ def test_read_file_tool_blocks_relative_path_under_terminal_cwd(
     import tools.terminal_tool as terminal_tool
 
     _create(fake_home, "auth.json")
-    # Force the file_tools resolver to anchor relative paths at HERMES_HOME
+    # Force the file_tools resolver to anchor relative paths at AGENTIC_OS_HOME
     # while the Python process cwd remains tmp_path (a different directory).
     monkeypatch.setenv("TERMINAL_CWD", str(fake_home))
     monkeypatch.chdir(tmp_path)
@@ -292,7 +292,7 @@ def test_search_tool_filters_credential_results(fake_home, tmp_path, monkeypatch
 
 
 def test_dotenv_blocked(fake_home):
-    """.env in HERMES_HOME holds API keys — blocked."""
+    """.env in AGENTIC_OS_HOME holds API keys — blocked."""
     from agent.file_safety import get_read_block_error
 
     env = _create(fake_home, ".env")
@@ -346,7 +346,7 @@ def test_identically_named_hermes_files_outside_home_not_blocked(
     fake_home, tmp_path
 ):
     """Hermes-specific filenames (``auth.json``, ``mcp-tokens/``, ``google_oauth.json``)
-    outside HERMES_HOME must remain readable — the gate is per-location for
+    outside AGENTIC_OS_HOME must remain readable — the gate is per-location for
     those, not per-filename. ``.env`` is the exception: it's blocked anywhere
     on disk (see test_project_local_env_blocked) because the basename always
     means \"secret-bearing environment file\" regardless of directory."""
@@ -354,11 +354,11 @@ def test_identically_named_hermes_files_outside_home_not_blocked(
 
     project = tmp_path / "myproject"
     project.mkdir()
-    # auth.json outside HERMES_HOME — readable (per-location gate).
+    # auth.json outside AGENTIC_OS_HOME — readable (per-location gate).
     p = project / "auth.json"
     p.write_text("not secret here", encoding="utf-8")
     assert get_read_block_error(str(p)) is None, (
-        "auth.json outside HERMES_HOME should NOT be blocked"
+        "auth.json outside AGENTIC_OS_HOME should NOT be blocked"
     )
 
     google_oauth = project / "auth" / "google_oauth.json"
@@ -392,7 +392,7 @@ def test_config_yaml_not_blocked(fake_home):
 
 
 def test_profile_mode_blocks_root_credentials(tmp_path, monkeypatch):
-    """Under a profile, HERMES_HOME = <root>/profiles/<name>, but
+    """Under a profile, AGENTIC_OS_HOME = <root>/profiles/<name>, but
     <root>/auth.json must ALSO be blocked — credentials at root are
     inherited by every profile."""
     import agent.file_safety as fs
@@ -400,7 +400,7 @@ def test_profile_mode_blocks_root_credentials(tmp_path, monkeypatch):
     root = tmp_path / "hermes"
     profile = root / "profiles" / "coder"
     profile.mkdir(parents=True)
-    monkeypatch.setattr(fs, "_hermes_home_path", lambda: profile)
+    monkeypatch.setattr(fs, "_agentic_os_home_path", lambda: profile)
     monkeypatch.setattr(fs, "_hermes_root_path", lambda: root)
 
     from agent.file_safety import get_read_block_error

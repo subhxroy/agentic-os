@@ -77,7 +77,7 @@ _SESSION_CHAT_NAME: ContextVar = ContextVar("HERMES_SESSION_CHAT_NAME", default=
 _SESSION_THREAD_ID: ContextVar = ContextVar("HERMES_SESSION_THREAD_ID", default=_UNSET)
 _SESSION_USER_ID: ContextVar = ContextVar("HERMES_SESSION_USER_ID", default=_UNSET)
 _SESSION_USER_NAME: ContextVar = ContextVar("HERMES_SESSION_USER_NAME", default=_UNSET)
-_SESSION_KEY: ContextVar = ContextVar("HERMES_SESSION_KEY", default=_UNSET)
+_SESSION_KEY: ContextVar = ContextVar("AGENTIC_OS_SESSION_KEY", default=_UNSET)
 _SESSION_ID: ContextVar = ContextVar("HERMES_SESSION_ID", default=_UNSET)
 # In-process UI session/window id for multi-session desktop/TUI hosts. This is
 # intentionally separate from HERMES_SESSION_ID: the latter is the durable
@@ -128,7 +128,7 @@ _VAR_MAP = {
     "HERMES_SESSION_THREAD_ID": _SESSION_THREAD_ID,
     "HERMES_SESSION_USER_ID": _SESSION_USER_ID,
     "HERMES_SESSION_USER_NAME": _SESSION_USER_NAME,
-    "HERMES_SESSION_KEY": _SESSION_KEY,
+    "AGENTIC_OS_SESSION_KEY": _SESSION_KEY,
     "HERMES_SESSION_ID": _SESSION_ID,
     "HERMES_UI_SESSION_ID": _SESSION_UI_SESSION_ID,
     "HERMES_SESSION_MESSAGE_ID": _SESSION_MESSAGE_ID,

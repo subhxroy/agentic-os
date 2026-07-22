@@ -60,7 +60,7 @@ profile_routes:
 |---|---|---|
 | `name` | yes | Human-readable route identifier (used in logs). |
 | `platform` | yes | Adapter platform: `discord`, `telegram`, `feishu`, `slack`, … |
-| `profile` | yes | Target profile name (must exist under `~/.hermes/profiles/<name>`). |
+| `profile` | yes | Target profile name (must exist under `~/.agentic-os/profiles/<name>`). |
 | `guild_id` | no | Server/guild (Discord). |
 | `chat_id` | no | Channel/group/DM id. |
 | `thread_id` | no | Thread id within a channel. |
@@ -111,7 +111,7 @@ every platform goes through this path — not just Discord.
 ## Relationship to multiplexing
 
 `profile_routes` requires `gateway.multiplex_profiles: true`. Multiplexing is what
-activates the per-profile runtime scope (per-profile `HERMES_HOME`, secret scope, and
+activates the per-profile runtime scope (per-profile `AGENTIC_OS_HOME`, secret scope, and
 profile-namespaced session keys); routing is the decision layer that picks *which*
 profile a given guild/channel/thread lands in. With multiplexing off, `profile_routes`
 is ignored entirely — behavior is byte-identical to a single-profile gateway.

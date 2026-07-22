@@ -425,7 +425,7 @@ def _run_agent(
             #                so the agent continues instead of stalling on
             #                the tool's built-in "not available" error
             #   - sudo password prompt → terminal_tool gates on
-            #                HERMES_INTERACTIVE which we never set
+            #                AGENTIC_OS_INTERACTIVE which we never set
             #   - shell-hook approval → auto-approved via HERMES_ACCEPT_HOOKS=1
             #                (set above); also falls back to deny on non-tty
             #   - dangerous-command approval → bypassed via HERMES_YOLO_MODE=1

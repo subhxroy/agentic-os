@@ -162,7 +162,7 @@ _SECRET_SUBSTRINGS = ("KEY", "TOKEN", "SECRET", "PASSWORD", "CREDENTIAL",
 # runtime location) that repo-root modules a sandbox script imports may read at
 # import time.  None match _SECRET_SUBSTRINGS.
 _HERMES_CHILD_ALLOWED = frozenset({
-    "HERMES_HOME",
+    "AGENTIC_OS_HOME",
     "HERMES_PROFILE",
     "HERMES_CONFIG",
     "HERMES_ENV",
@@ -1363,7 +1363,7 @@ def execute_code(
         # with a C/POSIX locale (containers, minimal base images).
         child_env["PYTHONIOENCODING"] = "utf-8"
         child_env["PYTHONUTF8"] = "1"
-        # Ensure the hermes-agent root is importable in the sandbox so
+        # Ensure the agentic-os root is importable in the sandbox so
         # repo-root modules are available to child scripts.  We also prepend
         # the staging tmpdir so ``from hermes_tools import ...`` resolves even
         # when the subprocess CWD is not tmpdir (project mode).
@@ -1543,7 +1543,7 @@ def execute_code(
 
         # Redact secrets (API keys, tokens, etc.) from sandbox output.
         # The sandbox env-var filter (lines 434-454) blocks os.environ access,
-        # but scripts can still read secrets from disk (e.g. open('~/.hermes/.env')).
+        # but scripts can still read secrets from disk (e.g. open('~/.agentic-os/.env')).
         # This ensures leaked secrets never enter the model context.
         # code_file=True: this is code-execution output — skip false-positive
         # ENV/JSON/f-string-template redaction; real credentials still masked.
@@ -1712,7 +1712,7 @@ def _get_execution_mode() -> str:
         with the active virtual environment's python, so project dependencies
         (pandas, torch, project packages) and files resolve naturally.
       - ``strict``: scripts run in an isolated temp directory with
-        ``sys.executable`` (hermes-agent's python). Reproducible and the
+        ``sys.executable`` (agentic-os's python). Reproducible and the
         interpreter is guaranteed to work, but project deps and relative paths
         won't resolve.
 
@@ -1907,11 +1907,11 @@ def build_execute_code_schema(enabled_sandbox_tools: set = None,
 
     # Mode-specific CWD guidance. Project mode is the default and matches
     # terminal()'s filesystem/interpreter; strict mode retains the isolated
-    # temp-dir staging and hermes-agent's own python.
+    # temp-dir staging and agentic-os's own python.
     if mode == "strict":
         cwd_note = (
             "Scripts run in their own temp dir, not the session's CWD — use absolute paths "
-            "(os.path.expanduser('~/.hermes/.env')) or terminal()/read_file() for user files."
+            "(os.path.expanduser('~/.agentic-os/.env')) or terminal()/read_file() for user files."
         )
     else:
         cwd_note = (

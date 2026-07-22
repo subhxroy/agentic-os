@@ -171,7 +171,7 @@ class TestSSHBulkUpload:
         assert "-" in tar_cmd  # stdout
         assert "-C" in tar_cmd
 
-        # ssh: extract from stdin at ~/.hermes, preserving existing dir modes (#17767)
+        # ssh: extract from stdin at ~/.agentic-os, preserving existing dir modes (#17767)
         ssh_str = " ".join(ssh_cmd)
         assert "ssh" in ssh_str
         assert "tar xf -" in ssh_str

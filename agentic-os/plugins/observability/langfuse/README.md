@@ -18,7 +18,7 @@ hermes plugins enable observability/langfuse
 
 ## Required credentials
 
-Set these in `~/.hermes/.env` (or via `hermes tools`):
+Set these in `~/.agentic-os/.env` (or via `hermes tools`):
 
 ```bash
 HERMES_LANGFUSE_PUBLIC_KEY=pk-lf-...

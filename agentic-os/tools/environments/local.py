@@ -54,9 +54,9 @@ def _resolve_local_initial_cwd(cwd: str) -> str:
 
     ``TERMINAL_CWD`` can be populated from config.yaml before the terminal
     backend is created.  If that value is relative and happens to match the
-    directory Hermes was already launched from (for example ``hermes-agent``
-    while the process cwd is ``~/.hermes/hermes-agent``), passing it through
-    unchanged makes the wrapper run ``cd hermes-agent`` *inside* the project
+    directory Hermes was already launched from (for example ``agentic-os``
+    while the process cwd is ``~/.agentic-os/agentic-os``), passing it through
+    unchanged makes the wrapper run ``cd agentic-os`` *inside* the project
     and fail with a confusing nested-path error.  Anchor relative local cwd
     values once, up front, so both ``subprocess.Popen(cwd=...)`` and the
     in-shell ``cd`` use the same absolute directory.
@@ -76,9 +76,9 @@ def _resolve_local_initial_cwd(cwd: str) -> str:
     candidate = os.path.abspath(expanded)
     current = os.getcwd()
 
-    # Common recovery for config values like ``hermes-agent`` when Hermes was
+    # Common recovery for config values like ``agentic-os`` when Hermes was
     # launched from that directory already.  ``os.path.abspath`` would point at
-    # a nonexistent nested ``./hermes-agent``; use the current directory instead.
+    # a nonexistent nested ``./agentic-os``; use the current directory instead.
     if not os.path.isdir(candidate):
         wanted_parts = Path(expanded).parts
         current_parts = Path(current).parts
@@ -372,7 +372,7 @@ def _is_hermes_internal_secret(key: str) -> bool:
     This is the single source of truth for "Hermes-internal dynamic secret"
     across every spawn path — the terminal ``_make_run_env`` /
     ``_sanitize_subprocess_env`` filters, the Docker passthrough filter, and the
-    non-terminal :func:`hermes_subprocess_env` helper all call it, so the
+    non-terminal :func:`agentic_os_subprocess_env` helper all call it, so the
     dynamic patterns are stripped **unconditionally** regardless of
     ``env_passthrough`` skill registration or ``inherit_credentials``. Nothing
     a model-driving CLI legitimately needs matches these patterns.
@@ -389,14 +389,14 @@ def _is_hermes_internal_secret(key: str) -> bool:
     return False
 
 
-def _inject_context_hermes_home(env: dict) -> None:
+def _inject_context_agentic_os_home(env: dict) -> None:
     """Bridge the context-local Hermes home override into subprocess env."""
     try:
         from agentic_os_constants import get_agentic_os_home_override
 
         value = get_agentic_os_home_override()
         if value:
-            env["HERMES_HOME"] = value
+            env["AGENTIC_OS_HOME"] = value
     except Exception:
         pass
 
@@ -476,7 +476,7 @@ def _sanitize_subprocess_env(base_env: dict | None, extra_env: dict | None = Non
         elif key not in _HERMES_PROVIDER_ENV_BLOCKLIST or _is_passthrough(key):
             sanitized[key] = value
 
-    _inject_context_hermes_home(sanitized)
+    _inject_context_agentic_os_home(sanitized)
 
     from agentic_os_constants import apply_subprocess_home_env
     apply_subprocess_home_env(sanitized)
@@ -500,7 +500,7 @@ def _sanitize_subprocess_env(base_env: dict | None, extra_env: dict | None = Non
 # secrets to keep out of a compromised dependency's reach (gateway bot tokens,
 # GitHub auth, remote-compute tokens, dashboard session secret).  The set is a
 # narrow subset of _HERMES_PROVIDER_ENV_BLOCKLIST; provider keys are handled by
-# the conditional Tier-2 strip in hermes_subprocess_env().
+# the conditional Tier-2 strip in agentic_os_subprocess_env().
 _ALWAYS_STRIP_KEYS: frozenset[str] = frozenset({
     # GitHub auth
     "GH_TOKEN",
@@ -536,7 +536,7 @@ _ALWAYS_STRIP_KEYS: frozenset[str] = frozenset({
 })
 
 
-def hermes_subprocess_env(*, inherit_credentials: bool = False) -> dict[str, str]:
+def agentic_os_subprocess_env(*, inherit_credentials: bool = False) -> dict[str, str]:
     """Build a sanitized environment dict for a spawned subprocess.
 
     Centralized helper for the **non-terminal** spawn surface (browser,
@@ -592,7 +592,7 @@ def hermes_subprocess_env(*, inherit_credentials: bool = False) -> dict[str, str
     # Windows UTF-8 safety for spawned processes (#31420).
     env.setdefault("PYTHONUTF8", "1")
 
-    _inject_context_hermes_home(env)
+    _inject_context_agentic_os_home(env)
     from agentic_os_constants import apply_subprocess_home_env
     apply_subprocess_home_env(env)
 
@@ -638,8 +638,8 @@ def _find_bash() -> str:
     #
     # Layouts (both checked so upgrades between MinGit and PortableGit
     # installs work transparently):
-    #   PortableGit: %LOCALAPPDATA%\hermes\git\bin\bash.exe   (primary)
-    #   MinGit:      %LOCALAPPDATA%\hermes\git\usr\bin\bash.exe (legacy/32-bit fallback)
+    #   PortableGit: %LOCALAPPDATA%\agentic-os\git\bin\bash.exe   (primary)
+    #   MinGit:      %LOCALAPPDATA%\agentic-os\git\usr\bin\bash.exe (legacy/32-bit fallback)
     _local_appdata = os.environ.get("LOCALAPPDATA", "")
     _hermes_portable_git = os.path.join(_local_appdata, "hermes", "git") if _local_appdata else ""
     if _hermes_portable_git:
@@ -1159,7 +1159,7 @@ def _make_run_env(env: dict) -> dict:
         # launched without it on PATH (systemd, service managers, cron, etc.).
         run_env[path_key] = _prepend_hermes_bin_dir(new_path)
 
-    _inject_context_hermes_home(run_env)
+    _inject_context_agentic_os_home(run_env)
 
     from agentic_os_constants import apply_subprocess_home_env
     apply_subprocess_home_env(run_env)
@@ -1289,11 +1289,11 @@ class LocalEnvironment(BaseEnvironment):
         can't open the path, and the Windows default temp (``%TEMP%``) often
         contains spaces (``C:\\Users\\Some Name\\AppData\\Local\\Temp``) that
         break unquoted bash interpolations.  Use a dedicated cache dir under
-        ``HERMES_HOME`` instead — single-word path, guaranteed to exist, same
+        ``AGENTIC_OS_HOME`` instead — single-word path, guaranteed to exist, same
         string resolves in both Git Bash and native Python.
         """
         if _IS_WINDOWS:
-            # Derive a Windows-safe temp dir under HERMES_HOME.  Using
+            # Derive a Windows-safe temp dir under AGENTIC_OS_HOME.  Using
             # forward slashes makes the same string work unchanged in bash
             # command interpolations AND in Python ``open()`` — Windows
             # accepts forward slashes in filesystem paths, and we control

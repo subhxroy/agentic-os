@@ -8,7 +8,7 @@ platforms: [linux, macos, windows]
 metadata:
   hermes:
     tags: [Coding-Agent, Grok, xAI, Code-Review, Refactoring, Automation]
-    related_skills: [codex, claude-code, hermes-agent]
+    related_skills: [codex, claude-code, agentic-os]
 ---
 
 # Grok Build CLI — Hermes Orchestration Guide

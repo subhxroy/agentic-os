@@ -1,8 +1,8 @@
 """
 Cron job storage and management.
 
-Jobs are stored in ~/.hermes/cron/jobs.json
-Output is saved to ~/.hermes/cron/output/{job_id}/{timestamp}.md
+Jobs are stored in ~/.agentic-os/cron/jobs.json
+Output is saved to ~/.agentic-os/cron/output/{job_id}/{timestamp}.md
 """
 
 import contextlib
@@ -52,13 +52,13 @@ except ImportError:
 # =============================================================================
 
 # Cron is per-profile by design (issue #4707). Each profile owns its own cron
-# store under its own HERMES_HOME, and a profile-scoped gateway runs that
-# profile's jobs under that same HERMES_HOME — so a job authored in profile
-# `coder` lives in `~/.hermes/profiles/coder/cron/jobs.json` and executes with
+# store under its own AGENTIC_OS_HOME, and a profile-scoped gateway runs that
+# profile's jobs under that same AGENTIC_OS_HOME — so a job authored in profile
+# `coder` lives in `~/.agentic-os/profiles/coder/cron/jobs.json` and executes with
 # `coder`'s `.env`, `config.yaml`, and skills. We deliberately anchor on
 # `get_agentic_os_home()` (the active profile home), NOT `get_default_agentic_os_root()`
 # (the shared root). Anchoring at the root would funnel every profile's jobs
-# into one shared `jobs.json` and run them under whatever HERMES_HOME the
+# into one shared `jobs.json` and run them under whatever AGENTIC_OS_HOME the
 # ticker process happens to have — leaking config/credentials/skills across
 # profiles (the security boundary #4707 was filed for). Do NOT change this to
 # the default root: that re-breaks per-profile isolation. See also the dynamic
@@ -132,8 +132,8 @@ def _current_cron_store() -> _CronStorePaths:
        OUTPUT_DIR no longer match their import-time values, someone chose
        the documented process-wide compatibility surface; honor it;
     3. the ACTIVE profile home, resolved fresh via get_agentic_os_home()
-       (context-local override, then the HERMES_HOME env var) — so a test
-       or embedder that re-points HERMES_HOME after this module was
+       (context-local override, then the AGENTIC_OS_HOME env var) — so a test
+       or embedder that re-points AGENTIC_OS_HOME after this module was
        imported reads/writes ITS OWN store, not whatever jobs.json the
        import happened to freeze (the filed incident: fixtures that patched
        the env too late silently rewrote the user's real jobs file);
@@ -757,7 +757,7 @@ def compute_next_run(schedule: Dict[str, Any], last_run_at: Optional[str] = None
             logger.warning(
                 "Cannot compute next run for cron schedule %r: 'croniter' is "
                 "not installed. croniter is a core dependency as of v0.9.x; "
-                "reinstall hermes-agent or run 'pip install croniter' in your "
+                "reinstall agentic-os or run 'pip install croniter' in your "
                 "runtime env.",
                 expr,
             )
@@ -1109,7 +1109,7 @@ def create_job(
                 delivered verbatim. Without ``no_agent``, its stdout is
                 injected into the agent's prompt as context (data-collection /
                 change-detection pattern). Paths resolve under
-                ~/.hermes/scripts/; ``.sh`` / ``.bash`` files run via bash,
+                ~/.agentic-os/scripts/; ``.sh`` / ``.bash`` files run via bash,
                 anything else via Python.
         context_from: Optional job ID (or list of job IDs) whose most recent output
                       is injected into the prompt as context before each run.
@@ -2120,7 +2120,7 @@ def _get_due_jobs_locked() -> List[Dict[str, Any]]:
 
                 # Durably claim a one-shot for the DURATION of its run before
                 # returning it as due, so a second scheduler process (gateway +
-                # desktop both run in-process 60s tickers on one HERMES_HOME)
+                # desktop both run in-process 60s tickers on one AGENTIC_OS_HOME)
                 # cannot re-dispatch it while the first run is still in flight
                 # (#59229). A plain one-shot's due-state is not resolved until
                 # mark_job_run() completes it minutes later, so advancing

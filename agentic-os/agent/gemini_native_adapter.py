@@ -108,7 +108,7 @@ def probe_gemini_tier(
                 json=payload,
                 headers={
                     "Content-Type": "application/json",
-                    "X-Goog-Api-Client": f"hermes-agent/{_HERMES_VERSION}",
+                    "X-Goog-Api-Client": f"agentic-os/{_HERMES_VERSION}",
                 },
             )
     except Exception as exc:
@@ -877,7 +877,7 @@ class GeminiNativeClient:
         if not (api_key or "").strip():
             raise RuntimeError(
                 "Gemini native client requires an API key, but none was provided. "
-                "Set GOOGLE_API_KEY or GEMINI_API_KEY in your environment / ~/.hermes/.env "
+                "Set GOOGLE_API_KEY or GEMINI_API_KEY in your environment / ~/.agentic-os/.env "
                 "(get one at https://aistudio.google.com/app/apikey), or run `hermes setup` "
                 "to configure the Google provider."
             )
@@ -914,8 +914,8 @@ class GeminiNativeClient:
             # Include Hermes client context following Gemini's partner
             # integration guidance.
             # See https://ai.google.dev/gemini-api/docs/partner-integration
-            "User-Agent": f"hermes-agent/{_HERMES_VERSION} (gemini-native)",
-            "X-Goog-Api-Client": f"hermes-agent/{_HERMES_VERSION}",
+            "User-Agent": f"agentic-os/{_HERMES_VERSION} (gemini-native)",
+            "X-Goog-Api-Client": f"agentic-os/{_HERMES_VERSION}",
         }
         headers.update(self._default_headers)
         return headers

@@ -607,13 +607,13 @@ def _rss_mb(pid: int) -> float:
 
 def _default_workers() -> int:
     try:
-        return max(2, int(os.environ.get("HERMES_TUI_RPC_POOL_WORKERS") or "8"))
+        return max(2, int(os.environ.get("AGENTIC_OS_TUI_RPC_POOL_WORKERS") or "8"))
     except (TypeError, ValueError):
         return 8
 
 
 def run_host(stdin: Any = None, stdout: Any = None) -> None:
-    os.environ["HERMES_COMPUTE_HOST_CHILD"] = "1"
+    os.environ["AGENTIC_OS_COMPUTE_HOST_CHILD"] = "1"
     stdin = stdin or sys.stdin
     host = ComputeHost(stdout=stdout or sys.stdout)
     shutting_down = threading.Event()
@@ -638,7 +638,7 @@ def run_host(stdin: Any = None, stdout: Any = None) -> None:
             "boot_id": host._boot_id,
             "build_sha": _build_sha(),
             "cwd": os.getcwd(),
-            "hermes_home": os.environ.get("HERMES_HOME", ""),
+            "hermes_home": os.environ.get("AGENTIC_OS_HOME", ""),
         }
     )
 

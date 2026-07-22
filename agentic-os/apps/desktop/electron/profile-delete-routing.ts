@@ -3,7 +3,7 @@
 // When the renderer issues DELETE /api/profiles/<name>, the handler must
 // tear down that profile's backend (primary window backend or pool backend)
 // and then route the *next* request away from the just-deleted profile's
-// pool backend -- spawning a fresh one would call ensure_hermes_home() and
+// pool backend -- spawning a fresh one would call ensure_agentic_os_home() and
 // recreate the profile directory the delete just removed, leaving a zombie
 // process behind (issue #52279).
 //
@@ -85,7 +85,7 @@ export function decideProfileDeleteAction(
  * Route the next `hermes:api` request away from the primary/window backend
  * whenever a profile was just torn down -- otherwise ensureBackend would
  * spawn a fresh pool backend for the deleted profile, whose
- * ensure_hermes_home() recreates the directory the delete just removed.
+ * ensure_agentic_os_home() recreates the directory the delete just removed.
  */
 export function resolveRouteProfile(
   tornDownProfile: string | null,

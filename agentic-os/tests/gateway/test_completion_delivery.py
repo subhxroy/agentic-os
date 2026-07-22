@@ -24,7 +24,7 @@ from tools.process_registry import ProcessRegistry, ProcessSession
 @pytest.fixture(autouse=True)
 def isolated_registry(tmp_path, monkeypatch):
     """Any current/future durable compatibility path must stay in tmp state."""
-    monkeypatch.setenv("HERMES_HOME", str(tmp_path))
+    monkeypatch.setenv("AGENTIC_OS_HOME", str(tmp_path))
     import tools.process_registry as pr_module
 
     monkeypatch.setattr(pr_module, "CHECKPOINT_PATH", tmp_path / "processes.json")
@@ -64,7 +64,7 @@ def _async_event(delegation_id="deleg_duplicate"):
         # PR #62479 stamps these on gateway-owned events. They must not
         # change the producer identity used for queue replay.
         "origin_profile": "default",
-        "origin_hermes_home": "/tmp/hermes-default",
+        "origin_agentic_os_home": "/tmp/hermes-default",
     }
 
 

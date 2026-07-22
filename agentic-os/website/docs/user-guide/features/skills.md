@@ -8,7 +8,7 @@ description: "On-demand knowledge documents — progressive disclosure, agent-ma
 
 Skills are on-demand knowledge documents the agent can load when needed. They follow a **progressive disclosure** pattern to minimize token usage and are compatible with the [agentskills.io](https://agentskills.io/specification) open standard.
 
-All skills live in **`~/.hermes/skills/`** — the primary directory and source of truth. On fresh install, bundled skills are copied from the repo. Hub-installed and agent-created skills also go here. The agent can modify or delete any skill.
+All skills live in **`~/.agentic-os/skills/`** — the primary directory and source of truth. On fresh install, bundled skills are copied from the repo. Hub-installed and agent-created skills also go here. The agent can modify or delete any skill.
 
 You can also point Hermes at **external skill directories** — additional folders scanned alongside the local one. See [External Skill Directories](#external-skill-directories) below.
 
@@ -21,7 +21,7 @@ See also:
 
 By default every profile is seeded with the bundled skill catalog, and each `hermes update` adds any newly bundled skills. If you want a profile with **no bundled skills** — and that stays empty across updates — you have two paths:
 
-**At install time** (applies to the default `~/.hermes` profile):
+**At install time** (applies to the default `~/.agentic-os` profile):
 
 ```bash
 curl -fsSL https://agentic-os.nousresearch.com/install.sh | bash -s -- --no-skills
@@ -258,7 +258,7 @@ required_environment_variables:
     required_for: full functionality
 ```
 
-When a missing value is encountered, Hermes asks for it securely only when the skill is actually loaded in the local CLI. You can skip setup and keep using the skill. Messaging surfaces never ask for secrets in chat — they tell you to use `hermes setup` or `~/.hermes/.env` locally instead.
+When a missing value is encountered, Hermes asks for it securely only when the skill is actually loaded in the local CLI. You can skip setup and keep using the skill. Messaging surfaces never ask for secrets in chat — they tell you to use `hermes setup` or `~/.agentic-os/.env` locally instead.
 
 Once set, declared env vars are **automatically passed through** to `execute_code` and `terminal` sandboxes — the skill's scripts can use `$TENOR_API_KEY` directly. For non-skill env vars, use the `terminal.env_passthrough` config option. See [Environment Variable Passthrough](/user-guide/security#environment-variable-passthrough) for details.
 
@@ -283,7 +283,7 @@ See [Skill Settings](/user-guide/configuration#skill-settings) and [Creating Ski
 ## Skill Directory Structure
 
 ```text
-~/.hermes/skills/                  # Single source of truth
+~/.agentic-os/skills/                  # Single source of truth
 ├── mlops/                         # Category directory
 │   ├── axolotl/
 │   │   ├── SKILL.md               # Main instructions (required)
@@ -316,7 +316,7 @@ scanner version, findings, timestamp, and fresh-or-cached status in
 
 If you maintain skills outside of Hermes — for example, a shared `~/.agents/skills/` directory used by multiple AI tools — you can tell Hermes to scan those directories too.
 
-Add `external_dirs` under the `skills` section in `~/.hermes/config.yaml`:
+Add `external_dirs` under the `skills` section in `~/.agentic-os/config.yaml`:
 
 ```yaml
 skills:
@@ -330,7 +330,7 @@ Paths support `~` expansion and `${VAR}` environment variable substitution.
 
 ### How it works
 
-- **Create locally, update in place**: New agent-created skills are written to `~/.hermes/skills/`. Existing skills are modified where they are found, including skills under `external_dirs`, when the agent uses `skill_manage` actions such as `patch`, `edit`, `write_file`, `remove_file`, or `delete`.
+- **Create locally, update in place**: New agent-created skills are written to `~/.agentic-os/skills/`. Existing skills are modified where they are found, including skills under `external_dirs`, when the agent uses `skill_manage` actions such as `patch`, `edit`, `write_file`, `remove_file`, or `delete`.
 - **External dirs are not a write-protection boundary**: If an external skill directory is writable by the Hermes process, agent-managed skill updates can change files in that directory. Use filesystem permissions or a separate profile/toolset setup if shared external skills must stay read-only.
 - **Local precedence**: If the same skill name exists in both the local dir and an external dir, the local version wins.
 - **Full integration**: External skills appear in the system prompt index, `skills_list`, `skill_view`, and as `/skill-name` slash commands — no different from local skills.
@@ -339,7 +339,7 @@ Paths support `~` expansion and `${VAR}` environment variable substitution.
 ### Example
 
 ```text
-~/.hermes/skills/               # Local (primary, read-write)
+~/.agentic-os/skills/               # Local (primary, read-write)
 ├── devops/deploy-k8s/
 │   └── SKILL.md
 └── mlops/axolotl/
@@ -379,7 +379,7 @@ The agent receives all three skills loaded into one user message, with any text 
 
 ### YAML schema
 
-Bundles live in **`~/.hermes/skill-bundles/<slug>.yaml`** and look like this:
+Bundles live in **`~/.agentic-os/skill-bundles/<slug>.yaml`** and look like this:
 
 ```yaml
 name: backend-dev
@@ -417,7 +417,7 @@ hermes bundles create backend-dev --skill ... --force
 # Delete a bundle
 hermes bundles delete backend-dev
 
-# Re-scan ~/.hermes/skill-bundles/ and report changes
+# Re-scan ~/.agentic-os/skill-bundles/ and report changes
 hermes bundles reload
 ```
 
@@ -435,9 +435,9 @@ From inside a chat session, `/bundles` lists every installed bundle and its skil
 Use a bundle when:
 - You always pair the same skills for a recurring task (`/backend-dev`, `/release-prep`, `/incident-response`).
 - You want a one-character-shorter mental model than typing several `/skill` invocations in a row.
-- You want to ship a team-wide "task profile" by checking the bundle YAML into a shared dotfiles repo and symlinking it into `~/.hermes/skill-bundles/`.
+- You want to ship a team-wide "task profile" by checking the bundle YAML into a shared dotfiles repo and symlinking it into `~/.agentic-os/skill-bundles/`.
 
-A bundle is just a YAML alias — it doesn't install skills for you. The skills themselves must already be present (in `~/.hermes/skills/` or an external skill directory). Otherwise the bundle invocation just skips the missing ones.
+A bundle is just a YAML alias — it doesn't install skills for you. The skills themselves must already be present (in `~/.agentic-os/skills/` or an external skill directory). Otherwise the bundle invocation just skips the missing ones.
 
 ## Agent-Managed Skills (skill_manage tool)
 
@@ -488,7 +488,7 @@ When `write_approval: true`, every `skill_manage` write (create / edit /
 patch / delete / write_file / remove_file) is **staged** instead of committed —
 a SKILL.md is too large to review inline, so staging applies regardless of
 whether the write came from a foreground turn or the background review.
-Staged writes survive restarts under `~/.hermes/pending/skills/` and are
+Staged writes survive restarts under `~/.agentic-os/pending/skills/` and are
 reviewed with the same familiar approve/deny flow as dangerous commands:
 
 ```
@@ -822,7 +822,7 @@ hermes skills install my-org/hermes-skills/deploy-runbook
 
 #### Non-default paths
 
-If your skills don't live under `skills/` (common when you're adding a `skills/` subtree to an existing project), edit the tap entry in `~/.hermes/.hub/taps.json`:
+If your skills don't live under `skills/` (common when you're adding a `skills/` subtree to an existing project), edit the tap entry in `~/.agentic-os/.hub/taps.json`:
 
 ```json
 {
@@ -864,18 +864,18 @@ Inside a running session:
 /skills tap remove myorg/skills-repo
 ```
 
-Taps are stored in `~/.hermes/.hub/taps.json` (created on demand).
+Taps are stored in `~/.agentic-os/.hub/taps.json` (created on demand).
 
 ## Bundled skill updates (`hermes skills reset`)
 
-Hermes ships with a set of bundled skills in `skills/` inside the repo. On install and on every `hermes update`, a sync pass copies those into `~/.hermes/skills/` and records a manifest at `~/.hermes/skills/.bundled_manifest` mapping each skill name to the content hash at the time it was synced (the **origin hash**).
+Hermes ships with a set of bundled skills in `skills/` inside the repo. On install and on every `hermes update`, a sync pass copies those into `~/.agentic-os/skills/` and records a manifest at `~/.agentic-os/skills/.bundled_manifest` mapping each skill name to the content hash at the time it was synced (the **origin hash**).
 
 On each sync, Hermes recomputes the hash of your local copy and compares it to the origin hash:
 
 - **Unchanged** → safe to pull upstream changes, copy the new bundled version in, record the new origin hash.
 - **Changed** → treated as **user-modified** and skipped forever, so your edits never get stomped.
 
-The protection is good, but it has one sharp edge. If you edit a bundled skill and then later want to abandon your changes and go back to the bundled version by just copy-pasting from `~/.hermes/hermes-agent/skills/`, the manifest still holds the *old* origin hash from whenever the last successful sync ran. Your fresh copy-paste contents (current bundled hash) won't match that stale origin hash, so sync keeps flagging it as user-modified.
+The protection is good, but it has one sharp edge. If you edit a bundled skill and then later want to abandon your changes and go back to the bundled version by just copy-pasting from `~/.agentic-os/agentic-os/skills/`, the manifest still holds the *old* origin hash from whenever the last successful sync ran. Your fresh copy-paste contents (current bundled hash) won't match that stale origin hash, so sync keeps flagging it as user-modified.
 
 `hermes skills reset` is the escape hatch:
 
@@ -900,7 +900,7 @@ The same command works in chat as a slash command:
 ```
 
 :::note Profiles
-Each profile has its own `.bundled_manifest` under its own `HERMES_HOME`, so `hermes -p coder skills reset <name>` only affects that profile.
+Each profile has its own `.bundled_manifest` under its own `AGENTIC_OS_HOME`, so `hermes -p coder skills reset <name>` only affects that profile.
 :::
 
 ### Slash commands (inside chat)

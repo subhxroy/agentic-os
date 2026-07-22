@@ -552,7 +552,7 @@ def _write_through_provider_state_to_global_root(
         # Classic mode (profile == root); the profile save already hit root.
         return
     # Seat belt: under pytest, refuse to write the real user's
-    # ~/.hermes/auth.json even when HERMES_HOME points at a profile path
+    # ~/.agentic-os/auth.json even when AGENTIC_OS_HOME points at a profile path
     # (mirrors the read-side guard in _load_global_auth_store). Uses the
     # unmodified HOME env, not Path.home() which fixtures may monkeypatch.
     if os.environ.get("PYTEST_CURRENT_TEST"):
@@ -2009,7 +2009,7 @@ def _seed_from_singletons(provider: str, entries: List[PooledCredential]) -> Tup
         # Code identity injection, `mcp_` tool-name rewrite, and claude-cli
         # User-Agent header (`agent/anthropic_adapter.py:2128`).  Users who
         # explicitly opted into the API-key path are explicitly opting OUT of
-        # that masquerade.  Prefer ~/.hermes/.env over os.environ for the
+        # that masquerade.  Prefer ~/.agentic-os/.env over os.environ for the
         # same reason `_seed_from_env` does — that's the authoritative file
         # that `hermes setup` writes.
         _env_file = load_env()
@@ -2187,7 +2187,7 @@ def _seed_from_singletons(provider: str, entries: List[PooledCredential]) -> Tup
             logger.debug("Qwen OAuth token seed failed: %s", exc)
 
     elif provider == "minimax-oauth":
-        # MiniMax OAuth tokens live in ~/.hermes/auth.json providers.minimax-oauth.
+        # MiniMax OAuth tokens live in ~/.agentic-os/auth.json providers.minimax-oauth.
         # Seed the pool so `/auth list` reflects the logged-in state and the
         # standard `hermes auth remove minimax-oauth <N>` flow works.
         # Use refresh_if_expiring=False equivalent: resolve_minimax_oauth_runtime_credentials
@@ -2302,7 +2302,7 @@ def _seed_from_env(provider: str, entries: List[PooledCredential]) -> Tuple[bool
     changed = False
     active_sources: Set[str] = set()
 
-    # Prefer ~/.hermes/.env over os.environ — the user's config file is the
+    # Prefer ~/.agentic-os/.env over os.environ — the user's config file is the
     # authoritative source for Hermes credentials. Stale env vars from parent
     # processes (Codex CLI, test scripts, etc.) should not override deliberate
     # changes to the .env file.
@@ -2325,7 +2325,7 @@ def _seed_from_env(provider: str, entries: List[PooledCredential]) -> Tuple[bool
 
     # Honour user suppression — `hermes auth remove <provider> <N>` for an
     # env-seeded credential marks the env:<VAR> source as suppressed so it
-    # won't be re-seeded from the user's shell environment or ~/.hermes/.env.
+    # won't be re-seeded from the user's shell environment or ~/.agentic-os/.env.
     # Without this gate the removal is silently undone on the next
     # load_pool() call whenever the var is still exported by the shell.
     try:
@@ -2363,7 +2363,7 @@ def _seed_from_env(provider: str, entries: List[PooledCredential]) -> Tuple[bool
         return payload
 
     if provider == "openrouter":
-        # Prefer ~/.hermes/.env over os.environ
+        # Prefer ~/.agentic-os/.env over os.environ
         token = _get_env_prefer_dotenv("OPENROUTER_API_KEY")
         if token:
             source = "env:OPENROUTER_API_KEY"
@@ -2400,7 +2400,7 @@ def _seed_from_env(provider: str, entries: List[PooledCredential]) -> Tuple[bool
         ]
 
     for env_var in env_vars:
-        # Prefer ~/.hermes/.env over os.environ
+        # Prefer ~/.agentic-os/.env over os.environ
         token = _get_env_prefer_dotenv(env_var)
         if not token:
             continue

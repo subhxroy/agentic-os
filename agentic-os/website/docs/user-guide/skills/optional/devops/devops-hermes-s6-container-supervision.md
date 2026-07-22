@@ -14,14 +14,14 @@ Modify, debug, or extend the s6-overlay supervision tree inside the Agentic OS D
 
 | | |
 |---|---|
-| Source | Optional — install with `hermes skills install official/devops/hermes-s6-container-supervision` |
-| Path | `optional-skills/devops/hermes-s6-container-supervision` |
+| Source | Optional — install with `hermes skills install official/devops/agentic-os-s6-container-supervision` |
+| Path | `optional-skills/devops/agentic-os-s6-container-supervision` |
 | Version | `1.0.0` |
 | Author | Agentic OS |
 | License | MIT |
 | Platforms | linux |
 | Tags | `docker`, `s6`, `supervision`, `gateway`, `profiles` |
-| Related skills | [`hermes-agent`](/docs/user-guide/skills/bundled/autonomous-ai-agents/autonomous-ai-agents-hermes-agent), `agentic-os-dev` |
+| Related skills | [`agentic-os`](/docs/user-guide/skills/bundled/autonomous-ai-agents/autonomous-ai-agents-agentic-os), `agentic-os-dev` |
 
 ## Reference: full SKILL.md
 
@@ -54,9 +54,9 @@ If you're just running the Agentic OS and want to use Docker, see `website/docs/
 │   │   ├── chown /opt/data/profiles (every boot)
 │   │   ├── seed .env / config.yaml / SOUL.md
 │   │   └── skills_sync.py
-│   └── 02-reconcile-profiles          ← hermes_cli.container_boot
+│   └── 02-reconcile-profiles          ← agentic_os_cli.container_boot
 │       ├── chown /run/service (hermes-writable for runtime register)
-│       └── walk $HERMES_HOME/profiles/<name>/gateway_state.json
+│       └── walk $AGENTIC_OS_HOME/profiles/<name>/gateway_state.json
 │           → recreate /run/service/gateway-<name>/
 │           → auto-start only those with prior_state == "running"
 │
@@ -69,7 +69,7 @@ If you're just running the Agentic OS and want to use Docker, see `website/docs/
 │   │   ├── type        ("longrun")
 │   │   ├── run         ("#!/command/with-contenv sh ... exec s6-setuidgid hermes hermes -p coder gateway run")
 │   │   ├── down        (marker — present means "registered but don't auto-start")
-│   │   └── log/run     (s6-log → $HERMES_HOME/logs/gateways/coder/current)
+│   │   └── log/run     (s6-log → $AGENTIC_OS_HOME/logs/gateways/coder/current)
 │   └── ...
 │
 └── CMD ("main program")               ← /opt/hermes/docker/main-wrapper.sh
@@ -84,7 +84,7 @@ If you're just running the Agentic OS and want to use Docker, see `website/docs/
 |---|---|
 | `Dockerfile` | s6-overlay install + cont-init.d wiring + `ENTRYPOINT ["/init", "/opt/hermes/docker/main-wrapper.sh"]` |
 | `docker/stage2-hook.sh` | The "old entrypoint logic" — UID remap, chown, seed, skills sync. Runs as cont-init.d/01-hermes-setup. |
-| `docker/cont-init.d/02-reconcile-profiles` | Calls `hermes_cli.container_boot` on every boot to restore profile gateway slots from the persistent volume. |
+| `docker/cont-init.d/02-reconcile-profiles` | Calls `agentic_os_cli.container_boot` on every boot to restore profile gateway slots from the persistent volume. |
 | `docker/main-wrapper.sh` | The container's CMD. Routes user args, drops to hermes via `s6-setuidgid`, exec's the chosen program. |
 | `docker/s6-rc.d/main-hermes/run` | No-op `sleep infinity` — slot exists so the s6-rc user bundle is valid; main hermes runs as the CMD, not as a supervised service. |
 | `docker/s6-rc.d/dashboard/run` | Conditional service — `exec sleep infinity` unless `HERMES_DASHBOARD` is truthy. |
@@ -154,8 +154,8 @@ Edit `S6ServiceManager._render_run_script` in `hermes_cli/service_manager.py`. T
 ### Run the docker test harness
 
 ```sh
-docker build -t hermes-agent-harness:latest .
-HERMES_TEST_IMAGE=hermes-agent-harness:latest scripts/run_tests.sh tests/docker/ -v
+docker build -t agentic-os-harness:latest .
+HERMES_TEST_IMAGE=agentic-os-harness:latest scripts/run_tests.sh tests/docker/ -v
 # Expect 19 passed, 0 xfailed against the s6 image
 ```
 
@@ -169,11 +169,11 @@ The harness lives in `tests/docker/` and skips when Docker isn't available. The 
 
 ### Profile directory ownership
 
-The cont-init reconciler runs as hermes (`s6-setuidgid hermes` in `02-reconcile-profiles`). If a profile dir ends up root-owned (e.g. because `docker exec <c> hermes profile create …` ran as root by default), the reconciler can't read SOUL.md and fails with `PermissionError`. Mitigation: `stage2-hook.sh` chowns `$HERMES_HOME/profiles` to hermes on **every** boot, idempotently. Don't remove that block.
+The cont-init reconciler runs as hermes (`s6-setuidgid hermes` in `02-reconcile-profiles`). If a profile dir ends up root-owned (e.g. because `docker exec <c> hermes profile create …` ran as root by default), the reconciler can't read SOUL.md and fails with `PermissionError`. Mitigation: `stage2-hook.sh` chowns `$AGENTIC_OS_HOME/profiles` to hermes on **every** boot, idempotently. Don't remove that block.
 
 ### Files written by `docker exec` are root-owned
 
-`docker exec` defaults to root. Either pass `--user hermes` or rely on the stage2 chown sweep next reboot. Don't write files under `$HERMES_HOME/profiles/<name>/` as root manually — the next reconcile pass will sweep them but in-flight operations may hit perm errors.
+`docker exec` defaults to root. Either pass `--user hermes` or rely on the stage2 chown sweep next reboot. Don't write files under `$AGENTIC_OS_HOME/profiles/<name>/` as root manually — the next reconcile pass will sweep them but in-flight operations may hit perm errors.
 
 ### Service slot exists but s6-svstat says "s6-supervise not running"
 
@@ -193,5 +193,5 @@ Check whether something is invoking `s6-svscanctl -t` or `/run/s6/basedir/bin/ha
 
 ## Related skills
 
-- `agentic-os-dev`: General hermes-agent codebase navigation
+- `agentic-os-dev`: General agentic-os codebase navigation
 - `hermes-tool-quirks`: Specific Hermes-tool workarounds (sed/grep/etc.) — load when debugging the s6 stack's interaction with hermes built-in tools.

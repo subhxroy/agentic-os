@@ -1452,13 +1452,13 @@ class HermesACPAgent(acp.Agent):
         # thread — setting it here would write to the event-loop thread's TLS,
         # not the executor's. Interactive routing uses a contextvar in
         # tools.approval (set_hermes_interactive_context) rather than
-        # os.environ["HERMES_INTERACTIVE"], so concurrent executor workers can't
+        # os.environ["AGENTIC_OS_INTERACTIVE"], so concurrent executor workers can't
         # race on a process-global flag — one session's restore can't drop
         # another onto the non-interactive auto-approve path mid-run
         # (GHSA-96vc-wcxf-jjff). The contextvar write is isolated by the
         # contextvars.copy_context() wrapper around the executor call below.
         # ACP's conn.request_permission maps cleanly to the interactive
-        # callback shape — not the gateway-queue HERMES_EXEC_ASK path,
+        # callback shape — not the gateway-queue AGENTIC_OS_EXEC_ASK path,
         # which requires a notify_cb registered in _gateway_notify_cbs.
         previous_approval_cb = None
         interactive_token = None
@@ -1467,7 +1467,7 @@ class HermesACPAgent(acp.Agent):
 
         def _run_agent() -> dict:
             nonlocal previous_approval_cb, interactive_token, edit_approval_token, previous_session_id
-            # Bind HERMES_SESSION_KEY for this session so per-session caches
+            # Bind AGENTIC_OS_SESSION_KEY for this session so per-session caches
             # (e.g. the interactive sudo password cache in tools.terminal_tool)
             # scope to the ACP session rather than leaking across sessions
             # that land on the same reused executor thread. This call runs
@@ -1556,7 +1556,7 @@ class HermesACPAgent(acp.Agent):
             pre_turn_hermes_id = getattr(state.agent, "session_id", None)
             # Wrap the executor call in a fresh copy of the current context so
             # concurrent ACP sessions on the shared ThreadPoolExecutor don't
-            # stomp on each other's ContextVar writes (HERMES_SESSION_KEY in
+            # stomp on each other's ContextVar writes (AGENTIC_OS_SESSION_KEY in
             # particular — used by the interactive sudo password cache scope).
             ctx = contextvars.copy_context()
             result = await loop.run_in_executor(_executor, ctx.run, _run_agent)

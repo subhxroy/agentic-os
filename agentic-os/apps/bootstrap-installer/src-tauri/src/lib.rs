@@ -93,7 +93,7 @@ fn get_mode(state: tauri::State<'_, Arc<AppState>>) -> AppMode {
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
-    // Tracing → bootstrap-installer.log under HERMES_HOME/logs/ so install
+    // Tracing → bootstrap-installer.log under AGENTIC_OS_HOME/logs/ so install
     // failures leave a trail for support. Console output also goes here in
     // debug builds.
     let _guard = paths::init_logging();
@@ -130,7 +130,7 @@ pub fn run() {
             // `--reinstall`/`--repair` opts out so a broken install can be
             // repaired by re-running setup instead of launching the bad app.
             if cfg!(target_os = "macos") && mode == AppMode::Install && !force_setup {
-                let install_root = paths::hermes_home().join("hermes-agent");
+                let install_root = paths::hermes_home().join("agentic-os");
                 if bootstrap::hermes_is_installed(&install_root) {
                     match bootstrap::spawn_installed_desktop(&install_root) {
                         Ok(()) => {

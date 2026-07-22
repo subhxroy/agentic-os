@@ -66,7 +66,7 @@ Hermes registers itself as an MCP server so codex can call back for tools codex 
 - **`skill_view` / `skills_list`** — read from Hermes' skill library.
 - **`text_to_speech`** — TTS through Hermes' configured provider.
 
-When the model wants one of these, codex spawns the `hermes_tools_mcp_server` subprocess via stdio MCP, the call is dispatched through `model_tools.handle_function_call()` (same code path as Hermes' default runtime), and the result is returned to codex like any other MCP response.
+When the model wants one of these, codex spawns the `agentic_os_tools_mcp_server` subprocess via stdio MCP, the call is dispatched through `model_tools.handle_function_call()` (same code path as Hermes' default runtime), and the result is returned to codex like any other MCP response.
 
 ### What's NOT available on this runtime
 
@@ -158,7 +158,7 @@ uses:
    ```bash
    codex login                  # writes tokens to ~/.codex/auth.json
    ```
-   Hermes' own `hermes auth add openai-codex` writes to `~/.hermes/auth.json` — that's a separate session. **Run `codex login` separately** if you haven't.
+   Hermes' own `hermes auth add openai-codex` writes to `~/.agentic-os/auth.json` — that's a separate session. **Run `codex login` separately** if you haven't.
 
 3. **(Optional) Install the Codex plugins you want.** When you enable the runtime, Hermes auto-migrates whichever curated plugins you've already installed via Codex CLI:
    ```bash
@@ -178,7 +178,7 @@ In a Hermes session:
 That command:
 - Verifies the `codex` CLI is installed (blocks with an install hint if not).
 - Persists `model.openai_runtime: codex_app_server` to your config.yaml.
-- Migrates user MCP servers from `~/.hermes/config.yaml` to `~/.codex/config.toml`.
+- Migrates user MCP servers from `~/.agentic-os/config.yaml` to `~/.codex/config.toml`.
 - **Discovers and migrates installed native Codex plugins** (Linear, GitHub, Gmail, Calendar, Canva, etc.) by querying Codex's `plugin/list` RPC.
 - **Registers Hermes' own tools as an MCP server** so the codex subprocess can call back for tools codex doesn't ship with.
 - **Writes `default_permissions = ":workspace"`** so the sandbox allows writes within the workspace without prompting for every operation.
@@ -191,7 +191,7 @@ To check current state without changing anything:
 /codex-runtime
 ```
 
-You can also set it manually in `~/.hermes/config.yaml`:
+You can also set it manually in `~/.agentic-os/config.yaml`:
 ```yaml
 model:
   openai_runtime: codex_app_server   # default is "auto" (= Hermes runtime)
@@ -257,7 +257,7 @@ You can override the default in `~/.codex/config.toml` outside Hermes' managed b
 default_permissions = ":read-only"
 ```
 
-(Hermes will preserve your override on re-migration as long as it lives outside the `# managed by hermes-agent` markers.)
+(Hermes will preserve your override on re-migration as long as it lives outside the `# managed by agentic-os` markers.)
 
 ## Auxiliary tasks and ChatGPT subscription token cost
 
@@ -265,7 +265,7 @@ When this runtime is on with the `openai-codex` provider, **auxiliary tasks (tit
 
 This isn't specific to `codex_app_server` — it's true for the existing `codex_responses` path too — but it's more visible here because you're explicitly opting in for the subscription billing.
 
-To route specific aux tasks to a cheaper / different model, set explicit overrides in `~/.hermes/config.yaml`:
+To route specific aux tasks to a cheaper / different model, set explicit overrides in `~/.agentic-os/config.yaml`:
 
 ```yaml
 auxiliary:
@@ -290,13 +290,13 @@ The self-improvement review fork inherits the main runtime via `_current_main_ru
 Hermes wraps everything it manages between two marker comments:
 
 ```toml
-# managed by hermes-agent — `hermes codex-runtime migrate` regenerates this section
+# managed by agentic-os — `hermes codex-runtime migrate` regenerates this section
 default_permissions = ":workspace"
 [mcp_servers.filesystem]
 ...
 [plugins."github@openai-curated"]
 ...
-# end hermes-agent managed section
+# end agentic-os managed section
 ```
 
 Anything **outside** that block is yours. Re-running migration (via `/codex-runtime codex_app_server` or whenever you toggle the runtime on) replaces the managed block in place but preserves user content above and below it verbatim. This means you can:
@@ -312,11 +312,11 @@ Anything you add **inside** the managed block will get clobbered on the next mig
 
 By default, Hermes points the codex subprocess at `~/.codex/` regardless of which Hermes profile is active. This means `hermes -p work` and `hermes -p personal` share the same Codex auth, plugins, and config. For most users this is the right behavior — it matches what running `codex` CLI directly would do.
 
-If you want per-profile Codex isolation (separate auth, separate installed plugins, separate config), set `CODEX_HOME` explicitly per profile. The cleanest way is to point at a directory under your `HERMES_HOME`:
+If you want per-profile Codex isolation (separate auth, separate installed plugins, separate config), set `CODEX_HOME` explicitly per profile. The cleanest way is to point at a directory under your `AGENTIC_OS_HOME`:
 
 ```bash
 # Inside the work profile, you might wrap hermes:
-CODEX_HOME=~/.hermes/profiles/work/codex hermes chat
+CODEX_HOME=~/.agentic-os/profiles/work/codex hermes chat
 ```
 
 You'll need to re-run `codex login` once with that `CODEX_HOME` set so the OAuth tokens land in the profile-scoped location. After that, `hermes -p work` will operate on isolated Codex state.
@@ -368,13 +368,13 @@ Codex's built-in toolset covers shell/file ops/patches but doesn't have web sear
 ```toml
 [mcp_servers.hermes-tools]
 command = "/path/to/python"
-args = ["-m", "agent.transports.hermes_tools_mcp_server"]
-env = { HERMES_HOME = "/your/.hermes", PYTHONPATH = "...", HERMES_QUIET = "1" }
+args = ["-m", "agent.transports.agentic_os_tools_mcp_server"]
+env = { AGENTIC_OS_HOME = "/your/.hermes", PYTHONPATH = "...", HERMES_QUIET = "1" }
 startup_timeout_sec = 30.0
 tool_timeout_sec = 600.0
 ```
 
-When the model calls `web_search` (or another exposed Hermes tool), codex spawns the `hermes_tools_mcp_server` subprocess via stdio, the request is dispatched through `model_tools.handle_function_call()`, and the result is projected back to codex like any other MCP response.
+When the model calls `web_search` (or another exposed Hermes tool), codex spawns the `agentic_os_tools_mcp_server` subprocess via stdio, the request is dispatched through `model_tools.handle_function_call()`, and the result is projected back to codex like any other MCP response.
 
 **Tools available via the callback:** `web_search`, `web_extract`, `browser_navigate`, `browser_click`, `browser_type`, `browser_press`, `browser_snapshot`, `browser_scroll`, `browser_back`, `browser_get_images`, `browser_console`, `browser_vision`, `vision_analyze`, `image_generate`, `skill_view`, `skills_list`, `text_to_speech`.
 
@@ -451,7 +451,7 @@ If you find a bug, [open an issue](https://github.com/subhxroy/agentic-os/issues
                                                         │
                                                         ▼
         ┌──────────────────────────────────────────────────────────┐
-        │  hermes_tools_mcp_server.py (subprocess on demand)        │
+        │  agentic_os_tools_mcp_server.py (subprocess on demand)        │
         │   web_search, web_extract, browser_*, vision_analyze,    │
         │   image_generate, skill_view, skills_list, text_to_speech│
         └──────────────────────────────────────────────────────────┘

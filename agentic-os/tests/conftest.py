@@ -1,12 +1,12 @@
-"""Shared fixtures for the hermes-agent test suite.
+"""Shared fixtures for the agentic-os test suite.
 
 Hermetic-test invariants enforced here (see AGENTS.md for rationale):
 
 1. **No credential env vars.** All provider/credential-shaped env vars
    (ending in _API_KEY, _TOKEN, _SECRET, _PASSWORD, _CREDENTIALS, etc.)
    are unset before every test. Local developer keys cannot leak in.
-2. **Isolated HERMES_HOME.** HERMES_HOME points to a per-test tempdir so
-   code reading ``~/.hermes/*`` via ``get_agentic_os_home()`` can't see the
+2. **Isolated AGENTIC_OS_HOME.** AGENTIC_OS_HOME points to a per-test tempdir so
+   code reading ``~/.agentic-os/*`` via ``get_agentic_os_home()`` can't see the
    real one. (We do NOT also redirect HOME — that broke subprocesses in
    CI. Code using ``Path.home() / ".hermes"`` instead of the canonical
    ``get_agentic_os_home()`` is a bug to fix at the callsite.)
@@ -170,7 +170,7 @@ def _looks_like_credential(name: str) -> bool:
 # unconditionally — individual tests that need them set do so explicitly.
 _HERMES_BEHAVIORAL_VARS = frozenset({
     "HERMES_YOLO_MODE",
-    "HERMES_INTERACTIVE",
+    "AGENTIC_OS_INTERACTIVE",
     "HERMES_QUIET",
     "HERMES_TOOL_PROGRESS",
     "HERMES_TOOL_PROGRESS_MODE",
@@ -180,15 +180,15 @@ _HERMES_BEHAVIORAL_VARS = frozenset({
     "HERMES_SESSION_CHAT_NAME",
     "HERMES_SESSION_THREAD_ID",
     "HERMES_SESSION_SOURCE",
-    "HERMES_SESSION_KEY",
-    "HERMES_GATEWAY_SESSION",
+    "AGENTIC_OS_SESSION_KEY",
+    "AGENTIC_OS_GATEWAY_SESSION",
     "HERMES_CRON_SESSION",
     "_HERMES_GATEWAY",
     "HERMES_PLATFORM",
     "HERMES_MODEL",
     "HERMES_INFERENCE_MODEL",
     "HERMES_INFERENCE_PROVIDER",
-    "HERMES_TUI_PROVIDER",
+    "AGENTIC_OS_TUI_PROVIDER",
     "HERMES_MANAGED",
     "HERMES_MANAGED_DIR",
     "HERMES_DEV",
@@ -197,12 +197,12 @@ _HERMES_BEHAVIORAL_VARS = frozenset({
     "agentic_os_timeZONE",
     "HERMES_REDACT_SECRETS",
     "HERMES_BACKGROUND_NOTIFICATIONS",
-    "HERMES_EXEC_ASK",
-    "HERMES_HOME_MODE",
+    "AGENTIC_OS_EXEC_ASK",
+    "AGENTIC_OS_HOME_MODE",
     "HERMES_AGENT_USE_LEGACY_SESSION_KEYS",
     # Kanban path/board pins must never leak from a developer shell or
     # dispatched worker into tests; otherwise tests can write fake tasks to
-    # the real ~/.hermes/kanban.db instead of the per-test HERMES_HOME.
+    # the real ~/.agentic-os/kanban.db instead of the per-test AGENTIC_OS_HOME.
     "HERMES_KANBAN_DB",
     "HERMES_KANBAN_BOARD",
     "HERMES_KANBAN_HOME",
@@ -333,8 +333,8 @@ _HERMES_BEHAVIORAL_VARS = frozenset({
 def _hermetic_environment(tmp_path, monkeypatch):
     """Blank out all credential/behavioral env vars so local and CI match.
 
-    Also redirects HOME and HERMES_HOME to per-test tempdirs so code that
-    reads ``~/.hermes/*`` can't touch the real one, and pins TZ/LANG so
+    Also redirects HOME and AGENTIC_OS_HOME to per-test tempdirs so code that
+    reads ``~/.agentic-os/*`` can't touch the real one, and pins TZ/LANG so
     datetime/locale-sensitive tests are deterministic.
     """
     # 1. Blank every credential-shaped env var that's currently set.
@@ -353,23 +353,23 @@ def _hermetic_environment(tmp_path, monkeypatch):
     # custom host resolution override/delete this explicitly.
     monkeypatch.setenv("HERMES_HONCHO_HOST", "hermes")
 
-    # 3. Redirect HERMES_HOME to a per-test tempdir. Code that reads
-    #    ``~/.hermes/*`` via ``get_agentic_os_home()`` now gets the tempdir.
+    # 3. Redirect AGENTIC_OS_HOME to a per-test tempdir. Code that reads
+    #    ``~/.agentic-os/*`` via ``get_agentic_os_home()`` now gets the tempdir.
     #
     #    NOTE: We do NOT also redirect HOME. Doing so broke CI because
     #    some tests (and their transitive deps) spawn subprocesses that
     #    inherit HOME and expect it to be stable. If a test genuinely
     #    needs HOME isolated, it should set it explicitly in its own
-    #    fixture. Any code in the codebase reading ``~/.hermes/*`` via
+    #    fixture. Any code in the codebase reading ``~/.agentic-os/*`` via
     #    ``Path.home() / ".hermes"`` instead of ``get_agentic_os_home()``
     #    is a bug to fix at the callsite.
-    fake_hermes_home = tmp_path / "hermes_test"
-    fake_hermes_home.mkdir()
-    (fake_hermes_home / "sessions").mkdir()
-    (fake_hermes_home / "cron").mkdir()
-    (fake_hermes_home / "memories").mkdir()
-    (fake_hermes_home / "skills").mkdir()
-    monkeypatch.setenv("HERMES_HOME", str(fake_hermes_home))
+    fake_agentic_os_home = tmp_path / "hermes_test"
+    fake_agentic_os_home.mkdir()
+    (fake_agentic_os_home / "sessions").mkdir()
+    (fake_agentic_os_home / "cron").mkdir()
+    (fake_agentic_os_home / "memories").mkdir()
+    (fake_agentic_os_home / "skills").mkdir()
+    monkeypatch.setenv("AGENTIC_OS_HOME", str(fake_agentic_os_home))
 
     # 4. Deterministic locale / timezone / hashseed. CI runs in UTC with
     #    C.UTF-8 locale; local dev often doesn't. Pin everything.
@@ -392,7 +392,7 @@ def _hermetic_environment(tmp_path, monkeypatch):
     monkeypatch.setenv("TIRITH_ENABLED", "false")
 
     # 5. Reset plugin singleton so tests don't leak plugins from
-    #    ~/.hermes/plugins/ (which, per step 3, is now empty — but the
+    #    ~/.agentic-os/plugins/ (which, per step 3, is now empty — but the
     #    singleton might still be cached from a previous test).
     try:
         import agentic_os_cli.plugins as _plugins_mod
@@ -408,7 +408,7 @@ def _hermetic_environment(tmp_path, monkeypatch):
 # Backward-compat alias — old tests reference this fixture name. Keep it
 # as a no-op wrapper so imports don't break.
 @pytest.fixture(autouse=True)
-def _isolate_hermes_home(_hermetic_environment):
+def _isolate_agentic_os_home(_hermetic_environment):
     """Alias preserved for any test that yields this name explicitly."""
     return None
 
@@ -511,7 +511,7 @@ def _ensure_current_event_loop(request):
 # (``cmd_update``, ``kill_gateway_processes``, ``stop_profile_gateway``).
 # When a single test forgets to mock either ``os.kill`` or the global
 # ``find_gateway_pids`` helper, the real call leaks out of the hermetic
-# environment and finds the developer's live ``hermes-gateway`` process
+# environment and finds the developer's live ``agentic-os-gateway`` process
 # via ``psutil`` — sending it SIGTERM mid-test. The shutdown forensics in
 # PR #23285 caught this happening 5+ times in 3 days, every time
 # correlated with a ``tests/agentic_os_cli/`` pytest run starting up.
@@ -523,7 +523,7 @@ def _ensure_current_event_loop(request):
 #    a hard ``RuntimeError`` so the offending test gets a stack trace
 #    instead of silently murdering the real gateway.
 #  • ``subprocess.run`` / ``subprocess.Popen`` / ``call`` / ``check_call`` /
-#    ``check_output`` reject any ``systemctl ... <verb> hermes-gateway``
+#    ``check_output`` reject any ``systemctl ... <verb> agentic-os-gateway``
 #    invocation that would mutate the live unit. Read-only systemctl
 #    calls (``status``, ``show``, ``list-units``) still pass through.
 #
@@ -572,7 +572,7 @@ def _live_system_guard(request, monkeypatch):
       • pty.spawn
       • asyncio.create_subprocess_exec / create_subprocess_shell
     Subprocess inspection looks at the WHOLE command string (not just
-    tokens[0]), so ``bash -c "systemctl restart hermes-gateway"``,
+    tokens[0]), so ``bash -c "systemctl restart agentic-os-gateway"``,
     ``sudo systemctl ...``, ``env systemctl ...``, ``setsid systemctl ...``
     are all caught. ``pkill``/``killall``/``taskkill`` invocations
     targeting hermes/python patterns are also blocked.
@@ -674,7 +674,7 @@ def _live_system_guard(request, monkeypatch):
 
     # ── Subprocess command-string inspection (whole-line) ──────────
     _HERMES_TOKENS = (
-        "hermes-gateway",
+        "agentic-os-gateway",
         "hermes.service",
         "agentic_os_cli.main gateway",
         "agentic_os_cli/main.py gateway",
@@ -749,7 +749,7 @@ def _live_system_guard(request, monkeypatch):
             raise RuntimeError(
                 f"tests/conftest.py live-system guard: blocked "
                 f"subprocess.{name}({cmd!r}) — would mutate the "
-                "live hermes-gateway systemd unit. Mock "
+                "live agentic-os-gateway systemd unit. Mock "
                 "subprocess.run / _run_systemctl in the test, or "
                 "mark with @pytest.mark.live_system_guard_bypass."
             )

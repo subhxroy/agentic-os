@@ -1,12 +1,12 @@
 # 1Password
 
-Resolve provider API keys from [1Password](https://1password.com/) at process startup instead of storing them in plaintext inside `~/.hermes/.env`. You keep your keys as 1Password items and reference them by `op://vault/item/field`; rotating a credential becomes a single change in 1Password.
+Resolve provider API keys from [1Password](https://1password.com/) at process startup instead of storing them in plaintext inside `~/.agentic-os/.env`. You keep your keys as 1Password items and reference them by `op://vault/item/field`; rotating a credential becomes a single change in 1Password.
 
 ## How it works
 
 1. You install the official [1Password CLI](https://developer.1password.com/docs/cli/get-started/) (`op`) and authenticate it — either with a **service-account token** (headless servers) or an **interactive/desktop session** (your laptop).
-2. You map environment-variable names to `op://` references in `~/.hermes/config.yaml`.
-3. Every time `hermes` (or the gateway, or a cron job) starts, after `~/.hermes/.env` has loaded, Hermes runs `op read` for each reference and sets the resolved values into `os.environ`.
+2. You map environment-variable names to `op://` references in `~/.agentic-os/config.yaml`.
+3. Every time `hermes` (or the gateway, or a cron job) starts, after `~/.agentic-os/.env` has loaded, Hermes runs `op read` for each reference and sets the resolved values into `os.environ`.
 4. By default Hermes **overrides** values already in your environment, so 1Password is the source of truth — rotate a credential once and every Hermes process picks it up on next start. Flip `override_existing: false` if you want `.env` to win instead.
 
 Hermes never authenticates on your behalf and never downloads `op`: it shells out to your already-installed, already-trusted CLI. If `op` is missing, your session is locked, or a reference is wrong, Hermes prints a one-line warning and continues with whatever credentials `.env` already had — it never blocks startup.
@@ -15,20 +15,20 @@ Hermes never authenticates on your behalf and never downloads `op`: it shells ou
 
 `op` supports two non-interactive-friendly modes; Hermes works with either:
 
-- **Service accounts** (recommended for servers/CI): create a service account in 1Password, grant it read access to the relevant vault, and export its token as `OP_SERVICE_ACCOUNT_TOKEN` in `~/.hermes/.env`. The token is the credential — treat it like any other bearer token.
+- **Service accounts** (recommended for servers/CI): create a service account in 1Password, grant it read access to the relevant vault, and export its token as `OP_SERVICE_ACCOUNT_TOKEN` in `~/.agentic-os/.env`. The token is the credential — treat it like any other bearer token.
 - **Desktop / interactive sessions** (laptops): run `op signin` (or enable CLI integration in the 1Password app). Hermes passes your `OP_SESSION_*` variables through to the `op` child process. The 1Password cache key includes those session variables, so signing into a different account never serves a value cached under the previous identity.
 
 ## Bootstrap token
 
 When you authenticate with a **service-account token**, that token is itself the bootstrap credential Agentic OS needs *before* it can resolve any `op://` reference. It must be present in `os.environ` of every process that resolves secrets — including cron jobs (`kanban.dispatch_in_gateway: false`), subprocess invocations, CLI runs, macOS launchd agents, and Docker containers — not just the interactive gateway. There are three ways to make it available, in order of precedence:
 
-1. **In `~/.hermes/.env` (recommended).** `hermes secrets onepassword setup --token <token>` writes the token to `~/.hermes/.env`, exactly like Bitwarden's `BWS_ACCESS_TOKEN`. Because `load_hermes_dotenv()` always loads `.env`, the token is available everywhere with zero extra setup. This is the simplest reliable option.
+1. **In `~/.agentic-os/.env` (recommended).** `hermes secrets onepassword setup --token <token>` writes the token to `~/.agentic-os/.env`, exactly like Bitwarden's `BWS_ACCESS_TOKEN`. Because `load_hermes_dotenv()` always loads `.env`, the token is available everywhere with zero extra setup. This is the simplest reliable option.
 
-2. **In `~/.hermes/.op.env` (gitignored).** If you'd rather keep the service-account token out of `.env` — for example so `.env` can be checked into a private dotfiles repo while the token stays out of version control — place it in `~/.hermes/.op.env`:
+2. **In `~/.agentic-os/.op.env` (gitignored).** If you'd rather keep the service-account token out of `.env` — for example so `.env` can be checked into a private dotfiles repo while the token stays out of version control — place it in `~/.agentic-os/.op.env`:
 
    ```bash
-   echo 'OP_SERVICE_ACCOUNT_TOKEN=ops_...' > ~/.hermes/.op.env
-   chmod 600 ~/.hermes/.op.env
+   echo 'OP_SERVICE_ACCOUNT_TOKEN=ops_...' > ~/.agentic-os/.op.env
+   chmod 600 ~/.agentic-os/.op.env
    ```
 
    Hermes auto-loads `.op.env` at startup, **after** `.env`, and **never** overrides a token already present in the environment. `.op.env` is gitignored so the token never enters a committed file.
@@ -104,7 +104,7 @@ From now on, every `hermes` invocation resolves the references at startup. You'l
 
 ## Configuration
 
-Defaults in `~/.hermes/config.yaml`:
+Defaults in `~/.agentic-os/config.yaml`:
 
 ```yaml
 secrets:
@@ -155,14 +155,14 @@ Successful, complete pulls are cached in-process and on disk under `<hermes_home
 
 ## Security notes
 
-- A 1Password service-account token can read every secret the account has access to. Store it in `~/.hermes/.env` (not `config.yaml`), and revoke + regenerate from 1Password if it leaks.
+- A 1Password service-account token can read every secret the account has access to. Store it in `~/.agentic-os/.env` (not `config.yaml`), and revoke + regenerate from 1Password if it leaks.
 - Hermes refuses to let a resolved value overwrite the token env var itself, even with `override_existing: true`.
 - The `op` child process gets a minimal allowlisted environment (auth/session vars + `PATH`/`HOME`), not a copy of the full `os.environ`, so post-dotenv provider credentials aren't all inherited by the child.
 - References are validated to start with `op://`, and the reference is passed after a `--` option terminator so a crafted value can't be parsed as an `op` flag.
 
 ## When NOT to use this
 
-- **Single-machine personal setups** where `~/.hermes/.env` is fine.
+- **Single-machine personal setups** where `~/.agentic-os/.env` is fine.
 - **Air-gapped environments** that can't reach 1Password.
 - **CI/CD** where an existing secrets-injection mechanism is already wired up — pick one path, not two.
 

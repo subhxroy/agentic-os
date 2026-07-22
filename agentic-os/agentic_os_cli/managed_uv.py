@@ -1,10 +1,10 @@
 """Managed uv — one path, no guessing.
 
-Hermes owns its own uv binary at ``$HERMES_HOME/bin/uv`` (or ``uv.exe`` on
+Hermes owns its own uv binary at ``$AGENTIC_OS_HOME/bin/uv`` (or ``uv.exe`` on
 Windows).  Every code path that needs uv resolves it from that single location.
 If the binary is missing, ``ensure_uv()`` bootstraps it via the official
 standalone installer with ``UV_UNMANAGED_INSTALL`` / ``UV_INSTALL_DIR`` pointed
-at ``$HERMES_HOME/bin`` so the installer writes directly there — no PATH
+at ``$AGENTIC_OS_HOME/bin`` so the installer writes directly there — no PATH
 probing, no conda guards, no multi-location resolution chains.
 """
 
@@ -30,7 +30,7 @@ logger = logging.getLogger(__name__)
 def managed_uv_path() -> Path:
     """Return the path where Hermes keeps *its* uv binary.
 
-    ``$HERMES_HOME/bin/uv`` on POSIX, ``$HERMES_HOME\\bin\\uv.exe`` on
+    ``$AGENTIC_OS_HOME/bin/uv`` on POSIX, ``$AGENTIC_OS_HOME\\bin\\uv.exe`` on
     Windows.  The directory may not exist yet — callers should use
     ``ensure_uv()`` to bootstrap it.
     """
@@ -196,7 +196,7 @@ def _install_uv(target: Path) -> None:
 
     Uses ``UV_UNMANAGED_INSTALL`` (POSIX) or ``UV_INSTALL_DIR`` (Windows)
     so the astral installer writes the binary directly into
-    ``$HERMES_HOME/bin/`` instead of ``~/.local/bin/``.
+    ``$AGENTIC_OS_HOME/bin/`` instead of ``~/.local/bin/``.
     """
     system = platform.system()
     env = {

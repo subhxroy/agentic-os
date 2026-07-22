@@ -96,7 +96,7 @@ def _spawn_view():
     return {
         "HERMES_SESSION_CHAT_ID": env.get("HERMES_SESSION_CHAT_ID"),
         "HERMES_SESSION_THREAD_ID": env.get("HERMES_SESSION_THREAD_ID"),
-        "HERMES_SESSION_KEY": env.get("HERMES_SESSION_KEY"),
+        "AGENTIC_OS_SESSION_KEY": env.get("AGENTIC_OS_SESSION_KEY"),
     }
 
 
@@ -155,14 +155,14 @@ def test_reset_session_vars_closes_inheritance_leak():
     captured = asyncio.run(_child_turn(reset_first=True))
 
     window = captured["window"]
-    for var in ("HERMES_SESSION_CHAT_ID", "HERMES_SESSION_THREAD_ID", "HERMES_SESSION_KEY"):
+    for var in ("HERMES_SESSION_CHAT_ID", "HERMES_SESSION_THREAD_ID", "AGENTIC_OS_SESSION_KEY"):
         assert window[var] is None, (
             f"{var} leaked the parent session after reset: {window[var]!r}"
         )
 
     # B's own session still binds correctly after the reset window.
     assert captured["bound"]["HERMES_SESSION_CHAT_ID"] == "FOREIGN_CHAT"
-    assert captured["bound"]["HERMES_SESSION_KEY"] == FOREIGN["session_key"]
+    assert captured["bound"]["AGENTIC_OS_SESSION_KEY"] == FOREIGN["session_key"]
 
 
 def test_reset_session_vars_restores_unset_not_empty():

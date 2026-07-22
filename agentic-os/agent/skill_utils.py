@@ -434,7 +434,7 @@ def get_external_skills_dirs() -> List[Path]:
 
     Each entry is expanded (``~`` and ``${VAR}``) and resolved to an absolute
     path.  Only directories that actually exist are returned.  Duplicates and
-    paths that resolve to the local ``~/.hermes/skills/`` are silently skipped.
+    paths that resolve to the local ``~/.agentic-os/skills/`` are silently skipped.
 
     Cached in-process, keyed on ``config.yaml`` mtime — the function is
     called once per skill during banner / tool-registry scans, and YAML
@@ -492,7 +492,7 @@ def get_external_skills_dirs() -> List[Path]:
         # Expand ~ and environment variables
         expanded = os.path.expanduser(os.path.expandvars(entry))
         p = Path(expanded)
-        # Resolve relative paths against HERMES_HOME, not cwd
+        # Resolve relative paths against AGENTIC_OS_HOME, not cwd
         if not p.is_absolute():
             p = (hermes_home / p).resolve()
         else:
@@ -513,7 +513,7 @@ def get_external_skills_dirs() -> List[Path]:
 
 
 def get_all_skills_dirs() -> List[Path]:
-    """Return all skill directories: local ``~/.hermes/skills/`` first, then external.
+    """Return all skill directories: local ``~/.agentic-os/skills/`` first, then external.
 
     The local dir is always first (and always included even if it doesn't exist
     yet — callers handle that).  External dirs follow in config order.
@@ -527,7 +527,7 @@ def normalize_skill_lookup_name(identifier: str) -> str:
     """Normalize a skill identifier to a ``skill_view()``-safe relative path.
 
     Slash commands and cron jobs may store absolute paths to skills that live
-    under ``~/.hermes/skills/`` (including via symlinks) or configured
+    under ``~/.agentic-os/skills/`` (including via symlinks) or configured
     ``skills.external_dirs``. ``skill_view()`` rejects absolute names for
     security, so callers must translate trusted absolute paths to their
     relative form first.
@@ -560,7 +560,7 @@ def normalize_skill_lookup_name(identifier: str) -> str:
 
     # Prefer the lexical path under a trusted skill root before resolving
     # symlinks. Slash-command discovery can legitimately find a skill via
-    # ~/.hermes/skills/<name> where <name> is a symlink to a checked-out
+    # ~/.agentic-os/skills/<name> where <name> is a symlink to a checked-out
     # skill elsewhere. Resolving first turns that trusted visible path into
     # an arbitrary absolute path that skill_view() refuses to load.
     for root in trusted_roots:

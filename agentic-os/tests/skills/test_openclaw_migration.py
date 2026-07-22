@@ -12,12 +12,12 @@ SCRIPT_PATH = (
     / "migration"
     / "openclaw-migration"
     / "scripts"
-    / "openclaw_to_hermes.py"
+    / "openclaw_to_agentic_os.py"
 )
 
 
 def load_module():
-    spec = importlib.util.spec_from_file_location("openclaw_to_hermes", SCRIPT_PATH)
+    spec = importlib.util.spec_from_file_location("openclaw_to_agentic_os", SCRIPT_PATH)
     module = importlib.util.module_from_spec(spec)
     assert spec.loader is not None
     sys.modules[spec.name] = module
@@ -842,7 +842,7 @@ def test_skill_installs_cleanly_under_skills_guard():
     # python_os_environ  — reads MIGRATION_JSON_OUTPUT to enable JSON output mode
     #                      (feature flag, not an env dump)
     # hermes_config_mod  — print statements in the post-migration summary that
-    #                      tell the user to *review* ~/.hermes/config.yaml;
+    #                      tell the user to *review* ~/.agentic-os/config.yaml;
     #                      the script never writes to that file
     #
     # Accept "caution" or "safe" — just not "dangerous" from a *real* threat.
@@ -863,7 +863,7 @@ def test_rebrand_text_replaces_openclaw_variants():
     assert mod.rebrand_text("Open-Claw config is great") == "Hermes config is great"
     assert mod.rebrand_text("OPENCLAW uses tools well") == "Hermes uses tools well"
     # All-lowercase matches → lowercase ``hermes``; this preserves the
-    # real filesystem path ``~/.hermes`` (Hermes home) when rebranding
+    # real filesystem path ``~/.agentic-os`` (Hermes home) when rebranding
     # memory entries that reference ``~/.openclaw`` or ``openclaw`` prose.
     assert mod.rebrand_text("openclaw should always respond concisely") == "hermes should always respond concisely"
 
@@ -901,12 +901,12 @@ def test_rebrand_text_preserves_filesystem_path_casing():
     """
     mod = load_module()
     assert mod.rebrand_text("config is at ~/.openclaw/config.yaml") == \
-        "config is at ~/.hermes/config.yaml"
+        "config is at ~/.agentic-os/config.yaml"
     assert mod.rebrand_text("use .openclaw directory") == "use .hermes directory"
     assert mod.rebrand_text("Path.home() / '.openclaw'") == "Path.home() / '.hermes'"
     # Sentence with both lowercase path and capitalized prose.
     assert mod.rebrand_text("openclaw config path: ~/.openclaw/") == \
-        "hermes config path: ~/.hermes/"
+        "hermes config path: ~/.agentic-os/"
 
 
 def test_migrate_memory_rebrands_entries(tmp_path):

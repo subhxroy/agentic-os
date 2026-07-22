@@ -75,7 +75,7 @@ def _isolated_config(tmp_path, monkeypatch):
     hermes_home = tmp_path / ".hermes"
     hermes_home.mkdir()
     (hermes_home / "config.yaml").write_text("model:\n  default: gpt-x\n  provider: openrouter\nproviders: {}\n", encoding="utf-8")
-    monkeypatch.setattr(gateway_run, "_hermes_home", hermes_home)
+    monkeypatch.setattr(gateway_run, "_agentic_os_home", hermes_home)
     monkeypatch.setattr("agent.models_dev.fetch_models_dev", lambda: {})
     return hermes_home
 

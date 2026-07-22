@@ -338,8 +338,8 @@ export const pt: Translations = {
     providersHint:
       "Escreve memory.provider (vazio = incorporado) e context.engine no config.yaml. Aplicado na próxima sessão.",
     refreshDashboard: "Re-analisar extensões do dashboard",
-    removeConfirm: "Remover este plugin de ~/.hermes/plugins/?",
-    removeHint: "Apenas plugins instalados pelo utilizador em ~/.hermes/plugins podem ser removidos.",
+    removeConfirm: "Remover este plugin de ~/.agentic-os/plugins/?",
+    removeHint: "Apenas plugins instalados pelo utilizador em ~/.agentic-os/plugins podem ser removidos.",
     rescanHeading: "Registo de plugins SPA",
     rescanHint: "Re-analise depois de adicionar ficheiros em disco para que a barra lateral detete novos manifestos.",
     runtimeHeading: "Runtime do gateway (plugins YAML)",
@@ -361,7 +361,7 @@ export const pt: Translations = {
     all: "Todas",
     categories: "Categorias",
     filters: "Filtros",
-    noSkills: "Nenhuma competência encontrada. As competências são carregadas de ~/.hermes/skills/",
+    noSkills: "Nenhuma competência encontrada. As competências são carregadas de ~/.agentic-os/skills/",
     noSkillsMatch: "Nenhuma competência corresponde à pesquisa ou filtro.",
     skillCount: "{count} competência{s}",
     resultCount: "{count} resultado{s}",
@@ -375,7 +375,7 @@ export const pt: Translations = {
   },
 
   config: {
-    configPath: "~/.hermes/config.yaml",
+    configPath: "~/.agentic-os/config.yaml",
     filters: "Filtros",
     sections: "Secções",
     exportConfig: "Exportar configuração como JSON",

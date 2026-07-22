@@ -1,6 +1,6 @@
 # Spotify
 
-Hermes can control Spotify directly — playback, queue, search, playlists, saved tracks/albums, and listening history — using Spotify's official Web API with PKCE OAuth. Tokens are stored in `~/.hermes/auth.json` and refreshed automatically on 401; you only log in once per machine (refresh tokens expire after ~6 months; re-run `hermes auth spotify` when they do).
+Hermes can control Spotify directly — playback, queue, search, playlists, saved tracks/albums, and listening history — using Spotify's official Web API with PKCE OAuth. Tokens are stored in `~/.agentic-os/auth.json` and refreshed automatically on 401; you only log in once per machine (refresh tokens expire after ~6 months; re-run `hermes auth spotify` when they do).
 
 Unlike Hermes' built-in OAuth integrations (Google, GitHub Copilot, Codex), Spotify requires every user to register their own lightweight developer app. Spotify does not let third parties ship a public OAuth app that anyone can use. It takes about two minutes and `hermes auth spotify` walks you through it.
 
@@ -49,10 +49,10 @@ If no `HERMES_SPOTIFY_CLIENT_ID` is set, Hermes walks you through the app regist
 1. Opens `https://developer.spotify.com/dashboard` in your browser
 2. Prints the exact values to paste into Spotify's "Create app" form
 3. Prompts you for the Client ID you get back
-4. Saves it to `~/.hermes/.env` so future runs skip this step
+4. Saves it to `~/.agentic-os/.env` so future runs skip this step
 5. Continues straight into the OAuth consent flow
 
-After you approve, tokens are written under `providers.spotify` in `~/.hermes/auth.json`. The active inference provider is NOT changed — Spotify auth is independent of your LLM provider.
+After you approve, tokens are written under `providers.spotify` in `~/.agentic-os/auth.json`. The active inference provider is NOT changed — Spotify auth is independent of your LLM provider.
 
 ### Creating the Spotify app (what the wizard asks for)
 
@@ -60,7 +60,7 @@ When the dashboard opens, click **Create app** and fill in:
 
 | Field | Value |
 |-------|-------|
-| App name | anything (e.g. `hermes-agent`) |
+| App name | anything (e.g. `agentic-os`) |
 | App description | anything (e.g. `personal Hermes integration`) |
 | Website | leave blank |
 | Redirect URI | `http://127.0.0.1:43827/spotify/callback` |
@@ -225,7 +225,7 @@ Full cron reference: [Cron Jobs](./cron).
 hermes auth logout spotify
 ```
 
-Removes tokens from `~/.hermes/auth.json`. To also clear the app config, delete `HERMES_SPOTIFY_CLIENT_ID` (and `HERMES_SPOTIFY_REDIRECT_URI` if you set it) from `~/.hermes/.env`, or run the wizard again.
+Removes tokens from `~/.agentic-os/auth.json`. To also clear the app config, delete `HERMES_SPOTIFY_CLIENT_ID` (and `HERMES_SPOTIFY_REDIRECT_URI` if you set it) from `~/.agentic-os/.env`, or run the wizard again.
 
 To revoke the app on Spotify's side, visit [Apps connected to your account](https://www.spotify.com/account/apps/) and click **REMOVE ACCESS**.
 
@@ -237,7 +237,7 @@ To revoke the app on Spotify's side, visit [Apps connected to your account](http
 
 **`204 No Content` on `get_currently_playing`** — nothing is currently playing on any device. This is Spotify's normal response, not an error; Hermes surfaces it as an explanatory empty result (`is_playing: false`).
 
-**`INVALID_CLIENT: Invalid redirect URI`** — the redirect URI in your Spotify app settings doesn't match what Hermes is using. The default is `http://127.0.0.1:43827/spotify/callback`. Either add that to your app's allowed redirect URIs, or set `HERMES_SPOTIFY_REDIRECT_URI` in `~/.hermes/.env` to whatever you registered.
+**`INVALID_CLIENT: Invalid redirect URI`** — the redirect URI in your Spotify app settings doesn't match what Hermes is using. The default is `http://127.0.0.1:43827/spotify/callback`. Either add that to your app's allowed redirect URIs, or set `HERMES_SPOTIFY_REDIRECT_URI` in `~/.agentic-os/.env` to whatever you registered.
 
 **`429 Too Many Requests`** — Spotify's rate limit. Hermes returns a friendly error; wait a minute and retry. If this persists, you're probably running a tight loop in a script — Spotify's quota resets roughly every 30 seconds.
 
@@ -261,7 +261,7 @@ Scope reference: [Spotify Web API scopes](https://developer.spotify.com/document
 hermes auth spotify --client-id <id> --redirect-uri http://localhost:3000/callback
 ```
 
-Or set them permanently in `~/.hermes/.env`:
+Or set them permanently in `~/.agentic-os/.env`:
 
 ```
 HERMES_SPOTIFY_CLIENT_ID=<your_id>
@@ -274,6 +274,6 @@ The redirect URI must be allow-listed in your Spotify app's settings. The defaul
 
 | File | Contents |
 |------|----------|
-| `~/.hermes/auth.json` → `providers.spotify` | access token, refresh token, expiry, scope, redirect URI |
-| `~/.hermes/.env` | `HERMES_SPOTIFY_CLIENT_ID`, optional `HERMES_SPOTIFY_REDIRECT_URI` |
+| `~/.agentic-os/auth.json` → `providers.spotify` | access token, refresh token, expiry, scope, redirect URI |
+| `~/.agentic-os/.env` | `HERMES_SPOTIFY_CLIENT_ID`, optional `HERMES_SPOTIFY_REDIRECT_URI` |
 | Spotify app | owned by you at [developer.spotify.com/dashboard](https://developer.spotify.com/dashboard); contains the Client ID and the redirect URI allow-list |

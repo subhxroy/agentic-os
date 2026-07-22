@@ -25,7 +25,7 @@ import time
 from dataclasses import dataclass, field
 from typing import Any, Optional
 
-from tools.environments.local import hermes_subprocess_env
+from tools.environments.local import agentic_os_subprocess_env
 
 # Default minimum codex version we test against. The PR sets this from the
 # `codex --version` parsed at install time; bumping is a one-line change here.
@@ -87,7 +87,7 @@ class CodexAppServerClient:
         # centralized helper so Tier-1 + dynamic-internal secrets are always
         # stripped while provider creds still flow, matching copilot_acp_client
         # (#29157 sibling spawn-site gap).
-        spawn_env = hermes_subprocess_env(inherit_credentials=True)
+        spawn_env = agentic_os_subprocess_env(inherit_credentials=True)
         if env:
             spawn_env.update(env)
         if codex_home:
@@ -107,7 +107,7 @@ class CodexAppServerClient:
                 else spawn_env.get(
                     "HERMES_KANBAN_ROOT",
                     os.path.join(
-                        spawn_env.get("HERMES_HOME", os.path.expanduser("~/.hermes")),
+                        spawn_env.get("AGENTIC_OS_HOME", os.path.expanduser("~/.agentic-os")),
                         "kanban",
                     ),
                 )

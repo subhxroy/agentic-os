@@ -15,7 +15,7 @@ Configure, extend, or contribute to Agentic OS.
 | | |
 |---|---|
 | Source | Bundled (installed by default) |
-| Path | `skills/autonomous-ai-agents/hermes-agent` |
+| Path | `skills/autonomous-ai-agents/agentic-os` |
 | Version | `2.1.0` |
 | Author | Agentic OS + Teknium |
 | License | MIT |
@@ -305,7 +305,7 @@ The registry of record is `hermes_cli/commands.py` — every consumer
 /toolsets            List toolsets (CLI)
 /skills              Search/install skills (CLI)
 /skill <name>        Load a skill into session
-/reload-skills       Re-scan ~/.hermes/skills/ for added/removed skills
+/reload-skills       Re-scan ~/.agentic-os/skills/ for added/removed skills
 /reload              Reload .env variables into the running session (CLI)
 /reload-mcp          Reload MCP servers
 /cron                Manage cron jobs (CLI)
@@ -358,17 +358,17 @@ The registry of record is `hermes_cli/commands.py` — every consumer
 ## Key Paths & Config
 
 ```
-~/.hermes/config.yaml       Main configuration
-~/.hermes/.env              API keys and secrets (under $HERMES_HOME if set)
-$HERMES_HOME/skills/        Installed skills
-~/.hermes/sessions/         Gateway routing index, request dumps, *.jsonl transcripts (and optional per-session JSON snapshots when sessions.write_json_snapshots: true)
-~/.hermes/state.db          Canonical session store (SQLite + FTS5)
-~/.hermes/logs/             Gateway and error logs
-~/.hermes/auth.json         OAuth tokens and credential pools
-~/.hermes/hermes-agent/     Source code (if git-installed)
+~/.agentic-os/config.yaml       Main configuration
+~/.agentic-os/.env              API keys and secrets (under $AGENTIC_OS_HOME if set)
+$AGENTIC_OS_HOME/skills/        Installed skills
+~/.agentic-os/sessions/         Gateway routing index, request dumps, *.jsonl transcripts (and optional per-session JSON snapshots when sessions.write_json_snapshots: true)
+~/.agentic-os/state.db          Canonical session store (SQLite + FTS5)
+~/.agentic-os/logs/             Gateway and error logs
+~/.agentic-os/auth.json         OAuth tokens and credential pools
+~/.agentic-os/agentic-os/     Source code (if git-installed)
 ```
 
-Profiles use `~/.hermes/profiles/<name>/` with the same layout.
+Profiles use `~/.agentic-os/profiles/<name>/` with the same layout.
 
 ### Config Sections
 
@@ -511,7 +511,7 @@ Note: YOLO / `approvals.mode: off` does NOT turn off secret redaction. They are 
 
 ### Shell hooks allowlist
 
-Some shell-hook integrations require explicit allowlisting before they fire. Managed via `~/.hermes/shell-hooks-allowlist.json` — prompted interactively the first time a hook wants to run.
+Some shell-hook integrations require explicit allowlisting before they fire. Managed via `~/.agentic-os/shell-hooks-allowlist.json` — prompted interactively the first time a hook wants to run.
 
 ### Disabling the web/browser/image-gen tools
 
@@ -692,7 +692,7 @@ so nothing is lost.
   Bundled + hub-installed skills are off-limits. **Never deletes** —
   max destructive action is archive. Pinned skills are exempt from
   every auto-transition and every LLM review pass.
-- **Telemetry:** sidecar at `~/.hermes/skills/.usage.json` holds
+- **Telemetry:** sidecar at `~/.agentic-os/skills/.usage.json` holds
   per-skill `use_count`, `view_count`, `patch_count`,
   `last_activity_at`, `state`, `pinned`.
 
@@ -852,13 +852,13 @@ and logs — avoids shell-escaping backslashes in bash.
 ### Gateway issues
 Check logs first:
 ```bash
-grep -i "failed to send\|error" ~/.hermes/logs/gateway.log | tail -20
+grep -i "failed to send\|error" ~/.agentic-os/logs/gateway.log | tail -20
 ```
 
 Common gateway problems:
 - **Gateway dies on SSH logout**: Enable linger: `sudo loginctl enable-linger $USER`
 - **Gateway dies on WSL2 close**: WSL2 requires `systemd=true` in `/etc/wsl.conf` for systemd services to work. Without it, gateway falls back to `nohup` (dies when session closes).
-- **Gateway crash loop**: Reset the failed state: `systemctl --user reset-failed hermes-gateway`
+- **Gateway crash loop**: Reset the failed state: `systemctl --user reset-failed agentic-os-gateway`
 
 ### Platform-specific issues
 - **Discord bot silent**: Must enable **Message Content Intent** in Bot → Privileged Gateway Intents.
@@ -906,9 +906,9 @@ multi-source resolution chain (highest priority first):
 | Memory | `hermes memory status` or [Memory docs](https://agentic-os.nousresearch.com/docs/user-guide/features/memory) |
 | Env variables | `hermes config env-path` or [Env vars reference](https://agentic-os.nousresearch.com/docs/reference/environment-variables) |
 | CLI commands | `hermes --help` or [CLI reference](https://agentic-os.nousresearch.com/docs/reference/cli-commands) |
-| Gateway logs | `~/.hermes/logs/gateway.log` |
+| Gateway logs | `~/.agentic-os/logs/gateway.log` |
 | Session files | `hermes sessions browse` (reads state.db) |
-| Source code | `~/.hermes/hermes-agent/` |
+| Source code | `~/.agentic-os/agentic-os/` |
 
 ---
 
@@ -920,12 +920,12 @@ For occasional contributors and PR authors. Full developer docs: https://agentic
 
 <!-- ascii-guard-ignore -->
 ```
-hermes-agent/
+agentic-os/
 ├── run_agent.py          # AIAgent — core conversation loop
 ├── model_tools.py        # Tool discovery and dispatch
 ├── toolsets.py           # Toolset definitions
 ├── cli.py                # Interactive CLI (HermesCLI)
-├── hermes_state.py       # SQLite session store
+├── agentic_os_state.py       # SQLite session store
 ├── agent/                # Prompt builder, context compression, memory, model routing, credential pooling, skill dispatch
 ├── hermes_cli/           # CLI subcommands, config, setup, commands
 │   ├── commands.py       # Slash command registry (CommandDef)
@@ -941,7 +941,7 @@ hermes-agent/
 ```
 <!-- ascii-guard-ignore-end -->
 
-Config: `~/.hermes/config.yaml` (settings), `~/.hermes/.env` (API keys) — both under `$HERMES_HOME` when it is set.
+Config: `~/.agentic-os/config.yaml` (settings), `~/.agentic-os/.env` (API keys) — both under `$AGENTIC_OS_HOME` when it is set.
 
 ### Adding a Tool (3 files)
 
@@ -971,7 +971,7 @@ registry.register(
 
 Auto-discovery: any `tools/*.py` file with a top-level `registry.register()` call is imported automatically — no manual list needed.
 
-All handlers must return JSON strings. Use `get_agentic_os_home()` for paths, never hardcode `~/.hermes`.
+All handlers must return JSON strings. Use `get_agentic_os_home()` for paths, never hardcode `~/.agentic-os`.
 
 ### Adding a Slash Command
 
@@ -1000,7 +1000,7 @@ python -m pytest tests/ -o 'addopts=' -q   # Full suite
 python -m pytest tests/tools/ -q            # Specific area
 ```
 
-- Tests auto-redirect `HERMES_HOME` to temp dirs — never touch real `~/.hermes/`
+- Tests auto-redirect `AGENTIC_OS_HOME` to temp dirs — never touch real `~/.agentic-os/`
 - Run full suite before pushing any change
 - Use `-o 'addopts='` to clear any baked-in pytest flags
 
@@ -1056,6 +1056,6 @@ Types: `fix:`, `feat:`, `refactor:`, `docs:`, `chore:`
 
 - **Never break prompt caching** — don't change context, tools, or system prompt mid-conversation
 - **Message role alternation** — never two assistant or two user messages in a row
-- Use `get_agentic_os_home()` from `hermes_constants` for all paths (profile-safe)
+- Use `get_agentic_os_home()` from `agentic_os_constants` for all paths (profile-safe)
 - Config values go in `config.yaml`, secrets go in `.env`
 - New tools need a `check_fn` so they only appear when requirements are met

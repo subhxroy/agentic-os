@@ -82,7 +82,7 @@ Create an `AGENTS.md` in your project root with architecture decisions, coding c
 
 ### SOUL.md: Customize Personality
 
-Want Hermes to have a stable default voice? Edit `~/.hermes/SOUL.md` (or `$HERMES_HOME/SOUL.md` if you use a custom Hermes home). Hermes now seeds a starter SOUL automatically and uses that global file as the instance-wide personality source.
+Want Hermes to have a stable default voice? Edit `~/.agentic-os/SOUL.md` (or `$AGENTIC_OS_HOME/SOUL.md` if you use a custom Hermes home). Hermes now seeds a starter SOUL automatically and uses that global file as the instance-wide personality source.
 
 For a full walkthrough, see [Use SOUL.md with Hermes](/guides/use-soul-with-hermes).
 
@@ -174,7 +174,7 @@ Instead of manually collecting user IDs for allowlists, enable DM pairing. When 
 Use `/verbose` to control how much tool activity you see. In messaging platforms, less is usually more — keep it on "new" to see just new tool calls. In the CLI, "all" gives you a satisfying live view of everything the agent does.
 
 :::tip
-By default, messaging sessions never auto-reset — context lives until you `/reset` or compression kicks in. If you want sessions to reset automatically (after idle time or daily at a fixed hour), opt in via the `session_reset` section in `~/.hermes/config.yaml`.
+By default, messaging sessions never auto-reset — context lives until you `/reset` or compression kicks in. If you want sessions to reset automatically (after idle time or daily at a fixed hour), opt in via the `session_reset` section in `~/.agentic-os/config.yaml`.
 :::
 
 ## Security

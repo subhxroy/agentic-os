@@ -7,7 +7,7 @@ import { sessionMatchesSearch } from './session-search'
 function makeSession(overrides: Partial<SessionInfo> = {}): SessionInfo {
   return {
     archived: false,
-    cwd: '/home/user/projects/hermes-agent',
+    cwd: '/home/user/projects/agentic-os',
     ended_at: null,
     id: '20260603_090200_abcd12',
     input_tokens: 0,
@@ -49,7 +49,7 @@ describe('sessionMatchesSearch', () => {
 
     expect(sessionMatchesSearch(session, 'desktop search')).toBe(true)
     expect(sessionMatchesSearch(session, 'session search')).toBe(true)
-    expect(sessionMatchesSearch(session, 'hermes-agent')).toBe(true)
+    expect(sessionMatchesSearch(session, 'agentic-os')).toBe(true)
   })
 
   it('matches sessions by git branch', () => {

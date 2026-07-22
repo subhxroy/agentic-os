@@ -1387,11 +1387,11 @@ def _home_thread_env_var(platform_name: str) -> str:
 
 def _restart_notification_pending() -> bool:
     """Return True when a /restart completion marker is waiting to be delivered."""
-    return (_hermes_home / ".restart_notify.json").exists()
+    return (_agentic_os_home / ".restart_notify.json").exists()
 
 
 def _planned_restart_notification_path() -> Path:
-    return _hermes_home / ".restart_pending.json"
+    return _agentic_os_home / ".restart_pending.json"
 
 
 def _planned_restart_notification_pending() -> bool:
@@ -1412,23 +1412,23 @@ _ensure_ssl_certs()
 # Add parent directory to path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-# Resolve Hermes home directory (respects HERMES_HOME override)
+# Resolve Hermes home directory (respects AGENTIC_OS_HOME override)
 from agentic_os_constants import get_agentic_os_home, get_agentic_os_home_override
 from utils import atomic_json_write, atomic_yaml_write, base_url_host_matches, is_truthy_value
-_hermes_home = get_agentic_os_home()
+_agentic_os_home = get_agentic_os_home()
 
-# Load environment variables from ~/.hermes/.env first.
+# Load environment variables from ~/.agentic-os/.env first.
 # User-managed env files should override stale shell exports on restart.
 from dotenv import load_dotenv  # noqa: F401  # backward-compat for tests that monkeypatch this symbol
 from agentic_os_cli.env_loader import load_hermes_dotenv
-_env_path = _hermes_home / '.env'
-load_hermes_dotenv(hermes_home=_hermes_home, project_env=Path(__file__).resolve().parents[1] / '.env')
+_env_path = _agentic_os_home / '.env'
+load_hermes_dotenv(hermes_home=_agentic_os_home, project_env=Path(__file__).resolve().parents[1] / '.env')
 
 
 def _reload_runtime_env_preserving_config_authority() -> None:
     """Reload .env for fresh credentials without letting stale .env override config.
 
-    Gateway processes are long-lived, so per-turn code reloads ~/.hermes/.env to
+    Gateway processes are long-lived, so per-turn code reloads ~/.agentic-os/.env to
     pick up rotated API keys. config.yaml remains authoritative for agent budget
     settings such as agent.max_turns; otherwise a stale HERMES_MAX_ITERATIONS in
     .env can replace the startup bridge on later turns.
@@ -1444,14 +1444,14 @@ def _reload_runtime_env_preserving_config_authority() -> None:
         # Credentials are resolved from the active profile's secret scope, not
         # os.environ. Still honor config.yaml's agent.max_turns bridge below
         # using the scoped home, but never reload .env into global env.
-        _bridge_max_turns_from_config(_hermes_home)
+        _bridge_max_turns_from_config(_agentic_os_home)
         return
 
     load_hermes_dotenv(
-        hermes_home=_hermes_home,
+        hermes_home=_agentic_os_home,
         project_env=Path(__file__).resolve().parents[1] / '.env',
     )
-    _bridge_max_turns_from_config(_hermes_home)
+    _bridge_max_turns_from_config(_agentic_os_home)
 
 
 def _bridge_max_turns_from_config(home: "Path") -> None:
@@ -1615,7 +1615,7 @@ _DOCKER_MEDIA_OUTPUT_CONTAINER_PATHS = {"/output", "/outputs"}
 
 # Bridge config.yaml values into the environment so os.getenv() picks them up.
 # config.yaml is authoritative for terminal settings — overrides .env.
-_config_path = _hermes_home / 'config.yaml'
+_config_path = _agentic_os_home / 'config.yaml'
 if _config_path.exists():
     try:
         import yaml as _yaml
@@ -1874,7 +1874,7 @@ except Exception as _bootstrap_exc:
 os.environ["HERMES_QUIET"] = "1"
 
 # Enable interactive exec approval for dangerous commands on messaging platforms
-os.environ["HERMES_EXEC_ASK"] = "1"
+os.environ["AGENTIC_OS_EXEC_ASK"] = "1"
 
 # Set terminal working directory for messaging platforms.
 # config.yaml terminal.cwd is the canonical source (bridged to TERMINAL_CWD
@@ -2158,7 +2158,7 @@ def _try_resolve_fallback_provider() -> dict | None:
     from agentic_os_cli.runtime_provider import resolve_runtime_provider
     try:
         import yaml as _y
-        cfg_path = _hermes_home / "config.yaml"
+        cfg_path = _agentic_os_home / "config.yaml"
         if not cfg_path.exists():
             return None
         with open(cfg_path, encoding="utf-8") as _f:
@@ -2527,13 +2527,13 @@ def _gateway_config_home() -> Path:
     override = get_agentic_os_home_override()
     if override:
         return Path(override)
-    return _hermes_home
+    return _agentic_os_home
 
 
 def _load_gateway_config() -> dict:
-    """Load and parse ~/.hermes/config.yaml, returning {} on any error.
+    """Load and parse ~/.agentic-os/config.yaml, returning {} on any error.
 
-    Uses the module-level ``_hermes_home`` (so tests that monkeypatch it
+    Uses the module-level ``_agentic_os_home`` (so tests that monkeypatch it
     still see their fixture) and shares the mtime-keyed raw-yaml cache
     from ``agentic_os_cli.config.read_raw_config`` when the paths match.
 
@@ -2547,10 +2547,10 @@ def _load_gateway_config() -> dict:
     used_canonical = False
     try:
         from agentic_os_cli.config import get_config_path, read_raw_config
-        # Fast path: if _hermes_home agrees with the canonical config
+        # Fast path: if _agentic_os_home agrees with the canonical config
         # location, reuse the shared cache. Otherwise fall through to a
         # direct read (keeps test fixtures with a monkeypatched
-        # _hermes_home working).
+        # _agentic_os_home working).
         if config_path == get_config_path():
             raw = read_raw_config()
             used_canonical = True
@@ -2626,7 +2626,7 @@ def _load_gateway_runtime_config() -> dict:
 
     Runtime helpers should honor the same env-template expansion documented for
     ``config.yaml`` while still respecting tests that monkeypatch
-    ``gateway.run._hermes_home``. Build on ``_load_gateway_config()`` rather
+    ``gateway.run._agentic_os_home``. Build on ``_load_gateway_config()`` rather
     than calling the canonical loader directly so both behaviors stay aligned.
 
     Expansion failures are intentionally NOT swallowed — silently returning
@@ -3382,7 +3382,7 @@ class GatewayRunner(GatewayAuthorizationMixin, GatewayKanbanWatchersMixin, Gatew
         except Exception as e:
             # WARNING (not DEBUG) so the failure appears in errors.log — matches
             # cli.py's handling of the same init path.  Users hitting NFS-mounted
-            # HERMES_HOME silently lost /resume, /title, /history, /branch, and
+            # AGENTIC_OS_HOME silently lost /resume, /title, /history, /branch, and
             # session search without this.  The underlying cause (usually
             # "locking protocol" from NFS) is now also captured by
             # agentic_os_state.get_last_init_error() for slash-command error strings.
@@ -3410,7 +3410,7 @@ class GatewayRunner(GatewayAuthorizationMixin, GatewayKanbanWatchersMixin, Gatew
                 logger.debug("state.db auto-maintenance skipped: %s", exc)
 
         # Opportunistic shadow-repo cleanup — deletes orphan/stale
-        # checkpoint repos under ~/.hermes/checkpoints/.  Opt-in via
+        # checkpoint repos under ~/.agentic-os/checkpoints/.  Opt-in via
         # checkpoints.auto_prune, idempotent via .last_prune marker.
         try:
             from agentic_os_cli.config import load_config as _load_full_config
@@ -3551,16 +3551,16 @@ class GatewayRunner(GatewayAuthorizationMixin, GatewayKanbanWatchersMixin, Gatew
     # -- Setup skill availability ----------------------------------------
 
     def _has_setup_skill(self) -> bool:
-        """Check if the hermes-agent-setup skill is installed."""
+        """Check if the agentic-os-setup skill is installed."""
         try:
             from tools.skill_manager_tool import _find_skill
-            return _find_skill("hermes-agent-setup") is not None
+            return _find_skill("agentic-os-setup") is not None
         except Exception:
             return False
 
     # -- Voice mode persistence ------------------------------------------
 
-    _VOICE_MODE_PATH = _hermes_home / "gateway_voice_mode.json"
+    _VOICE_MODE_PATH = _agentic_os_home / "gateway_voice_mode.json"
 
     def _voice_key(self, platform: Platform, chat_id: str) -> str:
         """Return a platform-namespaced key for voice mode state."""
@@ -4977,7 +4977,7 @@ class GatewayRunner(GatewayAuthorizationMixin, GatewayKanbanWatchersMixin, Gatew
         observe-the-marker latency the live-validation gate checks (point a).
         Reconciles once at startup. A marker stamped with a PRIOR
         instantiation epoch (one that survived a machine restart on the durable
-        HERMES_HOME volume — NS-570) is treated as absent by ``drain_requested``
+        AGENTIC_OS_HOME volume — NS-570) is treated as absent by ``drain_requested``
         and is NOT honoured; only a marker from the current instantiation flips
         the gateway into drain. Best-effort: any tick error is logged and the
         loop continues (a transient stat() failure must not wedge the gateway).
@@ -5093,9 +5093,9 @@ class GatewayRunner(GatewayAuthorizationMixin, GatewayKanbanWatchersMixin, Gatew
         """Load ephemeral prefill messages from config or env var.
         
         Checks HERMES_PREFILL_MESSAGES_FILE env var first, then falls back to
-        the top-level prefill_messages_file key in ~/.hermes/config.yaml.
+        the top-level prefill_messages_file key in ~/.agentic-os/config.yaml.
         agent.prefill_messages_file is accepted as a legacy fallback.
-        Relative paths are resolved from ~/.hermes/.
+        Relative paths are resolved from ~/.agentic-os/.
         """
         file_path = os.getenv("HERMES_PREFILL_MESSAGES_FILE", "")
         if not file_path:
@@ -5107,7 +5107,7 @@ class GatewayRunner(GatewayAuthorizationMixin, GatewayKanbanWatchersMixin, Gatew
             return []
         path = Path(file_path).expanduser()
         if not path.is_absolute():
-            path = _hermes_home / path
+            path = _agentic_os_home / path
         if not path.exists():
             logger.warning("Prefill messages file not found: %s", path)
             return []
@@ -5127,7 +5127,7 @@ class GatewayRunner(GatewayAuthorizationMixin, GatewayKanbanWatchersMixin, Gatew
         """Load ephemeral system prompt from config or env var.
         
         Checks HERMES_EPHEMERAL_SYSTEM_PROMPT env var first, then falls back to
-        agent.system_prompt in ~/.hermes/config.yaml.
+        agent.system_prompt in ~/.agentic-os/config.yaml.
         """
         prompt = os.getenv("HERMES_EPHEMERAL_SYSTEM_PROMPT", "")
         if prompt:
@@ -5435,7 +5435,7 @@ class GatewayRunner(GatewayAuthorizationMixin, GatewayKanbanWatchersMixin, Gatew
         """Load OpenRouter provider routing preferences from config.yaml."""
         try:
             import yaml as _y
-            cfg_path = _hermes_home / "config.yaml"
+            cfg_path = _agentic_os_home / "config.yaml"
             if cfg_path.exists():
                 with open(cfg_path, encoding="utf-8") as _f:
                     cfg = _y.safe_load(_f) or {}
@@ -5454,7 +5454,7 @@ class GatewayRunner(GatewayAuthorizationMixin, GatewayKanbanWatchersMixin, Gatew
         """
         try:
             import yaml as _y
-            cfg_path = _hermes_home / "config.yaml"
+            cfg_path = _agentic_os_home / "config.yaml"
             if cfg_path.exists():
                 with open(cfg_path, encoding="utf-8") as _f:
                     cfg = _y.safe_load(_f) or {}
@@ -5481,7 +5481,7 @@ class GatewayRunner(GatewayAuthorizationMixin, GatewayKanbanWatchersMixin, Gatew
         """
         try:
             import yaml as _y
-            cfg_path = _hermes_home / "config.yaml"
+            cfg_path = _agentic_os_home / "config.yaml"
             if not cfg_path.exists():
                 self._fallback_model = None
                 return self._fallback_model
@@ -6113,7 +6113,7 @@ class GatewayRunner(GatewayAuthorizationMixin, GatewayKanbanWatchersMixin, Gatew
                     f"{message}\n\n"
                     f"{busy_input_hint_gateway(_hint_mode)}"
                 )
-                mark_seen(_hermes_home / "config.yaml", BUSY_INPUT_FLAG)
+                mark_seen(_agentic_os_home / "config.yaml", BUSY_INPUT_FLAG)
         except Exception as _onb_err:
             logger.debug("Failed to apply busy-input onboarding hint: %s", _onb_err)
 
@@ -6582,7 +6582,7 @@ class GatewayRunner(GatewayAuthorizationMixin, GatewayKanbanWatchersMixin, Gatew
         """
         import json
 
-        path = _hermes_home / self._STUCK_LOOP_FILE
+        path = _agentic_os_home / self._STUCK_LOOP_FILE
         try:
             counts = json.loads(path.read_text()) if path.exists() else {}
         except Exception:
@@ -6609,7 +6609,7 @@ class GatewayRunner(GatewayAuthorizationMixin, GatewayKanbanWatchersMixin, Gatew
         """
         import json
 
-        path = _hermes_home / self._STUCK_LOOP_FILE
+        path = _agentic_os_home / self._STUCK_LOOP_FILE
         if not path.exists():
             return 0
 
@@ -6656,7 +6656,7 @@ class GatewayRunner(GatewayAuthorizationMixin, GatewayKanbanWatchersMixin, Gatew
         """
         import json
 
-        path = _hermes_home / self._STUCK_LOOP_FILE
+        path = _agentic_os_home / self._STUCK_LOOP_FILE
         if not path.exists():
             return
         try:
@@ -6837,13 +6837,13 @@ class GatewayRunner(GatewayAuthorizationMixin, GatewayKanbanWatchersMixin, Gatew
 
                 service_name = get_service_name()
             except Exception:
-                service_name = "hermes-gateway"
+                service_name = "agentic-os-gateway"
 
             current_pid = os.getpid()
 
             # Detect whether the gateway unit is registered as a system or
             # user service.  Daemon-style deployments are typically system
-            # units (e.g. /etc/systemd/system/hermes-gateway.service), while
+            # units (e.g. /etc/systemd/system/agentic-os-gateway.service), while
             # `hermes setup` under a non-root account may register a user
             # unit.  Hard-coding ``--user`` broke system-unit deployments:
             # systemctl returned an empty MainPID, the PID-equality check
@@ -7326,7 +7326,7 @@ class GatewayRunner(GatewayAuthorizationMixin, GatewayKanbanWatchersMixin, Gatew
         logger.info("Session storage: %s", self.config.sessions_dir)
 
         # Sanity-check that systemd's TimeoutStopSec covers our drain
-        # window.  When the user upgraded hermes-agent without re-running
+        # window.  When the user upgraded agentic-os without re-running
         # ``hermes setup``, their unit file may still encode the old
         # default — in which case SIGKILL hits mid-drain and looks like
         # a phantom kill in the journal.  Best-effort, never raises.
@@ -7597,7 +7597,7 @@ class GatewayRunner(GatewayAuthorizationMixin, GatewayKanbanWatchersMixin, Gatew
         # process already drained active agents, so sessions aren't stuck.
         # This prevents unwanted auto-resets after `hermes update`,
         # `hermes gateway restart`, or `/restart`.
-        _clean_marker = _hermes_home / ".clean_shutdown"
+        _clean_marker = _agentic_os_home / ".clean_shutdown"
         if _clean_marker.exists():
             logger.info("Previous gateway exited cleanly — skipping session suspension")
             try:
@@ -7934,8 +7934,8 @@ class GatewayRunner(GatewayAuthorizationMixin, GatewayKanbanWatchersMixin, Gatew
         if not notified and any(
             path.exists()
             for path in (
-                _hermes_home / ".update_pending.json",
-                _hermes_home / ".update_pending.claimed.json",
+                _agentic_os_home / ".update_pending.json",
+                _agentic_os_home / ".update_pending.claimed.json",
             )
         ):
             self._schedule_update_notification_watch()
@@ -9247,7 +9247,7 @@ class GatewayRunner(GatewayAuthorizationMixin, GatewayKanbanWatchersMixin, Gatew
             # of resuming a half-finished tool loop.
             if not timed_out:
                 try:
-                    (_hermes_home / ".clean_shutdown").touch()
+                    (_agentic_os_home / ".clean_shutdown").touch()
                 except Exception:
                     pass
             else:
@@ -9349,7 +9349,7 @@ class GatewayRunner(GatewayAuthorizationMixin, GatewayKanbanWatchersMixin, Gatew
         0) unless ``gateway.multiplex_profiles`` is on.
 
         Each profile's adapters are created and connected under that profile's
-        HERMES_HOME + secret scope (``_profile_runtime_scope``), stored in
+        AGENTIC_OS_HOME + secret scope (``_profile_runtime_scope``), stored in
         ``self._profile_adapters[profile]``, and given a message handler that
         stamps ``source.profile`` before delegating to the shared
         ``_handle_message`` — so the agent turn resolves that profile's config,
@@ -9404,7 +9404,7 @@ class GatewayRunner(GatewayAuthorizationMixin, GatewayKanbanWatchersMixin, Gatew
             served = [active] + sorted(self._profile_adapters.keys())
             # Per-profile PairingStores so authz_mixin can route pairing
             # checks to the right whitelist. The active profile gets a store
-            # at its HERMES_HOME; additional served profiles get one under
+            # at its AGENTIC_OS_HOME; additional served profiles get one under
             # profiles/<name>/pairing/. See gateway.pairing.PairingStore.
             for name in served:
                 if name and name not in self.pairing_stores:
@@ -9822,7 +9822,7 @@ class GatewayRunner(GatewayAuthorizationMixin, GatewayKanbanWatchersMixin, Gatew
             )
             if not check_whatsapp_cloud_requirements():
                 logger.warning(
-                    "WhatsApp Cloud: aiohttp/httpx missing — reinstall hermes-agent"
+                    "WhatsApp Cloud: aiohttp/httpx missing — reinstall agentic-os"
                 )
                 return None
             return WhatsAppCloudAdapter(config)
@@ -10156,8 +10156,8 @@ class GatewayRunner(GatewayAuthorizationMixin, GatewayKanbanWatchersMixin, Gatew
                 else:
                     response_text = raw
             if response_text:
-                response_path = _hermes_home / ".update_response"
-                prompt_path = _hermes_home / ".update_prompt.json"
+                response_path = _agentic_os_home / ".update_response"
+                prompt_path = _agentic_os_home / ".update_prompt.json"
                 try:
                     tmp = response_path.with_suffix(".tmp")
                     tmp.write_text(response_text)
@@ -10176,8 +10176,8 @@ class GatewayRunner(GatewayAuthorizationMixin, GatewayKanbanWatchersMixin, Gatew
             # blocking on stdin until the 30-minute watcher timeout.
             # The slash command then falls through to normal dispatch.
             if _recognized_cmd:
-                response_path = _hermes_home / ".update_response"
-                prompt_path = _hermes_home / ".update_prompt.json"
+                response_path = _agentic_os_home / ".update_response"
+                prompt_path = _agentic_os_home / ".update_prompt.json"
                 try:
                     tmp = response_path.with_suffix(".tmp")
                     tmp.write_text("")
@@ -12770,7 +12770,7 @@ class GatewayRunner(GatewayAuthorizationMixin, GatewayKanbanWatchersMixin, Gatew
                     and not is_seen(_onb_cfg, PROFILE_BUILD_FLAG)
                 ):
                     turn_sidecar_notes.append(profile_build_directive().strip())
-                    mark_seen(_hermes_home / "config.yaml", PROFILE_BUILD_FLAG)
+                    mark_seen(_agentic_os_home / "config.yaml", PROFILE_BUILD_FLAG)
                 else:
                     turn_sidecar_notes.append(_intro_note)
             except Exception as _pb_err:
@@ -13918,7 +13918,7 @@ class GatewayRunner(GatewayAuthorizationMixin, GatewayKanbanWatchersMixin, Gatew
             return False
 
         try:
-            marker_path = _hermes_home / ".restart_last_processed.json"
+            marker_path = _agentic_os_home / ".restart_last_processed.json"
             if not marker_path.exists():
                 # Belt-and-suspenders for when the dedup marker goes missing
                 # (manually cleaned up, or the previous cycle's write failed).
@@ -15893,11 +15893,11 @@ class GatewayRunner(GatewayAuthorizationMixin, GatewayKanbanWatchersMixin, Gatew
         the messenger.  The user's next message is intercepted by
         ``_handle_message`` and written to ``.update_response``.
         """
-        pending_path = _hermes_home / ".update_pending.json"
-        claimed_path = _hermes_home / ".update_pending.claimed.json"
-        output_path = _hermes_home / ".update_output.txt"
-        exit_code_path = _hermes_home / ".update_exit_code"
-        prompt_path = _hermes_home / ".update_prompt.json"
+        pending_path = _agentic_os_home / ".update_pending.json"
+        claimed_path = _agentic_os_home / ".update_pending.claimed.json"
+        output_path = _agentic_os_home / ".update_output.txt"
+        exit_code_path = _agentic_os_home / ".update_exit_code"
+        prompt_path = _agentic_os_home / ".update_prompt.json"
 
         loop = asyncio.get_running_loop()
         deadline = loop.time() + timeout
@@ -16023,7 +16023,7 @@ class GatewayRunner(GatewayAuthorizationMixin, GatewayKanbanWatchersMixin, Gatew
                 for p in (pending_path, claimed_path, output_path,
                           exit_code_path, prompt_path):
                     p.unlink(missing_ok=True)
-                (_hermes_home / ".update_response").unlink(missing_ok=True)
+                (_agentic_os_home / ".update_response").unlink(missing_ok=True)
                 self._update_prompt_pending.pop(session_key, None)
                 return
 
@@ -16109,7 +16109,7 @@ class GatewayRunner(GatewayAuthorizationMixin, GatewayKanbanWatchersMixin, Gatew
             for p in (pending_path, claimed_path, output_path,
                       exit_code_path, prompt_path):
                 p.unlink(missing_ok=True)
-            (_hermes_home / ".update_response").unlink(missing_ok=True)
+            (_agentic_os_home / ".update_response").unlink(missing_ok=True)
             self._update_prompt_pending.pop(session_key, None)
 
     async def _send_update_notification(self) -> bool:
@@ -16122,10 +16122,10 @@ class GatewayRunner(GatewayAuthorizationMixin, GatewayKanbanWatchersMixin, Gatew
         cannot resolve the adapter (e.g. after a gateway restart where the
         platform hasn't reconnected yet).
         """
-        pending_path = _hermes_home / ".update_pending.json"
-        claimed_path = _hermes_home / ".update_pending.claimed.json"
-        output_path = _hermes_home / ".update_output.txt"
-        exit_code_path = _hermes_home / ".update_exit_code"
+        pending_path = _agentic_os_home / ".update_pending.json"
+        claimed_path = _agentic_os_home / ".update_pending.claimed.json"
+        output_path = _agentic_os_home / ".update_output.txt"
+        exit_code_path = _agentic_os_home / ".update_exit_code"
 
         if not pending_path.exists() and not claimed_path.exists():
             return False
@@ -16232,7 +16232,7 @@ class GatewayRunner(GatewayAuthorizationMixin, GatewayKanbanWatchersMixin, Gatew
 
     async def _send_restart_notification(self) -> Optional[tuple[str, str, Optional[str]]]:
         """Notify the chat that initiated /restart that the gateway is back."""
-        notify_path = _hermes_home / ".restart_notify.json"
+        notify_path = _agentic_os_home / ".restart_notify.json"
         if not notify_path.exists():
             return None
 
@@ -16445,7 +16445,7 @@ class GatewayRunner(GatewayAuthorizationMixin, GatewayKanbanWatchersMixin, Gatew
             if executor is None or getattr(executor, "_shutdown", False):
                 executor = concurrent.futures.ThreadPoolExecutor(
                     max_workers=10,
-                    thread_name_prefix="hermes-gateway",
+                    thread_name_prefix="agentic-os-gateway",
                 )
                 self._executor = executor
             return executor
@@ -16662,7 +16662,7 @@ class GatewayRunner(GatewayAuthorizationMixin, GatewayKanbanWatchersMixin, Gatew
                     error = result.get("error", "unknown error")
                     # All failure branches: a single, minimal, neutral marker.
                     # Do NOT mention "no STT provider configured", "setup
-                    # instructions", or the "hermes-agent-setup" skill, and do
+                    # instructions", or the "agentic-os-setup" skill, and do
                     # NOT claim a direct message was sent — those phrases get
                     # persisted in conversation history and poison every later
                     # turn, so the model keeps volunteering STT-setup advice
@@ -18863,7 +18863,7 @@ class GatewayRunner(GatewayAuthorizationMixin, GatewayKanbanWatchersMixin, Gatew
         return None
 
     def _resolve_profile_home_for_source(self, source: SessionSource) -> "Path":
-        """Resolve which profile's HERMES_HOME should serve this inbound source.
+        """Resolve which profile's AGENTIC_OS_HOME should serve this inbound source.
 
         Resolution order:
           1. ``source.profile`` — set by /p/<profile>/ URL prefix, per-credential
@@ -18897,7 +18897,7 @@ class GatewayRunner(GatewayAuthorizationMixin, GatewayKanbanWatchersMixin, Gatew
             if explicit_profile and not profile_exists(name):
                 logger.warning(
                     "Profile %r does not exist for source %s/%s (guild_id=%s), "
-                    "falling back to global HERMES_HOME",
+                    "falling back to global AGENTIC_OS_HOME",
                     explicit_profile,
                     source.platform.value,
                     source.chat_id,
@@ -18909,7 +18909,7 @@ class GatewayRunner(GatewayAuthorizationMixin, GatewayKanbanWatchersMixin, Gatew
             # Catch normalization errors, path errors, etc.
             logger.warning(
                 "Failed to resolve profile directory for source %s/%s (guild_id=%s), "
-                "falling back to global HERMES_HOME: %s",
+                "falling back to global AGENTIC_OS_HOME: %s",
                 source.platform.value,
                 source.chat_id,
                 getattr(source, "guild_id", None),
@@ -19085,7 +19085,7 @@ class GatewayRunner(GatewayAuthorizationMixin, GatewayKanbanWatchersMixin, Gatew
             _live_status_adapter = None
         if _live_status_mode == "off":
             _live_status_adapter = None
-        # "log" mode: tool calls are written to ~/.hermes/logs/tool_calls.log
+        # "log" mode: tool calls are written to ~/.agentic-os/logs/tool_calls.log
         # instead of the chat (#3459 / #3458). Gateway-only by design.
         log_mode_enabled = progress_mode == "log" and source.platform != Platform.WEBHOOK
         log_queue: "queue.Queue | None" = queue.Queue() if log_mode_enabled else None
@@ -19252,7 +19252,7 @@ class GatewayRunner(GatewayAuthorizationMixin, GatewayKanbanWatchersMixin, Gatew
                         if gate_on and not is_seen(_cfg, TOOL_PROGRESS_FLAG):
                             long_tool_hint_fired[0] = True
                             progress_queue.put(tool_progress_hint_gateway())
-                            mark_seen(_hermes_home / "config.yaml", TOOL_PROGRESS_FLAG)
+                            mark_seen(_agentic_os_home / "config.yaml", TOOL_PROGRESS_FLAG)
                 except Exception as _hint_err:
                     logger.debug("tool-progress onboarding hint failed: %s", _hint_err)
                 return
@@ -19466,7 +19466,7 @@ class GatewayRunner(GatewayAuthorizationMixin, GatewayKanbanWatchersMixin, Gatew
 
             from agent.redact import RedactingFormatter
 
-            log_dir = _hermes_home / "logs"
+            log_dir = _agentic_os_home / "logs"
             log_dir.mkdir(parents=True, exist_ok=True)
             file_handler = RotatingFileHandler(
                 log_dir / "tool_calls.log",
@@ -19947,7 +19947,7 @@ class GatewayRunner(GatewayAuthorizationMixin, GatewayKanbanWatchersMixin, Gatew
             # session_key is propagated via contextvars in _set_session_env()
             # (_SESSION_KEY) and via set_current_session_key() (_approval_session_key)
             # below — both concurrency-safe and inherited by tool worker threads.
-            # We deliberately do NOT write os.environ["HERMES_SESSION_KEY"] here:
+            # We deliberately do NOT write os.environ["AGENTIC_OS_SESSION_KEY"] here:
             # os.environ is process-global, so concurrent gateway sessions (e.g.
             # two Discord threads) would clobber each other's value, and a tool
             # thread whose contextvar is unset would fall back to os.environ and
@@ -19955,7 +19955,7 @@ class GatewayRunner(GatewayAuthorizationMixin, GatewayKanbanWatchersMixin, Gatew
             # the wrong thread (#24100). The non-gateway surfaces don't depend on
             # this write: CLI and cron bind the session via contextvars
             # (set_current_session_key / session context), and only the TUI
-            # slash-worker *subprocess* exports HERMES_SESSION_KEY (from its own
+            # slash-worker *subprocess* exports AGENTIC_OS_SESSION_KEY (from its own
             # --session-key argv, a separate process) — so removing this in-process
             # gateway write does not affect any of them.
 
@@ -22450,9 +22450,9 @@ async def start_gateway(config: Optional[GatewayConfig] = None, replace: bool = 
     record_boot_fingerprint()
 
     # ── Duplicate-instance guard ──────────────────────────────────────
-    # Prevent two gateways from running under the same HERMES_HOME.
-    # The PID file is scoped to HERMES_HOME, so future multi-profile
-    # setups (each profile using a distinct HERMES_HOME) will naturally
+    # Prevent two gateways from running under the same AGENTIC_OS_HOME.
+    # The PID file is scoped to AGENTIC_OS_HOME, so future multi-profile
+    # setups (each profile using a distinct AGENTIC_OS_HOME) will naturally
     # allow concurrent instances without tripping this guard.
     from gateway.status import (
         acquire_gateway_runtime_lock,
@@ -22573,7 +22573,7 @@ async def start_gateway(config: Optional[GatewayConfig] = None, replace: bool = 
         else:
             hermes_home = str(get_agentic_os_home())
             logger.error(
-                "Another gateway instance is already running (PID %d, HERMES_HOME=%s). "
+                "Another gateway instance is already running (PID %d, AGENTIC_OS_HOME=%s). "
                 "Use 'hermes gateway restart' to replace it, or 'hermes gateway stop' first.",
                 existing_pid, hermes_home,
             )
@@ -22596,7 +22596,7 @@ async def start_gateway(config: Optional[GatewayConfig] = None, replace: bool = 
     # and gateway.log (INFO+, gateway-component records only).
     # Idempotent, so repeated calls from AIAgent.__init__ won't duplicate.
     from agentic_os_logging import setup_logging, _safe_stderr
-    setup_logging(hermes_home=_hermes_home, mode="gateway")
+    setup_logging(hermes_home=_agentic_os_home, mode="gateway")
 
     # Startup security posture audit — warn-on-load, never blocks. Surfaces
     # root / weak-SSH / ephemeral-container / unauthenticated-listener posture
@@ -22612,7 +22612,7 @@ async def start_gateway(config: Optional[GatewayConfig] = None, replace: bool = 
             _audit_cfg = read_raw_config()
         except Exception:
             _audit_cfg = None
-        log_startup_security_warnings(hermes_home=_hermes_home, config=_audit_cfg)
+        log_startup_security_warnings(hermes_home=_agentic_os_home, config=_audit_cfg)
     except Exception as _audit_exc:
         logger.debug("Startup security audit failed (non-fatal): %s", _audit_exc)
 
@@ -22729,7 +22729,7 @@ async def start_gateway(config: Optional[GatewayConfig] = None, replace: bool = 
             # if our cgroup is being torn down.  Bounded by an internal
             # timeout; never blocks the event loop here.
             try:
-                _diag_log = _hermes_home / "logs" / "gateway-shutdown-diag.log"
+                _diag_log = _agentic_os_home / "logs" / "gateway-shutdown-diag.log"
                 spawn_async_diagnostic(
                     _diag_log, _shutdown_ctx["signal"], timeout_seconds=5.0
                 )

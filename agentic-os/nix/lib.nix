@@ -102,7 +102,7 @@ let
             # Nix build definitions (Python build doesn't need these)
             "nix"
             # Skills are shipped via HERMES_BUNDLED_SKILLS /
-            # HERMES_OPTIONAL_SKILLS (see hermes-agent.nix), not via the
+            # HERMES_OPTIONAL_SKILLS (see agentic-os.nix), not via the
             # wheel's data_files — setup.py's _data_file_tree returns []
             # for a missing dir, so the wheel builds fine without them.
             # This keeps SKILL.md edits from rebuilding the Python venv.

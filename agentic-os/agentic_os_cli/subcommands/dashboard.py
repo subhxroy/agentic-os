@@ -156,7 +156,7 @@ def build_dashboard_parser(
     serve_parser.set_defaults(func=cmd_dashboard, no_open=True, headless_backend=True)
 
     # `hermes dashboard register` — register a self-hosted dashboard OAuth
-    # client with Nous Portal and write the client_id into ~/.hermes/.env.
+    # client with Nous Portal and write the client_id into ~/.agentic-os/.env.
     # Nested subparser so bare `hermes dashboard` keeps launching the server
     # (set_defaults(func=cmd_dashboard) above remains the default).
     dashboard_subparsers = dashboard_parser.add_subparsers(
@@ -168,7 +168,7 @@ def build_dashboard_parser(
         description=(
             "Register this install as a self-hosted dashboard with your Nous "
             "Portal account. Creates an OAuth client, writes "
-            "HERMES_DASHBOARD_OAUTH_CLIENT_ID into ~/.hermes/.env, and prints "
+            "HERMES_DASHBOARD_OAUTH_CLIENT_ID into ~/.agentic-os/.env, and prints "
             "how to engage the login gate. Requires being logged in (hermes setup)."
         ),
     )

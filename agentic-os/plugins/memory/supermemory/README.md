@@ -18,7 +18,7 @@ Or manually:
 
 ```bash
 hermes config set memory.provider supermemory
-echo 'SUPERMEMORY_API_KEY=***' >> ~/.hermes/.env
+echo 'SUPERMEMORY_API_KEY=***' >> ~/.agentic-os/.env
 ```
 
 For a fully self-hosted setup, start Supermemory local and note the API key it
@@ -29,7 +29,7 @@ npx supermemory local
 ```
 
 Before running `hermes memory setup`, add the local endpoint to
-`$HERMES_HOME/supermemory.json`:
+`$AGENTIC_OS_HOME/supermemory.json`:
 
 ```json
 {
@@ -42,7 +42,7 @@ the endpoint first ensures the setup connection probe also stays local.
 
 ## Config
 
-Config file: `$HERMES_HOME/supermemory.json`
+Config file: `$AGENTIC_OS_HOME/supermemory.json`
 
 | Key | Default | Description |
 |-----|---------|-------------|

@@ -214,7 +214,7 @@ COMMAND_REGISTRY: list[CommandDef] = [
                cli_only=True),
     CommandDef("reload-mcp", "Reload MCP servers from config", "Tools & Skills",
                aliases=("reload_mcp",)),
-    CommandDef("reload-skills", "Re-scan ~/.hermes/skills/ for newly installed or removed skills",
+    CommandDef("reload-skills", "Re-scan ~/.agentic-os/skills/ for newly installed or removed skills",
                "Tools & Skills", aliases=("reload_skills",)),
     CommandDef("browser", "Connect browser tools to your live Chromium-family browser via CDP", "Tools & Skills",
                cli_only=True, args_hint="[connect|disconnect|status]",
@@ -1260,7 +1260,7 @@ def slack_native_slashes() -> list[tuple[str, str, str]]:
     return entries
 
 
-def slack_app_manifest(request_url: str = "https://hermes-agent.local/slack/commands") -> dict[str, Any]:
+def slack_app_manifest(request_url: str = "https://agentic-os.local/slack/commands") -> dict[str, Any]:
     """Generate a Slack app manifest with all gateway commands as slashes.
 
     ``request_url`` is required by Slack's manifest schema for every slash

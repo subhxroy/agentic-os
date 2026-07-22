@@ -64,7 +64,7 @@ test-results/
 # CLI config (may contain sensitive SSH paths)
 cli-config.yaml
 
-# Skills Hub state (lives in ~/.hermes/skills/.hub/ at runtime, but just in case)
+# Skills Hub state (lives in ~/.agentic-os/skills/.hub/ at runtime, but just in case)
 skills/.hub/
 ignored/
 .worktrees/
@@ -125,7 +125,7 @@ config/mcporter.json
 hermes_cli/tui_dist/*
 hermes_cli/scripts/
 docs/superpowers/*
-# Working directory for the Agentic OS's session state (~/.hermes/ at runtime;
+# Working directory for the Agentic OS's session state (~/.agentic-os/ at runtime;
 # also created in-repo when an agent operates in this checkout). Plans, audit
 # logs, and per-session caches are never artifacts of the codebase.
 .hermes/
@@ -161,6 +161,6 @@ apps/desktop/demo/
 
 # PR infographics are rendered locally and embedded in PR descriptions via the
 # image-provider (fal.media) URL — they are NEVER committed to the repo. The
-# PR body is the archive. See the hermes-agent-dev skill's
+# PR body is the archive. See the agentic-os-dev skill's
 # pr-infographic-workflow reference (storage rule + lapse #8 / #COMMIT-1).
 infographic/

@@ -52,7 +52,7 @@ def test_there_are_plugin_bundles_to_check() -> None:
     doesn't silently turn this guard into a no-op."""
     bundles = _plugin_frontend_bundles()
     names = {b.parent.parent.parent.name for b in bundles}
-    # kanban + hermes-achievements are bundled today; assert at least one is
+    # kanban + agentic-os-achievements are bundled today; assert at least one is
     # found so the guard can't pass vacuously.
     assert bundles, "no plugin dashboard bundles found — glob/layout drift?"
     assert names, "could not resolve plugin names from bundle paths"

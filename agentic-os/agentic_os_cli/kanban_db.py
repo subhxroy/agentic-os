@@ -36,9 +36,9 @@ Board resolution order (highest precedence first, all optional):
   the "currently selected" board. Written by ``hermes kanban boards
   switch <slug>``. When absent, the active board is ``default``.
 
-In standard installs ``<root>`` is ``~/.hermes``. In Docker / custom
-deployments where ``HERMES_HOME`` points outside ``~/.hermes`` (e.g.
-``/opt/hermes``), ``<root>`` is ``HERMES_HOME``. Legacy env-var
+In standard installs ``<root>`` is ``~/.agentic-os``. In Docker / custom
+deployments where ``AGENTIC_OS_HOME`` points outside ``~/.agentic-os`` (e.g.
+``/opt/hermes``), ``<root>`` is ``AGENTIC_OS_HOME``. Legacy env-var
 overrides still work:
 
 * ``HERMES_KANBAN_DB`` — pin the database file path directly.
@@ -147,7 +147,7 @@ def _fire_kanban_lifecycle_hook(event: str, task_id: str, **fields: Any) -> None
     a plugin raising, import error) is swallowed — a misbehaving observer must
     never break a board state transition.
 
-    ``profile_name`` is resolved from the active HERMES_HOME so dispatcher- and
+    ``profile_name`` is resolved from the active AGENTIC_OS_HOME so dispatcher- and
     worker-side hooks both carry the right profile without the caller plumbing
     it through.
     """
@@ -347,7 +347,7 @@ def scoped_current_board(slug: str):
 
 # Slug validator: lowercase alphanumerics, digits, hyphens; 1–64 chars.
 # Strict enough to stop traversal (`..`) and embedded path separators, loose
-# enough that kebab-case names like ``atm10-server`` or ``hermes-agent``
+# enough that kebab-case names like ``atm10-server`` or ``agentic-os``
 # pass without fuss. Board names with display formatting (spaces, emoji)
 # live in ``board.json``; the slug is just the directory name.
 _BOARD_SLUG_RE = re.compile(r"^[a-z0-9][a-z0-9\-_]{0,63}$")
@@ -376,12 +376,12 @@ def kanban_home() -> Path:
     1. ``HERMES_KANBAN_HOME`` env var when set and non-empty (explicit
        override for tests and unusual deployments).
     2. ``get_default_agentic_os_root()``, which already returns ``<root>``
-       when ``HERMES_HOME`` is ``<root>/profiles/<name>``, and returns
-       ``HERMES_HOME`` directly for Docker / custom deployments.
+       when ``AGENTIC_OS_HOME`` is ``<root>/profiles/<name>``, and returns
+       ``AGENTIC_OS_HOME`` directly for Docker / custom deployments.
 
     The kanban board is shared across profiles **by design** (see the
     module docstring). Resolving the kanban paths through the active
-    profile's ``HERMES_HOME`` would silently fork the board per profile,
+    profile's ``AGENTIC_OS_HOME`` would silently fork the board per profile,
     which breaks the dispatcher / worker handoff.
     """
     override = os.environ.get("HERMES_KANBAN_HOME", "").strip()
@@ -8159,7 +8159,7 @@ def _resolve_worker_cli_toolsets(hermes_home: Optional[str]) -> Optional[list[st
         return toolsets or None
     except Exception as exc:
         _log.debug(
-            "kanban worker: could not resolve CLI toolsets for HERMES_HOME=%r (%s)",
+            "kanban worker: could not resolve CLI toolsets for AGENTIC_OS_HOME=%r (%s)",
             hermes_home,
             exc,
         )
@@ -8195,23 +8195,23 @@ def _default_spawn(
     prompt = f"work kanban task {task.id}"
     env = dict(os.environ)
 
-    # Inject HERMES_HOME so the worker reads the profile-scoped config.yaml
+    # Inject AGENTIC_OS_HOME so the worker reads the profile-scoped config.yaml
     # (fallback_providers, toolsets, agent settings, etc.) instead of the root
     # config.  Without this, `env = dict(os.environ)` copies only the parent's
     # env, and when the child process starts `hermes -p <name>` the
     # _apply_profile_override() runs *before* agentic_os_constants is imported.
-    # If HERMES_HOME is absent from the child's env, get_agentic_os_home() falls
+    # If AGENTIC_OS_HOME is absent from the child's env, get_agentic_os_home() falls
     # back to Path.home() / ".hermes" (the DEFAULT profile root), ignoring the
     # profile-specific config entirely.  Fixes profile-scoped fallback_providers
     # being invisible to kanban workers.
     from agentic_os_cli.profiles import resolve_profile_env
     try:
-        env["HERMES_HOME"] = resolve_profile_env(profile_arg)
+        env["AGENTIC_OS_HOME"] = resolve_profile_env(profile_arg)
     except FileNotFoundError:
         # Profile dir doesn't exist — defer resolution to the CLI's
         # _apply_profile_override() via HERMES_PROFILE (set below).
         # This only happens in test fixtures where the isolated
-        # HERMES_HOME never had profiles created.
+        # AGENTIC_OS_HOME never had profiles created.
         pass
     if task.tenant:
         env["HERMES_TENANT"] = task.tenant
@@ -8258,7 +8258,7 @@ def _default_spawn(
         env["TERMINAL_MAX_FOREGROUND_TIMEOUT"] = foreground_timeout
     # Pin the shared board + workspaces root the dispatcher resolved, so
     # that even when the worker activates a profile (`hermes -p <name>`
-    # rewrites HERMES_HOME), its kanban paths still match the
+    # rewrites AGENTIC_OS_HOME), its kanban paths still match the
     # dispatcher's. Belt-and-braces with the `get_default_agentic_os_root()`
     # resolution in `kanban_home()` — symmetric resolution is the norm,
     # but unusual symlink / Docker layouts are caught here too.
@@ -8275,19 +8275,19 @@ def _default_spawn(
     # attributed correctly regardless of how the child loads config.
     env["HERMES_PROFILE"] = profile_arg
 
-    # A worker must NEVER boot the interactive TUI: an inherited HERMES_TUI=1
+    # A worker must NEVER boot the interactive TUI: an inherited AGENTIC_OS_TUI=1
     # or a `display.interface: tui` in the profile's config would send the
     # quiet chat run into the Ink TUI, whose no-TTY bail-out exits 0 without
     # doing the task → "protocol violation" on every attempt. `--cli` is the
     # highest-precedence interface override; dropping the env var covers
     # older hermes builds on PATH that predate the flag's precedence.
-    env.pop("HERMES_TUI", None)
+    env.pop("AGENTIC_OS_TUI", None)
 
     cmd = [
         *_resolve_hermes_argv(),
         "-p", profile_arg,
         "--cli",
-        # Worker subprocesses switch to a profile-scoped HERMES_HOME above,
+        # Worker subprocesses switch to a profile-scoped AGENTIC_OS_HOME above,
         # so they see that profile's shell-hook allowlist instead of the
         # dispatcher's root allowlist. Pass --accept-hooks explicitly so
         # profile-local worker sessions still register configured hooks.
@@ -8304,7 +8304,7 @@ def _default_spawn(
                 cmd.extend(["--skills", sk])
     if task.model_override:
         cmd.extend(["-m", task.model_override])
-    worker_toolsets = _resolve_worker_cli_toolsets(env.get("HERMES_HOME"))
+    worker_toolsets = _resolve_worker_cli_toolsets(env.get("AGENTIC_OS_HOME"))
     if worker_toolsets:
         cmd.extend(["--toolsets", ",".join(worker_toolsets)])
     cmd.extend([

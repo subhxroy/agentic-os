@@ -108,7 +108,7 @@ jobs:
     timeout-minutes: 30
     environment:
       name: pypi
-      url: https://pypi.org/p/hermes-agent
+      url: https://pypi.org/p/agentic-os
     permissions:
       id-token: write # OIDC trusted publishing
 

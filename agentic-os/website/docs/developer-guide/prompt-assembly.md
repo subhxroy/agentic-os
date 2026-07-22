@@ -46,7 +46,7 @@ When `skip_context_files` is set (e.g., subagent delegation), SOUL.md is not loa
 Here is a simplified view of what the final system prompt looks like when all layers are present (comments show the source of each section):
 
 ```
-# Layer 1: Agent Identity (from ~/.hermes/SOUL.md)
+# Layer 1: Agent Identity (from ~/.agentic-os/SOUL.md)
 You are Hermes, an AI assistant created by Nous Research.
 You are an expert software engineer and researcher.
 You value correctness, clarity, and efficiency.
@@ -155,7 +155,7 @@ not a live mid-session mutation of a frozen prompt.
 
 ## How SOUL.md appears in the prompt
 
-`SOUL.md` lives at `~/.hermes/SOUL.md` and serves as the agent's identity — the very first section of the system prompt. The loading logic in `prompt_builder.py` works as follows:
+`SOUL.md` lives at `~/.agentic-os/SOUL.md` and serves as the agent's identity — the very first section of the system prompt. The loading logic in `prompt_builder.py` works as follows:
 
 ```python
 # From agent/prompt_builder.py (simplified)
@@ -204,7 +204,7 @@ def build_context_files_prompt(cwd=None, skip_soul=False):
     if project_context:
         sections.append(project_context)
 
-    # SOUL.md from HERMES_HOME (independent of project context)
+    # SOUL.md from AGENTIC_OS_HOME (independent of project context)
     if not skip_soul:
         soul_content = load_soul_md()
         if soul_content:
@@ -275,8 +275,8 @@ Most users should treat `agent/prompt_builder.py` as implementation code, not a 
 
 ### Use these surfaces first
 
-- `~/.hermes/SOUL.md` — replace the built-in default identity block with your own agent persona and standing behavior.
-- `~/.hermes/MEMORY.md` and `~/.hermes/USER.md` — provide durable cross-session facts and user profile data that should be snapshotted into new sessions.
+- `~/.agentic-os/SOUL.md` — replace the built-in default identity block with your own agent persona and standing behavior.
+- `~/.agentic-os/MEMORY.md` and `~/.agentic-os/USER.md` — provide durable cross-session facts and user profile data that should be snapshotted into new sessions.
 - Project context files such as `.hermes.md`, `HERMES.md`, `AGENTS.md`, `CLAUDE.md`, or `.cursorrules` — inject repo-specific working rules.
 - Skills — package reusable workflows and references without editing core prompt code.
 - Optional system prompt config / API overrides — add deployment-specific instruction text without forking Hermes.

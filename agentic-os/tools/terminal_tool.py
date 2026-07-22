@@ -205,9 +205,9 @@ def _get_sudo_password_cache_scope() -> str:
     try:
         from gateway.session_context import get_session_env
 
-        session_key = get_session_env("HERMES_SESSION_KEY", "")
+        session_key = get_session_env("AGENTIC_OS_SESSION_KEY", "")
     except Exception:
-        session_key = os.getenv("HERMES_SESSION_KEY", "")
+        session_key = os.getenv("AGENTIC_OS_SESSION_KEY", "")
     if session_key:
         return f"session:{session_key}"
 
@@ -321,7 +321,7 @@ def _handle_sudo_failure(output: str, env_type: str) -> str:
     
     Returns enhanced output if sudo failed in messaging context, else original.
     """
-    is_gateway = env_var_enabled("HERMES_GATEWAY_SESSION")
+    is_gateway = env_var_enabled("AGENTIC_OS_GATEWAY_SESSION")
     
     if not is_gateway:
         return output
@@ -387,7 +387,7 @@ def _prompt_for_sudo_password(timeout_seconds: int = 45) -> str:
     - Timeout expires (45s default)
     - Any error occurs
     
-    Only works in interactive mode (HERMES_INTERACTIVE=1).
+    Only works in interactive mode (AGENTIC_OS_INTERACTIVE=1).
     If a _sudo_password_callback is registered (by the CLI), delegates to it
     so the prompt integrates with prompt_toolkit's UI.  Otherwise reads
     directly from /dev/tty with echo disabled.
@@ -897,7 +897,7 @@ def _transform_sudo_command(command: str | None) -> tuple[str | None, str | None
     methods for how they handle the non-None sudo_stdin case.
 
     If SUDO_PASSWORD is not set and an interactive UI is available
-    (HERMES_INTERACTIVE=1 or a registered sudo password callback):
+    (AGENTIC_OS_INTERACTIVE=1 or a registered sudo password callback):
       Prompts user for password with 45s timeout, caches for session.
 
     If SUDO_PASSWORD is not set and NOT interactive:
@@ -927,7 +927,7 @@ def _transform_sudo_command(command: str | None) -> tuple[str | None, str | None
 
     has_sudo_prompt_callback = _get_sudo_password_callback() is not None
     should_prompt_for_sudo = (
-        env_var_enabled("HERMES_INTERACTIVE") or has_sudo_prompt_callback
+        env_var_enabled("AGENTIC_OS_INTERACTIVE") or has_sudo_prompt_callback
     )
     if not has_configured_password and not sudo_password and should_prompt_for_sudo:
         sudo_password = _prompt_for_sudo_password(timeout_seconds=45)
@@ -997,7 +997,7 @@ _docker_orphan_reaper_lock = threading.Lock()
 def _maybe_reap_docker_orphans(container_config: Dict[str, Any]) -> None:
     """Run the docker orphan reaper once per process, if enabled.
 
-    Sweeps long-Exited containers labeled ``hermes-agent=1`` for the current
+    Sweeps long-Exited containers labeled ``agentic-os=1`` for the current
     profile that match the issue #20561 leak class — containers left behind
     by Hermes processes that exited without firing ``atexit`` (SIGKILL,
     OOM, terminal-window-close). The reaper is conservative by default:
@@ -1241,7 +1241,7 @@ def _parse_env_var(name: str, default: str, converter: Any = int, type_label: st
     except (ValueError, json.JSONDecodeError):
         raise ValueError(
             f"Invalid value for {name}: {raw!r} (expected {type_label}). "
-            f"Check ~/.hermes/.env or environment variables."
+            f"Check ~/.agentic-os/.env or environment variables."
         )
 
 
@@ -2349,7 +2349,7 @@ def terminal_tool(
             }, ensure_ascii=False)
 
         # Hard-block: gateway lifecycle commands (systemctl/launchctl/hermes
-        # restart|stop targeting hermes-gateway) must never run inside the
+        # restart|stop targeting agentic-os-gateway) must never run inside the
         # gateway process itself. The restart would SIGTERM the gateway, which
         # kills this very subprocess before it can complete — the service may
         # never restart. This mirrors the `hermes gateway restart` guard in
@@ -2527,7 +2527,7 @@ def terminal_tool(
                 # Nudge: homebrewed CI watcher built from `gh pr view`
                 # `--json statusCheckRollup` or `gh pr checks` piped through
                 # `jq` is the #1 cause of silent CI-watcher failures in
-                # hermes-agent dev work. May 2026 PRs that surfaced this
+                # agentic-os dev work. May 2026 PRs that surfaced this
                 # exact failure mode: #31329, #31448, #31695, #31709, #31745,
                 # #32264, #33131. Failure modes seen:
                 #   * `gh pr view --json statusCheckRollup --jq ...` with
@@ -2575,7 +2575,7 @@ def terminal_tool(
                             "This looks like a homebrewed CI poller built from "
                             "`gh pr view --json statusCheckRollup` and/or "
                             "`gh pr checks | jq`. That shape has burned us "
-                            "repeatedly in hermes-agent dev work (PRs #31329, "
+                            "repeatedly in agentic-os dev work (PRs #31329, "
                             "#31448, #31695, #31709, #31745, #32264, #33131) — "
                             "stdout buffering kills output capture, jq null-key "
                             "edge cases silently exit the loop, conclusion-vs-"
@@ -2786,7 +2786,7 @@ def terminal_tool(
             )
             if sudo_cache_cleared:
                 has_sudo_prompt_callback = _get_sudo_password_callback() is not None
-                if has_sudo_prompt_callback or env_var_enabled("HERMES_INTERACTIVE"):
+                if has_sudo_prompt_callback or env_var_enabled("AGENTIC_OS_INTERACTIVE"):
                     output += (
                         "\n\n⚠️ Sudo authentication failed — cached password "
                         "cleared. You will be prompted again on the next sudo "

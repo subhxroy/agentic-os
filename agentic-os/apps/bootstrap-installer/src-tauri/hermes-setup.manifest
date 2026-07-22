@@ -4,7 +4,7 @@
 
     The TL;DR: tell Windows we are NOT an installer in the classic "needs
     UAC elevation" sense, despite the product name. We provision into
-    %LOCALAPPDATA%\hermes which is user-scoped and never touch HKLM or
+    %LOCALAPPDATA%\agentic-os which is user-scoped and never touch HKLM or
     Program Files. install.ps1 runs as a child process and elevates
     itself only if a future stage explicitly needs HKLM access.
 
