@@ -38,7 +38,7 @@ function findPython() {
     const candidates = process.platform === 'win32' ? ['python', 'py', 'python3'] : ['python3', 'python'];
     for (const cmd of candidates) {
         try {
-            execSync(`"${cmd}" --version`, { stdio: 'ignore' });
+            execSync(`${cmd} --version`, { stdio: 'ignore' });
             return cmd;
         } catch (e) {
             // keep looking
@@ -72,12 +72,14 @@ function findDesktopAppDir() {
     return null;
 }
 
-function runCommand(cmd, args, options = {}) {
+function runProcess(cmd, args, options = {}) {
+    const isShellNeeded = options.useShell !== undefined ? options.useShell : (cmd === 'npm' || cmd === 'npm.cmd' || cmd === 'npx');
+    
     const child = spawn(cmd, args, {
         cwd: options.cwd || ROOT,
         stdio: 'inherit',
         env: { ...process.env, ...options.env },
-        shell: false,
+        shell: isShellNeeded,
     });
 
     const cleanup = () => {
@@ -108,8 +110,7 @@ function launchElectron() {
     console.log('\x1b[36m%s\x1b[0m', '  Launching Agentic OS Electron Desktop App...');
     console.log('\x1b[90m%s\x1b[0m', `  Directory: ${desktopDir}`);
     console.log('');
-    const npmBin = process.platform === 'win32' ? 'npm.cmd' : 'npm';
-    runCommand(npmBin, ['run', 'dev'], { cwd: desktopDir });
+    runProcess('npm', ['run', 'dev'], { cwd: desktopDir, useShell: true });
 }
 
 function launchPythonMode(flag) {
@@ -119,7 +120,7 @@ function launchPythonMode(flag) {
     if (flag) {
         args.push(flag);
     }
-    runCommand(pythonBin, args);
+    runProcess(pythonBin, args, { useShell: false });
 }
 
 function promptSelection() {
@@ -193,9 +194,7 @@ function main() {
     } else if (flag === '--localhost' || flag === '--web') {
         launchPythonMode('--dashboard');
     } else {
-        const pythonBin = findPython();
-        const launchScript = findLaunchScript();
-        runCommand(pythonBin, [launchScript, ...rawArgs]);
+        launchPythonMode(rawArgs[0]);
     }
 }
 
