@@ -337,6 +337,8 @@ TASK_COMPLETION_GUIDANCE = (
     "Do not stop after writing a stub, a plan, or a single command. Keep working "
     "until you have actually exercised the code or produced the requested result, "
     "then report what real execution returned.\n"
+    "For simple greetings, conversational questions, or casual chat (e.g. 'hi', 'hello'), "
+    "respond directly without calling any tools.\n"
     "If a tool, install, or network call fails and blocks the real path, say so "
     "directly and try an alternative (different package manager, different "
     "approach, ask the user). NEVER substitute plausible-looking fabricated "
