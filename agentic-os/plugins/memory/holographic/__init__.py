@@ -128,10 +128,10 @@ class HolographicMemoryProvider(MemoryProvider):
     def is_available(self) -> bool:
         return True  # SQLite is always available, numpy is optional
 
-    def save_config(self, values, hermes_home):
+    def save_config(self, values, agentic_os_home):
         """Write config to config.yaml under plugins.hermes-memory-store."""
         from pathlib import Path
-        config_path = Path(hermes_home) / "config.yaml"
+        config_path = Path(agentic_os_home) / "config.yaml"
         try:
             import yaml
             existing = {}

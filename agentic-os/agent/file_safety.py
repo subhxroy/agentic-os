@@ -27,7 +27,7 @@ def _hermes_root_path() -> Path:
 
 def build_write_denied_paths(home: str) -> set[str]:
     """Return exact sensitive paths that must never be written."""
-    hermes_home = _agentic_os_home_path()
+    agentic_os_home = _agentic_os_home_path()
     hermes_root = _hermes_root_path()
     return {
         os.path.realpath(p)
@@ -37,12 +37,12 @@ def build_write_denied_paths(home: str) -> set[str]:
             os.path.join(home, ".ssh", "id_ed25519"),
             os.path.join(home, ".ssh", "config"),
             # Active profile .env (or top-level .env when not in profile mode).
-            str(hermes_home / ".env"),
+            str(agentic_os_home / ".env"),
             # Top-level .env, even when running under a profile — overwriting it
             # leaks credentials across every profile that inherits from root (#15981).
             str(hermes_root / ".env"),
             # Active profile Anthropic PKCE credential store.
-            str(hermes_home / ".anthropic_oauth.json"),
+            str(agentic_os_home / ".anthropic_oauth.json"),
             # Top-level Anthropic PKCE credential store remains sensitive even
             # when a profile is active; default/non-profile sessions still read it.
             str(hermes_root / ".anthropic_oauth.json"),

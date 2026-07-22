@@ -94,7 +94,7 @@ function PreviewLoadError({
             href={error.url}
             onClick={event => {
               event.preventDefault()
-              void window.hermesDesktop?.openExternal(error.url)
+              void window.agenticOSDesktop?.openExternal(error.url)
             }}
           >
             {compactUrl(error.url)}
@@ -414,8 +414,8 @@ export function PreviewPane({
     if (
       target.kind !== 'file' ||
       isDesktopFsRemoteMode() ||
-      !window.hermesDesktop?.watchPreviewFile ||
-      !window.hermesDesktop?.onPreviewFileChanged
+      !window.agenticOSDesktop?.watchPreviewFile ||
+      !window.agenticOSDesktop?.onPreviewFileChanged
     ) {
       return
     }
@@ -448,7 +448,7 @@ export function PreviewPane({
       reloadPreview()
     }
 
-    const unsubscribe = window.hermesDesktop.onPreviewFileChanged(payload => {
+    const unsubscribe = window.agenticOSDesktop.onPreviewFileChanged(payload => {
       if (!active || payload.id !== watchId) {
         return
       }
@@ -466,11 +466,11 @@ export function PreviewPane({
       }, FILE_RELOAD_DEBOUNCE_MS)
     })
 
-    void window.hermesDesktop
+    void window.agenticOSDesktop
       .watchPreviewFile(target.url)
       .then(watch => {
         if (!active) {
-          void window.hermesDesktop?.stopPreviewFileWatch?.(watch.id)
+          void window.agenticOSDesktop?.stopPreviewFileWatch?.(watch.id)
 
           return
         }
@@ -493,7 +493,7 @@ export function PreviewPane({
       }
 
       if (watchId) {
-        void window.hermesDesktop?.stopPreviewFileWatch?.(watchId)
+        void window.agenticOSDesktop?.stopPreviewFileWatch?.(watchId)
       }
     }
   }, [appendConsoleEntry, copy, reloadPreview, target.kind, target.url])

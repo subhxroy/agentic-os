@@ -713,7 +713,7 @@ def init_agent(
     # both live under ~/.agentic-os/logs/.  Idempotent, so gateway mode
     # (which creates a new AIAgent per message) won't duplicate handlers.
     from agentic_os_logging import setup_logging, setup_verbose_logging
-    setup_logging(hermes_home=_ra()._agentic_os_home)
+    setup_logging(agentic_os_home=_ra()._agentic_os_home)
 
     if agent.verbose_logging:
         setup_verbose_logging()
@@ -1302,8 +1302,8 @@ def init_agent(
         os.environ["HERMES_SESSION_ID"] = agent.session_id
 
     # Session logs go into ~/.agentic-os/sessions/ alongside gateway sessions
-    hermes_home = get_agentic_os_home()
-    agent.logs_dir = hermes_home / "sessions"
+    agentic_os_home = get_agentic_os_home()
+    agent.logs_dir = agentic_os_home / "sessions"
     agent.logs_dir.mkdir(parents=True, exist_ok=True)
     # Per-session JSON snapshot writer (~/.agentic-os/sessions/session_{sid}.json)
     # is opt-in via sessions.write_json_snapshots (default False).  state.db
@@ -1473,7 +1473,7 @@ def init_agent(
                     _init_kwargs = {
                         "session_id": agent.session_id,
                         "platform": platform or "cli",
-                        "hermes_home": str(get_agentic_os_home()),
+                        "agentic_os_home": str(get_agentic_os_home()),
                         "agent_context": "primary",
                     }
                     if _init_kwargs["platform"] == "cli":
@@ -2040,7 +2040,7 @@ def init_agent(
         try:
             agent.context_compressor.on_session_start(
                 agent.session_id,
-                hermes_home=str(get_agentic_os_home()),
+                agentic_os_home=str(get_agentic_os_home()),
                 platform=agent.platform or "cli",
                 model=agent.model,
                 context_length=getattr(agent.context_compressor, "context_length", 0),

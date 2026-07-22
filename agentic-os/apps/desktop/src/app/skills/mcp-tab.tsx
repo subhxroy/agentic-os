@@ -584,7 +584,7 @@ export function McpTab({ gateway }: { gateway: HermesGateway | null }) {
         serverName,
         start: authMcpServer,
         status: getMcpOAuthFlow,
-        openExternal: url => window.hermesDesktop.openExternal(url)
+        openExternal: url => window.agenticOSDesktop.openExternal(url)
       })
 
       const result: McpTestResult = { ok: true, tools: flow.tools ?? [] }

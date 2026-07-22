@@ -19,7 +19,7 @@ from unittest.mock import MagicMock
 import pytest
 
 
-def _fresh_run_agent(hermes_home):
+def _fresh_run_agent(agentic_os_home):
     for mod in list(sys.modules):
         if mod == "run_agent" or mod.startswith("agent.") or mod.startswith("tools.") or mod.startswith("hermes_"):
             del sys.modules[mod]

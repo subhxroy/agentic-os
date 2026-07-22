@@ -462,7 +462,7 @@ THREAT_PATTERNS = [
      "agent_config_mod", "critical", "persistence",
      "references agent config files (could persist malicious instructions across sessions)"),
     (r'\.hermes/config\.yaml|\.hermes/SOUL\.md',
-     "hermes_config_mod", "critical", "persistence",
+     "agentic_os_config_mod", "critical", "persistence",
      "references Hermes configuration files directly"),
     (r'\.claude/settings|\.codex/config',
      "other_agent_config", "high", "persistence",

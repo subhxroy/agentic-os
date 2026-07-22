@@ -86,7 +86,7 @@ describe('gatewayMediaDataUrl', () => {
 
   beforeEach(() => {
     api.mockClear()
-    vi.stubGlobal('window', { hermesDesktop: { api } })
+    vi.stubGlobal('window', { agenticOSDesktop: { api } })
     $connection.set({ mode: 'remote' } as never)
   })
 
@@ -118,7 +118,7 @@ describe('downloadGatewayMediaFile', () => {
 
   beforeEach(() => {
     api.mockClear()
-    vi.stubGlobal('window', { hermesDesktop: { api }, setTimeout: vi.fn() })
+    vi.stubGlobal('window', { agenticOSDesktop: { api }, setTimeout: vi.fn() })
     vi.stubGlobal(
       'fetch',
       vi.fn(async () => ({ blob: async () => new Blob(['# report'], { type: 'text/markdown' }) }))

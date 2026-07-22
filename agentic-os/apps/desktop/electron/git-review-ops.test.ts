@@ -17,7 +17,7 @@ afterEach(() => {
 })
 
 function makeRepo() {
-  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'hermes-desktop-git-status-'))
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'agentic-os-desktop-git-status-'))
 
   tempDirs.push(dir)
   execFileSync('git', ['init', '-q'], { cwd: dir })

@@ -161,7 +161,7 @@ class TestSeverityExtraction:
 class TestRunAudit:
     def test_no_components_returns_empty(self, tmp_path: Path):
         findings = sa.run_audit(
-            skip_venv=True, skip_plugins=True, skip_mcp=True, hermes_home=tmp_path
+            skip_venv=True, skip_plugins=True, skip_mcp=True, agentic_os_home=tmp_path
         )
         assert findings == []
 
@@ -185,7 +185,7 @@ class TestRunAudit:
         with patch.object(sa, "_osv_query_batch", side_effect=fake_batch), \
              patch.object(sa, "_osv_fetch_details", side_effect=fake_details):
             findings = sa.run_audit(
-                skip_venv=True, skip_plugins=False, skip_mcp=True, hermes_home=tmp_path
+                skip_venv=True, skip_plugins=False, skip_mcp=True, agentic_os_home=tmp_path
             )
         assert len(findings) == 2
         # CRITICAL must come first

@@ -248,8 +248,8 @@ export function ArtifactsView({ setStatusbarItemGroup: _setStatusbarItemGroup, .
           return
         }
 
-        if (window.hermesDesktop?.openExternal) {
-          await window.hermesDesktop.openExternal(href)
+        if (window.agenticOSDesktop?.openExternal) {
+          await window.agenticOSDesktop.openExternal(href)
         } else {
           window.open(href, '_blank', 'noopener,noreferrer')
         }

@@ -124,7 +124,7 @@ _TUI_EMBEDDED_PANE_CLARIFIER = (
 def _tui_embedded_pane_clarifier(hint: str) -> str:
     """Append the desktop-embedded-terminal-pane clarifier to a tui hint.
 
-    Triggered by ``HERMES_DESKTOP_TERMINAL=1`` (set by ``main.cjs`` only on the
+    Triggered by ``AGENTIC_OS_DESKTOP_TERMINAL=1`` (set by ``main.cjs`` only on the
     shell env of the desktop's embedded TUI PTY — never on the chat backend).
     This is a runtime-surface qualifier, not a config override, so it lives at
     the resolution site rather than inside ``_resolve_platform_hint`` (which
@@ -139,7 +139,7 @@ def _tui_embedded_pane_clarifier(hint: str) -> str:
         return hint
     if _TUI_EMBEDDED_PANE_CLARIFIER in hint:
         return hint
-    if not is_truthy_value(os.getenv("HERMES_DESKTOP_TERMINAL")):
+    if not is_truthy_value(os.getenv("AGENTIC_OS_DESKTOP_TERMINAL")):
         return hint
     return hint + _TUI_EMBEDDED_PANE_CLARIFIER
 

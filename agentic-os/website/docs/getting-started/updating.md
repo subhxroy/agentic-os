@@ -84,7 +84,7 @@ updates:
 
 ### Windows: another `hermes.exe` is running
 
-On Windows, `hermes update` will refuse to run if it detects another `hermes.exe` process holding the venv's entry-point executable open — most commonly the Hermes Desktop app's spawned backend, an open `hermes` REPL in another terminal, or a running gateway:
+On Windows, `hermes update` will refuse to run if it detects another `hermes.exe` process holding the venv's entry-point executable open — most commonly the Agentic OS Desktop app's spawned backend, an open `hermes` REPL in another terminal, or a running gateway:
 
 ```
 $ hermes update
@@ -94,7 +94,7 @@ $ hermes update
   Updating now would fail to overwrite ...\venv\Scripts\hermes.exe because
   Windows blocks REPLACE on a running executable.
 
-  Close Hermes Desktop, exit any open `hermes` REPLs, and
+  Close Agentic OS Desktop, exit any open `hermes` REPLs, and
   stop the gateway (`hermes gateway stop`) before retrying.
   Override with `hermes update --force` if you've already
   confirmed those processes will not write to the venv.

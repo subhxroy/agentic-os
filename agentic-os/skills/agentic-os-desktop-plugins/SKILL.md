@@ -10,7 +10,7 @@ metadata:
     related_skills: []
 ---
 
-# Hermes Desktop Plugins Skill
+# Agentic OS Desktop Plugins Skill
 
 Write plugins for the Hermes desktop app: statusbar items, layout panes,
 command-palette commands, keybinds, routes, and themes. A plugin is a single
@@ -49,7 +49,7 @@ Full human reference (every export, area payloads, backend, security):
 
 ## Quick Reference
 
-The ONLY import surface is `@hermes/plugin-sdk` (plus `react` /
+The ONLY import surface is `@agentic-os/plugin-sdk` (plus `react` /
 `react/jsx-runtime`, which resolve to the app's own React — write UI with
 `jsx()` calls, not JSX syntax; the file is not compiled).
 
@@ -149,7 +149,7 @@ The ONLY import surface is `@hermes/plugin-sdk` (plus `react` /
   blank space or blurry scaling.
 - JSX syntax will not parse — the file loads uncompiled. Use
   `jsx('div', { children: ... })` from `react/jsx-runtime`.
-- Do not import anything except `@hermes/plugin-sdk`, `react`, and
+- Do not import anything except `@agentic-os/plugin-sdk`, `react`, and
   `react/jsx-runtime`; other specifiers fail to resolve.
 - Handlers must read state imperatively (`$atom.get()`), never from render
   closures — rapid events will otherwise see stale values.

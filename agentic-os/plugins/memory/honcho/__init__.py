@@ -308,12 +308,12 @@ class HonchoMemoryProvider(MemoryProvider):
         except Exception:
             return False
 
-    def save_config(self, values, hermes_home):
+    def save_config(self, values, agentic_os_home):
         """Write config to $AGENTIC_OS_HOME/honcho.json (Honcho SDK native format)."""
         import json
         import os
         from pathlib import Path
-        config_path = Path(hermes_home) / "honcho.json"
+        config_path = Path(agentic_os_home) / "honcho.json"
         existing = {}
         if config_path.exists():
             try:
@@ -330,7 +330,7 @@ class HonchoMemoryProvider(MemoryProvider):
             {"key": "baseUrl", "description": "Honcho base URL (for self-hosted)"},
         ]
 
-    def post_setup(self, hermes_home: str, config: dict) -> None:
+    def post_setup(self, agentic_os_home: str, config: dict) -> None:
         """Run the full Honcho setup wizard after provider selection."""
         import types
         from plugins.memory.honcho.cli import cmd_setup

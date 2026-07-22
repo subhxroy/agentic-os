@@ -106,8 +106,8 @@ export interface PetGenProvider {
   default: boolean
 }
 
-const PROVIDER_KEY = 'hermes.desktop.petgen.provider'
-const REMIX_CONFIRMED_KEY = 'hermes.desktop.petgen.remixConfirmed'
+const PROVIDER_KEY = 'agentic-os.desktop.petgen.provider'
+const REMIX_CONFIRMED_KEY = 'agentic-os.desktop.petgen.remixConfirmed'
 
 /** Reference-capable providers available to pick (from `pet.generate.status`). */
 export const $petGenProviders = atom<PetGenProvider[]>([])

@@ -371,16 +371,16 @@ async def test_blocks_canonical_read_denylist_credential_stores(tmp_path: Path, 
     monkeypatch.setenv("HOME", str(tmp_path))
     monkeypatch.setenv("AGENTIC_OS_HOME", str(tmp_path / ".hermes"))
 
-    hermes_home = tmp_path / ".hermes"
-    (hermes_home).mkdir(parents=True)
+    agentic_os_home = tmp_path / ".hermes"
+    (agentic_os_home).mkdir(parents=True)
 
-    auth_json = hermes_home / "auth.json"
+    auth_json = agentic_os_home / "auth.json"
     auth_json.write_text('{"openai": "sk-AUTHJSON-SECRET"}\n', encoding="utf-8")
 
-    oauth = hermes_home / ".anthropic_oauth.json"
+    oauth = agentic_os_home / ".anthropic_oauth.json"
     oauth.write_text('{"access_token": "OAUTH-SECRET"}\n', encoding="utf-8")
 
-    mcp_token = hermes_home / "mcp-tokens" / "github.json"
+    mcp_token = agentic_os_home / "mcp-tokens" / "github.json"
     mcp_token.parent.mkdir(parents=True)
     mcp_token.write_text('{"token": "MCP-TOKEN-SECRET"}\n', encoding="utf-8")
 
@@ -423,9 +423,9 @@ async def test_canonical_guard_fails_closed_when_lookup_raises(tmp_path: Path, m
     monkeypatch.setenv("HOME", str(tmp_path))
     monkeypatch.setenv("AGENTIC_OS_HOME", str(tmp_path / ".hermes"))
 
-    hermes_home = tmp_path / ".hermes"
-    hermes_home.mkdir(parents=True)
-    auth_json = hermes_home / "auth.json"
+    agentic_os_home = tmp_path / ".hermes"
+    agentic_os_home.mkdir(parents=True)
+    auth_json = agentic_os_home / "auth.json"
     auth_json.write_text('{"openai": "sk-AUTHJSON-SECRET"}\n', encoding="utf-8")
 
     def _boom(_path):

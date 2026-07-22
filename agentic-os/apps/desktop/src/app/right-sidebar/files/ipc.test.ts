@@ -23,13 +23,13 @@ function dataUrl(text: string) {
 function installBridge() {
   ;(
     window as unknown as {
-      hermesDesktop: {
+      agenticOSDesktop: {
         gitRoot: typeof gitRoot
         readDir: typeof readDir
         readFileDataUrl: typeof readFileDataUrl
       }
     }
-  ).hermesDesktop = { gitRoot, readDir, readFileDataUrl }
+  ).agenticOSDesktop = { gitRoot, readDir, readFileDataUrl }
 }
 
 describe('readProjectDir', () => {
@@ -43,11 +43,11 @@ describe('readProjectDir', () => {
 
   afterEach(() => {
     clearProjectDirCache()
-    delete (window as unknown as { hermesDesktop?: unknown }).hermesDesktop
+    delete (window as unknown as { agenticOSDesktop?: unknown }).agenticOSDesktop
   })
 
   it('returns no-bridge when the desktop bridge is unavailable', async () => {
-    delete (window as unknown as { hermesDesktop?: unknown }).hermesDesktop
+    delete (window as unknown as { agenticOSDesktop?: unknown }).agenticOSDesktop
 
     await expect(readProjectDir('/repo')).resolves.toEqual({ entries: [], error: 'no-bridge' })
   })

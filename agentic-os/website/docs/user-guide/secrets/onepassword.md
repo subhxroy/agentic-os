@@ -22,7 +22,7 @@ Hermes never authenticates on your behalf and never downloads `op`: it shells ou
 
 When you authenticate with a **service-account token**, that token is itself the bootstrap credential Agentic OS needs *before* it can resolve any `op://` reference. It must be present in `os.environ` of every process that resolves secrets — including cron jobs (`kanban.dispatch_in_gateway: false`), subprocess invocations, CLI runs, macOS launchd agents, and Docker containers — not just the interactive gateway. There are three ways to make it available, in order of precedence:
 
-1. **In `~/.agentic-os/.env` (recommended).** `hermes secrets onepassword setup --token <token>` writes the token to `~/.agentic-os/.env`, exactly like Bitwarden's `BWS_ACCESS_TOKEN`. Because `load_hermes_dotenv()` always loads `.env`, the token is available everywhere with zero extra setup. This is the simplest reliable option.
+1. **In `~/.agentic-os/.env` (recommended).** `hermes secrets onepassword setup --token <token>` writes the token to `~/.agentic-os/.env`, exactly like Bitwarden's `BWS_ACCESS_TOKEN`. Because `load_agentic_os_dotenv()` always loads `.env`, the token is available everywhere with zero extra setup. This is the simplest reliable option.
 
 2. **In `~/.agentic-os/.op.env` (gitignored).** If you'd rather keep the service-account token out of `.env` — for example so `.env` can be checked into a private dotfiles repo while the token stays out of version control — place it in `~/.agentic-os/.op.env`:
 
@@ -146,7 +146,7 @@ Startup warnings now include a `→` remediation line telling you exactly which 
 
 ## Caching
 
-Successful, complete pulls are cached in-process and on disk under `<hermes_home>/cache/op_cache.json` (written atomically, mode `0600`), so back-to-back short-lived `hermes` invocations don't re-shell `op` for every reference. The cache:
+Successful, complete pulls are cached in-process and on disk under `<agentic_os_home>/cache/op_cache.json` (written atomically, mode `0600`), so back-to-back short-lived `hermes` invocations don't re-shell `op` for every reference. The cache:
 
 - stores only resolved secret **values** — never the service-account token or any raw auth material (auth is fingerprinted into the cache key);
 - is invalidated when the token, account, `OP_SESSION_*` variables, or the set of references change;

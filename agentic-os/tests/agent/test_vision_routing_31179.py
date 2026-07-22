@@ -42,16 +42,16 @@ import pytest
 def isolated_home(monkeypatch):
     """Temp AGENTIC_OS_HOME with config + clean credential env vars."""
     test_home = tempfile.mkdtemp(prefix="hermes_test_31179_")
-    hermes_home = os.path.join(test_home, ".hermes")
-    os.makedirs(hermes_home)
-    monkeypatch.setenv("AGENTIC_OS_HOME", hermes_home)
+    agentic_os_home = os.path.join(test_home, ".hermes")
+    os.makedirs(agentic_os_home)
+    monkeypatch.setenv("AGENTIC_OS_HOME", agentic_os_home)
 
     # Strip all credential-shaped env vars so each scenario starts hermetic.
     for k in list(os.environ.keys()):
         if k.endswith("_API_KEY") or k.endswith("_TOKEN"):
             monkeypatch.delenv(k, raising=False)
 
-    yield hermes_home
+    yield agentic_os_home
     shutil.rmtree(test_home, ignore_errors=True)
 
 

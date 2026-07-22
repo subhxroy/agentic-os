@@ -1,4 +1,4 @@
-import { isGatewayReauthRequired, resolveGatewayWsUrl } from '@hermes/shared'
+import { isGatewayReauthRequired, resolveGatewayWsUrl } from '@agentic-os/shared'
 import { useStore } from '@nanostores/react'
 import { useCallback, useEffect, useRef } from 'react'
 
@@ -11,7 +11,7 @@ export function useGatewayRequest() {
   const gatewayState = useStore($gatewayState)
   const gatewayRef = useRef<HermesGateway | null>(null)
 
-  const connectionRef = useRef<Awaited<ReturnType<NonNullable<typeof window.hermesDesktop>['getConnection']>> | null>(
+  const connectionRef = useRef<Awaited<ReturnType<NonNullable<typeof window.agenticOSDesktop>['getConnection']>> | null>(
     null
   )
 
@@ -52,7 +52,7 @@ export function useGatewayRequest() {
     }
 
     reconnectingRef.current = (async () => {
-      const desktop = window.hermesDesktop
+      const desktop = window.agenticOSDesktop
 
       if (!desktop) {
         return null

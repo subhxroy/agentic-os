@@ -32,26 +32,26 @@ def _clean_state():
 
 class TestRegisterCredentialFiles:
     def test_dict_with_path_key(self, tmp_path):
-        hermes_home = tmp_path / ".hermes"
-        hermes_home.mkdir()
-        (hermes_home / "token.json").write_text("{}")
+        agentic_os_home = tmp_path / ".hermes"
+        agentic_os_home.mkdir()
+        (agentic_os_home / "token.json").write_text("{}")
 
-        with patch.dict(os.environ, {"AGENTIC_OS_HOME": str(hermes_home)}):
+        with patch.dict(os.environ, {"AGENTIC_OS_HOME": str(agentic_os_home)}):
             missing = register_credential_files([{"path": "token.json"}])
 
         assert missing == []
         mounts = get_credential_file_mounts()
         assert len(mounts) == 1
-        assert mounts[0]["host_path"] == str(hermes_home / "token.json")
+        assert mounts[0]["host_path"] == str(agentic_os_home / "token.json")
         assert mounts[0]["container_path"] == "/root/.hermes/token.json"
 
     def test_dict_with_name_key_fallback(self, tmp_path):
         """Skills use 'name' instead of 'path' — both should work."""
-        hermes_home = tmp_path / ".hermes"
-        hermes_home.mkdir()
-        (hermes_home / "google_token.json").write_text("{}")
+        agentic_os_home = tmp_path / ".hermes"
+        agentic_os_home.mkdir()
+        (agentic_os_home / "google_token.json").write_text("{}")
 
-        with patch.dict(os.environ, {"AGENTIC_OS_HOME": str(hermes_home)}):
+        with patch.dict(os.environ, {"AGENTIC_OS_HOME": str(agentic_os_home)}):
             missing = register_credential_files([
                 {"name": "google_token.json", "description": "OAuth token"},
             ])
@@ -62,11 +62,11 @@ class TestRegisterCredentialFiles:
         assert "google_token.json" in mounts[0]["container_path"]
 
     def test_string_entry(self, tmp_path):
-        hermes_home = tmp_path / ".hermes"
-        hermes_home.mkdir()
-        (hermes_home / "secret.key").write_text("key")
+        agentic_os_home = tmp_path / ".hermes"
+        agentic_os_home.mkdir()
+        (agentic_os_home / "secret.key").write_text("key")
 
-        with patch.dict(os.environ, {"AGENTIC_OS_HOME": str(hermes_home)}):
+        with patch.dict(os.environ, {"AGENTIC_OS_HOME": str(agentic_os_home)}):
             missing = register_credential_files(["secret.key"])
 
         assert missing == []
@@ -74,10 +74,10 @@ class TestRegisterCredentialFiles:
         assert len(mounts) == 1
 
     def test_missing_file_reported(self, tmp_path):
-        hermes_home = tmp_path / ".hermes"
-        hermes_home.mkdir()
+        agentic_os_home = tmp_path / ".hermes"
+        agentic_os_home.mkdir()
 
-        with patch.dict(os.environ, {"AGENTIC_OS_HOME": str(hermes_home)}):
+        with patch.dict(os.environ, {"AGENTIC_OS_HOME": str(agentic_os_home)}):
             missing = register_credential_files([
                 {"name": "does_not_exist.json"},
             ])
@@ -87,11 +87,11 @@ class TestRegisterCredentialFiles:
 
     def test_path_takes_precedence_over_name(self, tmp_path):
         """When both path and name are present, path wins."""
-        hermes_home = tmp_path / ".hermes"
-        hermes_home.mkdir()
-        (hermes_home / "real.json").write_text("{}")
+        agentic_os_home = tmp_path / ".hermes"
+        agentic_os_home.mkdir()
+        (agentic_os_home / "real.json").write_text("{}")
 
-        with patch.dict(os.environ, {"AGENTIC_OS_HOME": str(hermes_home)}):
+        with patch.dict(os.environ, {"AGENTIC_OS_HOME": str(agentic_os_home)}):
             missing = register_credential_files([
                 {"path": "real.json", "name": "wrong.json"},
             ])
@@ -103,13 +103,13 @@ class TestRegisterCredentialFiles:
 
 class TestSkillsDirectoryMount:
     def test_returns_mount_when_skills_dir_exists(self, tmp_path):
-        hermes_home = tmp_path / ".hermes"
-        skills_dir = hermes_home / "skills"
+        agentic_os_home = tmp_path / ".hermes"
+        skills_dir = agentic_os_home / "skills"
         skills_dir.mkdir(parents=True)
         (skills_dir / "test-skill").mkdir()
         (skills_dir / "test-skill" / "SKILL.md").write_text("# test")
 
-        with patch.dict(os.environ, {"AGENTIC_OS_HOME": str(hermes_home)}):
+        with patch.dict(os.environ, {"AGENTIC_OS_HOME": str(agentic_os_home)}):
             mounts = get_skills_directory_mount()
 
         assert len(mounts) >= 1
@@ -117,10 +117,10 @@ class TestSkillsDirectoryMount:
         assert mounts[0]["container_path"] == "/root/.hermes/skills"
 
     def test_returns_none_when_no_skills_dir(self, tmp_path):
-        hermes_home = tmp_path / ".hermes"
-        hermes_home.mkdir()
+        agentic_os_home = tmp_path / ".hermes"
+        agentic_os_home.mkdir()
 
-        with patch.dict(os.environ, {"AGENTIC_OS_HOME": str(hermes_home)}):
+        with patch.dict(os.environ, {"AGENTIC_OS_HOME": str(agentic_os_home)}):
             mounts = get_skills_directory_mount()
 
         # No local skills dir → no local mount (external dirs may still appear)
@@ -128,18 +128,18 @@ class TestSkillsDirectoryMount:
         assert local_mounts == []
 
     def test_custom_container_base(self, tmp_path):
-        hermes_home = tmp_path / ".hermes"
-        (hermes_home / "skills").mkdir(parents=True)
+        agentic_os_home = tmp_path / ".hermes"
+        (agentic_os_home / "skills").mkdir(parents=True)
 
-        with patch.dict(os.environ, {"AGENTIC_OS_HOME": str(hermes_home)}):
+        with patch.dict(os.environ, {"AGENTIC_OS_HOME": str(agentic_os_home)}):
             mounts = get_skills_directory_mount(container_base="/home/user/.hermes")
 
         assert mounts[0]["container_path"] == "/home/user/.hermes/skills"
 
     def test_symlinks_are_sanitized(self, tmp_path):
         """Symlinks in skills dir should be excluded from the mount."""
-        hermes_home = tmp_path / ".hermes"
-        skills_dir = hermes_home / "skills"
+        agentic_os_home = tmp_path / ".hermes"
+        skills_dir = agentic_os_home / "skills"
         skills_dir.mkdir(parents=True)
         (skills_dir / "legit.md").write_text("# real skill")
         # Create a symlink pointing outside the skills tree
@@ -147,7 +147,7 @@ class TestSkillsDirectoryMount:
         secret.write_text("TOP SECRET")
         (skills_dir / "evil_link").symlink_to(secret)
 
-        with patch.dict(os.environ, {"AGENTIC_OS_HOME": str(hermes_home)}):
+        with patch.dict(os.environ, {"AGENTIC_OS_HOME": str(agentic_os_home)}):
             mounts = get_skills_directory_mount()
 
         assert len(mounts) >= 1
@@ -163,12 +163,12 @@ class TestSkillsDirectoryMount:
 
     def test_no_symlinks_returns_original_dir(self, tmp_path):
         """When no symlinks exist, the original dir is returned (no copy)."""
-        hermes_home = tmp_path / ".hermes"
-        skills_dir = hermes_home / "skills"
+        agentic_os_home = tmp_path / ".hermes"
+        skills_dir = agentic_os_home / "skills"
         skills_dir.mkdir(parents=True)
         (skills_dir / "skill.md").write_text("ok")
 
-        with patch.dict(os.environ, {"AGENTIC_OS_HOME": str(hermes_home)}):
+        with patch.dict(os.environ, {"AGENTIC_OS_HOME": str(agentic_os_home)}):
             mounts = get_skills_directory_mount()
 
         assert mounts[0]["host_path"] == str(skills_dir)
@@ -176,8 +176,8 @@ class TestSkillsDirectoryMount:
 
 class TestIterSkillsFiles:
     def test_returns_files_skipping_symlinks(self, tmp_path):
-        hermes_home = tmp_path / ".hermes"
-        skills_dir = hermes_home / "skills"
+        agentic_os_home = tmp_path / ".hermes"
+        skills_dir = agentic_os_home / "skills"
         (skills_dir / "cat" / "myskill").mkdir(parents=True)
         (skills_dir / "cat" / "myskill" / "SKILL.md").write_text("# skill")
         (skills_dir / "cat" / "myskill" / "scripts").mkdir()
@@ -187,7 +187,7 @@ class TestIterSkillsFiles:
         secret.write_text("nope")
         (skills_dir / "cat" / "myskill" / "evil").symlink_to(secret)
 
-        with patch.dict(os.environ, {"AGENTIC_OS_HOME": str(hermes_home)}):
+        with patch.dict(os.environ, {"AGENTIC_OS_HOME": str(agentic_os_home)}):
             files = iter_skills_files()
 
         paths = {f["container_path"] for f in files}
@@ -197,10 +197,10 @@ class TestIterSkillsFiles:
         assert not any("evil" in f["container_path"] for f in files)
 
     def test_empty_when_no_skills_dir(self, tmp_path):
-        hermes_home = tmp_path / ".hermes"
-        hermes_home.mkdir()
+        agentic_os_home = tmp_path / ".hermes"
+        agentic_os_home.mkdir()
 
-        with patch.dict(os.environ, {"AGENTIC_OS_HOME": str(hermes_home)}):
+        with patch.dict(os.environ, {"AGENTIC_OS_HOME": str(agentic_os_home)}):
             assert iter_skills_files() == []
 
 class TestPathTraversalSecurity:
@@ -220,7 +220,7 @@ class TestPathTraversalSecurity:
         monkeypatch.setenv("AGENTIC_OS_HOME", str(tmp_path / ".hermes"))
         (tmp_path / ".hermes").mkdir()
 
-        # Create a sensitive file one level above hermes_home
+        # Create a sensitive file one level above agentic_os_home
         sensitive = tmp_path / "sensitive.json"
         sensitive.write_text('{"secret": "value"}')
 
@@ -231,11 +231,11 @@ class TestPathTraversalSecurity:
 
     def test_deep_traversal_rejected(self, tmp_path, monkeypatch):
         """'../../etc/passwd' style traversal must be rejected."""
-        hermes_home = tmp_path / ".hermes"
-        hermes_home.mkdir()
-        monkeypatch.setenv("AGENTIC_OS_HOME", str(hermes_home))
+        agentic_os_home = tmp_path / ".hermes"
+        agentic_os_home.mkdir()
+        monkeypatch.setenv("AGENTIC_OS_HOME", str(agentic_os_home))
 
-        # Create a fake sensitive file outside hermes_home
+        # Create a fake sensitive file outside agentic_os_home
         ssh_dir = tmp_path / ".ssh"
         ssh_dir.mkdir()
         (ssh_dir / "id_rsa").write_text("PRIVATE KEY")
@@ -247,9 +247,9 @@ class TestPathTraversalSecurity:
 
     def test_absolute_path_rejected(self, tmp_path, monkeypatch):
         """Absolute paths must be rejected regardless of whether they exist."""
-        hermes_home = tmp_path / ".hermes"
-        hermes_home.mkdir()
-        monkeypatch.setenv("AGENTIC_OS_HOME", str(hermes_home))
+        agentic_os_home = tmp_path / ".hermes"
+        agentic_os_home.mkdir()
+        monkeypatch.setenv("AGENTIC_OS_HOME", str(agentic_os_home))
 
         # Create a file at an absolute path
         sensitive = tmp_path / "absolute.json"
@@ -262,10 +262,10 @@ class TestPathTraversalSecurity:
 
     def test_legitimate_file_still_works(self, tmp_path, monkeypatch):
         """Normal files inside AGENTIC_OS_HOME must still be registered."""
-        hermes_home = tmp_path / ".hermes"
-        hermes_home.mkdir()
-        monkeypatch.setenv("AGENTIC_OS_HOME", str(hermes_home))
-        (hermes_home / "token.json").write_text('{"token": "abc"}')
+        agentic_os_home = tmp_path / ".hermes"
+        agentic_os_home.mkdir()
+        monkeypatch.setenv("AGENTIC_OS_HOME", str(agentic_os_home))
+        (agentic_os_home / "token.json").write_text('{"token": "abc"}')
 
         result = register_credential_file("token.json")
 
@@ -276,12 +276,12 @@ class TestPathTraversalSecurity:
 
     def test_nested_subdir_inside_agentic_os_home_allowed(self, tmp_path, monkeypatch):
         """Files in subdirectories of AGENTIC_OS_HOME must be allowed."""
-        hermes_home = tmp_path / ".hermes"
-        hermes_home.mkdir()
-        subdir = hermes_home / "creds"
+        agentic_os_home = tmp_path / ".hermes"
+        agentic_os_home.mkdir()
+        subdir = agentic_os_home / "creds"
         subdir.mkdir()
         (subdir / "oauth.json").write_text("{}")
-        monkeypatch.setenv("AGENTIC_OS_HOME", str(hermes_home))
+        monkeypatch.setenv("AGENTIC_OS_HOME", str(agentic_os_home))
 
         result = register_credential_file("creds/oauth.json")
 
@@ -289,16 +289,16 @@ class TestPathTraversalSecurity:
 
     def test_symlink_traversal_rejected(self, tmp_path, monkeypatch):
         """A symlink inside AGENTIC_OS_HOME pointing outside must be rejected."""
-        hermes_home = tmp_path / ".hermes"
-        hermes_home.mkdir()
-        monkeypatch.setenv("AGENTIC_OS_HOME", str(hermes_home))
+        agentic_os_home = tmp_path / ".hermes"
+        agentic_os_home.mkdir()
+        monkeypatch.setenv("AGENTIC_OS_HOME", str(agentic_os_home))
 
-        # Create a sensitive file outside hermes_home
+        # Create a sensitive file outside agentic_os_home
         sensitive = tmp_path / "sensitive.json"
         sensitive.write_text('{"secret": "value"}')
 
-        # Create a symlink inside hermes_home pointing outside
-        symlink = hermes_home / "evil_link.json"
+        # Create a symlink inside agentic_os_home pointing outside
+        symlink = agentic_os_home / "evil_link.json"
         try:
             symlink.symlink_to(sensitive)
         except (OSError, NotImplementedError):
@@ -318,20 +318,20 @@ class TestPathTraversalSecurity:
 class TestConfigPathTraversal:
     """terminal.credential_files in config.yaml must also reject traversal."""
 
-    def _write_config(self, hermes_home: Path, cred_files: list):
+    def _write_config(self, agentic_os_home: Path, cred_files: list):
         import yaml
-        config_path = hermes_home / "config.yaml"
+        config_path = agentic_os_home / "config.yaml"
         config_path.write_text(yaml.dump({"terminal": {"credential_files": cred_files}}))
 
     def test_config_traversal_rejected(self, tmp_path, monkeypatch):
         """'../secret' in config.yaml must not escape AGENTIC_OS_HOME."""
-        hermes_home = tmp_path / ".hermes"
-        hermes_home.mkdir()
-        monkeypatch.setenv("AGENTIC_OS_HOME", str(hermes_home))
+        agentic_os_home = tmp_path / ".hermes"
+        agentic_os_home.mkdir()
+        monkeypatch.setenv("AGENTIC_OS_HOME", str(agentic_os_home))
 
         sensitive = tmp_path / "secret.json"
         sensitive.write_text("{}")
-        self._write_config(hermes_home, ["../secret.json"])
+        self._write_config(agentic_os_home, ["../secret.json"])
 
         mounts = get_credential_file_mounts()
         host_paths = [m["host_path"] for m in mounts]
@@ -340,25 +340,25 @@ class TestConfigPathTraversal:
 
     def test_config_absolute_path_rejected(self, tmp_path, monkeypatch):
         """Absolute paths in config.yaml must be rejected."""
-        hermes_home = tmp_path / ".hermes"
-        hermes_home.mkdir()
-        monkeypatch.setenv("AGENTIC_OS_HOME", str(hermes_home))
+        agentic_os_home = tmp_path / ".hermes"
+        agentic_os_home.mkdir()
+        monkeypatch.setenv("AGENTIC_OS_HOME", str(agentic_os_home))
 
         sensitive = tmp_path / "abs.json"
         sensitive.write_text("{}")
-        self._write_config(hermes_home, [str(sensitive)])
+        self._write_config(agentic_os_home, [str(sensitive)])
 
         mounts = get_credential_file_mounts()
         assert mounts == []
 
     def test_config_legitimate_file_works(self, tmp_path, monkeypatch):
         """Normal files inside AGENTIC_OS_HOME via config must still mount."""
-        hermes_home = tmp_path / ".hermes"
-        hermes_home.mkdir()
-        monkeypatch.setenv("AGENTIC_OS_HOME", str(hermes_home))
+        agentic_os_home = tmp_path / ".hermes"
+        agentic_os_home.mkdir()
+        monkeypatch.setenv("AGENTIC_OS_HOME", str(agentic_os_home))
 
-        (hermes_home / "oauth.json").write_text("{}")
-        self._write_config(hermes_home, ["oauth.json"])
+        (agentic_os_home / "oauth.json").write_text("{}")
+        self._write_config(agentic_os_home, ["oauth.json"])
 
         mounts = get_credential_file_mounts()
         assert len(mounts) == 1
@@ -374,12 +374,12 @@ class TestCacheDirectoryMounts:
 
     def test_returns_existing_cache_dirs(self, tmp_path, monkeypatch):
         """Existing cache dirs are returned with correct container paths."""
-        hermes_home = tmp_path / ".hermes"
-        hermes_home.mkdir()
-        (hermes_home / "cache" / "documents").mkdir(parents=True)
-        (hermes_home / "cache" / "audio").mkdir(parents=True)
-        (hermes_home / "cache" / "videos").mkdir(parents=True)
-        monkeypatch.setenv("AGENTIC_OS_HOME", str(hermes_home))
+        agentic_os_home = tmp_path / ".hermes"
+        agentic_os_home.mkdir()
+        (agentic_os_home / "cache" / "documents").mkdir(parents=True)
+        (agentic_os_home / "cache" / "audio").mkdir(parents=True)
+        (agentic_os_home / "cache" / "videos").mkdir(parents=True)
+        monkeypatch.setenv("AGENTIC_OS_HOME", str(agentic_os_home))
 
         mounts = get_cache_directory_mounts()
         paths = {m["container_path"] for m in mounts}
@@ -389,11 +389,11 @@ class TestCacheDirectoryMounts:
 
     def test_skips_nonexistent_dirs(self, tmp_path, monkeypatch):
         """Dirs that don't exist on disk are not returned."""
-        hermes_home = tmp_path / ".hermes"
-        hermes_home.mkdir()
+        agentic_os_home = tmp_path / ".hermes"
+        agentic_os_home.mkdir()
         # Create only one cache dir
-        (hermes_home / "cache" / "documents").mkdir(parents=True)
-        monkeypatch.setenv("AGENTIC_OS_HOME", str(hermes_home))
+        (agentic_os_home / "cache" / "documents").mkdir(parents=True)
+        monkeypatch.setenv("AGENTIC_OS_HOME", str(agentic_os_home))
 
         mounts = get_cache_directory_mounts()
         assert len(mounts) == 1
@@ -406,22 +406,22 @@ class TestCacheDirectoryMounts:
         ``has content`` for ``get_agentic_os_dir``'s populated-legacy check
         (see #27602 — empty legacy stubs are no longer honoured).
         """
-        hermes_home = tmp_path / ".hermes"
-        hermes_home.mkdir()
+        agentic_os_home = tmp_path / ".hermes"
+        agentic_os_home.mkdir()
         # Use legacy dir name with content — get_agentic_os_dir prefers
         # populated old over new.
-        legacy_doc = hermes_home / "document_cache"
-        legacy_img = hermes_home / "image_cache"
+        legacy_doc = agentic_os_home / "document_cache"
+        legacy_img = agentic_os_home / "image_cache"
         legacy_doc.mkdir()
         legacy_img.mkdir()
         (legacy_doc / "cached.txt").write_bytes(b"x")
         (legacy_img / "cached.png").write_bytes(b"x")
-        monkeypatch.setenv("AGENTIC_OS_HOME", str(hermes_home))
+        monkeypatch.setenv("AGENTIC_OS_HOME", str(agentic_os_home))
 
         mounts = get_cache_directory_mounts()
         host_paths = {m["host_path"] for m in mounts}
-        assert str(hermes_home / "document_cache") in host_paths
-        assert str(hermes_home / "image_cache") in host_paths
+        assert str(agentic_os_home / "document_cache") in host_paths
+        assert str(agentic_os_home / "image_cache") in host_paths
         # Container paths always use the new layout
         container_paths = {m["container_path"] for m in mounts}
         assert "/root/.hermes/cache/documents" in container_paths
@@ -429,9 +429,9 @@ class TestCacheDirectoryMounts:
 
     def test_empty_agentic_os_home(self, tmp_path, monkeypatch):
         """No cache dirs → empty list."""
-        hermes_home = tmp_path / ".hermes"
-        hermes_home.mkdir()
-        monkeypatch.setenv("AGENTIC_OS_HOME", str(hermes_home))
+        agentic_os_home = tmp_path / ".hermes"
+        agentic_os_home.mkdir()
+        monkeypatch.setenv("AGENTIC_OS_HOME", str(agentic_os_home))
 
         assert get_cache_directory_mounts() == []
 
@@ -440,11 +440,11 @@ class TestMapCachePathToContainer:
     """Tests for map_cache_path_to_container() — the backend-agnostic mapper."""
 
     def test_maps_path_under_cache_dir(self, tmp_path, monkeypatch):
-        hermes_home = tmp_path / ".hermes"
-        img_dir = hermes_home / "cache" / "images"
+        agentic_os_home = tmp_path / ".hermes"
+        img_dir = agentic_os_home / "cache" / "images"
         img_dir.mkdir(parents=True)
         host_path = str(img_dir / "generated.png")
-        monkeypatch.setenv("AGENTIC_OS_HOME", str(hermes_home))
+        monkeypatch.setenv("AGENTIC_OS_HOME", str(agentic_os_home))
 
         assert (
             map_cache_path_to_container(host_path)
@@ -452,11 +452,11 @@ class TestMapCachePathToContainer:
         )
 
     def test_custom_container_base_for_remote_home(self, tmp_path, monkeypatch):
-        hermes_home = tmp_path / ".hermes"
-        img_dir = hermes_home / "cache" / "images"
+        agentic_os_home = tmp_path / ".hermes"
+        img_dir = agentic_os_home / "cache" / "images"
         img_dir.mkdir(parents=True)
         host_path = str(img_dir / "remote.png")
-        monkeypatch.setenv("AGENTIC_OS_HOME", str(hermes_home))
+        monkeypatch.setenv("AGENTIC_OS_HOME", str(agentic_os_home))
 
         assert (
             map_cache_path_to_container(host_path, container_base="/home/agent/.hermes")
@@ -464,18 +464,18 @@ class TestMapCachePathToContainer:
         )
 
     def test_returns_none_when_outside_cache_dirs(self, tmp_path, monkeypatch):
-        hermes_home = tmp_path / ".hermes"
-        (hermes_home / "cache" / "images").mkdir(parents=True)
-        monkeypatch.setenv("AGENTIC_OS_HOME", str(hermes_home))
+        agentic_os_home = tmp_path / ".hermes"
+        (agentic_os_home / "cache" / "images").mkdir(parents=True)
+        monkeypatch.setenv("AGENTIC_OS_HOME", str(agentic_os_home))
 
         assert map_cache_path_to_container(str(tmp_path / "elsewhere.png")) is None
 
     def test_returns_none_when_no_cache_dirs_exist(self, tmp_path, monkeypatch):
-        hermes_home = tmp_path / ".hermes"
-        hermes_home.mkdir()
-        monkeypatch.setenv("AGENTIC_OS_HOME", str(hermes_home))
+        agentic_os_home = tmp_path / ".hermes"
+        agentic_os_home.mkdir()
+        monkeypatch.setenv("AGENTIC_OS_HOME", str(agentic_os_home))
 
-        assert map_cache_path_to_container(str(hermes_home / "cache" / "images" / "x.png")) is None
+        assert map_cache_path_to_container(str(agentic_os_home / "cache" / "images" / "x.png")) is None
 
 
 class TestIterCacheFiles:
@@ -483,12 +483,12 @@ class TestIterCacheFiles:
 
     def test_enumerates_files(self, tmp_path, monkeypatch):
         """Regular files in cache dirs are returned."""
-        hermes_home = tmp_path / ".hermes"
-        doc_dir = hermes_home / "cache" / "documents"
+        agentic_os_home = tmp_path / ".hermes"
+        doc_dir = agentic_os_home / "cache" / "documents"
         doc_dir.mkdir(parents=True)
         (doc_dir / "upload.zip").write_bytes(b"PK\x03\x04")
         (doc_dir / "report.pdf").write_bytes(b"%PDF-1.4")
-        monkeypatch.setenv("AGENTIC_OS_HOME", str(hermes_home))
+        monkeypatch.setenv("AGENTIC_OS_HOME", str(agentic_os_home))
 
         entries = iter_cache_files()
         names = {Path(e["container_path"]).name for e in entries}
@@ -497,13 +497,13 @@ class TestIterCacheFiles:
 
     def test_skips_symlinks(self, tmp_path, monkeypatch):
         """Symlinks inside cache dirs are skipped."""
-        hermes_home = tmp_path / ".hermes"
-        doc_dir = hermes_home / "cache" / "documents"
+        agentic_os_home = tmp_path / ".hermes"
+        doc_dir = agentic_os_home / "cache" / "documents"
         doc_dir.mkdir(parents=True)
         real_file = doc_dir / "real.txt"
         real_file.write_text("content")
         (doc_dir / "link.txt").symlink_to(real_file)
-        monkeypatch.setenv("AGENTIC_OS_HOME", str(hermes_home))
+        monkeypatch.setenv("AGENTIC_OS_HOME", str(agentic_os_home))
 
         entries = iter_cache_files()
         names = [Path(e["container_path"]).name for e in entries]
@@ -512,12 +512,12 @@ class TestIterCacheFiles:
 
     def test_nested_files(self, tmp_path, monkeypatch):
         """Files in subdirectories are included with correct relative paths."""
-        hermes_home = tmp_path / ".hermes"
-        ss_dir = hermes_home / "cache" / "screenshots"
+        agentic_os_home = tmp_path / ".hermes"
+        ss_dir = agentic_os_home / "cache" / "screenshots"
         sub = ss_dir / "session_abc"
         sub.mkdir(parents=True)
         (sub / "screen1.png").write_bytes(b"PNG")
-        monkeypatch.setenv("AGENTIC_OS_HOME", str(hermes_home))
+        monkeypatch.setenv("AGENTIC_OS_HOME", str(agentic_os_home))
 
         entries = iter_cache_files()
         assert len(entries) == 1
@@ -525,9 +525,9 @@ class TestIterCacheFiles:
 
     def test_empty_cache(self, tmp_path, monkeypatch):
         """No cache dirs → empty list."""
-        hermes_home = tmp_path / ".hermes"
-        hermes_home.mkdir()
-        monkeypatch.setenv("AGENTIC_OS_HOME", str(hermes_home))
+        agentic_os_home = tmp_path / ".hermes"
+        agentic_os_home.mkdir()
+        monkeypatch.setenv("AGENTIC_OS_HOME", str(agentic_os_home))
 
         assert iter_cache_files() == []
 

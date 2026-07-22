@@ -10,18 +10,18 @@ import type {
 import { desktopFsProfile, isDesktopFsRemoteMode } from './desktop-fs'
 
 // Remote-aware git facade. Locally the desktop runs git through Electron
-// (window.hermesDesktop.git); on a remote gateway that's the wrong filesystem,
+// (window.agenticOSDesktop.git); on a remote gateway that's the wrong filesystem,
 // so we mirror the same surface over the dashboard REST API (/api/git/*) — the
 // coding rail, worktree lanes, review pane, and branch ops then act on the
 // BACKEND repo where sessions actually run. Mirrors desktop-fs.ts.
 
-type GitBridge = NonNullable<NonNullable<Window['hermesDesktop']>['git']>
+type GitBridge = NonNullable<NonNullable<Window['agenticOSDesktop']>['git']>
 
 function desktopApi<T>(path: string, body?: Record<string, unknown>): Promise<T> {
-  const desktop = window.hermesDesktop
+  const desktop = window.agenticOSDesktop
 
   if (!desktop) {
-    throw new Error('Hermes Desktop bridge is unavailable')
+    throw new Error('Agentic OS Desktop bridge is unavailable')
   }
 
   return desktop.api<T>(
@@ -101,5 +101,5 @@ const remoteGit: GitBridge = {
 }
 
 export function desktopGit(): GitBridge | undefined {
-  return isDesktopFsRemoteMode() ? remoteGit : window.hermesDesktop?.git
+  return isDesktopFsRemoteMode() ? remoteGit : window.agenticOSDesktop?.git
 }

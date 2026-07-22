@@ -30,15 +30,15 @@ def _run_helper(
     target: Path,
     log_path: Path,
     *,
-    hermes_home: Path | None = None,
+    agentic_os_home: Path | None = None,
 ) -> subprocess.CompletedProcess[str]:
     shell = shutil.which("sh")
     if shell is None:
         pytest.skip("sh not available")
-    hermes_home = target if hermes_home is None else hermes_home
+    agentic_os_home = target if agentic_os_home is None else agentic_os_home
     script = (
         "set -eu\n"
-        f'AGENTIC_OS_HOME="{hermes_home}"\n'
+        f'AGENTIC_OS_HOME="{agentic_os_home}"\n'
         f"{_chown_hermes_tree_function(text)}\n"
         f'chown() {{ printf "%s\\n" "$*" >> "{log_path}"; }}\n'
         f'chown_hermes_tree "{target}"\n'
@@ -93,7 +93,7 @@ def test_chown_helper_refuses_target_under_symlinked_home(
         stage2_text,
         linked_home / "cron",
         log_path,
-        hermes_home=linked_home,
+        agentic_os_home=linked_home,
     )
 
     assert proc.returncode == 0, proc.stderr
@@ -122,7 +122,7 @@ def test_chown_helper_refuses_target_with_symlinked_ancestor(
         stage2_text,
         home / "platforms" / "pairing",
         log_path,
-        hermes_home=home,
+        agentic_os_home=home,
     )
 
     assert proc.returncode == 0, proc.stderr

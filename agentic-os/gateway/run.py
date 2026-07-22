@@ -1420,9 +1420,9 @@ _agentic_os_home = get_agentic_os_home()
 # Load environment variables from ~/.agentic-os/.env first.
 # User-managed env files should override stale shell exports on restart.
 from dotenv import load_dotenv  # noqa: F401  # backward-compat for tests that monkeypatch this symbol
-from agentic_os_cli.env_loader import load_hermes_dotenv
+from agentic_os_cli.env_loader import load_agentic_os_dotenv
 _env_path = _agentic_os_home / '.env'
-load_hermes_dotenv(hermes_home=_agentic_os_home, project_env=Path(__file__).resolve().parents[1] / '.env')
+load_agentic_os_dotenv(agentic_os_home=_agentic_os_home, project_env=Path(__file__).resolve().parents[1] / '.env')
 
 
 def _reload_runtime_env_preserving_config_authority() -> None:
@@ -1447,8 +1447,8 @@ def _reload_runtime_env_preserving_config_authority() -> None:
         _bridge_max_turns_from_config(_agentic_os_home)
         return
 
-    load_hermes_dotenv(
-        hermes_home=_agentic_os_home,
+    load_agentic_os_dotenv(
+        agentic_os_home=_agentic_os_home,
         project_env=Path(__file__).resolve().parents[1] / '.env',
     )
     _bridge_max_turns_from_config(_agentic_os_home)
@@ -22571,11 +22571,11 @@ async def start_gateway(config: Optional[GatewayConfig] = None, replace: bool = 
             except Exception:
                 pass
         else:
-            hermes_home = str(get_agentic_os_home())
+            agentic_os_home = str(get_agentic_os_home())
             logger.error(
                 "Another gateway instance is already running (PID %d, AGENTIC_OS_HOME=%s). "
                 "Use 'hermes gateway restart' to replace it, or 'hermes gateway stop' first.",
-                existing_pid, hermes_home,
+                existing_pid, agentic_os_home,
             )
             print(
                 f"\n❌ Gateway already running (PID {existing_pid}).\n"
@@ -22596,7 +22596,7 @@ async def start_gateway(config: Optional[GatewayConfig] = None, replace: bool = 
     # and gateway.log (INFO+, gateway-component records only).
     # Idempotent, so repeated calls from AIAgent.__init__ won't duplicate.
     from agentic_os_logging import setup_logging, _safe_stderr
-    setup_logging(hermes_home=_agentic_os_home, mode="gateway")
+    setup_logging(agentic_os_home=_agentic_os_home, mode="gateway")
 
     # Startup security posture audit — warn-on-load, never blocks. Surfaces
     # root / weak-SSH / ephemeral-container / unauthenticated-listener posture
@@ -22612,7 +22612,7 @@ async def start_gateway(config: Optional[GatewayConfig] = None, replace: bool = 
             _audit_cfg = read_raw_config()
         except Exception:
             _audit_cfg = None
-        log_startup_security_warnings(hermes_home=_agentic_os_home, config=_audit_cfg)
+        log_startup_security_warnings(agentic_os_home=_agentic_os_home, config=_audit_cfg)
     except Exception as _audit_exc:
         logger.debug("Startup security audit failed (non-fatal): %s", _audit_exc)
 

@@ -13,7 +13,7 @@ import type {
   SubscriptionTierOption,
   UsageBarData,
   UsageModelData
-} from '@hermes/shared/billing'
+} from '@agentic-os/shared/billing'
 
 export type {
   BillingAutoReload,

@@ -194,7 +194,7 @@ prefer `AGENTIC_OS_HOME` for Hermes data and `HERMES_REAL_HOME` for the account 
 from pathlib import Path
 import os
 
-hermes_home = Path(os.environ["AGENTIC_OS_HOME"])
+agentic_os_home = Path(os.environ["AGENTIC_OS_HOME"])
 real_home = Path(os.environ.get("HERMES_REAL_HOME", os.environ["HOME"]))
 ```
 

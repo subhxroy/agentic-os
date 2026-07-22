@@ -17,9 +17,9 @@
     "jsx": "react-jsx",
     "paths": {
       "@/*": ["./src/*"],
-      "@hermes/plugin-sdk": ["./src/sdk/index.ts"],
-      "@hermes/shared/billing": ["../shared/src/billing-types.ts"],
-      "@hermes/shared": ["../shared/src/index.ts"]
+      "@agentic-os/plugin-sdk": ["./src/sdk/index.ts"],
+      "@agentic-os/shared/billing": ["../shared/src/billing-types.ts"],
+      "@agentic-os/shared": ["../shared/src/index.ts"]
     }
   },
   "include": ["src", "../shared/src"],

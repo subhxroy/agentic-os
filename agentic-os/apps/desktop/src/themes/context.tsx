@@ -25,15 +25,15 @@ import { $userThemes, listAllThemes, resolveTheme } from './user-themes'
 // Legacy global skin (pre per-profile themes). Still the inheritance fallback
 // for any profile without its own assignment, so single-profile users and old
 // installs are unaffected.
-const SKIN_KEY = 'hermes-desktop-theme-v2'
-const MODE_KEY = 'hermes-desktop-mode-v1'
+const SKIN_KEY = 'agentic-os-desktop-theme-v2'
+const MODE_KEY = 'agentic-os-desktop-mode-v1'
 // Per-profile skin + light/dark mode assignments: { [profileKey]: value }. A
 // profile inherits the global default until it's given its own appearance.
-const PROFILE_SKINS_KEY = 'hermes-desktop-profile-themes-v1'
-const PROFILE_MODES_KEY = 'hermes-desktop-profile-modes-v1'
+const PROFILE_SKINS_KEY = 'agentic-os-desktop-profile-themes-v1'
+const PROFILE_MODES_KEY = 'agentic-os-desktop-profile-modes-v1'
 // Last active profile, recorded so the boot-time paint can pick that profile's
 // theme before the gateway reports which profile actually launched.
-const LAST_PROFILE_KEY = 'hermes-desktop-active-profile-v1'
+const LAST_PROFILE_KEY = 'agentic-os-desktop-active-profile-v1'
 const RETIRED_SKINS = new Set(['nous-light', 'default', 'gold'])
 
 export type ThemeMode = 'light' | 'dark' | 'system'
@@ -231,7 +231,7 @@ function applyTheme(theme: DesktopTheme, mode: 'light' | 'dark') {
 
   const chromeBg = chromeBackground(c.background, isDark)
 
-  window.hermesDesktop?.setTitleBarTheme?.({
+  window.agenticOSDesktop?.setTitleBarTheme?.({
     background: chromeBg,
     foreground: c.foreground
   })
@@ -262,7 +262,7 @@ function applyTheme(theme: DesktopTheme, mode: 'light' | 'dark') {
 // theme instead of the OS appearance. An explicit light/dark pick is forced;
 // 'system' stays 'system' so prefers-color-scheme keeps tracking the OS.
 const syncNativeTheme = (pref: ThemeMode, rendered: 'light' | 'dark') =>
-  window.hermesDesktop?.setNativeTheme?.(pref === 'system' ? 'system' : rendered)
+  window.agenticOSDesktop?.setNativeTheme?.(pref === 'system' ? 'system' : rendered)
 
 // Boot-time paint to avoid a flash before <ThemeProvider> mounts. Use the last
 // active profile's appearance so a non-default profile relaunch paints its own

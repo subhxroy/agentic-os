@@ -68,14 +68,14 @@ export type Route = 'welcome' | 'progress' | 'success' | 'failure'
 
 /// How the installer was launched, mirrored from src-tauri AppMode.
 /// 'install' = first-run onboarding (bare launch). 'update' = driven by the
-/// desktop app handing off via `Hermes-Setup.exe --update`.
+/// desktop app handing off via `Agentic-OS-Setup.exe --update`.
 export type AppMode = 'install' | 'update'
 
 export const $route = atom<Route>('welcome')
 export const $mode = atom<AppMode>('install')
 export const $bootstrap = atom<BootstrapStateModel>(INITIAL)
 export const $logPath = atom<string | null>(null)
-export const $hermesHome = atom<string | null>(null)
+export const $agenticOSHome = atom<string | null>(null)
 
 export const $progress = computed($bootstrap, (b) => {
   const total = b.stageOrder.length
@@ -178,7 +178,7 @@ export async function initialize(): Promise<void> {
   if (fake) {
     unlisten = () => {}
     $logPath.set('~/.agentic-os/logs/bootstrap-installer.log')
-    $hermesHome.set('~/.agentic-os')
+    $agenticOSHome.set('~/.agentic-os')
     $mode.set(fake === 'update' ? 'update' : 'install')
 
     // Update auto-runs (it's a hand-off); install/failure wait for the welcome click.
@@ -189,14 +189,14 @@ export async function initialize(): Promise<void> {
 
   // Pull static info on mount for the diagnostics footer.
   try {
-    const [logPath, hermesHome, mode] = await Promise.all([
+    const [logPath, agenticOSHome, mode] = await Promise.all([
       invoke<string>('get_log_path'),
       invoke<string>('get_agentic_os_home'),
       invoke<AppMode>('get_mode')
     ])
 
     $logPath.set(logPath)
-    $hermesHome.set(hermesHome)
+    $agenticOSHome.set(agenticOSHome)
     $mode.set(mode)
   } catch (err) {
     console.warn('failed to fetch installer paths', err)
@@ -317,7 +317,7 @@ export async function startInstall(opts?: { branch?: string }): Promise<void> {
       commit: null,
       branch: opts?.branch ?? null,
       include_desktop: true,
-      hermes_home: null
+      agentic_os_home: null
     }
   })
 }
@@ -329,7 +329,7 @@ export async function startUpdate(): Promise<void> {
     return
   }
 
-  // Update is driven by the desktop handing off (Hermes-Setup.exe --update);
+  // Update is driven by the desktop handing off (Agentic-OS-Setup.exe --update);
   // there's no welcome click. Reset + jump straight to progress, then let the
   // Rust side stream the synthetic update manifest.
   $bootstrap.set(INITIAL)

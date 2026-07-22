@@ -67,7 +67,7 @@ def test_manager_explicit_home_removes_only_that_profiles_tokens(tmp_path):
 
     token = set_AGENTIC_OS_HOME_OVERRIDE(profile_a)
     try:
-        MCPOAuthManager().remove("shared", hermes_home=profile_b)
+        MCPOAuthManager().remove("shared", agentic_os_home=profile_b)
     finally:
         reset_AGENTIC_OS_HOME_OVERRIDE(token)
 

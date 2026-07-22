@@ -26,12 +26,12 @@ import pytest
 
 @pytest.fixture(autouse=True)
 def _isolate_env(tmp_path, monkeypatch):
-    hermes_home = tmp_path / ".hermes"
-    hermes_home.mkdir()
-    monkeypatch.setenv("AGENTIC_OS_HOME", str(hermes_home))
+    agentic_os_home = tmp_path / ".hermes"
+    agentic_os_home.mkdir()
+    monkeypatch.setenv("AGENTIC_OS_HOME", str(agentic_os_home))
     monkeypatch.delenv("SECURITY_GUIDANCE_BLOCK", raising=False)
     monkeypatch.delenv("SECURITY_GUIDANCE_DISABLE", raising=False)
-    yield hermes_home
+    yield agentic_os_home
 
 
 # ---------------------------------------------------------------------------

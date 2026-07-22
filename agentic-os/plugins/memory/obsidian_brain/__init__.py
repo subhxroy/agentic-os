@@ -157,8 +157,8 @@ class ObsidianBrainProvider(MemoryProvider):
             return False
         return Path(vault_path).exists() or Path(vault_path).parent.exists()
 
-    def save_config(self, values, hermes_home):
-        config_path = Path(hermes_home) / "obsidian-brain.json"
+    def save_config(self, values, agentic_os_home):
+        config_path = Path(agentic_os_home) / "obsidian-brain.json"
         existing = {}
         if config_path.exists():
             try:

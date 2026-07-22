@@ -115,7 +115,7 @@ describe('extractDroppedFiles', () => {
 
   const stubBridge = (transfer: DataTransfer & { _pathByFile: Map<File, string> }) => {
     vi.stubGlobal('window', {
-      hermesDesktop: {
+      agenticOSDesktop: {
         getPathForFile: (file: File) => transfer._pathByFile.get(file) ?? ''
       }
     })
@@ -201,7 +201,7 @@ describe('attachmentPreviewDataUrl', () => {
     const readFileDataUrl = vi.fn(async () => LOCAL_PREVIEW)
     const api = vi.fn()
 
-    vi.stubGlobal('window', { hermesDesktop: { api, readFileDataUrl } })
+    vi.stubGlobal('window', { agenticOSDesktop: { api, readFileDataUrl } })
     $connection.set({ mode: 'remote' } as never)
 
     await expect(attachmentPreviewDataUrl('/Users/me/Pictures/pic.png')).resolves.toBe(LOCAL_PREVIEW)
@@ -223,7 +223,7 @@ describe('attachmentPreviewDataUrl', () => {
       throw new Error(`unexpected path ${path}`)
     })
 
-    vi.stubGlobal('window', { hermesDesktop: { api, readFileDataUrl } })
+    vi.stubGlobal('window', { agenticOSDesktop: { api, readFileDataUrl } })
     $connection.set({ mode: 'remote' } as never)
 
     await expect(attachmentPreviewDataUrl('/home/gateway/shot.png')).resolves.toBe(REMOTE_PREVIEW)
@@ -238,7 +238,7 @@ describe('attachmentPreviewDataUrl', () => {
 
     const api = vi.fn(async () => ({ dataUrl: REMOTE_PREVIEW }))
 
-    vi.stubGlobal('window', { hermesDesktop: { api, readFileDataUrl } })
+    vi.stubGlobal('window', { agenticOSDesktop: { api, readFileDataUrl } })
     $connection.set({ mode: 'remote' } as never)
 
     await expect(attachmentPreviewDataUrl('/home/gateway/shot.png')).resolves.toBe(REMOTE_PREVIEW)

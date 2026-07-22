@@ -1,6 +1,6 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
-  "productName": "Hermes",
+  "productName": "Agentic OS",
   "version": "0.0.1",
   "identifier": "com.nousresearch.hermes.setup",
   "build": {

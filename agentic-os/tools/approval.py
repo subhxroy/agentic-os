@@ -253,10 +253,10 @@ def _is_gateway_approval_context() -> bool:
 # go stale when AGENTIC_OS_HOME is set after this module is imported, e.g. under the
 # hermetic test conftest or any deferred-profile-resolution path).
 _SSH_SENSITIVE_PATH = r'(?:~|\$home|\$\{home\})/\.ssh(?:/|$)'
-_HERMES_ENV_PATH = (
+_AGENTIC_OS_ENV_PATH = (
     r'(?:~\/\.hermes/|'
     r'(?:\$home|\$\{home\})/\.hermes/|'
-    r'(?:\$hermes_home|\$\{hermes_home\})/)'
+    r'(?:\$agentic_os_home|\$\{agentic_os_home\})/)'
     r'\.env\b'
 )
 # ~/.agentic-os/config.yaml IS the security policy: approvals.mode, yolo, and the
@@ -265,12 +265,12 @@ _HERMES_ENV_PATH = (
 # and immediately bypass the gate). Pair the write_file/patch deny (file_tools
 # _check_sensitive_path) with terminal-side coverage so `sed -i`, `tee`, `>`,
 # `cp`, etc. targeting it are gated too — otherwise the deny is unpaired
-# theater. Mirrors _HERMES_ENV_PATH; matches the AGENTIC_OS_HOME override form as
+# theater. Mirrors _AGENTIC_OS_ENV_PATH; matches the AGENTIC_OS_HOME override form as
 # well as ~/.agentic-os/.
 _HERMES_CONFIG_PATH = (
     r'(?:~\/\.hermes/|'
     r'(?:\$home|\$\{home\})/\.hermes/|'
-    r'(?:\$hermes_home|\$\{hermes_home\})/)'
+    r'(?:\$agentic_os_home|\$\{agentic_os_home\})/)'
     r'config\.yaml\b'
 )
 _PROJECT_ENV_PATH = r'(?:(?:/|\.{1,2}/)?(?:[^\s/"\'`]+/)*\.env(?:\.[^/\s"\'`]+)*)'
@@ -297,7 +297,7 @@ _SYSTEM_CONFIG_PATH = (
 _SENSITIVE_WRITE_TARGET = (
     rf'(?:{_SYSTEM_CONFIG_PATH}|/dev/sd|'
     rf'{_SSH_SENSITIVE_PATH}|'
-    rf'{_HERMES_ENV_PATH}|'
+    rf'{_AGENTIC_OS_ENV_PATH}|'
     rf'{_HERMES_CONFIG_PATH}|'
     rf'{_SHELL_RC_FILES}|'
     rf'{_CREDENTIAL_FILES})'
@@ -741,8 +741,8 @@ DANGEROUS_PATTERNS = [
     # .env). sed -i bypasses the redirection/tee patterns above because it
     # mutates the file directly. Pairs the file_tools write_file/patch deny so
     # the terminal side is not an open door. See #14639.
-    (rf'\bsed\s+-[^\s]*i.*(?:{_HERMES_CONFIG_PATH}|{_HERMES_ENV_PATH})', "in-place edit of Hermes config/env"),
-    (rf'\bsed\s+--in-place\b.*(?:{_HERMES_CONFIG_PATH}|{_HERMES_ENV_PATH})', "in-place edit of Hermes config/env (long flag)"),
+    (rf'\bsed\s+-[^\s]*i.*(?:{_HERMES_CONFIG_PATH}|{_AGENTIC_OS_ENV_PATH})', "in-place edit of Hermes config/env"),
+    (rf'\bsed\s+--in-place\b.*(?:{_HERMES_CONFIG_PATH}|{_AGENTIC_OS_ENV_PATH})', "in-place edit of Hermes config/env (long flag)"),
     # perl -i and ruby -i perform the same in-place mutation as sed -i but are
     # not caught by the -e/-c script-execution pattern above (which targets code
     # evaluation, not file mutation). Pairs the sed -i coverage from #14639.
@@ -751,7 +751,7 @@ DANGEROUS_PATTERNS = [
     # backup suffix (`perl -i.bak`). Match any flag token containing `i`
     # anywhere in the args, not just the first token — `perl -e '...'` (code
     # eval, no -i) does not trip because it has no `-...i` flag token.
-    (rf'\b(?:perl|ruby)\b.*(?:^|\s)-[^\s]*i\b.*(?:{_HERMES_CONFIG_PATH}|{_HERMES_ENV_PATH})', "in-place edit of Hermes config/env (perl/ruby)"),
+    (rf'\b(?:perl|ruby)\b.*(?:^|\s)-[^\s]*i\b.*(?:{_HERMES_CONFIG_PATH}|{_AGENTIC_OS_ENV_PATH})', "in-place edit of Hermes config/env (perl/ruby)"),
     # Interpreter heredocs are handled by _execution_flag_findings() alongside
     # inline-exec flags; keep only shell heredocs regex-based here.
     # Shell execution via heredoc — `bash <<'EOF' ... EOF` runs arbitrary
@@ -1013,7 +1013,7 @@ def _rewrite_resolved_agentic_os_home(command: str) -> str:
 
     Resolves the active ``AGENTIC_OS_HOME`` at call time (and its symlink-resolved
     form) and folds an occurrence of ``<home>/`` in *command* into
-    ``~/.agentic-os/`` so the static ``_HERMES_CONFIG_PATH`` / ``_HERMES_ENV_PATH``
+    ``~/.agentic-os/`` so the static ``_HERMES_CONFIG_PATH`` / ``_AGENTIC_OS_ENV_PATH``
     patterns match. In Docker and gateway deployments the agent often references
     the resolved absolute path directly (e.g. ``sed -i ...
     /home/hermes/.hermes/config.yaml``) rather than ``~``, ``$HOME``, or

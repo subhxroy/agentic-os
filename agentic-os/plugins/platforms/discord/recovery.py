@@ -22,10 +22,10 @@ _RETENTION_DAYS = 30
 class DiscordRecoveryStore:
     """Small profile-scoped SQLite ledger for completed Discord messages."""
 
-    def __init__(self, hermes_home: Path | None = None) -> None:
+    def __init__(self, agentic_os_home: Path | None = None) -> None:
         self._lock = threading.Lock()
         self._initialized = False
-        self._agentic_os_home = Path(hermes_home or get_agentic_os_home())
+        self._agentic_os_home = Path(agentic_os_home or get_agentic_os_home())
 
     def path(self) -> Path:
         directory = self._agentic_os_home / "gateway"

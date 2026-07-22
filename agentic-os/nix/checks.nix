@@ -419,9 +419,9 @@ json.dump(sorted(leaf_paths(DEFAULT_CONFIG)), sys.stdout, indent=2)
 
           # Helper: run merge then load with Python, output merged JSON
           merge_and_load() {
-            local hermes_home="$1"
-            export AGENTIC_OS_HOME="$hermes_home"
-            ${configMergeScript} ${nixSettings} "$hermes_home/config.yaml"
+            local agentic_os_home="$1"
+            export AGENTIC_OS_HOME="$agentic_os_home"
+            ${configMergeScript} ${nixSettings} "$agentic_os_home/config.yaml"
             ${hermesVenv}/bin/python3 -c '
 import json, sys
 from agentic_os_cli.config import load_config

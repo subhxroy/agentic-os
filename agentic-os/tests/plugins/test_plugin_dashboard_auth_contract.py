@@ -1,7 +1,7 @@
 """Guardrail: dashboard plugins must NOT read the session token directly.
 
 The dashboard host exposes a sanctioned, gated-mode-aware auth surface on the
-plugin SDK (``window.__HERMES_PLUGIN_SDK__``): ``fetchJSON`` (JSON REST),
+plugin SDK (``window.__AGENTIC_OS_PLUGIN_SDK__``): ``fetchJSON`` (JSON REST),
 ``authedFetch`` (uploads / blob downloads), and ``buildWsUrl`` /
 ``buildWsAuthParam`` (WebSockets). These handle BOTH dashboard auth modes —
 loopback (``X-Hermes-Session-Token`` header) and gated OAuth

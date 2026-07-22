@@ -105,7 +105,7 @@ export async function artifactImageSrc(value: string, href = artifactHref(value)
     return href
   }
 
-  if (typeof window !== 'undefined' && window.hermesDesktop && isRemoteGateway()) {
+  if (typeof window !== 'undefined' && window.agenticOSDesktop && isRemoteGateway()) {
     return readDesktopFileDataUrl(filePathFromMediaPath(value))
   }
 

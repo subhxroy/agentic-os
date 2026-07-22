@@ -1,4 +1,4 @@
-import { isGatewayReauthRequired, resolveGatewayWsUrl } from '@hermes/shared'
+import { isGatewayReauthRequired, resolveGatewayWsUrl } from '@agentic-os/shared'
 import { useEffect, useRef } from 'react'
 
 import type { HermesConnection } from '@/global'
@@ -50,7 +50,7 @@ const RECONNECT_ESCALATE_AFTER = 6
 interface GatewayBootOptions {
   handleGatewayEvent: (event: RpcEvent) => void
   onConnectionReady: (
-    connection: Awaited<ReturnType<NonNullable<typeof window.hermesDesktop>['getConnection']>> | null
+    connection: Awaited<ReturnType<NonNullable<typeof window.agenticOSDesktop>['getConnection']>> | null
   ) => void
   onGatewayReady: (gateway: HermesGateway | null) => void
   refreshHermesConfig: () => Promise<void>
@@ -82,7 +82,7 @@ export function useGatewayBoot({
 
   useEffect(() => {
     let cancelled = false
-    const desktop = window.hermesDesktop
+    const desktop = window.agenticOSDesktop
 
     const publish = (next: HermesConnection | null) => {
       callbacksRef.current.onConnectionReady(next)

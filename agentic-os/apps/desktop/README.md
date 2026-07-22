@@ -1,4 +1,4 @@
-# Hermes Desktop ☤
+# Agentic OS Desktop ☤
 
 <p align="center">
   <a href="https://github.com/subhxroy/agentic-os/releases"><img src="https://img.shields.io/badge/Download-macOS%20%C2%B7%20Windows%20%C2%B7%20Linux-FFD700?style=for-the-badge" alt="Download"></a>
@@ -34,7 +34,7 @@ It builds and launches the GUI against your existing install — same config, ke
 
 ### Prebuilt installers
 
-Prebuilt installers are built and distributed via [the Hermes Desktop website.](https://agentic-os.nousresearch.com/).
+Prebuilt installers are built and distributed via [the Agentic OS Desktop website.](https://agentic-os.nousresearch.com/).
 
 ---
 
@@ -69,7 +69,7 @@ Point the app at a specific source checkout, or sandbox it away from your real c
 ```bash
 # throwaway AGENTIC_OS_HOME, separate Electron userData, distinct app name to avoid the single-instance lock
 ../scripts/dev-sandbox.sh npm run dev
-HERMES_DESKTOP_AGENTIC_ROOT=/path/to/clone npm run dev
+AGENTIC_OS_DESKTOP_AGENTIC_ROOT=/path/to/clone npm run dev
 AGENTIC_OS_HOME=/tmp/throwaway npm run dev
 npm run dev:fake-boot   # exercise the startup overlay with deterministic delays
 ```
@@ -104,10 +104,10 @@ The app has three boundaries:
 
 Backend resolution is an ordered ladder:
 
-1. `HERMES_DESKTOP_AGENTIC_ROOT`
+1. `AGENTIC_OS_DESKTOP_AGENTIC_ROOT`
 2. the current source checkout during development
 3. a completed managed install
-4. `HERMES_DESKTOP_HERMES`, or `hermes` on `PATH`
+4. `AGENTIC_OS_DESKTOP_HERMES`, or `hermes` on `PATH`
 5. a system Python that can import the Hermes runtime
 6. the first-launch bootstrap installer
 

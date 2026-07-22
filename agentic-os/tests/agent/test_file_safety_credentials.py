@@ -24,7 +24,7 @@ def fake_home(tmp_path, monkeypatch):
     """Point ``_agentic_os_home_path()`` at a tmp dir for isolated checks."""
     import agent.file_safety as fs
 
-    home = tmp_path / "hermes_home"
+    home = tmp_path / "agentic_os_home"
     home.mkdir()
     monkeypatch.setattr(fs, "_agentic_os_home_path", lambda: home)
     return home
@@ -111,7 +111,7 @@ def test_path_traversal_resolves_to_blocked(fake_home, tmp_path):
     _create(fake_home, "auth.json")
     sibling = tmp_path / "elsewhere"
     sibling.mkdir()
-    traversal = sibling / ".." / "hermes_home" / "auth.json"
+    traversal = sibling / ".." / "agentic_os_home" / "auth.json"
     err = get_read_block_error(str(traversal))
     assert err is not None
     assert "credential store" in err

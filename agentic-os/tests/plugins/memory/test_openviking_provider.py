@@ -298,9 +298,9 @@ def test_link_ovcli_profile_removes_stale_inline_config(tmp_path):
 
 def test_post_setup_existing_profile_picker_validates_and_links_saved_profile(tmp_path, monkeypatch):
     _clear_openviking_env(monkeypatch)
-    hermes_home = tmp_path / "hermes"
-    hermes_home.mkdir()
-    env_path = hermes_home / ".env"
+    agentic_os_home = tmp_path / "hermes"
+    agentic_os_home.mkdir()
+    env_path = agentic_os_home / ".env"
     env_path.write_text("OPENVIKING_ENDPOINT=http://old.local\nOTHER_KEY=keep\n", encoding="utf-8")
     openviking_home = tmp_path / ".openviking"
     openviking_home.mkdir()
@@ -311,7 +311,7 @@ def test_post_setup_existing_profile_picker_validates_and_links_saved_profile(tm
         json.dumps({"url": "https://vps.example", "api_key": "user-key"}),
         encoding="utf-8",
     )
-    monkeypatch.setenv("AGENTIC_OS_HOME", str(hermes_home))
+    monkeypatch.setenv("AGENTIC_OS_HOME", str(agentic_os_home))
     monkeypatch.setattr(openviking_module.Path, "home", staticmethod(lambda: tmp_path))
 
     from agentic_os_cli import memory_setup
@@ -332,7 +332,7 @@ def test_post_setup_existing_profile_picker_validates_and_links_saved_profile(tm
     monkeypatch.setattr(memory_setup, "_curses_select", lambda *args, **kwargs: next(choices))
     config = {"memory": {}}
 
-    OpenVikingMemoryProvider().post_setup(str(hermes_home), config)
+    OpenVikingMemoryProvider().post_setup(str(agentic_os_home), config)
 
     assert validate_calls == [{
         "endpoint": "https://vps.example",
@@ -354,9 +354,9 @@ def test_post_setup_existing_profile_picker_validates_and_links_saved_profile(tm
 
 def test_post_setup_create_remote_user_profile_can_mirror_to_openviking_store(tmp_path, monkeypatch):
     _clear_openviking_env(monkeypatch)
-    hermes_home = tmp_path / "hermes"
-    hermes_home.mkdir()
-    monkeypatch.setenv("AGENTIC_OS_HOME", str(hermes_home))
+    agentic_os_home = tmp_path / "hermes"
+    agentic_os_home.mkdir()
+    monkeypatch.setenv("AGENTIC_OS_HOME", str(agentic_os_home))
     monkeypatch.setattr(openviking_module.Path, "home", staticmethod(lambda: tmp_path))
     _allow_setup_validation(monkeypatch)
 
@@ -376,7 +376,7 @@ def test_post_setup_create_remote_user_profile_can_mirror_to_openviking_store(tm
     )
     config = {"memory": {}}
 
-    OpenVikingMemoryProvider().post_setup(str(hermes_home), config)
+    OpenVikingMemoryProvider().post_setup(str(agentic_os_home), config)
 
     mirrored_path = tmp_path / ".openviking" / "ovcli.conf.VPS"
     assert mirrored_path.exists()
@@ -390,16 +390,16 @@ def test_post_setup_create_remote_user_profile_can_mirror_to_openviking_store(tm
         "use_ovcli_config": True,
         "ovcli_config_path": str(mirrored_path),
     }
-    env_path = hermes_home / ".env"
+    env_path = agentic_os_home / ".env"
     if env_path.exists():
         assert "OPENVIKING_" not in env_path.read_text(encoding="utf-8")
 
 
 def test_post_setup_create_remote_user_can_keep_hermes_only(tmp_path, monkeypatch):
     _clear_openviking_env(monkeypatch)
-    hermes_home = tmp_path / "hermes"
-    hermes_home.mkdir()
-    monkeypatch.setenv("AGENTIC_OS_HOME", str(hermes_home))
+    agentic_os_home = tmp_path / "hermes"
+    agentic_os_home.mkdir()
+    monkeypatch.setenv("AGENTIC_OS_HOME", str(agentic_os_home))
     _allow_setup_validation(monkeypatch)
 
     from agentic_os_cli import memory_setup
@@ -417,11 +417,11 @@ def test_post_setup_create_remote_user_can_keep_hermes_only(tmp_path, monkeypatc
     )
     config = {"memory": {}}
 
-    OpenVikingMemoryProvider().post_setup(str(hermes_home), config)
+    OpenVikingMemoryProvider().post_setup(str(agentic_os_home), config)
 
     assert config["memory"]["provider"] == "openviking"
     assert config["memory"]["openviking"] == {"use_ovcli_config": False}
-    env_text = (hermes_home / ".env").read_text(encoding="utf-8")
+    env_text = (agentic_os_home / ".env").read_text(encoding="utf-8")
     assert "OPENVIKING_ENDPOINT=https://openviking.example" in env_text
     assert "OPENVIKING_API_KEY=user-secret" in env_text
     assert "OPENVIKING_AGENT=agent" in env_text
@@ -430,9 +430,9 @@ def test_post_setup_create_remote_user_can_keep_hermes_only(tmp_path, monkeypatc
 
 def test_post_setup_create_openviking_service_validates_after_api_key(tmp_path, monkeypatch):
     _clear_openviking_env(monkeypatch)
-    hermes_home = tmp_path / "hermes"
-    hermes_home.mkdir()
-    monkeypatch.setenv("AGENTIC_OS_HOME", str(hermes_home))
+    agentic_os_home = tmp_path / "hermes"
+    agentic_os_home.mkdir()
+    monkeypatch.setenv("AGENTIC_OS_HOME", str(agentic_os_home))
 
     from agentic_os_cli import memory_setup
 
@@ -463,7 +463,7 @@ def test_post_setup_create_openviking_service_validates_after_api_key(tmp_path, 
     )
     config = {"memory": {}}
 
-    OpenVikingMemoryProvider().post_setup(str(hermes_home), config)
+    OpenVikingMemoryProvider().post_setup(str(agentic_os_home), config)
 
     assert validation_calls == [(
         {
@@ -477,7 +477,7 @@ def test_post_setup_create_openviking_service_validates_after_api_key(tmp_path, 
         },
         True,
     )]
-    env_text = (hermes_home / ".env").read_text(encoding="utf-8")
+    env_text = (agentic_os_home / ".env").read_text(encoding="utf-8")
     assert "OPENVIKING_ENDPOINT=https://api.vikingdb.cn-beijing.volces.com/openviking" in env_text
     assert "OPENVIKING_API_KEY=service-secret" in env_text
     assert "OPENVIKING_AGENT=agent" in env_text
@@ -485,16 +485,16 @@ def test_post_setup_create_openviking_service_validates_after_api_key(tmp_path, 
 
 def test_post_setup_remote_blank_api_key_cancels_without_saving(tmp_path, monkeypatch):
     _clear_openviking_env(monkeypatch)
-    hermes_home = tmp_path / "hermes"
-    hermes_home.mkdir()
-    monkeypatch.setenv("AGENTIC_OS_HOME", str(hermes_home))
+    agentic_os_home = tmp_path / "hermes"
+    agentic_os_home.mkdir()
+    monkeypatch.setenv("AGENTIC_OS_HOME", str(agentic_os_home))
     monkeypatch.setattr(openviking_module, "_validate_openviking_reachability", lambda endpoint: (True, ""))
 
-    from agentic_os_cli import config as hermes_config
+    from agentic_os_cli import config as agentic_os_config
     from agentic_os_cli import memory_setup
 
     save_config = MagicMock()
-    monkeypatch.setattr(hermes_config, "save_config", save_config)
+    monkeypatch.setattr(agentic_os_config, "save_config", save_config)
     choices = iter([1, 0, 1])
     monkeypatch.setattr(memory_setup, "_curses_select", lambda *args, **kwargs: next(choices))
     monkeypatch.setattr(
@@ -507,18 +507,18 @@ def test_post_setup_remote_blank_api_key_cancels_without_saving(tmp_path, monkey
     )
     config = {"memory": {"provider": "builtin"}}
 
-    OpenVikingMemoryProvider().post_setup(str(hermes_home), config)
+    OpenVikingMemoryProvider().post_setup(str(agentic_os_home), config)
 
     save_config.assert_not_called()
     assert config == {"memory": {"provider": "builtin"}}
-    assert not (hermes_home / ".env").exists()
+    assert not (agentic_os_home / ".env").exists()
 
 
 def test_post_setup_user_key_path_can_route_detected_root_key_to_root_setup(tmp_path, monkeypatch):
     _clear_openviking_env(monkeypatch)
-    hermes_home = tmp_path / "hermes"
-    hermes_home.mkdir()
-    monkeypatch.setenv("AGENTIC_OS_HOME", str(hermes_home))
+    agentic_os_home = tmp_path / "hermes"
+    agentic_os_home.mkdir()
+    monkeypatch.setenv("AGENTIC_OS_HOME", str(agentic_os_home))
 
     from agentic_os_cli import memory_setup
 
@@ -548,10 +548,10 @@ def test_post_setup_user_key_path_can_route_detected_root_key_to_root_setup(tmp_
     monkeypatch.setattr(memory_setup, "_prompt", fake_prompt)
     config = {"memory": {}}
 
-    OpenVikingMemoryProvider().post_setup(str(hermes_home), config)
+    OpenVikingMemoryProvider().post_setup(str(agentic_os_home), config)
 
     assert prompt_events.count("Hermes peer ID in OpenViking") == 1
-    env_text = (hermes_home / ".env").read_text(encoding="utf-8")
+    env_text = (agentic_os_home / ".env").read_text(encoding="utf-8")
     assert "OPENVIKING_API_KEY=root-secret" in env_text
     assert "OPENVIKING_ACCOUNT=acct" in env_text
     assert "OPENVIKING_USER=alice" in env_text
@@ -560,9 +560,9 @@ def test_post_setup_user_key_path_can_route_detected_root_key_to_root_setup(tmp_
 
 def test_post_setup_root_key_path_can_route_detected_user_key_to_user_setup(tmp_path, monkeypatch):
     _clear_openviking_env(monkeypatch)
-    hermes_home = tmp_path / "hermes"
-    hermes_home.mkdir()
-    monkeypatch.setenv("AGENTIC_OS_HOME", str(hermes_home))
+    agentic_os_home = tmp_path / "hermes"
+    agentic_os_home.mkdir()
+    monkeypatch.setenv("AGENTIC_OS_HOME", str(agentic_os_home))
 
     from agentic_os_cli import memory_setup
 
@@ -588,9 +588,9 @@ def test_post_setup_root_key_path_can_route_detected_user_key_to_user_setup(tmp_
     )
     config = {"memory": {}}
 
-    OpenVikingMemoryProvider().post_setup(str(hermes_home), config)
+    OpenVikingMemoryProvider().post_setup(str(agentic_os_home), config)
 
-    env_text = (hermes_home / ".env").read_text(encoding="utf-8")
+    env_text = (agentic_os_home / ".env").read_text(encoding="utf-8")
     assert "OPENVIKING_API_KEY=user-secret" in env_text
     assert "OPENVIKING_AGENT=agent" in env_text
     assert "OPENVIKING_ACCOUNT" not in env_text
@@ -651,8 +651,8 @@ def test_start_local_openviking_server_uses_endpoint_host_and_port(monkeypatch):
 
 
 def test_start_local_openviking_server_writes_output_to_log(tmp_path, monkeypatch):
-    hermes_home = tmp_path / "hermes"
-    monkeypatch.setenv("AGENTIC_OS_HOME", str(hermes_home))
+    agentic_os_home = tmp_path / "hermes"
+    monkeypatch.setenv("AGENTIC_OS_HOME", str(agentic_os_home))
     popen_calls = []
 
     class FakeProcess:
@@ -661,7 +661,7 @@ def test_start_local_openviking_server_writes_output_to_log(tmp_path, monkeypatc
     def fake_popen(args, **kwargs):
         popen_calls.append((args, kwargs))
         assert kwargs["stdout"] is kwargs["stderr"]
-        assert kwargs["stdout"].name == str(hermes_home / "logs" / "openviking-server.log")
+        assert kwargs["stdout"].name == str(agentic_os_home / "logs" / "openviking-server.log")
         assert not kwargs["stdout"].closed
         return FakeProcess()
 
@@ -671,7 +671,7 @@ def test_start_local_openviking_server_writes_output_to_log(tmp_path, monkeypatc
     started, message = openviking_module._start_local_openviking_server("http://127.0.0.1:1934")
 
     assert started is True
-    assert str(hermes_home / "logs" / "openviking-server.log") in message
+    assert str(agentic_os_home / "logs" / "openviking-server.log") in message
     assert popen_calls
 
 
@@ -1068,9 +1068,9 @@ def test_initialize_does_not_emit_cli_warning_when_callback_absent(monkeypatch):
 
 def test_post_setup_local_server_down_can_offer_autostart(tmp_path, monkeypatch):
     _clear_openviking_env(monkeypatch)
-    hermes_home = tmp_path / "hermes"
-    hermes_home.mkdir()
-    monkeypatch.setenv("AGENTIC_OS_HOME", str(hermes_home))
+    agentic_os_home = tmp_path / "hermes"
+    agentic_os_home.mkdir()
+    monkeypatch.setenv("AGENTIC_OS_HOME", str(agentic_os_home))
     monkeypatch.setattr(openviking_module, "_validate_openviking_setup_values", lambda values, *, require_api_key=False: (True, "", None))
 
     from agentic_os_cli import memory_setup
@@ -1097,23 +1097,23 @@ def test_post_setup_local_server_down_can_offer_autostart(tmp_path, monkeypatch)
     )
     config = {"memory": {}}
 
-    OpenVikingMemoryProvider().post_setup(str(hermes_home), config)
+    OpenVikingMemoryProvider().post_setup(str(agentic_os_home), config)
 
     assert started == ["http://localhost:1933"]
     assert reachability_calls == ["http://localhost:1933"]
-    env_text = (hermes_home / ".env").read_text(encoding="utf-8")
+    env_text = (agentic_os_home / ".env").read_text(encoding="utf-8")
     assert "OPENVIKING_ENDPOINT=http://localhost:1933" in env_text
     assert "OPENVIKING_API_KEY" not in env_text
 
 
 def test_post_setup_invalid_env_profile_can_create_new_config(tmp_path, monkeypatch):
     _clear_openviking_env(monkeypatch)
-    hermes_home = tmp_path / "hermes"
-    hermes_home.mkdir()
+    agentic_os_home = tmp_path / "hermes"
+    agentic_os_home.mkdir()
     ovcli_path = tmp_path / "broken" / "ovcli.conf"
     ovcli_path.parent.mkdir()
     ovcli_path.write_text("{", encoding="utf-8")
-    monkeypatch.setenv("AGENTIC_OS_HOME", str(hermes_home))
+    monkeypatch.setenv("AGENTIC_OS_HOME", str(agentic_os_home))
     monkeypatch.setenv("OPENVIKING_CLI_CONFIG_FILE", str(ovcli_path))
     _allow_setup_validation(monkeypatch)
 
@@ -1132,7 +1132,7 @@ def test_post_setup_invalid_env_profile_can_create_new_config(tmp_path, monkeypa
     )
     config = {"memory": {}}
 
-    OpenVikingMemoryProvider().post_setup(str(hermes_home), config)
+    OpenVikingMemoryProvider().post_setup(str(agentic_os_home), config)
 
     assert ovcli_path.read_text(encoding="utf-8") == "{"
     assert config["memory"]["openviking"] == {"use_ovcli_config": False}
@@ -1301,11 +1301,11 @@ def test_tool_add_resource_uploads_file_uri(tmp_path):
 def test_tool_add_resource_rejects_hermes_credential_file_upload(tmp_path, monkeypatch):
     import agent.file_safety as fs
 
-    hermes_home = tmp_path / "hermes_home"
-    hermes_home.mkdir()
-    auth_json = hermes_home / "auth.json"
+    agentic_os_home = tmp_path / "agentic_os_home"
+    agentic_os_home.mkdir()
+    auth_json = agentic_os_home / "auth.json"
     auth_json.write_text('{"OPENROUTER_API_KEY":"sk-test-secret"}', encoding="utf-8")
-    monkeypatch.setattr(fs, "_agentic_os_home_path", lambda: hermes_home)
+    monkeypatch.setattr(fs, "_agentic_os_home_path", lambda: agentic_os_home)
 
     provider = OpenVikingMemoryProvider()
     provider._client = MagicMock()
@@ -1395,14 +1395,14 @@ def test_tool_add_resource_directory_zip_skips_symlink_escape(tmp_path):
 def test_tool_add_resource_directory_zip_skips_hermes_credential_files(tmp_path, monkeypatch):
     import agent.file_safety as fs
 
-    hermes_home = tmp_path / "hermes_home"
-    hermes_home.mkdir()
-    (hermes_home / "guide.md").write_text("# Guide\n", encoding="utf-8")
-    (hermes_home / "auth.json").write_text(
+    agentic_os_home = tmp_path / "agentic_os_home"
+    agentic_os_home.mkdir()
+    (agentic_os_home / "guide.md").write_text("# Guide\n", encoding="utf-8")
+    (agentic_os_home / "auth.json").write_text(
         '{"OPENROUTER_API_KEY":"sk-test-secret"}',
         encoding="utf-8",
     )
-    monkeypatch.setattr(fs, "_agentic_os_home_path", lambda: hermes_home)
+    monkeypatch.setattr(fs, "_agentic_os_home_path", lambda: agentic_os_home)
 
     provider = OpenVikingMemoryProvider()
     provider._client = MagicMock()
@@ -1420,10 +1420,10 @@ def test_tool_add_resource_directory_zip_skips_hermes_credential_files(tmp_path,
     provider._client.upload_temp_file.side_effect = inspect_upload
     provider._client.post.return_value = {
         "status": "ok",
-        "result": {"root_uri": "viking://resources/hermes_home"},
+        "result": {"root_uri": "viking://resources/agentic_os_home"},
     }
 
-    result = json.loads(provider._tool_add_resource({"url": str(hermes_home)}))
+    result = json.loads(provider._tool_add_resource({"url": str(agentic_os_home)}))
 
     assert result["status"] == "added"
     assert archive_entries["names"] == ["guide.md"]

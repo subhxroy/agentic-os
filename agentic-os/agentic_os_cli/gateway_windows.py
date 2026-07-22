@@ -381,7 +381,7 @@ def _stable_gateway_working_dir(project_root: Path) -> str:
 def _build_gateway_cmd_script(
     python_path: str,
     working_dir: str,
-    hermes_home: str,
+    agentic_os_home: str,
     profile_arg: str,
 ) -> str:
     """Build the ``gateway.cmd`` wrapper content (CRLF-terminated).
@@ -398,7 +398,7 @@ def _build_gateway_cmd_script(
     """
     lines = ["@echo off", f"rem {_TASK_DESCRIPTION}"]
     lines.append(f"cd /d {_quote_cmd_script_arg(working_dir)}")
-    lines.append(f'set "AGENTIC_OS_HOME={hermes_home}"')
+    lines.append(f'set "AGENTIC_OS_HOME={agentic_os_home}"')
     lines.append('set "PYTHONIOENCODING=utf-8"')
     lines.append('set "HERMES_GATEWAY_DETACHED=1"')
     pythonw_path, venv_dir, extra_pythonpath = _resolve_detached_python(python_path)
@@ -440,7 +440,7 @@ def _quote_vbs_string(value: str) -> str:
 def _build_gateway_vbs_script(
     python_path: str,
     working_dir: str,
-    hermes_home: str,
+    agentic_os_home: str,
     profile_arg: str,
 ) -> str:
     """Build a console-less ``gateway.vbs`` launcher (CRLF-terminated).
@@ -480,7 +480,7 @@ def _build_gateway_vbs_script(
         "Dim sh, env, existing_pp",
         'Set sh = CreateObject("WScript.Shell")',
         'Set env = sh.Environment("PROCESS")',
-        f"env.Item({_quote_vbs_string('AGENTIC_OS_HOME')}) = {_quote_vbs_string(hermes_home)}",
+        f"env.Item({_quote_vbs_string('AGENTIC_OS_HOME')}) = {_quote_vbs_string(agentic_os_home)}",
         f"env.Item({_quote_vbs_string('PYTHONIOENCODING')}) = {_quote_vbs_string('utf-8')}",
         f"env.Item({_quote_vbs_string('HERMES_GATEWAY_DETACHED')}) = {_quote_vbs_string('1')}",
         f"env.Item({_quote_vbs_string('VIRTUAL_ENV')}) = {_quote_vbs_string(_preserve_agentic_os_home_path(venv_dir))}",
@@ -537,10 +537,10 @@ def _write_task_script() -> Path:
 
     python_path = _preserve_agentic_os_home_path(get_python_path())
     working_dir = _stable_gateway_working_dir(PROJECT_ROOT)
-    hermes_home = str(Path(get_agentic_os_home()))
-    profile_arg = _profile_arg(hermes_home)
+    agentic_os_home = str(Path(get_agentic_os_home()))
+    profile_arg = _profile_arg(agentic_os_home)
 
-    content = _build_gateway_cmd_script(python_path, working_dir, hermes_home, profile_arg)
+    content = _build_gateway_cmd_script(python_path, working_dir, agentic_os_home, profile_arg)
     script_path = get_task_script_path()
     tmp = script_path.with_suffix(".tmp")
     tmp.write_text(content, encoding="utf-8", newline="")
@@ -549,7 +549,7 @@ def _write_task_script() -> Path:
     # Also render the console-less .vbs launcher used by Scheduled Task and the
     # Startup-folder fallback via wscript.exe (issue #45599 fix A). The .cmd
     # wrapper stays as a generated helper/compatibility artifact.
-    vbs_content = _build_gateway_vbs_script(python_path, working_dir, hermes_home, profile_arg)
+    vbs_content = _build_gateway_vbs_script(python_path, working_dir, agentic_os_home, profile_arg)
     vbs_path = script_path.with_suffix(".vbs")
     vbs_tmp = vbs_path.with_name(vbs_path.name + ".tmp")
     vbs_tmp.write_text(vbs_content, encoding="utf-8", newline="")
@@ -786,8 +786,8 @@ def _build_gateway_argv() -> tuple[list[str], str, dict[str, str]]:
     )
     project_root = _preserve_agentic_os_home_path(PROJECT_ROOT)
     working_dir = _stable_gateway_working_dir(PROJECT_ROOT)
-    hermes_home = str(Path(get_agentic_os_home()))
-    profile_arg = _profile_arg(hermes_home)
+    agentic_os_home = str(Path(get_agentic_os_home()))
+    profile_arg = _profile_arg(agentic_os_home)
 
     argv = [python_exe, "-m", "agentic_os_cli.main"]
     if profile_arg:
@@ -795,7 +795,7 @@ def _build_gateway_argv() -> tuple[list[str], str, dict[str, str]]:
     argv.extend(["gateway", "run"])
 
     env_overlay = {
-        "AGENTIC_OS_HOME": hermes_home,
+        "AGENTIC_OS_HOME": agentic_os_home,
         "PYTHONIOENCODING": "utf-8",
         "HERMES_GATEWAY_DETACHED": "1",
         "VIRTUAL_ENV": _preserve_agentic_os_home_path(venv_dir),
@@ -862,17 +862,17 @@ def windowless_gateway_restart_spec(
     working_dir = _stable_gateway_working_dir(PROJECT_ROOT)
     project_root = str(PROJECT_ROOT)
     try:
-        hermes_home = str(Path(get_agentic_os_home()).resolve())
+        agentic_os_home = str(Path(get_agentic_os_home()).resolve())
     except Exception:
-        hermes_home = ""
+        agentic_os_home = ""
 
     env_overlay: dict[str, str] = {
         "PYTHONIOENCODING": "utf-8",
         "HERMES_GATEWAY_DETACHED": "1",
         "VIRTUAL_ENV": str(venv_dir),
     }
-    if hermes_home:
-        env_overlay["AGENTIC_OS_HOME"] = hermes_home
+    if agentic_os_home:
+        env_overlay["AGENTIC_OS_HOME"] = agentic_os_home
     _prepend_pythonpath(
         env_overlay,
         [project_root, *extra_pythonpath] if extra_pythonpath else [project_root],
@@ -1179,11 +1179,11 @@ def _report_gateway_start(via: str) -> None:
 def _print_next_steps() -> None:
     from agentic_os_cli.config import get_agentic_os_home
 
-    hermes_home = Path(get_agentic_os_home())
+    agentic_os_home = Path(get_agentic_os_home())
     print()
     print("Next steps:")
     print("  hermes gateway status                      # Check status")
-    print(f"  type {hermes_home}\\logs\\gateway.log       # View logs")
+    print(f"  type {agentic_os_home}\\logs\\gateway.log       # View logs")
 
 
 def uninstall() -> None:

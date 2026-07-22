@@ -42,7 +42,7 @@ def _clean_env(monkeypatch):
 class TestIgnoreUserConfigEnvGate:
     """``load_cli_config()`` must honour ``HERMES_IGNORE_USER_CONFIG=1``.
 
-    When the env var is set, user config at ``<hermes_home>/config.yaml`` is
+    When the env var is set, user config at ``<agentic_os_home>/config.yaml`` is
     skipped even if present — the function returns only the built-in defaults
     (merged with the project-level ``cli-config.yaml`` fallback).
     """

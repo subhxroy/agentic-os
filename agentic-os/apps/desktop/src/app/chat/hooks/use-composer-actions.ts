@@ -51,7 +51,7 @@ export function isImagePath(filePath: string): boolean {
  */
 export async function attachmentPreviewDataUrl(filePath: string): Promise<string> {
   try {
-    const local = await window.hermesDesktop?.readFileDataUrl?.(filePath)
+    const local = await window.agenticOSDesktop?.readFileDataUrl?.(filePath)
 
     if (local) {
       return local
@@ -94,7 +94,7 @@ export function extractDroppedFiles(transfer: DataTransfer): DroppedFile[] {
   const result: DroppedFile[] = []
   const seenPaths = new Set<string>()
   const seenFiles = new Set<File>()
-  const getPath = window.hermesDesktop?.getPathForFile
+  const getPath = window.agenticOSDesktop?.getPathForFile
 
   // In-app drags first — they carry richer metadata (isDirectory) than the
   // File-based fallback can provide, and produce no overlapping native files.
@@ -447,7 +447,7 @@ export function useComposerActions({
       try {
         const buffer = await blob.arrayBuffer()
         const data = new Uint8Array(buffer)
-        const savedPath = await window.hermesDesktop?.saveImageBuffer(data, blobExtension(blob))
+        const savedPath = await window.agenticOSDesktop?.saveImageBuffer(data, blobExtension(blob))
 
         if (!savedPath) {
           notify({ kind: 'error', title: copy.imageAttach, message: copy.imageWriteFailed })
@@ -489,7 +489,7 @@ export function useComposerActions({
   const pasteClipboardImage = useCallback(
     async ({ silent = false }: { silent?: boolean } = {}) => {
       try {
-        const path = await window.hermesDesktop?.saveClipboardImage()
+        const path = await window.agenticOSDesktop?.saveClipboardImage()
 
         if (!path) {
           if (!silent) {
@@ -589,7 +589,7 @@ export function useComposerActions({
         }
 
         const fallbackPath =
-          !knownPath && window.hermesDesktop?.getPathForFile ? window.hermesDesktop.getPathForFile(file) : ''
+          !knownPath && window.agenticOSDesktop?.getPathForFile ? window.agenticOSDesktop.getPathForFile(file) : ''
 
         const filePath = knownPath || fallbackPath || ''
         const isImage = file.type.startsWith('image/') || isImagePath(file.name) || (filePath && isImagePath(filePath))

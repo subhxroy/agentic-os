@@ -579,11 +579,11 @@ def _build_hermes_tools_mcp_entry() -> dict:
     # a sibling test's monkeypatch.setenv("AGENTIC_OS_HOME", tmp_path) would
     # otherwise leak a transient pytest tempdir into the user's real
     # ~/.codex/config.toml and silently brick codex once the tempdir is GC'd.
-    hermes_home = os.environ.get("AGENTIC_OS_HOME") or ""
-    if hermes_home and _looks_like_test_tempdir(hermes_home):
-        hermes_home = ""
-    if hermes_home:
-        env["AGENTIC_OS_HOME"] = hermes_home
+    agentic_os_home = os.environ.get("AGENTIC_OS_HOME") or ""
+    if agentic_os_home and _looks_like_test_tempdir(agentic_os_home):
+        agentic_os_home = ""
+    if agentic_os_home:
+        env["AGENTIC_OS_HOME"] = agentic_os_home
     # PYTHONPATH passes through so a worktree-launched hermes finds the
     # branch's modules instead of the installed package.
     pythonpath = os.environ.get("PYTHONPATH")
@@ -607,7 +607,7 @@ def _build_hermes_tools_mcp_entry() -> dict:
 
 
 def migrate(
-    hermes_config: dict,
+    agentic_os_config: dict,
     *,
     codex_home: Optional[Path] = None,
     dry_run: bool = False,
@@ -619,7 +619,7 @@ def migrate(
     ~/.codex/config.toml.
 
     Args:
-        hermes_config: full ~/.agentic-os/config.yaml dict
+        agentic_os_config: full ~/.agentic-os/config.yaml dict
         codex_home: override CODEX_HOME (defaults to ~/.codex)
         dry_run: skip the actual write; report what would happen
         discover_plugins: when True (default), query `plugin/list` against
@@ -646,7 +646,7 @@ def migrate(
     target = codex_home / "config.toml"
     report.target_path = target
 
-    hermes_servers = (hermes_config or {}).get("mcp_servers") or {}
+    hermes_servers = (agentic_os_config or {}).get("mcp_servers") or {}
     if not isinstance(hermes_servers, dict):
         report.errors.append(
             "mcp_servers in Hermes config is not a dict; cannot migrate."

@@ -1,12 +1,12 @@
 ---
-title: "Hermes Desktop Plugins — Write desktop app plugins that add UI panes and commands"
-sidebar_label: "Hermes Desktop Plugins"
+title: "Agentic OS Desktop Plugins — Write desktop app plugins that add UI panes and commands"
+sidebar_label: "Agentic OS Desktop Plugins"
 description: "Write desktop app plugins that add UI panes and commands"
 ---
 
 {/* This page is auto-generated from the skill's SKILL.md by website/scripts/generate-skill-docs.py. Edit the source SKILL.md, not this page. */}
 
-# Hermes Desktop Plugins
+# Agentic OS Desktop Plugins
 
 Write desktop app plugins that add UI panes and commands.
 
@@ -26,7 +26,7 @@ Write desktop app plugins that add UI panes and commands.
 The following is the complete skill definition that Hermes loads when this skill is triggered. This is what the agent sees as instructions when the skill is active.
 :::
 
-# Hermes Desktop Plugins Skill
+# Agentic OS Desktop Plugins Skill
 
 Write plugins for the Hermes desktop app: statusbar items, layout panes,
 command-palette commands, keybinds, routes, and themes. A plugin is a single
@@ -65,7 +65,7 @@ Full human reference (every export, area payloads, backend, security):
 
 ## Quick Reference
 
-The ONLY import surface is `@hermes/plugin-sdk` (plus `react` /
+The ONLY import surface is `@agentic-os/plugin-sdk` (plus `react` /
 `react/jsx-runtime`, which resolve to the app's own React — write UI with
 `jsx()` calls, not JSX syntax; the file is not compiled).
 
@@ -165,7 +165,7 @@ The ONLY import surface is `@hermes/plugin-sdk` (plus `react` /
   blank space or blurry scaling.
 - JSX syntax will not parse — the file loads uncompiled. Use
   `jsx('div', { children: ... })` from `react/jsx-runtime`.
-- Do not import anything except `@hermes/plugin-sdk`, `react`, and
+- Do not import anything except `@agentic-os/plugin-sdk`, `react`, and
   `react/jsx-runtime`; other specifiers fail to resolve.
 - Handlers must read state imperatively (`$atom.get()`), never from render
   closures — rapid events will otherwise see stale values.

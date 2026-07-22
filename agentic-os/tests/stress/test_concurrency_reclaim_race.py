@@ -38,9 +38,9 @@ WORK_DURATION_S = 2.0  # longer than TTL => reclaimer wins
 WT = str(Path(__file__).resolve().parents[2])
 
 
-def worker_loop(worker_id: int, hermes_home: str, result_file: str) -> None:
-    os.environ["AGENTIC_OS_HOME"] = hermes_home
-    os.environ["HOME"] = hermes_home
+def worker_loop(worker_id: int, agentic_os_home: str, result_file: str) -> None:
+    os.environ["AGENTIC_OS_HOME"] = agentic_os_home
+    os.environ["HOME"] = agentic_os_home
     sys.path.insert(0, WT)
     from agentic_os_cli import kanban_db as kb
 
@@ -95,9 +95,9 @@ def worker_loop(worker_id: int, hermes_home: str, result_file: str) -> None:
         json.dump(events, f)
 
 
-def reclaimer_loop(hermes_home: str, result_file: str) -> None:
-    os.environ["AGENTIC_OS_HOME"] = hermes_home
-    os.environ["HOME"] = hermes_home
+def reclaimer_loop(agentic_os_home: str, result_file: str) -> None:
+    os.environ["AGENTIC_OS_HOME"] = agentic_os_home
+    os.environ["HOME"] = agentic_os_home
     sys.path.insert(0, WT)
     from agentic_os_cli import kanban_db as kb
 

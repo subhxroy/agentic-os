@@ -85,19 +85,19 @@ class TestDoctorEnvFileEncoding:
     ):
         import pathlib
 
-        hermes_home = tmp_path / ".hermes"
-        hermes_home.mkdir()
+        agentic_os_home = tmp_path / ".hermes"
+        agentic_os_home.mkdir()
         # Write a UTF-8 .env containing an em dash (U+2014 = e2 80 94). The
         # 0x94 byte is exactly the one the issue reporter hit: it's invalid
         # as a GBK trailing byte in this position, so locale-default reads
         # raise UnicodeDecodeError on Chinese Windows.
-        env_path = hermes_home / ".env"
+        env_path = agentic_os_home / ".env"
         env_path.write_text(
             "OPENAI_API_KEY=sk-test  # em-dash here — should not crash\n",
             encoding="utf-8",
         )
 
-        monkeypatch.setattr(doctor_mod, "AGENTIC_OS_HOME", hermes_home)
+        monkeypatch.setattr(doctor_mod, "AGENTIC_OS_HOME", agentic_os_home)
 
         orig_read_text = pathlib.Path.read_text
 
@@ -217,12 +217,12 @@ class TestHonchoDoctorConfigDetection:
 def test_run_doctor_sets_interactive_env_for_tool_checks(monkeypatch, tmp_path):
     """Doctor should present CLI-gated tools as available in CLI context."""
     project_root = tmp_path / "project"
-    hermes_home = tmp_path / ".hermes"
+    agentic_os_home = tmp_path / ".hermes"
     project_root.mkdir()
-    hermes_home.mkdir()
+    agentic_os_home.mkdir()
 
     monkeypatch.setattr(doctor_mod, "PROJECT_ROOT", project_root)
-    monkeypatch.setattr(doctor_mod, "AGENTIC_OS_HOME", hermes_home)
+    monkeypatch.setattr(doctor_mod, "AGENTIC_OS_HOME", agentic_os_home)
     monkeypatch.delenv("AGENTIC_OS_INTERACTIVE", raising=False)
 
     seen = {}
@@ -1355,20 +1355,20 @@ class TestDoctorStaleMaxIterationsDrift:
         import io
         from argparse import Namespace
 
-        hermes_home = tmp_path / ".hermes"
-        hermes_home.mkdir(parents=True)
-        (hermes_home / "config.yaml").write_text(
+        agentic_os_home = tmp_path / ".hermes"
+        agentic_os_home.mkdir(parents=True)
+        (agentic_os_home / "config.yaml").write_text(
             f"agent:\n  max_turns: {cfg_turns}\n", encoding="utf-8"
         )
         env_lines = ["OPENAI_API_KEY=sk-test\n"]
         if ghost is not None:
             env_lines.append(f"HERMES_MAX_ITERATIONS={ghost}\n")
-        (hermes_home / ".env").write_text("".join(env_lines), encoding="utf-8")
+        (agentic_os_home / ".env").write_text("".join(env_lines), encoding="utf-8")
 
-        monkeypatch.setattr(doctor_mod, "AGENTIC_OS_HOME", hermes_home)
-        monkeypatch.setattr(doctor_mod, "get_agentic_os_home", lambda: hermes_home)
+        monkeypatch.setattr(doctor_mod, "AGENTIC_OS_HOME", agentic_os_home)
+        monkeypatch.setattr(doctor_mod, "get_agentic_os_home", lambda: agentic_os_home)
         # Point the config helpers at the temp home.
-        monkeypatch.setenv("AGENTIC_OS_HOME", str(hermes_home))
+        monkeypatch.setenv("AGENTIC_OS_HOME", str(agentic_os_home))
         if os_environ_value is not None:
             # Simulate the gateway bridge having already overridden os.environ.
             monkeypatch.setenv("HERMES_MAX_ITERATIONS", str(os_environ_value))
@@ -1386,25 +1386,25 @@ class TestDoctorStaleMaxIterationsDrift:
         buf = io.StringIO()
         with contextlib.redirect_stdout(buf), pytest.raises(SystemExit):
             doctor_mod.run_doctor(Namespace(fix=fix))
-        return buf.getvalue(), hermes_home
+        return buf.getvalue(), agentic_os_home
 
     def test_detects_drift_warn_only(self, monkeypatch, tmp_path):
-        out, hermes_home = self._run_config_section(
+        out, agentic_os_home = self._run_config_section(
             monkeypatch, tmp_path, fix=False, ghost=90, cfg_turns=400,
             os_environ_value=400,  # bridge contaminated os.environ
         )
         assert "HERMES_MAX_ITERATIONS=90" in out
         assert "shadows" in out
         # Warn-only must NOT mutate .env.
-        assert "HERMES_MAX_ITERATIONS=90" in (hermes_home / ".env").read_text(encoding="utf-8")
+        assert "HERMES_MAX_ITERATIONS=90" in (agentic_os_home / ".env").read_text(encoding="utf-8")
 
     def test_fix_removes_ghost(self, monkeypatch, tmp_path):
-        out, hermes_home = self._run_config_section(
+        out, agentic_os_home = self._run_config_section(
             monkeypatch, tmp_path, fix=True, ghost=90, cfg_turns=400,
             os_environ_value=400,
         )
         assert "Removed stale HERMES_MAX_ITERATIONS" in out
-        env_after = (hermes_home / ".env").read_text(encoding="utf-8")
+        env_after = (agentic_os_home / ".env").read_text(encoding="utf-8")
         assert "HERMES_MAX_ITERATIONS" not in env_after
         assert "OPENAI_API_KEY=sk-test" in env_after  # other keys preserved
 
@@ -1545,15 +1545,15 @@ class TestDoctorDeprecatedConfigAndEnv:
         assert doctor_mod.collect_deprecated_env_vars(None) == []
 
     def _run_doctor_with_config(self, monkeypatch, tmp_path, *, config_yaml: str, env_text: str = ""):
-        hermes_home = tmp_path / ".hermes"
-        hermes_home.mkdir(parents=True)
-        (hermes_home / "config.yaml").write_text(config_yaml, encoding="utf-8")
+        agentic_os_home = tmp_path / ".hermes"
+        agentic_os_home.mkdir(parents=True)
+        (agentic_os_home / "config.yaml").write_text(config_yaml, encoding="utf-8")
         env_body = env_text if env_text else "OPENAI_API_KEY=sk-test\n"
-        (hermes_home / ".env").write_text(env_body, encoding="utf-8")
+        (agentic_os_home / ".env").write_text(env_body, encoding="utf-8")
 
-        monkeypatch.setattr(doctor_mod, "AGENTIC_OS_HOME", hermes_home)
-        monkeypatch.setattr(doctor_mod, "get_agentic_os_home", lambda: hermes_home)
-        monkeypatch.setenv("AGENTIC_OS_HOME", str(hermes_home))
+        monkeypatch.setattr(doctor_mod, "AGENTIC_OS_HOME", agentic_os_home)
+        monkeypatch.setattr(doctor_mod, "get_agentic_os_home", lambda: agentic_os_home)
+        monkeypatch.setenv("AGENTIC_OS_HOME", str(agentic_os_home))
         # Clear process-level legacy env so tests only see the on-disk .env.
         for k in (
             "HERMES_TOOL_PROGRESS",
@@ -1574,7 +1574,7 @@ class TestDoctorDeprecatedConfigAndEnv:
         buf = io.StringIO()
         with contextlib.redirect_stdout(buf), pytest.raises(SystemExit):
             doctor_mod.run_doctor(Namespace(fix=False))
-        return buf.getvalue(), hermes_home
+        return buf.getvalue(), agentic_os_home
 
     def test_doctor_warns_on_tool_progress_overrides_and_max_async_children(
         self, monkeypatch, tmp_path
@@ -1587,13 +1587,13 @@ delegation:
   max_async_children: 8
   max_concurrent_children: 3
 """
-        out, hermes_home = self._run_doctor_with_config(monkeypatch, tmp_path, config_yaml=cfg)
+        out, agentic_os_home = self._run_doctor_with_config(monkeypatch, tmp_path, config_yaml=cfg)
         assert "Deprecated: display.tool_progress_overrides" in out
         assert "display.platforms" in out
         assert "Deprecated: delegation.max_async_children" in out
         assert "max_concurrent_children" in out
         # Warn-only: must not mutate config.
-        on_disk = (hermes_home / "config.yaml").read_text(encoding="utf-8")
+        on_disk = (agentic_os_home / "config.yaml").read_text(encoding="utf-8")
         assert "tool_progress_overrides" in on_disk
         assert "max_async_children" in on_disk
 

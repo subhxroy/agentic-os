@@ -268,8 +268,8 @@ def _resolve_mcp_server_config(config: dict) -> dict:
 
     if current_secret_scope() is None:
         try:
-            from agentic_os_cli.env_loader import load_hermes_dotenv
-            load_hermes_dotenv()
+            from agentic_os_cli.env_loader import load_agentic_os_dotenv
+            load_agentic_os_dotenv()
         except Exception:  # pragma: no cover — defensive
             pass
     return _interpolate_env_vars(config)

@@ -637,13 +637,13 @@ def _resolve_stdio_command(command: str, env: dict) -> tuple[str, dict]:
         if which_hit:
             resolved_command = which_hit
         elif resolved_command in {"npx", "npm", "node"}:
-            hermes_home = os.path.expanduser(
+            agentic_os_home = os.path.expanduser(
                 os.getenv(
                     "AGENTIC_OS_HOME", os.path.join(os.path.expanduser("~"), ".hermes")
                 )
             )
             candidates = [
-                os.path.join(hermes_home, "node", "bin", resolved_command),
+                os.path.join(agentic_os_home, "node", "bin", resolved_command),
                 os.path.join(os.path.expanduser("~"), ".local", "bin", resolved_command),
                 # /usr/local/bin is the canonical install location for Node on
                 # Linux from-source builds, the upstream node:bookworm-slim
@@ -4005,8 +4005,8 @@ def _load_mcp_config() -> Dict[str, dict]:
             return {}
         # Ensure .env vars are available for interpolation
         try:
-            from agentic_os_cli.env_loader import load_hermes_dotenv
-            load_hermes_dotenv()
+            from agentic_os_cli.env_loader import load_agentic_os_dotenv
+            load_agentic_os_dotenv()
         except Exception:
             pass
         safe_servers: Dict[str, dict] = {}

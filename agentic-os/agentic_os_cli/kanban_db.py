@@ -8132,7 +8132,7 @@ def _worker_terminal_timeout_env(
     return str(desired)
 
 
-def _resolve_worker_cli_toolsets(hermes_home: Optional[str]) -> Optional[list[str]]:
+def _resolve_worker_cli_toolsets(agentic_os_home: Optional[str]) -> Optional[list[str]]:
     """Return the assigned profile's effective CLI toolsets for a worker.
 
     Dispatcher-spawned workers are launched from a long-lived gateway process,
@@ -8143,14 +8143,14 @@ def _resolve_worker_cli_toolsets(hermes_home: Optional[str]) -> Optional[list[st
     is only the kanban orchestrator surface. ``model_tools`` still appends the
     task-scoped kanban lifecycle tools when ``HERMES_KANBAN_TASK`` is set.
     """
-    if not hermes_home:
+    if not agentic_os_home:
         return None
     try:
         from agentic_os_constants import reset_AGENTIC_OS_HOME_OVERRIDE, set_AGENTIC_OS_HOME_OVERRIDE
         from agentic_os_cli.config import load_config
         from agentic_os_cli.tools_config import _get_platform_tools
 
-        token = set_AGENTIC_OS_HOME_OVERRIDE(hermes_home)
+        token = set_AGENTIC_OS_HOME_OVERRIDE(agentic_os_home)
         try:
             cfg = load_config()
             toolsets = sorted(_get_platform_tools(cfg, "cli"))
@@ -8160,7 +8160,7 @@ def _resolve_worker_cli_toolsets(hermes_home: Optional[str]) -> Optional[list[st
     except Exception as exc:
         _log.debug(
             "kanban worker: could not resolve CLI toolsets for AGENTIC_OS_HOME=%r (%s)",
-            hermes_home,
+            agentic_os_home,
             exc,
         )
         return None

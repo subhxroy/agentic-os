@@ -19,7 +19,7 @@ from types import SimpleNamespace
 
 
 def _run_apply_profile_override(
-    tmp_path, monkeypatch, *, hermes_home: str | None, active_profile: str | None,
+    tmp_path, monkeypatch, *, agentic_os_home: str | None, active_profile: str | None,
     argv: list[str] | None = None,
 ):
     """Run _apply_profile_override in isolation.
@@ -37,8 +37,8 @@ def _run_apply_profile_override(
         (hermes_root / "profiles" / active_profile).mkdir(parents=True, exist_ok=True)
 
     monkeypatch.setattr(Path, "home", lambda: tmp_path)
-    if hermes_home is not None:
-        monkeypatch.setenv("AGENTIC_OS_HOME", hermes_home)
+    if agentic_os_home is not None:
+        monkeypatch.setenv("AGENTIC_OS_HOME", agentic_os_home)
     else:
         monkeypatch.delenv("AGENTIC_OS_HOME", raising=False)
 
@@ -74,7 +74,7 @@ class TestApplyProfileOverrideHermesHomeGuard:
         result = _run_apply_profile_override(
             tmp_path,
             monkeypatch,
-            hermes_home=str(hermes_root),
+            agentic_os_home=str(hermes_root),
             active_profile="coder",
         )
 
@@ -118,7 +118,7 @@ class TestApplyProfileOverrideHermesHomeGuard:
         result = _run_apply_profile_override(
             tmp_path,
             monkeypatch,
-            hermes_home=None,
+            agentic_os_home=None,
             active_profile="coder",
         )
 
@@ -204,7 +204,7 @@ class TestApplyProfileOverrideHermesHomeGuard:
         result = _run_apply_profile_override(
             tmp_path,
             monkeypatch,
-            hermes_home=None,
+            agentic_os_home=None,
             active_profile="coder",
             argv=["hermes", "chat", "-p", "coder", "-q", "hello"],
         )
@@ -218,7 +218,7 @@ class TestApplyProfileOverrideHermesHomeGuard:
         result = _run_apply_profile_override(
             tmp_path,
             monkeypatch,
-            hermes_home=None,
+            agentic_os_home=None,
             active_profile="coder",
             argv=["hermes", "-m", "gpt-5", "--profile", "coder", "chat"],
         )
@@ -232,7 +232,7 @@ class TestApplyProfileOverrideHermesHomeGuard:
         result = _run_apply_profile_override(
             tmp_path,
             monkeypatch,
-            hermes_home=None,
+            agentic_os_home=None,
             active_profile="coder",
             argv=["hermes", "--continue", "--profile", "coder"],
         )
@@ -293,7 +293,7 @@ class TestSupervisedChildIgnoresStickyProfile:
         result = _run_apply_profile_override(
             tmp_path,
             monkeypatch,
-            hermes_home=None,
+            agentic_os_home=None,
             active_profile="briefer",
             argv=["hermes", "gateway", "run"],
         )

@@ -2209,7 +2209,7 @@ def format_process_notification(evt: dict) -> "str | None":
     if _exit in {-15, 143, "-15", "143"}:
         _signal = ", SIGTERM"
     if _reason == "killed":
-        _status = f"terminated by {_source or 'Hermes'}"
+        _status = f"terminated by {_source or 'Agentic OS'}"
     elif _reason == "lost":
         _status = "marked lost because the process backend disappeared"
     elif _reason == "failed_start":

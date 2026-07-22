@@ -41,9 +41,9 @@ class TestGetSubprocessHome:
         assert get_subprocess_home() is None
 
     def test_returns_none_when_home_dir_missing(self, tmp_path, monkeypatch):
-        hermes_home = tmp_path / ".hermes"
-        hermes_home.mkdir()
-        monkeypatch.setenv("AGENTIC_OS_HOME", str(hermes_home))
+        agentic_os_home = tmp_path / ".hermes"
+        agentic_os_home.mkdir()
+        monkeypatch.setenv("AGENTIC_OS_HOME", str(agentic_os_home))
         # No home/ subdirectory created
         from agentic_os_constants import get_subprocess_home
         assert get_subprocess_home() is None
@@ -52,20 +52,20 @@ class TestGetSubprocessHome:
         """Host installs should not hide real ~/.ssh, ~/.gitconfig, ~/.azure, etc."""
         self._host_mode(monkeypatch)
         real_home = tmp_path / "real-home"
-        hermes_home = real_home / ".hermes" / "profiles" / "coder"
-        profile_home = hermes_home / "home"
+        agentic_os_home = real_home / ".hermes" / "profiles" / "coder"
+        profile_home = agentic_os_home / "home"
         profile_home.mkdir(parents=True)
         monkeypatch.setenv("HOME", str(real_home))
-        monkeypatch.setenv("AGENTIC_OS_HOME", str(hermes_home))
+        monkeypatch.setenv("AGENTIC_OS_HOME", str(agentic_os_home))
         from agentic_os_constants import get_subprocess_home
         assert get_subprocess_home() is None
 
     def test_container_auto_uses_profile_home_when_home_dir_exists(self, tmp_path, monkeypatch):
         self._container_mode(monkeypatch)
-        hermes_home = tmp_path / ".hermes"
-        profile_home = hermes_home / "home"
+        agentic_os_home = tmp_path / ".hermes"
+        profile_home = agentic_os_home / "home"
         profile_home.mkdir(parents=True)
-        monkeypatch.setenv("AGENTIC_OS_HOME", str(hermes_home))
+        monkeypatch.setenv("AGENTIC_OS_HOME", str(agentic_os_home))
         from agentic_os_constants import get_subprocess_home
         assert get_subprocess_home() == str(profile_home)
 
@@ -179,13 +179,13 @@ class TestMakeRunEnvHomeInjection:
     """Verify _make_run_env() applies the subprocess HOME policy."""
 
     def test_host_auto_preserves_real_home_when_profile_home_exists(self, tmp_path, monkeypatch):
-        hermes_home = tmp_path / "hermes"
-        hermes_home.mkdir()
-        (hermes_home / "home").mkdir()
+        agentic_os_home = tmp_path / "hermes"
+        agentic_os_home.mkdir()
+        (agentic_os_home / "home").mkdir()
         real_home = tmp_path / "real-home"
         real_home.mkdir()
         monkeypatch.setattr(agentic_os_constants, "is_container", lambda: False)
-        monkeypatch.setenv("AGENTIC_OS_HOME", str(hermes_home))
+        monkeypatch.setenv("AGENTIC_OS_HOME", str(agentic_os_home))
         monkeypatch.setenv("HOME", str(real_home))
         monkeypatch.setenv("PATH", "/usr/bin:/bin")
 
@@ -196,28 +196,28 @@ class TestMakeRunEnvHomeInjection:
         assert result["HERMES_REAL_HOME"] == str(real_home)
 
     def test_profile_mode_injects_profile_home_when_profile_home_exists(self, tmp_path, monkeypatch):
-        hermes_home = tmp_path / "hermes"
-        hermes_home.mkdir()
-        (hermes_home / "home").mkdir()
+        agentic_os_home = tmp_path / "hermes"
+        agentic_os_home.mkdir()
+        (agentic_os_home / "home").mkdir()
         real_home = tmp_path / "real-home"
         real_home.mkdir()
         monkeypatch.setattr(agentic_os_constants, "is_container", lambda: False)
         monkeypatch.setenv("TERMINAL_HOME_MODE", "profile")
-        monkeypatch.setenv("AGENTIC_OS_HOME", str(hermes_home))
+        monkeypatch.setenv("AGENTIC_OS_HOME", str(agentic_os_home))
         monkeypatch.setenv("HOME", str(real_home))
         monkeypatch.setenv("PATH", "/usr/bin:/bin")
 
         from tools.environments.local import _make_run_env
         result = _make_run_env({})
 
-        assert result["HOME"] == str(hermes_home / "home")
+        assert result["HOME"] == str(agentic_os_home / "home")
         assert result["HERMES_REAL_HOME"] == str(real_home)
 
     def test_no_injection_when_home_dir_missing(self, tmp_path, monkeypatch):
-        hermes_home = tmp_path / "hermes"
-        hermes_home.mkdir()
+        agentic_os_home = tmp_path / "hermes"
+        agentic_os_home.mkdir()
         # No home/ subdirectory
-        monkeypatch.setenv("AGENTIC_OS_HOME", str(hermes_home))
+        monkeypatch.setenv("AGENTIC_OS_HOME", str(agentic_os_home))
         monkeypatch.setenv("HOME", "/root")
         monkeypatch.setenv("PATH", "/usr/bin:/bin")
 
@@ -268,13 +268,13 @@ class TestSanitizeSubprocessEnvHomeInjection:
     """Verify _sanitize_subprocess_env() applies the subprocess HOME policy."""
 
     def test_host_auto_preserves_real_home_when_profile_home_exists(self, tmp_path, monkeypatch):
-        hermes_home = tmp_path / "hermes"
-        hermes_home.mkdir()
-        (hermes_home / "home").mkdir()
+        agentic_os_home = tmp_path / "hermes"
+        agentic_os_home.mkdir()
+        (agentic_os_home / "home").mkdir()
         real_home = tmp_path / "real-home"
         real_home.mkdir()
         monkeypatch.setattr(agentic_os_constants, "is_container", lambda: False)
-        monkeypatch.setenv("AGENTIC_OS_HOME", str(hermes_home))
+        monkeypatch.setenv("AGENTIC_OS_HOME", str(agentic_os_home))
 
         base_env = {"HOME": str(real_home), "PATH": "/usr/bin", "USER": "root"}
         from tools.environments.local import _sanitize_subprocess_env
@@ -284,26 +284,26 @@ class TestSanitizeSubprocessEnvHomeInjection:
         assert result["HERMES_REAL_HOME"] == str(real_home)
 
     def test_profile_mode_injects_profile_home_when_profile_home_exists(self, tmp_path, monkeypatch):
-        hermes_home = tmp_path / "hermes"
-        hermes_home.mkdir()
-        (hermes_home / "home").mkdir()
+        agentic_os_home = tmp_path / "hermes"
+        agentic_os_home.mkdir()
+        (agentic_os_home / "home").mkdir()
         real_home = tmp_path / "real-home"
         real_home.mkdir()
         monkeypatch.setattr(agentic_os_constants, "is_container", lambda: False)
         monkeypatch.setenv("TERMINAL_HOME_MODE", "profile")
-        monkeypatch.setenv("AGENTIC_OS_HOME", str(hermes_home))
+        monkeypatch.setenv("AGENTIC_OS_HOME", str(agentic_os_home))
 
         base_env = {"HOME": str(real_home), "PATH": "/usr/bin", "USER": "root"}
         from tools.environments.local import _sanitize_subprocess_env
         result = _sanitize_subprocess_env(base_env)
 
-        assert result["HOME"] == str(hermes_home / "home")
+        assert result["HOME"] == str(agentic_os_home / "home")
         assert result["HERMES_REAL_HOME"] == str(real_home)
 
     def test_no_injection_when_home_dir_missing(self, tmp_path, monkeypatch):
-        hermes_home = tmp_path / "hermes"
-        hermes_home.mkdir()
-        monkeypatch.setenv("AGENTIC_OS_HOME", str(hermes_home))
+        agentic_os_home = tmp_path / "hermes"
+        agentic_os_home.mkdir()
+        monkeypatch.setenv("AGENTIC_OS_HOME", str(agentic_os_home))
 
         base_env = {"HOME": "/root", "PATH": "/usr/bin"}
         from tools.environments.local import _sanitize_subprocess_env
@@ -367,10 +367,10 @@ class TestPythonProcessUnchanged:
     def test_path_home_unchanged_after_subprocess_home_resolved(
         self, tmp_path, monkeypatch
     ):
-        hermes_home = tmp_path / "hermes"
-        hermes_home.mkdir()
-        (hermes_home / "home").mkdir()
-        monkeypatch.setenv("AGENTIC_OS_HOME", str(hermes_home))
+        agentic_os_home = tmp_path / "hermes"
+        agentic_os_home.mkdir()
+        (agentic_os_home / "home").mkdir()
+        monkeypatch.setenv("AGENTIC_OS_HOME", str(agentic_os_home))
 
         original_home = os.environ.get("HOME")
         original_path_home = str(Path.home())
@@ -379,6 +379,6 @@ class TestPythonProcessUnchanged:
         sub_home = get_subprocess_home()
 
         # Resolving subprocess HOME must not mutate the Python process env.
-        assert sub_home in (None, str(hermes_home / "home"), original_home)
+        assert sub_home in (None, str(agentic_os_home / "home"), original_home)
         assert os.environ.get("HOME") == original_home
         assert str(Path.home()) == original_path_home

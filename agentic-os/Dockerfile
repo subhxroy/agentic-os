@@ -128,7 +128,7 @@ COPY apps/shared/ apps/shared/
 # explicitly anyway as defense-in-depth: the previous Debian-bundled npm
 # 9.x defaulted to install-as-copy, which produced a hidden
 # node_modules/.package-lock.json that permanently disagreed with the root
-# lock on the @hermes/ink entry, tripped the TUI launcher's
+# lock on the @agentic-os/ink entry, tripped the TUI launcher's
 # `_tui_need_npm_install()` check on every startup, and triggered a
 # runtime `npm install` that then failed with EACCES.  Keeping the env
 # guards against a future regression if the source npm version changes.

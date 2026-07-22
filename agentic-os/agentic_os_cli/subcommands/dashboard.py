@@ -128,7 +128,7 @@ def build_dashboard_parser(
     # serve command — the headless backend server
     #
     # `serve` boots the exact same gateway as `dashboard` but never opens a
-    # browser. It exists so the Hermes Desktop app (and headless remote
+    # browser. It exists so the Agentic OS Desktop app (and headless remote
     # backends) can launch a backend WITHOUT invoking `dashboard`: the desktop
     # app and the web dashboard are independent surfaces that merely share this
     # server, and neither should appear to launch the other.
@@ -151,7 +151,7 @@ def build_dashboard_parser(
     )
     # `headless_backend` marks the lean path: desktop/remote clients speak pure
     # JSON-RPC/WS, so `serve` skips the web UI build AND never serves the SPA
-    # (cmd_dashboard exports HERMES_SERVE_HEADLESS=1). `dashboard` leaves it
+    # (cmd_dashboard exports AGENTIC_OS_SERVE_HEADLESS=1). `dashboard` leaves it
     # unset and serves the browser UI as before.
     serve_parser.set_defaults(func=cmd_dashboard, no_open=True, headless_backend=True)
 

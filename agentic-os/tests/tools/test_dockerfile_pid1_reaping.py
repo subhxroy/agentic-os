@@ -225,14 +225,14 @@ def test_dockerfile_materializes_local_tui_ink_package(dockerfile_text):
     # ``agentic-os-ink`` is a bundled workspace package referenced from
     # ``ui-tui/package.json`` via ``file:`` — not pulled from the npm
     # registry. The contract this test pins is just that the image
-    # actually carries the package source so ``await import('@hermes/ink')``
+    # actually carries the package source so ``await import('@agentic-os/ink')``
     # can resolve at runtime; the previous, much pickier assertion (manual
-    # ``rm -rf`` + ``npm install --omit=dev --prefix node_modules/@hermes/ink``)
+    # ``rm -rf`` + ``npm install --omit=dev --prefix node_modules/@agentic-os/ink``)
     # baked in implementation details of an older materialisation flow that
     # was simplified once npm workspaces handled the resolution natively.
     assert "ui-tui/packages/agentic-os-ink/" in dockerfile_text, (
         "Dockerfile must COPY the bundled agentic-os-ink workspace package "
-        "so ``await import('@hermes/ink')`` resolves at runtime."
+        "so ``await import('@agentic-os/ink')`` resolves at runtime."
     )
 
 

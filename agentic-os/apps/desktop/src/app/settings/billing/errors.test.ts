@@ -1,4 +1,4 @@
-import type { KnownBillingRefusalCode } from '@hermes/shared/billing'
+import type { KnownBillingRefusalCode } from '@agentic-os/shared/billing'
 import { describe, expect, it } from 'vitest'
 
 import type { BillingRefusal } from './api'

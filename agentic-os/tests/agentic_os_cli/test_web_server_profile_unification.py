@@ -496,7 +496,7 @@ class TestProfileScopedGateway:
 
         assert resp.status_code == 200
         assert seen_homes[0] == str(isolated_profiles["worker_beta"])
-        assert resp.json()["hermes_home"] == str(isolated_profiles["worker_beta"])
+        assert resp.json()["agentic_os_home"] == str(isolated_profiles["worker_beta"])
 
     def test_status_uses_runtime_pid_when_profile_pid_file_is_missing(
         self, client, isolated_profiles, monkeypatch

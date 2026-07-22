@@ -131,7 +131,7 @@ def _node_symlink_candidate_dirs() -> "list[Path]":
     return dirs
 
 
-def remove_node_symlinks(hermes_home: Path) -> list:
+def remove_node_symlinks(agentic_os_home: Path) -> list:
     """Remove the node/npm/npx symlinks the installer placed on PATH.
 
     The POSIX installer (``scripts/install.sh`` / ``scripts/lib/node-bootstrap.sh``)
@@ -148,7 +148,7 @@ def remove_node_symlinks(hermes_home: Path) -> list:
     directory are removed — links the user has repointed elsewhere (nvm, fnm,
     etc.) are left untouched.
     """
-    node_dir = (hermes_home / "node").resolve()
+    node_dir = (agentic_os_home / "node").resolve()
     removed = []
 
     for name in ("node", "npm", "npx"):
@@ -319,9 +319,9 @@ def uninstall_gateway_service():
 # or open a new terminal anyway).
 
 
-def _hermes_path_markers(hermes_home: Path) -> list[str]:
+def _hermes_path_markers(agentic_os_home: Path) -> list[str]:
     """Path-entry substrings that identify Hermes-owned User-PATH entries."""
-    root = str(hermes_home).rstrip("\\/")
+    root = str(agentic_os_home).rstrip("\\/")
     # Match on prefix so sub-entries (git\cmd, git\bin, git\usr\bin, node, etc.)
     # all get swept.  Also match the bare agentic-os install dir.
     markers = [root + "\\agentic-os", root + "\\git", root + "\\node", root + "\\venv"]
@@ -332,7 +332,7 @@ def _hermes_path_markers(hermes_home: Path) -> list[str]:
     return markers
 
 
-def remove_path_from_windows_registry(hermes_home: Path) -> list[str]:
+def remove_path_from_windows_registry(agentic_os_home: Path) -> list[str]:
     """Strip Hermes-owned entries from User-scope PATH in the registry.
 
     Returns the list of removed path entries.  Operates on HKCU\\Environment,
@@ -354,7 +354,7 @@ def remove_path_from_windows_registry(hermes_home: Path) -> list[str]:
                 return []
             # Preserve REG_EXPAND_SZ vs REG_SZ so unexpanded %VARS% survive.
             entries = [e for e in path_value.split(";") if e]
-            markers = _hermes_path_markers(hermes_home)
+            markers = _hermes_path_markers(agentic_os_home)
             kept: list[str] = []
             for entry in entries:
                 entry_norm = entry.rstrip("\\/")
@@ -397,13 +397,13 @@ def remove_hermes_env_vars_windows() -> list[str]:
     return removed
 
 
-def remove_portable_tooling_windows(hermes_home: Path) -> list[Path]:
+def remove_portable_tooling_windows(agentic_os_home: Path) -> list[Path]:
     """Delete PortableGit and Node installs the Windows installer created under
     ``%LOCALAPPDATA%\\hermes\\``.  Only called on full uninstall; they're
     isolated from any system Git / Node so they cannot break other tools."""
     removed: list[Path] = []
     for sub in ("git", "node", "gateway-service"):
-        target = hermes_home / sub
+        target = agentic_os_home / sub
         if target.exists():
             try:
                 shutil.rmtree(target, ignore_errors=False)
@@ -418,11 +418,11 @@ def _is_windows() -> bool:
     return sys.platform == "win32"
 
 
-def _is_default_agentic_os_home(hermes_home: Path) -> bool:
-    """Return True when ``hermes_home`` points at the default (non-profile) root."""
+def _is_default_agentic_os_home(agentic_os_home: Path) -> bool:
+    """Return True when ``agentic_os_home`` points at the default (non-profile) root."""
     try:
         from agentic_os_constants import get_default_agentic_os_root
-        return hermes_home.resolve() == get_default_agentic_os_root().resolve()
+        return agentic_os_home.resolve() == get_default_agentic_os_root().resolve()
     except Exception:
         return False
 
@@ -506,8 +506,8 @@ def run_gui_uninstall(args):
         uninstall_gui,
     )
 
-    hermes_home = get_agentic_os_home()
-    summary = gui_install_summary(hermes_home)
+    agentic_os_home = get_agentic_os_home()
+    summary = gui_install_summary(agentic_os_home)
     skip_confirm = bool(getattr(args, "yes", False))
 
     print()
@@ -518,7 +518,7 @@ def run_gui_uninstall(args):
 
     if not summary["gui_installed"]:
         print("No Hermes Chat GUI installation was found.")
-        print(f"  Checked: {hermes_home}, and the standard app locations for this OS.")
+        print(f"  Checked: {agentic_os_home}, and the standard app locations for this OS.")
         return
 
     print(color("This removes the Chat GUI only. The Hermes agent stays installed.", Colors.CYAN))
@@ -531,10 +531,10 @@ def run_gui_uninstall(args):
     if summary["userdata_exists"]:
         print(f"  • {summary['userdata_dir']}  (desktop app data)")
     print()
-    if agent_is_installed(hermes_home):
+    if agent_is_installed(agentic_os_home):
         print(color("Kept intact:", Colors.GREEN, Colors.BOLD))
-        print(f"  • The Hermes agent at {hermes_home / 'agentic-os'}")
-        print(f"  • Your config, sessions, and secrets under {hermes_home}")
+        print(f"  • The Hermes agent at {agentic_os_home / 'agentic-os'}")
+        print(f"  • Your config, sessions, and secrets under {agentic_os_home}")
         print()
 
     if not skip_confirm:
@@ -552,7 +552,7 @@ def run_gui_uninstall(args):
     print()
     print(color("Uninstalling Chat GUI...", Colors.CYAN, Colors.BOLD))
     print()
-    uninstall_gui(hermes_home)
+    uninstall_gui(agentic_os_home)
 
     print()
     print(color("┌─────────────────────────────────────────────────────────┐", Colors.GREEN, Colors.BOLD))
@@ -573,12 +573,12 @@ def run_uninstall(args):
     - Keep data: removes code but keeps ~/.agentic-os/ for future reinstall
     """
     project_root = get_project_root()
-    hermes_home = get_agentic_os_home()
+    agentic_os_home = get_agentic_os_home()
 
     if bool(getattr(args, "dry_run", False)):
         _print_uninstall_dry_run(
             project_root=project_root,
-            hermes_home=hermes_home,
+            agentic_os_home=agentic_os_home,
             full_uninstall=bool(getattr(args, "full", False)),
         )
         return
@@ -586,7 +586,7 @@ def run_uninstall(args):
     # Detect named profiles when uninstalling from the default root —
     # offer to clean them up too instead of leaving zombie AGENTIC_OS_HOMEs
     # and systemd units behind.
-    is_default_profile = _is_default_agentic_os_home(hermes_home)
+    is_default_profile = _is_default_agentic_os_home(agentic_os_home)
     named_profiles = _discover_named_profiles() if is_default_profile else []
 
     # Non-interactive fast path (``--yes``): no prompts. ``--full`` selects a
@@ -600,7 +600,7 @@ def run_uninstall(args):
         full_uninstall = bool(getattr(args, "full", False))
         _perform_uninstall(
             project_root=project_root,
-            hermes_home=hermes_home,
+            agentic_os_home=agentic_os_home,
             full_uninstall=full_uninstall,
             remove_profiles=False,
             named_profiles=named_profiles,
@@ -616,9 +616,9 @@ def run_uninstall(args):
     # Show what will be affected
     print(color("Current Installation:", Colors.CYAN, Colors.BOLD))
     print(f"  Code:    {project_root}")
-    print(f"  Config:  {hermes_home / 'config.yaml'}")
-    print(f"  Secrets: {hermes_home / '.env'}")
-    print(f"  Data:    {hermes_home / 'cron/'}, {hermes_home / 'sessions/'}, {hermes_home / 'logs/'}")
+    print(f"  Config:  {agentic_os_home / 'config.yaml'}")
+    print(f"  Secrets: {agentic_os_home / '.env'}")
+    print(f"  Data:    {agentic_os_home / 'cron/'}, {agentic_os_home / 'sessions/'}, {agentic_os_home / 'logs/'}")
     print()
 
     if named_profiles:
@@ -705,14 +705,14 @@ def run_uninstall(args):
 
     _perform_uninstall(
         project_root=project_root,
-        hermes_home=hermes_home,
+        agentic_os_home=agentic_os_home,
         full_uninstall=full_uninstall,
         remove_profiles=remove_profiles,
         named_profiles=named_profiles,
     )
 
 
-def _print_uninstall_dry_run(*, project_root: Path, hermes_home: Path, full_uninstall: bool) -> None:
+def _print_uninstall_dry_run(*, project_root: Path, agentic_os_home: Path, full_uninstall: bool) -> None:
     """Print the uninstall plan without stopping services or deleting files."""
     print()
     print(color("Dry run: no files, services, or environment entries will be changed.", Colors.CYAN, Colors.BOLD))
@@ -724,22 +724,22 @@ def _print_uninstall_dry_run(*, project_root: Path, hermes_home: Path, full_unin
     print("  • Desktop Chat GUI artifacts")
     print(f"  • Code checkout: {project_root}")
     if full_uninstall:
-        print(f"  • Hermes config/data: {hermes_home}")
-        if _is_default_agentic_os_home(hermes_home):
+        print(f"  • Hermes config/data: {agentic_os_home}")
+        if _is_default_agentic_os_home(agentic_os_home):
             profiles = _discover_named_profiles()
             if profiles:
                 print("  • Named profiles (interactive uninstall asks before removing):")
                 for prof in profiles:
                     print(f"    - {prof.name}: {prof.path}")
     else:
-        print(f"  • Keep Hermes config/data: {hermes_home}")
+        print(f"  • Keep Hermes config/data: {agentic_os_home}")
     print()
 
 
 def _perform_uninstall(
     *,
     project_root: Path,
-    hermes_home: Path,
+    agentic_os_home: Path,
     full_uninstall: bool,
     remove_profiles: bool,
     named_profiles: list,
@@ -774,10 +774,10 @@ def _perform_uninstall(
 
     if _is_windows():
         log_info("Removing PATH entries from Windows User environment...")
-        # Expand %LOCALAPPDATA% etc. in hermes_home so the marker matching is
+        # Expand %LOCALAPPDATA% etc. in agentic_os_home so the marker matching is
         # against fully resolved paths — installer writes literal strings
         # like C:\Users\<u>\AppData\Local\hermes\git\cmd, not %LOCALAPPDATA%.
-        removed_path_entries = remove_path_from_windows_registry(Path(os.path.expandvars(str(hermes_home))))
+        removed_path_entries = remove_path_from_windows_registry(Path(os.path.expandvars(str(agentic_os_home))))
         if removed_path_entries:
             for entry in removed_path_entries:
                 log_success(f"Removed from User PATH: {entry}")
@@ -805,7 +805,7 @@ def _perform_uninstall(
     #     (only when they still point into this Hermes home's node dir, so we
     #     never clobber an existing nvm / user-managed Node).
     log_info("Removing Hermes-managed node/npm/npx symlinks...")
-    removed_node_links = remove_node_symlinks(hermes_home)
+    removed_node_links = remove_node_symlinks(agentic_os_home)
     if removed_node_links:
         for link in removed_node_links:
             log_success(f"Removed {link}")
@@ -818,13 +818,13 @@ def _perform_uninstall(
     #     code, so the GUI — which is just another consumer of the same
     #     checkout — should go with it. uninstall_gui() never touches config /
     #     sessions / .env, so it's safe in keep-data mode; on full uninstall the
-    #     step-5 rmtree(hermes_home) would sweep the in-tree artifacts anyway,
+    #     step-5 rmtree(agentic_os_home) would sweep the in-tree artifacts anyway,
     #     but the packaged app + Electron userData live OUTSIDE AGENTIC_OS_HOME and
     #     must be cleaned explicitly here.
     log_info("Removing desktop Chat GUI artifacts...")
     try:
         from agentic_os_cli.gui_uninstall import uninstall_gui
-        gui_removed = uninstall_gui(hermes_home)
+        gui_removed = uninstall_gui(agentic_os_home)
         if not gui_removed:
             log_info("No desktop GUI artifacts found")
     except Exception as e:
@@ -838,7 +838,7 @@ def _perform_uninstall(
     try:
         if project_root.exists():
             # If the install is inside ~/.agentic-os/, just remove the agentic-os subdir
-            if hermes_home in project_root.parents or project_root.parent == hermes_home:
+            if agentic_os_home in project_root.parents or project_root.parent == agentic_os_home:
                 shutil.rmtree(project_root)
                 log_success(f"Removed {project_root}")
             else:
@@ -853,11 +853,11 @@ def _perform_uninstall(
     #     PortableGit, bundled Node, gateway-service dir.  Installer put them
     #     under AGENTIC_OS_HOME but they're install tooling, not config — safe to
     #     remove even in "keep data" mode.  If we're doing a full uninstall
-    #     the step-5 rmtree(hermes_home) would sweep them anyway; calling
+    #     the step-5 rmtree(agentic_os_home) would sweep them anyway; calling
     #     this helper there is a no-op since they'll already be gone.
     if _is_windows():
         log_info("Removing Windows installer artifacts (PortableGit, Node, gateway-service)...")
-        removed_artifacts = remove_portable_tooling_windows(hermes_home)
+        removed_artifacts = remove_portable_tooling_windows(agentic_os_home)
         if removed_artifacts:
             for path in removed_artifacts:
                 log_success(f"Removed {path}")
@@ -877,14 +877,14 @@ def _perform_uninstall(
 
         log_info("Removing configuration and data...")
         try:
-            if hermes_home.exists():
-                shutil.rmtree(hermes_home)
-                log_success(f"Removed {hermes_home}")
+            if agentic_os_home.exists():
+                shutil.rmtree(agentic_os_home)
+                log_success(f"Removed {agentic_os_home}")
         except Exception as e:
-            log_warn(f"Could not fully remove {hermes_home}: {e}")
+            log_warn(f"Could not fully remove {agentic_os_home}: {e}")
             log_info("You may need to manually remove it")
     else:
-        log_info(f"Keeping configuration and data in {hermes_home}")
+        log_info(f"Keeping configuration and data in {agentic_os_home}")
     
     # Done
     print()
@@ -895,7 +895,7 @@ def _perform_uninstall(
     
     if not full_uninstall:
         print(color("Your configuration and data have been preserved:", Colors.CYAN))
-        print(f"  {hermes_home}/")
+        print(f"  {agentic_os_home}/")
         print()
         print("To reinstall later with your existing settings:")
         if _is_windows():

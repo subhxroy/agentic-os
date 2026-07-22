@@ -92,7 +92,7 @@ def fake_as(monkeypatch):
     base = f"http://127.0.0.1:{port}"
     monkeypatch.setenv("HONCHO_OAUTH_AUTHORIZE_URL", f"{base}/authorize")
     monkeypatch.setenv("HONCHO_OAUTH_TOKEN_URL", f"{base}/oauth/token")
-    monkeypatch.setenv("HONCHO_OAUTH_CLIENT_ID", "hermes-desktop")
+    monkeypatch.setenv("HONCHO_OAUTH_CLIENT_ID", "agentic-os-desktop")
     try:
         yield base
     finally:
@@ -270,7 +270,7 @@ def test_launcher_runs_flow_in_background_and_reports_connected(monkeypatch, res
 
     st = oauth_flow.start_loopback_flow_background(config_path=Path("/t/honcho.json"), host="hermes")
     assert st["state"] == "pending"  # returns immediately, before the flow finishes
-    assert _wait_until(lambda: seen.get("source") == "hermes-desktop")  # default source tag
+    assert _wait_until(lambda: seen.get("source") == "agentic-os-desktop")  # default source tag
     assert seen["host"] == "hermes"
     gate.set()
     assert _wait_until(lambda: oauth_flow.get_flow_status()["state"] == "connected")
@@ -326,7 +326,7 @@ def test_get_flow_status_reports_stored_connection(tmp_path, monkeypatch, reset_
     cfgfile.write_text(json.dumps({"hosts": {"hermes": {
         "apiKey": "hch-at-tok",
         "oauth": {"refreshToken": "hch-rt-x", "expiresAt": 9_999_999_999,
-                  "clientId": "hermes-desktop", "tokenEndpoint": "http://x/oauth/token"},
+                  "clientId": "agentic-os-desktop", "tokenEndpoint": "http://x/oauth/token"},
     }}}))
     s = oauth_flow.get_flow_status()
     assert s["connected"] is True and s["auth"] == "oauth"

@@ -195,11 +195,11 @@ class TestShouldExclude:
 class TestBackup:
     def test_creates_zip(self, tmp_path, monkeypatch):
         """Backup creates a valid zip containing expected files."""
-        hermes_home = tmp_path / ".hermes"
-        hermes_home.mkdir()
-        _make_hermes_tree(hermes_home)
+        agentic_os_home = tmp_path / ".hermes"
+        agentic_os_home.mkdir()
+        _make_hermes_tree(agentic_os_home)
 
-        monkeypatch.setenv("AGENTIC_OS_HOME", str(hermes_home))
+        monkeypatch.setenv("AGENTIC_OS_HOME", str(agentic_os_home))
         # get_default_agentic_os_root needs this
         monkeypatch.setattr(Path, "home", lambda: tmp_path)
 
@@ -233,10 +233,10 @@ class TestBackup:
         Keep a real, uncheckpointed WAL transaction live so a raw copy of only
         ``state.db`` would be a valid-looking but torn snapshot.
         """
-        hermes_home = tmp_path / ".hermes"
-        hermes_home.mkdir()
-        (hermes_home / "config.yaml").write_text("model: test\n")
-        db_path = hermes_home / "state.db"
+        agentic_os_home = tmp_path / ".hermes"
+        agentic_os_home.mkdir()
+        (agentic_os_home / "config.yaml").write_text("model: test\n")
+        db_path = agentic_os_home / "state.db"
 
         writer = sqlite3.connect(db_path)
         writer.execute("PRAGMA journal_mode=WAL")
@@ -248,7 +248,7 @@ class TestBackup:
         writer.commit()
         assert Path(f"{db_path}-wal").stat().st_size > 0
 
-        monkeypatch.setenv("AGENTIC_OS_HOME", str(hermes_home))
+        monkeypatch.setenv("AGENTIC_OS_HOME", str(agentic_os_home))
         monkeypatch.setattr(Path, "home", lambda: tmp_path)
 
         import agentic_os_cli.backup as backup_mod
@@ -290,11 +290,11 @@ class TestBackup:
         """SQLite staging temp files must be created on the output zip's
         filesystem (dir=out_path.parent), NOT the system /tmp default — a
         small tmpfs there silently drops large DBs from the backup (#35376)."""
-        hermes_home = tmp_path / ".hermes"
-        hermes_home.mkdir()
-        _make_hermes_tree(hermes_home)
+        agentic_os_home = tmp_path / ".hermes"
+        agentic_os_home.mkdir()
+        _make_hermes_tree(agentic_os_home)
 
-        monkeypatch.setenv("AGENTIC_OS_HOME", str(hermes_home))
+        monkeypatch.setenv("AGENTIC_OS_HOME", str(agentic_os_home))
         monkeypatch.setattr(Path, "home", lambda: tmp_path)
 
         out_dir = tmp_path / "external-drive"
@@ -321,14 +321,14 @@ class TestBackup:
     def test_pre_update_db_snapshots_staged_beside_output_zip(self, tmp_path, monkeypatch):
         """The pre-update/pre-migration zip path (_write_full_zip_backup) must
         also stage SQLite snapshots beside its output zip, not in /tmp."""
-        hermes_home = tmp_path / ".hermes"
-        hermes_home.mkdir()
-        _make_hermes_tree(hermes_home)
+        agentic_os_home = tmp_path / ".hermes"
+        agentic_os_home.mkdir()
+        _make_hermes_tree(agentic_os_home)
 
-        monkeypatch.setenv("AGENTIC_OS_HOME", str(hermes_home))
+        monkeypatch.setenv("AGENTIC_OS_HOME", str(agentic_os_home))
         monkeypatch.setattr(Path, "home", lambda: tmp_path)
 
-        out_zip = hermes_home / "backups" / "pre-update-test.zip"
+        out_zip = agentic_os_home / "backups" / "pre-update-test.zip"
         out_zip.parent.mkdir(parents=True, exist_ok=True)
 
         import agentic_os_cli.backup as backup_mod
@@ -340,7 +340,7 @@ class TestBackup:
             return real_ntf(*a, **kw)
 
         monkeypatch.setattr(backup_mod.tempfile, "NamedTemporaryFile", _spy)
-        result = backup_mod._write_full_zip_backup(out_zip, hermes_home)
+        result = backup_mod._write_full_zip_backup(out_zip, agentic_os_home)
 
         assert result is not None
         assert staged_dirs, "no SQLite snapshot was staged"
@@ -348,11 +348,11 @@ class TestBackup:
 
     def test_excludes_hermes_agent(self, tmp_path, monkeypatch):
         """Backup does NOT include agentic-os/ directory."""
-        hermes_home = tmp_path / ".hermes"
-        hermes_home.mkdir()
-        _make_hermes_tree(hermes_home)
+        agentic_os_home = tmp_path / ".hermes"
+        agentic_os_home.mkdir()
+        _make_hermes_tree(agentic_os_home)
 
-        monkeypatch.setenv("AGENTIC_OS_HOME", str(hermes_home))
+        monkeypatch.setenv("AGENTIC_OS_HOME", str(agentic_os_home))
         monkeypatch.setattr(Path, "home", lambda: tmp_path)
 
         out_zip = tmp_path / "backup.zip"
@@ -370,19 +370,19 @@ class TestBackup:
         """A plugin venv / site-packages / pip cache under AGENTIC_OS_HOME must be
         pruned by the walk, while real data (skills, config) is preserved.
         This is the regression guard for the ballooning-backup bug."""
-        hermes_home = tmp_path / ".hermes"
-        hermes_home.mkdir()
-        _make_hermes_tree(hermes_home)
+        agentic_os_home = tmp_path / ".hermes"
+        agentic_os_home.mkdir()
+        _make_hermes_tree(agentic_os_home)
 
         # Simulate the heavy regeneratable trees that ballooned the backup.
-        venv_pkg = hermes_home / "plugins" / "heavy" / ".venv" / "lib" / "site-packages" / "dep"
+        venv_pkg = agentic_os_home / "plugins" / "heavy" / ".venv" / "lib" / "site-packages" / "dep"
         venv_pkg.mkdir(parents=True)
         (venv_pkg / "__init__.py").write_text("# dep\n")
-        pip_cache = hermes_home / ".cache" / "uv" / "wheels"
+        pip_cache = agentic_os_home / ".cache" / "uv" / "wheels"
         pip_cache.mkdir(parents=True)
         (pip_cache / "abc.whl").write_bytes(b"\x00")
 
-        monkeypatch.setenv("AGENTIC_OS_HOME", str(hermes_home))
+        monkeypatch.setenv("AGENTIC_OS_HOME", str(agentic_os_home))
         monkeypatch.setattr(Path, "home", lambda: tmp_path)
 
         out_zip = tmp_path / "backup.zip"
@@ -399,18 +399,18 @@ class TestBackup:
 
     def test_includes_nested_hermes_agent_in_skills(self, tmp_path, monkeypatch):
         """Backup includes skills/.../agentic-os/ but NOT root agentic-os/."""
-        hermes_home = tmp_path / ".hermes"
-        hermes_home.mkdir()
-        _make_hermes_tree(hermes_home)
+        agentic_os_home = tmp_path / ".hermes"
+        agentic_os_home.mkdir()
+        _make_hermes_tree(agentic_os_home)
 
         # Add a nested agentic-os directory inside skills (like the real layout)
-        nested = hermes_home / "skills" / "autonomous-ai-agents" / "agentic-os"
+        nested = agentic_os_home / "skills" / "autonomous-ai-agents" / "agentic-os"
         nested.mkdir(parents=True)
         (nested / "SKILL.md").write_text("# Agentic OS Skill\n")
         (nested / "sub").mkdir()
         (nested / "sub" / "item.txt").write_text("nested content\n")
 
-        monkeypatch.setenv("AGENTIC_OS_HOME", str(hermes_home))
+        monkeypatch.setenv("AGENTIC_OS_HOME", str(agentic_os_home))
         monkeypatch.setattr(Path, "home", lambda: tmp_path)
 
         out_zip = tmp_path / "backup.zip"
@@ -430,11 +430,11 @@ class TestBackup:
 
     def test_excludes_pycache(self, tmp_path, monkeypatch):
         """Backup does NOT include __pycache__ dirs."""
-        hermes_home = tmp_path / ".hermes"
-        hermes_home.mkdir()
-        _make_hermes_tree(hermes_home)
+        agentic_os_home = tmp_path / ".hermes"
+        agentic_os_home.mkdir()
+        _make_hermes_tree(agentic_os_home)
 
-        monkeypatch.setenv("AGENTIC_OS_HOME", str(hermes_home))
+        monkeypatch.setenv("AGENTIC_OS_HOME", str(agentic_os_home))
         monkeypatch.setattr(Path, "home", lambda: tmp_path)
 
         out_zip = tmp_path / "backup.zip"
@@ -450,11 +450,11 @@ class TestBackup:
 
     def test_excludes_pid_files(self, tmp_path, monkeypatch):
         """Backup does NOT include PID files."""
-        hermes_home = tmp_path / ".hermes"
-        hermes_home.mkdir()
-        _make_hermes_tree(hermes_home)
+        agentic_os_home = tmp_path / ".hermes"
+        agentic_os_home.mkdir()
+        _make_hermes_tree(agentic_os_home)
 
-        monkeypatch.setenv("AGENTIC_OS_HOME", str(hermes_home))
+        monkeypatch.setenv("AGENTIC_OS_HOME", str(agentic_os_home))
         monkeypatch.setattr(Path, "home", lambda: tmp_path)
 
         out_zip = tmp_path / "backup.zip"
@@ -470,11 +470,11 @@ class TestBackup:
 
     def test_default_output_path(self, tmp_path, monkeypatch):
         """When no output path given, zip goes to ~/hermes-backup-*.zip."""
-        hermes_home = tmp_path / ".hermes"
-        hermes_home.mkdir()
-        (hermes_home / "config.yaml").write_text("model: test\n")
+        agentic_os_home = tmp_path / ".hermes"
+        agentic_os_home.mkdir()
+        (agentic_os_home / "config.yaml").write_text("model: test\n")
 
-        monkeypatch.setenv("AGENTIC_OS_HOME", str(hermes_home))
+        monkeypatch.setenv("AGENTIC_OS_HOME", str(agentic_os_home))
         monkeypatch.setattr(Path, "home", lambda: tmp_path)
 
         args = Namespace(output=None)
@@ -488,14 +488,14 @@ class TestBackup:
 
     def test_skips_symlinked_files(self, tmp_path, monkeypatch):
         """Backup must not dereference symlinks and leak files outside AGENTIC_OS_HOME."""
-        hermes_home = tmp_path / ".hermes"
-        hermes_home.mkdir()
-        _make_hermes_tree(hermes_home)
+        agentic_os_home = tmp_path / ".hermes"
+        agentic_os_home.mkdir()
+        _make_hermes_tree(agentic_os_home)
         outside = tmp_path / "outside-secret.txt"
         outside.write_text("outside secret\n")
-        _symlink_file_or_skip(hermes_home / "skills" / "outside-link.txt", outside)
+        _symlink_file_or_skip(agentic_os_home / "skills" / "outside-link.txt", outside)
 
-        monkeypatch.setenv("AGENTIC_OS_HOME", str(hermes_home))
+        monkeypatch.setenv("AGENTIC_OS_HOME", str(agentic_os_home))
         monkeypatch.setattr(Path, "home", lambda: tmp_path)
 
         out_zip = tmp_path / "backup.zip"
@@ -564,9 +564,9 @@ class TestImport:
 
     def test_restores_files(self, tmp_path, monkeypatch):
         """Import extracts files into hermes home."""
-        hermes_home = tmp_path / ".hermes"
-        hermes_home.mkdir()
-        monkeypatch.setenv("AGENTIC_OS_HOME", str(hermes_home))
+        agentic_os_home = tmp_path / ".hermes"
+        agentic_os_home.mkdir()
+        monkeypatch.setenv("AGENTIC_OS_HOME", str(agentic_os_home))
         monkeypatch.setattr(Path, "home", lambda: tmp_path)
 
         zip_path = tmp_path / "backup.zip"
@@ -582,16 +582,16 @@ class TestImport:
         from agentic_os_cli.backup import run_import
         run_import(args)
 
-        assert (hermes_home / "config.yaml").read_text() == "model:\n  provider: openrouter\n"
-        assert (hermes_home / ".env").read_text() == "OPENROUTER_API_KEY=sk-test\n"
-        assert (hermes_home / "skills" / "my-skill" / "SKILL.md").read_text() == "# My Skill\n"
-        assert (hermes_home / "profiles" / "coder" / "config.yaml").exists()
+        assert (agentic_os_home / "config.yaml").read_text() == "model:\n  provider: openrouter\n"
+        assert (agentic_os_home / ".env").read_text() == "OPENROUTER_API_KEY=sk-test\n"
+        assert (agentic_os_home / "skills" / "my-skill" / "SKILL.md").read_text() == "# My Skill\n"
+        assert (agentic_os_home / "profiles" / "coder" / "config.yaml").exists()
 
     def test_strips_hermes_prefix(self, tmp_path, monkeypatch):
         """Import strips .hermes/ prefix if all entries share it."""
-        hermes_home = tmp_path / ".hermes"
-        hermes_home.mkdir()
-        monkeypatch.setenv("AGENTIC_OS_HOME", str(hermes_home))
+        agentic_os_home = tmp_path / ".hermes"
+        agentic_os_home.mkdir()
+        monkeypatch.setenv("AGENTIC_OS_HOME", str(agentic_os_home))
         monkeypatch.setattr(Path, "home", lambda: tmp_path)
 
         zip_path = tmp_path / "backup.zip"
@@ -605,14 +605,14 @@ class TestImport:
         from agentic_os_cli.backup import run_import
         run_import(args)
 
-        assert (hermes_home / "config.yaml").read_text() == "model: test\n"
-        assert (hermes_home / "skills" / "a" / "SKILL.md").read_text() == "# A\n"
+        assert (agentic_os_home / "config.yaml").read_text() == "model: test\n"
+        assert (agentic_os_home / "skills" / "a" / "SKILL.md").read_text() == "# A\n"
 
     def test_rejects_empty_zip(self, tmp_path, monkeypatch):
         """Import rejects an empty zip."""
-        hermes_home = tmp_path / ".hermes"
-        hermes_home.mkdir()
-        monkeypatch.setenv("AGENTIC_OS_HOME", str(hermes_home))
+        agentic_os_home = tmp_path / ".hermes"
+        agentic_os_home.mkdir()
+        monkeypatch.setenv("AGENTIC_OS_HOME", str(agentic_os_home))
         monkeypatch.setattr(Path, "home", lambda: tmp_path)
 
         zip_path = tmp_path / "empty.zip"
@@ -627,9 +627,9 @@ class TestImport:
 
     def test_rejects_non_hermes_zip(self, tmp_path, monkeypatch):
         """Import rejects a zip that doesn't look like a hermes backup."""
-        hermes_home = tmp_path / ".hermes"
-        hermes_home.mkdir()
-        monkeypatch.setenv("AGENTIC_OS_HOME", str(hermes_home))
+        agentic_os_home = tmp_path / ".hermes"
+        agentic_os_home.mkdir()
+        monkeypatch.setenv("AGENTIC_OS_HOME", str(agentic_os_home))
         monkeypatch.setattr(Path, "home", lambda: tmp_path)
 
         zip_path = tmp_path / "random.zip"
@@ -646,9 +646,9 @@ class TestImport:
 
     def test_blocks_path_traversal(self, tmp_path, monkeypatch):
         """Import blocks zip entries with path traversal."""
-        hermes_home = tmp_path / ".hermes"
-        hermes_home.mkdir()
-        monkeypatch.setenv("AGENTIC_OS_HOME", str(hermes_home))
+        agentic_os_home = tmp_path / ".hermes"
+        agentic_os_home.mkdir()
+        monkeypatch.setenv("AGENTIC_OS_HOME", str(agentic_os_home))
         monkeypatch.setattr(Path, "home", lambda: tmp_path)
 
         zip_path = tmp_path / "evil.zip"
@@ -664,7 +664,7 @@ class TestImport:
         run_import(args)
 
         # config.yaml should be restored
-        assert (hermes_home / "config.yaml").exists()
+        assert (agentic_os_home / "config.yaml").exists()
         # traversal file should NOT exist outside hermes home
         assert not (tmp_path / "etc" / "passwd").exists()
 
@@ -676,14 +676,14 @@ class TestImport:
         stale/foreign state and leaves the gateway stuck "starting",
         disconnecting it from the Nous portal (NS-508). The live file wins.
         """
-        hermes_home = tmp_path / ".hermes"
-        hermes_home.mkdir()
-        monkeypatch.setenv("AGENTIC_OS_HOME", str(hermes_home))
+        agentic_os_home = tmp_path / ".hermes"
+        agentic_os_home.mkdir()
+        monkeypatch.setenv("AGENTIC_OS_HOME", str(agentic_os_home))
         monkeypatch.setattr(Path, "home", lambda: tmp_path)
 
         # The target (e.g. hosted container) already has its own live state.
         live_state = '{"gateway_state": "running", "desired_state": "running"}'
-        (hermes_home / "gateway_state.json").write_text(live_state)
+        (agentic_os_home / "gateway_state.json").write_text(live_state)
 
         zip_path = tmp_path / "backup.zip"
         self._make_backup_zip(zip_path, {
@@ -698,16 +698,16 @@ class TestImport:
         run_import(args)
 
         # config.yaml is restored normally...
-        assert (hermes_home / "config.yaml").read_text() == "model: test\n"
+        assert (agentic_os_home / "config.yaml").read_text() == "model: test\n"
         # ...but the live gateway_state.json is untouched.
-        assert (hermes_home / "gateway_state.json").read_text() == live_state
+        assert (agentic_os_home / "gateway_state.json").read_text() == live_state
 
     def test_does_not_seed_gateway_state_when_absent(self, tmp_path, monkeypatch):
         """A backup's gateway_state.json is dropped, not written, when the
         target has none — a foreign state must never seed the reconciler."""
-        hermes_home = tmp_path / ".hermes"
-        hermes_home.mkdir()
-        monkeypatch.setenv("AGENTIC_OS_HOME", str(hermes_home))
+        agentic_os_home = tmp_path / ".hermes"
+        agentic_os_home.mkdir()
+        monkeypatch.setenv("AGENTIC_OS_HOME", str(agentic_os_home))
         monkeypatch.setattr(Path, "home", lambda: tmp_path)
 
         zip_path = tmp_path / "backup.zip"
@@ -721,20 +721,20 @@ class TestImport:
         from agentic_os_cli.backup import run_import
         run_import(args)
 
-        assert (hermes_home / "config.yaml").exists()
-        assert not (hermes_home / "gateway_state.json").exists()
+        assert (agentic_os_home / "config.yaml").exists()
+        assert not (agentic_os_home / "gateway_state.json").exists()
 
     def test_preserves_per_profile_gateway_state(self, tmp_path, monkeypatch):
         """The skip is matched by basename, so a named profile's
         gateway_state.json (profiles/<name>/gateway_state.json) is preserved
         the same way the root profile's is."""
-        hermes_home = tmp_path / ".hermes"
-        (hermes_home / "profiles" / "coder").mkdir(parents=True)
-        monkeypatch.setenv("AGENTIC_OS_HOME", str(hermes_home))
+        agentic_os_home = tmp_path / ".hermes"
+        (agentic_os_home / "profiles" / "coder").mkdir(parents=True)
+        monkeypatch.setenv("AGENTIC_OS_HOME", str(agentic_os_home))
         monkeypatch.setattr(Path, "home", lambda: tmp_path)
 
         live_state = '{"gateway_state": "running"}'
-        (hermes_home / "profiles" / "coder" / "gateway_state.json").write_text(live_state)
+        (agentic_os_home / "profiles" / "coder" / "gateway_state.json").write_text(live_state)
 
         zip_path = tmp_path / "backup.zip"
         self._make_backup_zip(zip_path, {
@@ -749,23 +749,23 @@ class TestImport:
         run_import(args)
 
         # Profile config is restored, but its live gateway state is preserved.
-        assert (hermes_home / "profiles" / "coder" / "config.yaml").read_text() == "model: anthropic\n"
+        assert (agentic_os_home / "profiles" / "coder" / "config.yaml").read_text() == "model: anthropic\n"
         assert (
-            hermes_home / "profiles" / "coder" / "gateway_state.json"
+            agentic_os_home / "profiles" / "coder" / "gateway_state.json"
         ).read_text() == live_state
 
     def test_preserves_runtime_pid_and_process_files(self, tmp_path, monkeypatch):
         """gateway.pid / cron.pid / gateway.lock / processes.json from a backup
         reference the source machine's process namespace and must never be
         written over the target's."""
-        hermes_home = tmp_path / ".hermes"
-        hermes_home.mkdir()
-        monkeypatch.setenv("AGENTIC_OS_HOME", str(hermes_home))
+        agentic_os_home = tmp_path / ".hermes"
+        agentic_os_home.mkdir()
+        monkeypatch.setenv("AGENTIC_OS_HOME", str(agentic_os_home))
         monkeypatch.setattr(Path, "home", lambda: tmp_path)
 
         # Live runtime files belonging to the target's own processes.
-        (hermes_home / "gateway.pid").write_text("4242")
-        (hermes_home / "processes.json").write_text('{"live": true}')
+        (agentic_os_home / "gateway.pid").write_text("4242")
+        (agentic_os_home / "processes.json").write_text('{"live": true}')
 
         zip_path = tmp_path / "backup.zip"
         self._make_backup_zip(zip_path, {
@@ -782,19 +782,19 @@ class TestImport:
         run_import(args)
 
         # Live runtime files are untouched; the backup's foreign ones never land.
-        assert (hermes_home / "gateway.pid").read_text() == "4242"
-        assert (hermes_home / "processes.json").read_text() == '{"live": true}'
+        assert (agentic_os_home / "gateway.pid").read_text() == "4242"
+        assert (agentic_os_home / "processes.json").read_text() == '{"live": true}'
         # cron.pid / gateway.lock had no live copy and were not seeded.
-        assert not (hermes_home / "cron.pid").exists()
-        assert not (hermes_home / "gateway.lock").exists()
+        assert not (agentic_os_home / "cron.pid").exists()
+        assert not (agentic_os_home / "gateway.lock").exists()
 
     def test_confirmation_prompt_abort(self, tmp_path, monkeypatch):
         """Import aborts when user says no to confirmation."""
-        hermes_home = tmp_path / ".hermes"
-        hermes_home.mkdir()
+        agentic_os_home = tmp_path / ".hermes"
+        agentic_os_home.mkdir()
         # Pre-existing config triggers the confirmation
-        (hermes_home / "config.yaml").write_text("existing: true\n")
-        monkeypatch.setenv("AGENTIC_OS_HOME", str(hermes_home))
+        (agentic_os_home / "config.yaml").write_text("existing: true\n")
+        monkeypatch.setenv("AGENTIC_OS_HOME", str(agentic_os_home))
         monkeypatch.setattr(Path, "home", lambda: tmp_path)
 
         zip_path = tmp_path / "backup.zip"
@@ -809,14 +809,14 @@ class TestImport:
             run_import(args)
 
         # Original config should be unchanged
-        assert (hermes_home / "config.yaml").read_text() == "existing: true\n"
+        assert (agentic_os_home / "config.yaml").read_text() == "existing: true\n"
 
     def test_force_skips_confirmation(self, tmp_path, monkeypatch):
         """Import with --force skips confirmation and overwrites."""
-        hermes_home = tmp_path / ".hermes"
-        hermes_home.mkdir()
-        (hermes_home / "config.yaml").write_text("existing: true\n")
-        monkeypatch.setenv("AGENTIC_OS_HOME", str(hermes_home))
+        agentic_os_home = tmp_path / ".hermes"
+        agentic_os_home.mkdir()
+        (agentic_os_home / "config.yaml").write_text("existing: true\n")
+        monkeypatch.setenv("AGENTIC_OS_HOME", str(agentic_os_home))
         monkeypatch.setattr(Path, "home", lambda: tmp_path)
 
         zip_path = tmp_path / "backup.zip"
@@ -829,13 +829,13 @@ class TestImport:
         from agentic_os_cli.backup import run_import
         run_import(args)
 
-        assert (hermes_home / "config.yaml").read_text() == "model: restored\n"
+        assert (agentic_os_home / "config.yaml").read_text() == "model: restored\n"
 
     def test_missing_file_exits(self, tmp_path, monkeypatch):
         """Import exits with error for nonexistent file."""
-        hermes_home = tmp_path / ".hermes"
-        hermes_home.mkdir()
-        monkeypatch.setenv("AGENTIC_OS_HOME", str(hermes_home))
+        agentic_os_home = tmp_path / ".hermes"
+        agentic_os_home.mkdir()
+        monkeypatch.setenv("AGENTIC_OS_HOME", str(agentic_os_home))
 
         args = Namespace(zipfile=str(tmp_path / "nonexistent.zip"), force=True)
 
@@ -846,9 +846,9 @@ class TestImport:
     @pytest.mark.skipif(os.name != "posix", reason="POSIX file permissions only")
     def test_restores_secret_files_with_0600_perms(self, tmp_path, monkeypatch):
         """Secret files must end up at 0600 after restore (zipfile drops mode bits)."""
-        hermes_home = tmp_path / ".hermes"
-        hermes_home.mkdir()
-        monkeypatch.setenv("AGENTIC_OS_HOME", str(hermes_home))
+        agentic_os_home = tmp_path / ".hermes"
+        agentic_os_home.mkdir()
+        monkeypatch.setenv("AGENTIC_OS_HOME", str(agentic_os_home))
         monkeypatch.setattr(Path, "home", lambda: tmp_path)
 
         zip_path = tmp_path / "backup.zip"
@@ -866,7 +866,7 @@ class TestImport:
         run_import(args)
 
         for rel in (".env", "auth.json", "state.db", "profiles/coder/.env"):
-            mode = (hermes_home / rel).stat().st_mode & 0o777
+            mode = (agentic_os_home / rel).stat().st_mode & 0o777
             assert mode == 0o600, f"{rel} restored with mode {oct(mode)}, expected 0o600"
 
 
@@ -1042,11 +1042,11 @@ class TestBackupEdgeCases:
 
     def test_output_is_directory(self, tmp_path, monkeypatch):
         """When output path is a directory, zip is created inside it."""
-        hermes_home = tmp_path / ".hermes"
-        hermes_home.mkdir()
-        (hermes_home / "config.yaml").write_text("model: test\n")
+        agentic_os_home = tmp_path / ".hermes"
+        agentic_os_home.mkdir()
+        (agentic_os_home / "config.yaml").write_text("model: test\n")
 
-        monkeypatch.setenv("AGENTIC_OS_HOME", str(hermes_home))
+        monkeypatch.setenv("AGENTIC_OS_HOME", str(agentic_os_home))
         monkeypatch.setattr(Path, "home", lambda: tmp_path)
 
         out_dir = tmp_path / "backups"
@@ -1062,11 +1062,11 @@ class TestBackupEdgeCases:
 
     def test_output_without_zip_suffix(self, tmp_path, monkeypatch):
         """Output path without .zip gets suffix appended."""
-        hermes_home = tmp_path / ".hermes"
-        hermes_home.mkdir()
-        (hermes_home / "config.yaml").write_text("model: test\n")
+        agentic_os_home = tmp_path / ".hermes"
+        agentic_os_home.mkdir()
+        (agentic_os_home / "config.yaml").write_text("model: test\n")
 
-        monkeypatch.setenv("AGENTIC_OS_HOME", str(hermes_home))
+        monkeypatch.setenv("AGENTIC_OS_HOME", str(agentic_os_home))
         monkeypatch.setattr(Path, "home", lambda: tmp_path)
 
         out_path = tmp_path / "mybackup.tar"
@@ -1080,13 +1080,13 @@ class TestBackupEdgeCases:
 
     def test_empty_agentic_os_home(self, tmp_path, monkeypatch):
         """Backup handles empty hermes home (no files to back up)."""
-        hermes_home = tmp_path / ".hermes"
-        hermes_home.mkdir()
+        agentic_os_home = tmp_path / ".hermes"
+        agentic_os_home.mkdir()
         # Only excluded dirs, no actual files
-        (hermes_home / "__pycache__").mkdir()
-        (hermes_home / "__pycache__" / "foo.pyc").write_bytes(b"\x00")
+        (agentic_os_home / "__pycache__").mkdir()
+        (agentic_os_home / "__pycache__" / "foo.pyc").write_bytes(b"\x00")
 
-        monkeypatch.setenv("AGENTIC_OS_HOME", str(hermes_home))
+        monkeypatch.setenv("AGENTIC_OS_HOME", str(agentic_os_home))
         monkeypatch.setattr(Path, "home", lambda: tmp_path)
 
         args = Namespace(output=str(tmp_path / "out.zip"))
@@ -1099,16 +1099,16 @@ class TestBackupEdgeCases:
 
     def test_permission_error_during_backup(self, tmp_path, monkeypatch):
         """Backup handles permission errors gracefully."""
-        hermes_home = tmp_path / ".hermes"
-        hermes_home.mkdir()
-        (hermes_home / "config.yaml").write_text("model: test\n")
+        agentic_os_home = tmp_path / ".hermes"
+        agentic_os_home.mkdir()
+        (agentic_os_home / "config.yaml").write_text("model: test\n")
 
         # Create an unreadable file
-        bad_file = hermes_home / "secret.db"
+        bad_file = agentic_os_home / "secret.db"
         bad_file.write_text("data")
         bad_file.chmod(0o000)
 
-        monkeypatch.setenv("AGENTIC_OS_HOME", str(hermes_home))
+        monkeypatch.setenv("AGENTIC_OS_HOME", str(agentic_os_home))
         monkeypatch.setattr(Path, "home", lambda: tmp_path)
 
         out_zip = tmp_path / "out.zip"
@@ -1126,16 +1126,16 @@ class TestBackupEdgeCases:
 
     def test_pre1980_timestamp_skipped(self, tmp_path, monkeypatch):
         """Backup skips files with pre-1980 timestamps (ZIP limitation)."""
-        hermes_home = tmp_path / ".hermes"
-        hermes_home.mkdir()
-        (hermes_home / "config.yaml").write_text("model: test\n")
+        agentic_os_home = tmp_path / ".hermes"
+        agentic_os_home.mkdir()
+        (agentic_os_home / "config.yaml").write_text("model: test\n")
 
         # Create a file with epoch timestamp (1970-01-01)
-        old_file = hermes_home / "ancient.txt"
+        old_file = agentic_os_home / "ancient.txt"
         old_file.write_text("old data")
         os.utime(old_file, (0, 0))
 
-        monkeypatch.setenv("AGENTIC_OS_HOME", str(hermes_home))
+        monkeypatch.setenv("AGENTIC_OS_HOME", str(agentic_os_home))
         monkeypatch.setattr(Path, "home", lambda: tmp_path)
 
         out_zip = tmp_path / "out.zip"
@@ -1154,15 +1154,15 @@ class TestBackupEdgeCases:
 
     def test_skips_output_zip_inside_hermes(self, tmp_path, monkeypatch):
         """Backup skips its own output zip if it's inside hermes root."""
-        hermes_home = tmp_path / ".hermes"
-        hermes_home.mkdir()
-        (hermes_home / "config.yaml").write_text("model: test\n")
+        agentic_os_home = tmp_path / ".hermes"
+        agentic_os_home.mkdir()
+        (agentic_os_home / "config.yaml").write_text("model: test\n")
 
-        monkeypatch.setenv("AGENTIC_OS_HOME", str(hermes_home))
+        monkeypatch.setenv("AGENTIC_OS_HOME", str(agentic_os_home))
         monkeypatch.setattr(Path, "home", lambda: tmp_path)
 
         # Output inside hermes home
-        out_zip = hermes_home / "backup.zip"
+        out_zip = agentic_os_home / "backup.zip"
         args = Namespace(output=str(out_zip))
 
         from agentic_os_cli.backup import run_backup
@@ -1182,9 +1182,9 @@ class TestImportEdgeCases:
 
     def test_not_a_zip(self, tmp_path, monkeypatch):
         """Import rejects a non-zip file."""
-        hermes_home = tmp_path / ".hermes"
-        hermes_home.mkdir()
-        monkeypatch.setenv("AGENTIC_OS_HOME", str(hermes_home))
+        agentic_os_home = tmp_path / ".hermes"
+        agentic_os_home.mkdir()
+        monkeypatch.setenv("AGENTIC_OS_HOME", str(agentic_os_home))
 
         not_zip = tmp_path / "fake.zip"
         not_zip.write_text("this is not a zip")
@@ -1197,10 +1197,10 @@ class TestImportEdgeCases:
 
     def test_eof_during_confirmation(self, tmp_path, monkeypatch):
         """Import handles EOFError during confirmation prompt."""
-        hermes_home = tmp_path / ".hermes"
-        hermes_home.mkdir()
-        (hermes_home / "config.yaml").write_text("existing\n")
-        monkeypatch.setenv("AGENTIC_OS_HOME", str(hermes_home))
+        agentic_os_home = tmp_path / ".hermes"
+        agentic_os_home.mkdir()
+        (agentic_os_home / "config.yaml").write_text("existing\n")
+        monkeypatch.setenv("AGENTIC_OS_HOME", str(agentic_os_home))
         monkeypatch.setattr(Path, "home", lambda: tmp_path)
 
         zip_path = tmp_path / "backup.zip"
@@ -1215,10 +1215,10 @@ class TestImportEdgeCases:
 
     def test_keyboard_interrupt_during_confirmation(self, tmp_path, monkeypatch):
         """Import handles KeyboardInterrupt during confirmation prompt."""
-        hermes_home = tmp_path / ".hermes"
-        hermes_home.mkdir()
-        (hermes_home / ".env").write_text("KEY=val\n")
-        monkeypatch.setenv("AGENTIC_OS_HOME", str(hermes_home))
+        agentic_os_home = tmp_path / ".hermes"
+        agentic_os_home.mkdir()
+        (agentic_os_home / ".env").write_text("KEY=val\n")
+        monkeypatch.setenv("AGENTIC_OS_HOME", str(agentic_os_home))
         monkeypatch.setattr(Path, "home", lambda: tmp_path)
 
         zip_path = tmp_path / "backup.zip"
@@ -1233,13 +1233,13 @@ class TestImportEdgeCases:
 
     def test_permission_error_during_import(self, tmp_path, monkeypatch):
         """Import handles permission errors during extraction."""
-        hermes_home = tmp_path / ".hermes"
-        hermes_home.mkdir()
-        monkeypatch.setenv("AGENTIC_OS_HOME", str(hermes_home))
+        agentic_os_home = tmp_path / ".hermes"
+        agentic_os_home.mkdir()
+        monkeypatch.setenv("AGENTIC_OS_HOME", str(agentic_os_home))
         monkeypatch.setattr(Path, "home", lambda: tmp_path)
 
         # Create a read-only directory so extraction fails
-        locked_dir = hermes_home / "locked"
+        locked_dir = agentic_os_home / "locked"
         locked_dir.mkdir()
         locked_dir.chmod(0o555)
 
@@ -1258,13 +1258,13 @@ class TestImportEdgeCases:
             locked_dir.chmod(0o755)
 
         # config.yaml should still be restored despite the error
-        assert (hermes_home / "config.yaml").exists()
+        assert (agentic_os_home / "config.yaml").exists()
 
     def test_progress_with_many_files(self, tmp_path, monkeypatch):
         """Import shows progress with 500+ files."""
-        hermes_home = tmp_path / ".hermes"
-        hermes_home.mkdir()
-        monkeypatch.setenv("AGENTIC_OS_HOME", str(hermes_home))
+        agentic_os_home = tmp_path / ".hermes"
+        agentic_os_home.mkdir()
+        monkeypatch.setenv("AGENTIC_OS_HOME", str(agentic_os_home))
         monkeypatch.setattr(Path, "home", lambda: tmp_path)
 
         zip_path = tmp_path / "big.zip"
@@ -1279,8 +1279,8 @@ class TestImportEdgeCases:
         from agentic_os_cli.backup import run_import
         run_import(args)
 
-        assert (hermes_home / "config.yaml").exists()
-        assert (hermes_home / "sessions" / "s0599.json").exists()
+        assert (agentic_os_home / "config.yaml").exists()
+        assert (agentic_os_home / "sessions" / "s0599.json").exists()
 
 
 # ---------------------------------------------------------------------------
@@ -1295,9 +1295,9 @@ class TestProfileRestoration:
 
     def test_import_creates_profile_wrappers(self, tmp_path, monkeypatch):
         """Import auto-creates wrapper scripts for restored profiles."""
-        hermes_home = tmp_path / ".hermes"
-        hermes_home.mkdir()
-        monkeypatch.setenv("AGENTIC_OS_HOME", str(hermes_home))
+        agentic_os_home = tmp_path / ".hermes"
+        agentic_os_home.mkdir()
+        monkeypatch.setenv("AGENTIC_OS_HOME", str(agentic_os_home))
         monkeypatch.setattr(Path, "home", lambda: tmp_path)
 
         # Mock the wrapper dir to be inside tmp_path
@@ -1318,8 +1318,8 @@ class TestProfileRestoration:
         run_import(args)
 
         # Profile directories should exist
-        assert (hermes_home / "profiles" / "coder" / "config.yaml").exists()
-        assert (hermes_home / "profiles" / "researcher" / "config.yaml").exists()
+        assert (agentic_os_home / "profiles" / "coder" / "config.yaml").exists()
+        assert (agentic_os_home / "profiles" / "researcher" / "config.yaml").exists()
 
         # Wrapper scripts should be created
         assert (wrapper_dir / "coder").exists()
@@ -1331,9 +1331,9 @@ class TestProfileRestoration:
 
     def test_import_skips_profile_dirs_without_config(self, tmp_path, monkeypatch):
         """Import doesn't create wrappers for profile dirs without config."""
-        hermes_home = tmp_path / ".hermes"
-        hermes_home.mkdir()
-        monkeypatch.setenv("AGENTIC_OS_HOME", str(hermes_home))
+        agentic_os_home = tmp_path / ".hermes"
+        agentic_os_home.mkdir()
+        monkeypatch.setenv("AGENTIC_OS_HOME", str(agentic_os_home))
         monkeypatch.setattr(Path, "home", lambda: tmp_path)
 
         wrapper_dir = tmp_path / ".local" / "bin"
@@ -1357,9 +1357,9 @@ class TestProfileRestoration:
 
     def test_import_without_profiles_module(self, tmp_path, monkeypatch):
         """Import gracefully handles missing profiles module (fresh install)."""
-        hermes_home = tmp_path / ".hermes"
-        hermes_home.mkdir()
-        monkeypatch.setenv("AGENTIC_OS_HOME", str(hermes_home))
+        agentic_os_home = tmp_path / ".hermes"
+        agentic_os_home.mkdir()
+        monkeypatch.setenv("AGENTIC_OS_HOME", str(agentic_os_home))
         monkeypatch.setattr(Path, "home", lambda: tmp_path)
 
         zip_path = tmp_path / "backup.zip"
@@ -1383,7 +1383,7 @@ class TestProfileRestoration:
             run_import(args)
 
         # Files should still be restored even if wrappers can't be created
-        assert (hermes_home / "profiles" / "coder" / "config.yaml").exists()
+        assert (agentic_os_home / "profiles" / "coder" / "config.yaml").exists()
 
 
 # ---------------------------------------------------------------------------
@@ -1437,7 +1437,7 @@ class TestSafeCopyDb:
 
 class TestQuickSnapshot:
     @pytest.fixture
-    def hermes_home(self, tmp_path):
+    def agentic_os_home(self, tmp_path):
         """Create a fake AGENTIC_OS_HOME with critical state files."""
         home = tmp_path / ".hermes"
         home.mkdir()
@@ -1459,23 +1459,23 @@ class TestQuickSnapshot:
         conn.close()
         return home
 
-    def test_creates_snapshot(self, hermes_home):
+    def test_creates_snapshot(self, agentic_os_home):
         from agentic_os_cli.backup import create_quick_snapshot
-        snap_id = create_quick_snapshot(hermes_home=hermes_home)
+        snap_id = create_quick_snapshot(agentic_os_home=agentic_os_home)
         assert snap_id is not None
-        snap_dir = hermes_home / "state-snapshots" / snap_id
+        snap_dir = agentic_os_home / "state-snapshots" / snap_id
         assert snap_dir.is_dir()
         assert (snap_dir / "manifest.json").exists()
 
-    def test_label_in_id(self, hermes_home):
+    def test_label_in_id(self, agentic_os_home):
         from agentic_os_cli.backup import create_quick_snapshot
-        snap_id = create_quick_snapshot(label="before-upgrade", hermes_home=hermes_home)
+        snap_id = create_quick_snapshot(label="before-upgrade", agentic_os_home=agentic_os_home)
         assert "before-upgrade" in snap_id
 
-    def test_state_db_safely_copied(self, hermes_home):
+    def test_state_db_safely_copied(self, agentic_os_home):
         from agentic_os_cli.backup import create_quick_snapshot
-        snap_id = create_quick_snapshot(hermes_home=hermes_home)
-        db_copy = hermes_home / "state-snapshots" / snap_id / "state.db"
+        snap_id = create_quick_snapshot(agentic_os_home=agentic_os_home)
+        db_copy = agentic_os_home / "state-snapshots" / snap_id / "state.db"
         assert db_copy.exists()
 
         conn = sqlite3.connect(str(db_copy))
@@ -1484,15 +1484,15 @@ class TestQuickSnapshot:
         assert len(rows) == 1
         assert rows[0] == ("s1", "hello world")
 
-    def test_copies_nested_files(self, hermes_home):
+    def test_copies_nested_files(self, agentic_os_home):
         from agentic_os_cli.backup import create_quick_snapshot
-        snap_id = create_quick_snapshot(hermes_home=hermes_home)
-        assert (hermes_home / "state-snapshots" / snap_id / "cron" / "jobs.json").exists()
+        snap_id = create_quick_snapshot(agentic_os_home=agentic_os_home)
+        assert (agentic_os_home / "state-snapshots" / snap_id / "cron" / "jobs.json").exists()
 
-    def test_copies_discord_recovery_ledger(self, hermes_home):
+    def test_copies_discord_recovery_ledger(self, agentic_os_home):
         from agentic_os_cli.backup import create_quick_snapshot
 
-        gateway_dir = hermes_home / "gateway"
+        gateway_dir = agentic_os_home / "gateway"
         gateway_dir.mkdir()
         ledger = gateway_dir / "discord_message_recovery.db"
         conn = sqlite3.connect(ledger)
@@ -1501,25 +1501,25 @@ class TestQuickSnapshot:
         conn.commit()
         conn.close()
 
-        snap_id = create_quick_snapshot(hermes_home=hermes_home)
+        snap_id = create_quick_snapshot(agentic_os_home=agentic_os_home)
 
-        copied = hermes_home / "state-snapshots" / snap_id / "gateway" / ledger.name
+        copied = agentic_os_home / "state-snapshots" / snap_id / "gateway" / ledger.name
         assert copied.exists()
         conn = sqlite3.connect(copied)
         assert conn.execute("SELECT message_id FROM handled").fetchall() == [("123",)]
         conn.close()
 
-    def test_copies_channel_aliases(self, hermes_home):
+    def test_copies_channel_aliases(self, agentic_os_home):
         from agentic_os_cli.backup import create_quick_snapshot
-        snap_id = create_quick_snapshot(hermes_home=hermes_home)
-        copied = hermes_home / "state-snapshots" / snap_id / "channel_aliases.json"
+        snap_id = create_quick_snapshot(agentic_os_home=agentic_os_home)
+        copied = agentic_os_home / "state-snapshots" / snap_id / "channel_aliases.json"
         assert copied.exists()
         assert "120363408391911677@g.us" in copied.read_text()
 
-    def test_missing_files_skipped(self, hermes_home):
+    def test_missing_files_skipped(self, agentic_os_home):
         from agentic_os_cli.backup import create_quick_snapshot
-        snap_id = create_quick_snapshot(hermes_home=hermes_home)
-        with open(hermes_home / "state-snapshots" / snap_id / "manifest.json") as f:
+        snap_id = create_quick_snapshot(agentic_os_home=agentic_os_home)
+        with open(agentic_os_home / "state-snapshots" / snap_id / "manifest.json") as f:
             meta = json.load(f)
         # gateway_state.json etc. don't exist in fixture
         assert "gateway_state.json" not in meta["files"]
@@ -1528,19 +1528,19 @@ class TestQuickSnapshot:
         from agentic_os_cli.backup import create_quick_snapshot
         empty = tmp_path / "empty"
         empty.mkdir()
-        assert create_quick_snapshot(hermes_home=empty) is None
+        assert create_quick_snapshot(agentic_os_home=empty) is None
 
-    def test_max_file_size_skips_oversized_file(self, hermes_home, capsys):
+    def test_max_file_size_skips_oversized_file(self, agentic_os_home, capsys):
         """Files above the cap are skipped with a warning; small files
         (the pairing/cron data the snapshot exists for) still land."""
         from agentic_os_cli.backup import create_quick_snapshot
         # state.db in the fixture is a few KB — cap below it
         cap = 1024
         snap_id = create_quick_snapshot(
-            hermes_home=hermes_home, max_file_size=cap
+            agentic_os_home=agentic_os_home, max_file_size=cap
         )
         assert snap_id is not None
-        snap_dir = hermes_home / "state-snapshots" / snap_id
+        snap_dir = agentic_os_home / "state-snapshots" / snap_id
         assert not (snap_dir / "state.db").exists()
         # Small files still captured
         assert (snap_dir / "cron" / "jobs.json").exists()
@@ -1551,110 +1551,110 @@ class TestQuickSnapshot:
         assert "skipping state.db" in out
         assert "exceeds" in out
 
-    def test_max_file_size_none_copies_everything(self, hermes_home):
+    def test_max_file_size_none_copies_everything(self, agentic_os_home):
         """Default (no cap) preserves manual /snapshot behavior."""
         from agentic_os_cli.backup import create_quick_snapshot
-        snap_id = create_quick_snapshot(hermes_home=hermes_home, max_file_size=None)
-        assert (hermes_home / "state-snapshots" / snap_id / "state.db").exists()
+        snap_id = create_quick_snapshot(agentic_os_home=agentic_os_home, max_file_size=None)
+        assert (agentic_os_home / "state-snapshots" / snap_id / "state.db").exists()
 
-    def test_max_file_size_under_cap_copies(self, hermes_home):
+    def test_max_file_size_under_cap_copies(self, agentic_os_home):
         from agentic_os_cli.backup import create_quick_snapshot
         snap_id = create_quick_snapshot(
-            hermes_home=hermes_home, max_file_size=1 << 30
+            agentic_os_home=agentic_os_home, max_file_size=1 << 30
         )
-        assert (hermes_home / "state-snapshots" / snap_id / "state.db").exists()
+        assert (agentic_os_home / "state-snapshots" / snap_id / "state.db").exists()
 
-    def test_list_snapshots(self, hermes_home):
+    def test_list_snapshots(self, agentic_os_home):
         from agentic_os_cli.backup import create_quick_snapshot, list_quick_snapshots
-        id1 = create_quick_snapshot(label="first", hermes_home=hermes_home)
-        id2 = create_quick_snapshot(label="second", hermes_home=hermes_home)
+        id1 = create_quick_snapshot(label="first", agentic_os_home=agentic_os_home)
+        id2 = create_quick_snapshot(label="second", agentic_os_home=agentic_os_home)
 
-        snaps = list_quick_snapshots(hermes_home=hermes_home)
+        snaps = list_quick_snapshots(agentic_os_home=agentic_os_home)
         assert len(snaps) == 2
         assert snaps[0]["id"] == id2  # most recent first
         assert snaps[1]["id"] == id1
 
-    def test_list_limit(self, hermes_home):
+    def test_list_limit(self, agentic_os_home):
         from agentic_os_cli.backup import create_quick_snapshot, list_quick_snapshots
         for i in range(5):
-            create_quick_snapshot(label=f"s{i}", hermes_home=hermes_home)
-        snaps = list_quick_snapshots(limit=3, hermes_home=hermes_home)
+            create_quick_snapshot(label=f"s{i}", agentic_os_home=agentic_os_home)
+        snaps = list_quick_snapshots(limit=3, agentic_os_home=agentic_os_home)
         assert len(snaps) == 3
 
-    def test_restore_config(self, hermes_home):
+    def test_restore_config(self, agentic_os_home):
         from agentic_os_cli.backup import create_quick_snapshot, restore_quick_snapshot
-        snap_id = create_quick_snapshot(hermes_home=hermes_home)
+        snap_id = create_quick_snapshot(agentic_os_home=agentic_os_home)
 
-        (hermes_home / "config.yaml").write_text("model:\n  provider: anthropic\n")
-        assert "anthropic" in (hermes_home / "config.yaml").read_text()
+        (agentic_os_home / "config.yaml").write_text("model:\n  provider: anthropic\n")
+        assert "anthropic" in (agentic_os_home / "config.yaml").read_text()
 
-        result = restore_quick_snapshot(snap_id, hermes_home=hermes_home)
+        result = restore_quick_snapshot(snap_id, agentic_os_home=agentic_os_home)
         assert result is True
-        assert "openrouter" in (hermes_home / "config.yaml").read_text()
+        assert "openrouter" in (agentic_os_home / "config.yaml").read_text()
 
-    def test_restore_state_db(self, hermes_home):
+    def test_restore_state_db(self, agentic_os_home):
         from agentic_os_cli.backup import create_quick_snapshot, restore_quick_snapshot
-        snap_id = create_quick_snapshot(hermes_home=hermes_home)
+        snap_id = create_quick_snapshot(agentic_os_home=agentic_os_home)
 
-        conn = sqlite3.connect(str(hermes_home / "state.db"))
+        conn = sqlite3.connect(str(agentic_os_home / "state.db"))
         conn.execute("INSERT INTO sessions VALUES ('s2', 'new')")
         conn.commit()
         conn.close()
 
-        restore_quick_snapshot(snap_id, hermes_home=hermes_home)
+        restore_quick_snapshot(snap_id, agentic_os_home=agentic_os_home)
 
-        conn = sqlite3.connect(str(hermes_home / "state.db"))
+        conn = sqlite3.connect(str(agentic_os_home / "state.db"))
         rows = conn.execute("SELECT * FROM sessions").fetchall()
         conn.close()
         assert len(rows) == 1
 
-    def test_restore_nonexistent(self, hermes_home):
+    def test_restore_nonexistent(self, agentic_os_home):
         from agentic_os_cli.backup import restore_quick_snapshot
-        assert restore_quick_snapshot("nonexistent", hermes_home=hermes_home) is False
+        assert restore_quick_snapshot("nonexistent", agentic_os_home=agentic_os_home) is False
 
-    def test_auto_prune(self, hermes_home):
+    def test_auto_prune(self, agentic_os_home):
         from agentic_os_cli.backup import create_quick_snapshot, list_quick_snapshots, _QUICK_DEFAULT_KEEP
         for i in range(_QUICK_DEFAULT_KEEP + 5):
-            create_quick_snapshot(label=f"snap-{i:03d}", hermes_home=hermes_home)
-        snaps = list_quick_snapshots(limit=100, hermes_home=hermes_home)
+            create_quick_snapshot(label=f"snap-{i:03d}", agentic_os_home=agentic_os_home)
+        snaps = list_quick_snapshots(limit=100, agentic_os_home=agentic_os_home)
         assert len(snaps) <= _QUICK_DEFAULT_KEEP
 
-    def test_manual_prune(self, hermes_home):
+    def test_manual_prune(self, agentic_os_home):
         from agentic_os_cli.backup import create_quick_snapshot, prune_quick_snapshots, list_quick_snapshots
         for i in range(10):
-            create_quick_snapshot(label=f"s{i}", hermes_home=hermes_home)
-        deleted = prune_quick_snapshots(keep=3, hermes_home=hermes_home)
+            create_quick_snapshot(label=f"s{i}", agentic_os_home=agentic_os_home)
+        deleted = prune_quick_snapshots(keep=3, agentic_os_home=agentic_os_home)
         assert deleted == 7
-        assert len(list_quick_snapshots(hermes_home=hermes_home)) == 3
+        assert len(list_quick_snapshots(agentic_os_home=agentic_os_home)) == 3
 
-    def test_snapshot_includes_pairing_directories(self, hermes_home):
+    def test_snapshot_includes_pairing_directories(self, agentic_os_home):
         """Pairing JSONs live outside state.db — snapshot must capture them
         recursively (generic + per-platform) so approved-user lists survive
         disasters like #15733."""
         from agentic_os_cli.backup import create_quick_snapshot
 
         # Generic pairing store (new location)
-        (hermes_home / "platforms" / "pairing").mkdir(parents=True)
-        (hermes_home / "platforms" / "pairing" / "telegram-approved.json").write_text(
+        (agentic_os_home / "platforms" / "pairing").mkdir(parents=True)
+        (agentic_os_home / "platforms" / "pairing" / "telegram-approved.json").write_text(
             '{"12345": {"user_name": "alice"}}'
         )
-        (hermes_home / "platforms" / "pairing" / "discord-approved.json").write_text(
+        (agentic_os_home / "platforms" / "pairing" / "discord-approved.json").write_text(
             '{"67890": {"user_name": "bob"}}'
         )
         # Legacy pairing store (old location)
-        (hermes_home / "pairing").mkdir()
-        (hermes_home / "pairing" / "matrix-approved.json").write_text(
+        (agentic_os_home / "pairing").mkdir()
+        (agentic_os_home / "pairing" / "matrix-approved.json").write_text(
             '{"@charlie:server": {"user_name": "charlie"}}'
         )
         # Feishu's separate JSON
-        (hermes_home / "feishu_comment_pairing.json").write_text(
+        (agentic_os_home / "feishu_comment_pairing.json").write_text(
             '{"doc_abc": {"allow_from": ["user_xyz"]}}'
         )
 
-        snap_id = create_quick_snapshot(hermes_home=hermes_home)
+        snap_id = create_quick_snapshot(agentic_os_home=agentic_os_home)
         assert snap_id is not None
 
-        snap_dir = hermes_home / "state-snapshots" / snap_id
+        snap_dir = agentic_os_home / "state-snapshots" / snap_id
         assert (snap_dir / "platforms" / "pairing" / "telegram-approved.json").exists()
         assert (snap_dir / "platforms" / "pairing" / "discord-approved.json").exists()
         assert (snap_dir / "pairing" / "matrix-approved.json").exists()
@@ -1668,18 +1668,18 @@ class TestQuickSnapshot:
         assert "pairing/matrix-approved.json" in files
         assert "feishu_comment_pairing.json" in files
 
-    def test_restore_recovers_pairing_data(self, hermes_home):
+    def test_restore_recovers_pairing_data(self, agentic_os_home):
         """After restore, deleted pairing files reappear with original content."""
         from agentic_os_cli.backup import create_quick_snapshot, restore_quick_snapshot
 
-        pairing_dir = hermes_home / "platforms" / "pairing"
+        pairing_dir = agentic_os_home / "platforms" / "pairing"
         pairing_dir.mkdir(parents=True)
         approved = pairing_dir / "telegram-approved.json"
         approved.write_text('{"12345": {"user_name": "alice"}}')
-        feishu = hermes_home / "feishu_comment_pairing.json"
+        feishu = agentic_os_home / "feishu_comment_pairing.json"
         feishu.write_text('{"doc_abc": {"allow_from": ["user_xyz"]}}')
 
-        snap_id = create_quick_snapshot(hermes_home=hermes_home)
+        snap_id = create_quick_snapshot(agentic_os_home=agentic_os_home)
         assert snap_id is not None
 
         # Simulate the disaster — user loses both pairing files.
@@ -1688,19 +1688,19 @@ class TestQuickSnapshot:
         assert not approved.exists()
         assert not feishu.exists()
 
-        assert restore_quick_snapshot(snap_id, hermes_home=hermes_home) is True
+        assert restore_quick_snapshot(snap_id, agentic_os_home=agentic_os_home) is True
         assert approved.exists()
         assert '"alice"' in approved.read_text()
         assert feishu.exists()
         assert '"user_xyz"' in feishu.read_text()
 
-    def test_empty_pairing_dir_does_not_fail(self, hermes_home):
+    def test_empty_pairing_dir_does_not_fail(self, agentic_os_home):
         """An empty pairing directory should be silently skipped."""
         from agentic_os_cli.backup import create_quick_snapshot
 
-        (hermes_home / "platforms" / "pairing").mkdir(parents=True)
+        (agentic_os_home / "platforms" / "pairing").mkdir(parents=True)
         # Directory exists but contains no files.
-        snap_id = create_quick_snapshot(hermes_home=hermes_home)
+        snap_id = create_quick_snapshot(agentic_os_home=agentic_os_home)
         # Other state still present → snapshot succeeds.
         assert snap_id is not None
 
@@ -1715,7 +1715,7 @@ class TestQuickSnapshot:
     # need explicit regression tests because they validate independent
     # traversal vectors.
 
-    def test_restore_rejects_snapshot_id_traversal(self, hermes_home):
+    def test_restore_rejects_snapshot_id_traversal(self, agentic_os_home):
         """restore_quick_snapshot must reject snapshot_id values that
         contain path separators, POSIX traversal entries, or are empty.
         These are rejected on the input string before any filesystem
@@ -1737,18 +1737,18 @@ class TestQuickSnapshot:
         ]
         for hostile in hostile_ids:
             assert restore_quick_snapshot(
-                hostile, hermes_home=hermes_home
+                hostile, agentic_os_home=agentic_os_home
             ) is False, f"hostile snapshot_id was not rejected: {hostile!r}"
 
-    def test_restore_rejects_manifest_rel_traversal(self, hermes_home):
+    def test_restore_rejects_manifest_rel_traversal(self, agentic_os_home):
         """A snapshot whose manifest.json contains a rel path that escapes
         the snapshot directory (e.g. ``../../outside.txt``) must skip that
         entry rather than restoring outside AGENTIC_OS_HOME."""
         from agentic_os_cli.backup import create_quick_snapshot, restore_quick_snapshot
 
-        snap_id = create_quick_snapshot(hermes_home=hermes_home)
+        snap_id = create_quick_snapshot(agentic_os_home=agentic_os_home)
         assert snap_id is not None
-        snap_dir = hermes_home / "state-snapshots" / snap_id
+        snap_dir = agentic_os_home / "state-snapshots" / snap_id
 
         # Inject a traversal entry into manifest.json AND seed the source
         # file outside the snapshot directory so a vulnerable implementation
@@ -1766,13 +1766,13 @@ class TestQuickSnapshot:
         escape_src.write_text("pwned-source")
 
         # Pre-condition: the destination must not exist before restore.
-        escape_dst = hermes_home.parent.parent / "outside.txt"
+        escape_dst = agentic_os_home.parent.parent / "outside.txt"
         assert not escape_dst.exists()
 
         # Restore should succeed for legitimate files but skip the hostile
         # entry. We don't assert on the return value (other legitimate
         # entries may still restore); we assert on the file-system effect.
-        restore_quick_snapshot(snap_id, hermes_home=hermes_home)
+        restore_quick_snapshot(snap_id, agentic_os_home=agentic_os_home)
 
         assert not escape_dst.exists(), (
             f"manifest rel traversal escaped AGENTIC_OS_HOME: {escape_dst} exists"
@@ -1791,7 +1791,7 @@ class TestQuickSnapshotProjectsKanban:
     """
 
     @pytest.fixture
-    def hermes_home(self, tmp_path):
+    def agentic_os_home(self, tmp_path):
         home = tmp_path / ".hermes"
         home.mkdir()
         # Minimal critical file so the snapshot is non-empty.
@@ -1817,50 +1817,50 @@ class TestQuickSnapshotProjectsKanban:
         ):
             assert name in _QUICK_STATE_FILES, name
 
-    def test_projects_db_snapshotted(self, hermes_home):
+    def test_projects_db_snapshotted(self, agentic_os_home):
         from agentic_os_cli.backup import create_quick_snapshot
-        snap_id = create_quick_snapshot(hermes_home=hermes_home)
-        copy = hermes_home / "state-snapshots" / snap_id / "projects.db"
+        snap_id = create_quick_snapshot(agentic_os_home=agentic_os_home)
+        copy = agentic_os_home / "state-snapshots" / snap_id / "projects.db"
         assert copy.exists()
         conn = sqlite3.connect(str(copy))
         rows = conn.execute("SELECT * FROM projects").fetchall()
         conn.close()
         assert rows == [("p1", "demo")]
 
-    def test_kanban_db_snapshotted(self, hermes_home):
+    def test_kanban_db_snapshotted(self, agentic_os_home):
         from agentic_os_cli.backup import create_quick_snapshot
-        snap_id = create_quick_snapshot(hermes_home=hermes_home)
-        copy = hermes_home / "state-snapshots" / snap_id / "kanban.db"
+        snap_id = create_quick_snapshot(agentic_os_home=agentic_os_home)
+        copy = agentic_os_home / "state-snapshots" / snap_id / "kanban.db"
         assert copy.exists()
         conn = sqlite3.connect(str(copy))
         rows = conn.execute("SELECT * FROM tasks").fetchall()
         conn.close()
         assert rows == [("t1", "todo")]
 
-    def test_restore_recreates_emptied_projects_db(self, hermes_home):
+    def test_restore_recreates_emptied_projects_db(self, agentic_os_home):
         from agentic_os_cli.backup import create_quick_snapshot, restore_quick_snapshot
-        snap_id = create_quick_snapshot(hermes_home=hermes_home)
+        snap_id = create_quick_snapshot(agentic_os_home=agentic_os_home)
 
         # Simulate the upgrade wiping the store back to an empty schema.
-        conn = sqlite3.connect(str(hermes_home / "projects.db"))
+        conn = sqlite3.connect(str(agentic_os_home / "projects.db"))
         conn.execute("DELETE FROM projects")
         conn.commit()
         conn.close()
 
-        assert restore_quick_snapshot(snap_id, hermes_home=hermes_home) is True
-        conn = sqlite3.connect(str(hermes_home / "projects.db"))
+        assert restore_quick_snapshot(snap_id, agentic_os_home=agentic_os_home) is True
+        conn = sqlite3.connect(str(agentic_os_home / "projects.db"))
         rows = conn.execute("SELECT * FROM projects").fetchall()
         conn.close()
         assert rows == [("p1", "demo")]
 
-    def test_non_default_kanban_board_snapshotted(self, hermes_home):
+    def test_non_default_kanban_board_snapshotted(self, agentic_os_home):
         """#52889 completeness: non-default boards live at
         <root>/kanban/boards/<slug>/kanban.db, not <root>/kanban.db. The
         ``kanban/boards`` dir entry must capture them too, or multi-board
         users still lose every board except ``default`` on upgrade."""
         from agentic_os_cli.backup import create_quick_snapshot, restore_quick_snapshot
 
-        board_dir = hermes_home / "kanban" / "boards" / "work"
+        board_dir = agentic_os_home / "kanban" / "boards" / "work"
         board_dir.mkdir(parents=True)
         conn = sqlite3.connect(str(board_dir / "kanban.db"))
         conn.execute("CREATE TABLE tasks (id TEXT PRIMARY KEY, data TEXT)")
@@ -1868,9 +1868,9 @@ class TestQuickSnapshotProjectsKanban:
         conn.commit()
         conn.close()
 
-        snap_id = create_quick_snapshot(hermes_home=hermes_home)
+        snap_id = create_quick_snapshot(agentic_os_home=agentic_os_home)
         copy = (
-            hermes_home / "state-snapshots" / snap_id
+            agentic_os_home / "state-snapshots" / snap_id
             / "kanban" / "boards" / "work" / "kanban.db"
         )
         assert copy.exists(), "non-default board kanban.db was not snapshotted"
@@ -1881,13 +1881,13 @@ class TestQuickSnapshotProjectsKanban:
         conn.commit()
         conn.close()
 
-        assert restore_quick_snapshot(snap_id, hermes_home=hermes_home) is True
+        assert restore_quick_snapshot(snap_id, agentic_os_home=agentic_os_home) is True
         conn = sqlite3.connect(str(board_dir / "kanban.db"))
         rows = conn.execute("SELECT * FROM tasks").fetchall()
         conn.close()
         assert rows == [("w1", "ship")]
 
-    def test_additional_per_profile_dbs_round_trip(self, hermes_home):
+    def test_additional_per_profile_dbs_round_trip(self, agentic_os_home):
         """#52889 completeness: response_store.db (conversation history),
         memory_store.db (holographic memory) and verification_evidence.db are
         the same upgrade-wiped data-loss class as projects.db and must also be
@@ -1900,34 +1900,34 @@ class TestQuickSnapshotProjectsKanban:
             "verification_evidence.db": ("verification_events", ("v1", "passed")),
         }
         for name, (table, row) in seeded.items():
-            conn = sqlite3.connect(str(hermes_home / name))
+            conn = sqlite3.connect(str(agentic_os_home / name))
             conn.execute(f"CREATE TABLE {table} (id TEXT PRIMARY KEY, data TEXT)")
             conn.execute(f"INSERT INTO {table} VALUES (?, ?)", row)
             conn.commit()
             conn.close()
 
-        snap_id = create_quick_snapshot(hermes_home=hermes_home)
+        snap_id = create_quick_snapshot(agentic_os_home=agentic_os_home)
         # Wipe every store (the upgrade failure), then restore.
         for name, (table, _row) in seeded.items():
-            conn = sqlite3.connect(str(hermes_home / name))
+            conn = sqlite3.connect(str(agentic_os_home / name))
             conn.execute(f"DELETE FROM {table}")
             conn.commit()
             conn.close()
 
-        assert restore_quick_snapshot(snap_id, hermes_home=hermes_home) is True
+        assert restore_quick_snapshot(snap_id, agentic_os_home=agentic_os_home) is True
         for name, (table, row) in seeded.items():
-            conn = sqlite3.connect(str(hermes_home / name))
+            conn = sqlite3.connect(str(agentic_os_home / name))
             rows = conn.execute(f"SELECT * FROM {table}").fetchall()
             conn.close()
             assert rows == [row], name
 
-    def test_board_workspaces_and_attachments_are_skipped(self, hermes_home):
+    def test_board_workspaces_and_attachments_are_skipped(self, agentic_os_home):
         """#52889 W3: the kanban/boards walk must capture board DBs + metadata
         but SKIP the heavy regenerable workspaces/ and attachments/ subtrees so
         snapshots don't bloat (×20 retained)."""
         from agentic_os_cli.backup import create_quick_snapshot
 
-        board = hermes_home / "kanban" / "boards" / "work"
+        board = agentic_os_home / "kanban" / "boards" / "work"
         (board / "workspaces" / "scratch").mkdir(parents=True)
         (board / "attachments" / "t1").mkdir(parents=True)
         conn = sqlite3.connect(str(board / "kanban.db"))
@@ -1938,8 +1938,8 @@ class TestQuickSnapshotProjectsKanban:
         (board / "workspaces" / "scratch" / "big.bin").write_bytes(b"x" * 4096)
         (board / "attachments" / "t1" / "file.bin").write_bytes(b"y" * 4096)
 
-        snap_id = create_quick_snapshot(hermes_home=hermes_home)
-        snap = hermes_home / "state-snapshots" / snap_id / "kanban" / "boards" / "work"
+        snap_id = create_quick_snapshot(agentic_os_home=agentic_os_home)
+        snap = agentic_os_home / "state-snapshots" / snap_id / "kanban" / "boards" / "work"
         # Board db + metadata captured...
         assert (snap / "kanban.db").exists()
         assert (snap / "board.json").exists()
@@ -1947,14 +1947,14 @@ class TestQuickSnapshotProjectsKanban:
         assert not (snap / "workspaces" / "scratch" / "big.bin").exists()
         assert not (snap / "attachments" / "t1" / "file.bin").exists()
 
-    def test_board_db_copied_wal_safely(self, hermes_home, monkeypatch):
+    def test_board_db_copied_wal_safely(self, agentic_os_home, monkeypatch):
         """#52889 W2: a non-default board's .db (dir-branch) must go through the
         WAL-safe _safe_copy_db, not a raw shutil.copy2, so an open WAL doesn't
         produce an inconsistent copy."""
         import agentic_os_cli.backup as bk
         from agentic_os_cli.backup import create_quick_snapshot
 
-        board = hermes_home / "kanban" / "boards" / "work"
+        board = agentic_os_home / "kanban" / "boards" / "work"
         board.mkdir(parents=True)
         conn = sqlite3.connect(str(board / "kanban.db"))
         conn.execute("PRAGMA journal_mode=WAL")
@@ -1971,10 +1971,10 @@ class TestQuickSnapshotProjectsKanban:
             return real(src, dst)
 
         monkeypatch.setattr(bk, "_safe_copy_db", _spy)
-        snap_id = create_quick_snapshot(hermes_home=hermes_home)
+        snap_id = create_quick_snapshot(agentic_os_home=agentic_os_home)
         # The board db was copied via _safe_copy_db (not raw copy).
         assert any(s.endswith("boards/work/kanban.db") for s in called["db"]), called["db"]
-        copy = hermes_home / "state-snapshots" / snap_id / "kanban" / "boards" / "work" / "kanban.db"
+        copy = agentic_os_home / "state-snapshots" / snap_id / "kanban" / "boards" / "work" / "kanban.db"
         rows = sqlite3.connect(str(copy)).execute("SELECT * FROM tasks").fetchall()
         assert rows == [("w1", "ship")]
 
@@ -1986,10 +1986,10 @@ class TestPreUpdateBackup:
     def test_failed_sqlite_snapshot_removes_incomplete_archive(self, tmp_path, monkeypatch):
         """The non-interactive full-zip helper must fail the entire archive
         rather than return success after omitting a live WAL database."""
-        hermes_home = tmp_path / ".hermes"
-        hermes_home.mkdir()
-        (hermes_home / "config.yaml").write_text("model: test\n")
-        db_path = hermes_home / "state.db"
+        agentic_os_home = tmp_path / ".hermes"
+        agentic_os_home.mkdir()
+        (agentic_os_home / "config.yaml").write_text("model: test\n")
+        db_path = agentic_os_home / "state.db"
 
         writer = sqlite3.connect(db_path)
         writer.execute("PRAGMA journal_mode=WAL")
@@ -2023,7 +2023,7 @@ class TestPreUpdateBackup:
         monkeypatch.setattr(backup_mod.sqlite3, "connect", connect_with_failed_backup)
         out_zip = tmp_path / "pre-update.zip"
         try:
-            result = backup_mod._write_full_zip_backup(out_zip, hermes_home)
+            result = backup_mod._write_full_zip_backup(out_zip, agentic_os_home)
         finally:
             writer.close()
 
@@ -2031,26 +2031,26 @@ class TestPreUpdateBackup:
         assert not out_zip.exists()
 
     @pytest.fixture
-    def hermes_home(self, tmp_path):
+    def agentic_os_home(self, tmp_path):
         root = tmp_path / ".hermes"
         root.mkdir()
         _make_hermes_tree(root)
         return root
 
-    def test_creates_backup_under_backups_dir(self, hermes_home):
+    def test_creates_backup_under_backups_dir(self, agentic_os_home):
         from agentic_os_cli.backup import create_pre_update_backup
-        out = create_pre_update_backup(hermes_home=hermes_home)
+        out = create_pre_update_backup(agentic_os_home=agentic_os_home)
         assert out is not None
         assert out.exists()
-        assert out.parent == hermes_home / "backups"
+        assert out.parent == agentic_os_home / "backups"
         assert out.name.startswith("pre-update-")
         assert out.suffix == ".zip"
 
-    def test_backup_contents_match_full_backup(self, hermes_home):
+    def test_backup_contents_match_full_backup(self, agentic_os_home):
         """Pre-update backup should include the same user data that
         ``hermes backup`` would, and should exclude the same directories."""
         from agentic_os_cli.backup import create_pre_update_backup
-        out = create_pre_update_backup(hermes_home=hermes_home)
+        out = create_pre_update_backup(agentic_os_home=agentic_os_home)
         assert out is not None
         with zipfile.ZipFile(out) as zf:
             names = set(zf.namelist())
@@ -2067,15 +2067,15 @@ class TestPreUpdateBackup:
         # pid files excluded
         assert "gateway.pid" not in names
 
-    def test_does_not_recurse_into_prior_backups(self, hermes_home):
+    def test_does_not_recurse_into_prior_backups(self, agentic_os_home):
         """The ``backups/`` directory must be excluded so that each backup
         doesn't grow exponentially by including all prior backups."""
         from agentic_os_cli.backup import create_pre_update_backup
         # First backup
-        out1 = create_pre_update_backup(hermes_home=hermes_home)
+        out1 = create_pre_update_backup(agentic_os_home=agentic_os_home)
         assert out1 is not None
         # Second backup — must not include the first
-        out2 = create_pre_update_backup(hermes_home=hermes_home)
+        out2 = create_pre_update_backup(agentic_os_home=agentic_os_home)
         assert out2 is not None
         with zipfile.ZipFile(out2) as zf:
             names = zf.namelist()
@@ -2084,7 +2084,7 @@ class TestPreUpdateBackup:
             f"{[n for n in names if n.startswith('backups/')]}"
         )
 
-    def test_rotation_keeps_only_n(self, hermes_home):
+    def test_rotation_keeps_only_n(self, agentic_os_home):
         """After more than ``keep`` backups are created, older ones are
         pruned automatically."""
         import time as _t
@@ -2092,12 +2092,12 @@ class TestPreUpdateBackup:
 
         created = []
         for _ in range(5):
-            out = create_pre_update_backup(hermes_home=hermes_home, keep=3)
+            out = create_pre_update_backup(agentic_os_home=agentic_os_home, keep=3)
             created.append(out)
             _t.sleep(1.05)  # ensure distinct seconds in timestamp
 
         remaining = sorted(
-            p.name for p in (hermes_home / "backups").iterdir()
+            p.name for p in (agentic_os_home / "backups").iterdir()
             if p.name.startswith("pre-update-")
         )
         assert len(remaining) == 3
@@ -2107,27 +2107,27 @@ class TestPreUpdateBackup:
         # Newest three should remain
         assert created[4].name in remaining
 
-    def test_rotation_preserves_manual_files(self, hermes_home):
+    def test_rotation_preserves_manual_files(self, agentic_os_home):
         """Hand-dropped zips in ``backups/`` must not be touched by
         rotation — it only prunes files matching ``pre-update-*.zip``."""
         import time as _t
         from agentic_os_cli.backup import create_pre_update_backup
 
-        (hermes_home / "backups").mkdir(exist_ok=True)
-        manual = hermes_home / "backups" / "my-manual.zip"
+        (agentic_os_home / "backups").mkdir(exist_ok=True)
+        manual = agentic_os_home / "backups" / "my-manual.zip"
         manual.write_bytes(b"manual backup")
 
         for _ in range(5):
-            create_pre_update_backup(hermes_home=hermes_home, keep=2)
+            create_pre_update_backup(agentic_os_home=agentic_os_home, keep=2)
             _t.sleep(1.05)
 
         assert manual.exists(), "Manual backup zip was incorrectly pruned"
 
     def test_returns_none_if_root_missing(self, tmp_path):
         from agentic_os_cli.backup import create_pre_update_backup
-        assert create_pre_update_backup(hermes_home=tmp_path / "does-not-exist") is None
+        assert create_pre_update_backup(agentic_os_home=tmp_path / "does-not-exist") is None
 
-    def test_keep_zero_does_not_delete_freshly_created_backup(self, hermes_home):
+    def test_keep_zero_does_not_delete_freshly_created_backup(self, agentic_os_home):
         """Regression: ``backup_keep: 0`` previously triggered ``backups[0:]``
         in the pruner — wiping the just-created zip and leaving the user
         with no recovery point.  The floor (keep>=1) preserves the new file
@@ -2135,22 +2135,22 @@ class TestPreUpdateBackup:
         set ``pre_update_backup: false`` instead.
         """
         from agentic_os_cli.backup import create_pre_update_backup
-        out = create_pre_update_backup(hermes_home=hermes_home, keep=0)
+        out = create_pre_update_backup(agentic_os_home=agentic_os_home, keep=0)
         assert out is not None
         assert out.exists(), (
             "keep=0 silently deleted the freshly-created backup; floor "
             "should preserve the just-written file."
         )
 
-    def test_keep_negative_does_not_delete_freshly_created_backup(self, hermes_home):
+    def test_keep_negative_does_not_delete_freshly_created_backup(self, agentic_os_home):
         """Mirror coverage: any value <1 should be floored, not literally
         applied as a slice index."""
         from agentic_os_cli.backup import create_pre_update_backup
-        out = create_pre_update_backup(hermes_home=hermes_home, keep=-3)
+        out = create_pre_update_backup(agentic_os_home=agentic_os_home, keep=-3)
         assert out is not None
         assert out.exists()
 
-    def test_keep_zero_still_prunes_older_backups(self, hermes_home):
+    def test_keep_zero_still_prunes_older_backups(self, agentic_os_home):
         """The floor preserves the new backup but should NOT regress the
         rotation behaviour for older zips: a third call with keep=0 must
         still remove pre-existing backups beyond the (floored) limit of 1.
@@ -2158,14 +2158,14 @@ class TestPreUpdateBackup:
         import time as _t
         from agentic_os_cli.backup import create_pre_update_backup
 
-        first = create_pre_update_backup(hermes_home=hermes_home, keep=5)
+        first = create_pre_update_backup(agentic_os_home=agentic_os_home, keep=5)
         _t.sleep(1.05)
-        second = create_pre_update_backup(hermes_home=hermes_home, keep=5)
+        second = create_pre_update_backup(agentic_os_home=agentic_os_home, keep=5)
         _t.sleep(1.05)
-        third = create_pre_update_backup(hermes_home=hermes_home, keep=0)
+        third = create_pre_update_backup(agentic_os_home=agentic_os_home, keep=0)
 
         remaining = {
-            p.name for p in (hermes_home / "backups").iterdir()
+            p.name for p in (agentic_os_home / "backups").iterdir()
             if p.name.startswith("pre-update-")
         }
         assert third.name in remaining, "Floor must preserve the new backup"
@@ -2174,15 +2174,15 @@ class TestPreUpdateBackup:
             f"remaining={remaining}"
         )
 
-    def test_skips_symlinked_files(self, hermes_home, tmp_path):
+    def test_skips_symlinked_files(self, agentic_os_home, tmp_path):
         """Pre-update backups must not dereference symlinks outside AGENTIC_OS_HOME."""
         from agentic_os_cli.backup import create_pre_update_backup
 
         outside = tmp_path / "outside-secret.txt"
         outside.write_text("outside secret\n")
-        _symlink_file_or_skip(hermes_home / "skills" / "outside-link.txt", outside)
+        _symlink_file_or_skip(agentic_os_home / "skills" / "outside-link.txt", outside)
 
-        out = create_pre_update_backup(hermes_home=hermes_home)
+        out = create_pre_update_backup(agentic_os_home=agentic_os_home)
         assert out is not None
         with zipfile.ZipFile(out) as zf:
             names = zf.namelist()
@@ -2196,7 +2196,7 @@ class TestRunPreUpdateBackup:
     user-facing output."""
 
     @pytest.fixture
-    def hermes_home(self, tmp_path, monkeypatch):
+    def agentic_os_home(self, tmp_path, monkeypatch):
         root = tmp_path / ".hermes"
         root.mkdir()
         _make_hermes_tree(root)
@@ -2211,9 +2211,9 @@ class TestRunPreUpdateBackup:
         return root
 
     @staticmethod
-    def _set_mode(hermes_home, value):
+    def _set_mode(agentic_os_home, value):
         import yaml
-        (hermes_home / "config.yaml").write_text(yaml.safe_dump({
+        (agentic_os_home / "config.yaml").write_text(yaml.safe_dump({
             "_config_version": 22,
             "updates": {"pre_update_backup": value},
         }))
@@ -2223,16 +2223,16 @@ class TestRunPreUpdateBackup:
                 del _sys.modules[mod]
 
     @staticmethod
-    def _zips(hermes_home):
-        d = hermes_home / "backups"
+    def _zips(agentic_os_home):
+        d = agentic_os_home / "backups"
         return list(d.glob("pre-update-*.zip")) if d.exists() else []
 
     @staticmethod
-    def _snaps(hermes_home):
-        d = hermes_home / "state-snapshots"
+    def _snaps(agentic_os_home):
+        d = agentic_os_home / "state-snapshots"
         return [p for p in d.iterdir() if p.is_dir()] if d.exists() else []
 
-    def test_default_creates_quick_snapshot_only(self, hermes_home, capsys):
+    def test_default_creates_quick_snapshot_only(self, agentic_os_home, capsys):
         """With no config, the default mode is ``quick``: a state snapshot is
         created but NOT the full zip."""
         from agentic_os_cli.main import _run_pre_update_backup
@@ -2241,10 +2241,10 @@ class TestRunPreUpdateBackup:
         assert snap_id is not None
         assert "Pre-update snapshot" in out
         assert "Creating pre-update backup" not in out
-        assert self._snaps(hermes_home)
-        assert not self._zips(hermes_home)
+        assert self._snaps(agentic_os_home)
+        assert not self._zips(agentic_os_home)
 
-    def test_backup_flag_forces_full(self, hermes_home, capsys):
+    def test_backup_flag_forces_full(self, agentic_os_home, capsys):
         """--backup forces the full zip (plus quick snapshot) for one run."""
         from agentic_os_cli.main import _run_pre_update_backup
         snap_id = _run_pre_update_backup(Namespace(no_backup=False, backup=True))
@@ -2254,9 +2254,9 @@ class TestRunPreUpdateBackup:
         assert "Creating pre-update backup" in out
         assert "Saved:" in out
         assert "hermes import" in out
-        assert len(self._zips(hermes_home)) == 1
+        assert len(self._zips(agentic_os_home)) == 1
 
-    def test_no_backup_flag_skips_everything(self, hermes_home, capsys):
+    def test_no_backup_flag_skips_everything(self, agentic_os_home, capsys):
         """--no-backup skips BOTH the quick snapshot and the zip."""
         from agentic_os_cli.main import _run_pre_update_backup
         snap_id = _run_pre_update_backup(Namespace(no_backup=True, backup=False))
@@ -2264,91 +2264,91 @@ class TestRunPreUpdateBackup:
         assert snap_id is None
         assert "skipped (--no-backup)" in out
         assert "Pre-update snapshot" not in out
-        assert not self._snaps(hermes_home)
-        assert not self._zips(hermes_home)
+        assert not self._snaps(agentic_os_home)
+        assert not self._zips(agentic_os_home)
 
-    def test_config_off_disables_everything_silently(self, hermes_home, capsys):
+    def test_config_off_disables_everything_silently(self, agentic_os_home, capsys):
         """pre_update_backup: off — an explicit opt-out disables the quick
         snapshot too (it previously ran unconditionally), with no output."""
-        self._set_mode(hermes_home, "off")
+        self._set_mode(agentic_os_home, "off")
         from agentic_os_cli.main import _run_pre_update_backup
         snap_id = _run_pre_update_backup(Namespace(no_backup=False, backup=False))
         out = capsys.readouterr().out
         assert snap_id is None
         assert out == ""
-        assert not self._snaps(hermes_home)
-        assert not self._zips(hermes_home)
+        assert not self._snaps(agentic_os_home)
+        assert not self._zips(agentic_os_home)
 
-    def test_legacy_false_maps_to_off(self, hermes_home, capsys):
+    def test_legacy_false_maps_to_off(self, agentic_os_home, capsys):
         """Legacy boolean ``false`` (the old zip opt-out) now means off."""
-        self._set_mode(hermes_home, False)
+        self._set_mode(agentic_os_home, False)
         from agentic_os_cli.main import _run_pre_update_backup
         snap_id = _run_pre_update_backup(Namespace(no_backup=False, backup=False))
         assert snap_id is None
         assert capsys.readouterr().out == ""
-        assert not self._snaps(hermes_home)
-        assert not self._zips(hermes_home)
+        assert not self._snaps(agentic_os_home)
+        assert not self._zips(agentic_os_home)
 
-    def test_legacy_true_maps_to_full(self, hermes_home, capsys):
+    def test_legacy_true_maps_to_full(self, agentic_os_home, capsys):
         """Legacy boolean ``true`` (the old always-zip opt-in) means full."""
-        self._set_mode(hermes_home, True)
+        self._set_mode(agentic_os_home, True)
         from agentic_os_cli.main import _run_pre_update_backup
         snap_id = _run_pre_update_backup(Namespace(no_backup=False, backup=False))
         out = capsys.readouterr().out
         assert snap_id is not None
         assert "Creating pre-update backup" in out
         assert "Saved:" in out
-        assert len(self._zips(hermes_home)) == 1
+        assert len(self._zips(agentic_os_home)) == 1
 
-    def test_config_full_mode(self, hermes_home, capsys):
-        self._set_mode(hermes_home, "full")
+    def test_config_full_mode(self, agentic_os_home, capsys):
+        self._set_mode(agentic_os_home, "full")
         from agentic_os_cli.main import _run_pre_update_backup
         snap_id = _run_pre_update_backup(Namespace(no_backup=False, backup=False))
         out = capsys.readouterr().out
         assert snap_id is not None
         assert "Pre-update snapshot" in out
         assert "Creating pre-update backup" in out
-        assert len(self._zips(hermes_home)) == 1
+        assert len(self._zips(agentic_os_home)) == 1
 
-    def test_config_quick_mode(self, hermes_home, capsys):
-        self._set_mode(hermes_home, "quick")
+    def test_config_quick_mode(self, agentic_os_home, capsys):
+        self._set_mode(agentic_os_home, "quick")
         from agentic_os_cli.main import _run_pre_update_backup
         snap_id = _run_pre_update_backup(Namespace(no_backup=False, backup=False))
         out = capsys.readouterr().out
         assert snap_id is not None
         assert "Pre-update snapshot" in out
         assert "Creating pre-update backup" not in out
-        assert not self._zips(hermes_home)
+        assert not self._zips(agentic_os_home)
 
-    def test_unknown_mode_falls_back_to_quick(self, hermes_home, capsys):
-        self._set_mode(hermes_home, "bogus-mode")
+    def test_unknown_mode_falls_back_to_quick(self, agentic_os_home, capsys):
+        self._set_mode(agentic_os_home, "bogus-mode")
         from agentic_os_cli.main import _run_pre_update_backup
         snap_id = _run_pre_update_backup(Namespace(no_backup=False, backup=False))
         out = capsys.readouterr().out
         assert snap_id is not None
         assert "Pre-update snapshot" in out
-        assert not self._zips(hermes_home)
+        assert not self._zips(agentic_os_home)
 
-    def test_no_backup_flag_overrides_full_config(self, hermes_home, capsys):
+    def test_no_backup_flag_overrides_full_config(self, agentic_os_home, capsys):
         """--no-backup wins even when config says full."""
-        self._set_mode(hermes_home, "full")
+        self._set_mode(agentic_os_home, "full")
         from agentic_os_cli.main import _run_pre_update_backup
         snap_id = _run_pre_update_backup(Namespace(no_backup=True, backup=False))
         out = capsys.readouterr().out
         assert snap_id is None
         assert "skipped (--no-backup)" in out
-        assert not self._snaps(hermes_home)
-        assert not self._zips(hermes_home)
+        assert not self._snaps(agentic_os_home)
+        assert not self._zips(agentic_os_home)
 
-    def test_backup_flag_overrides_off_config(self, hermes_home, capsys):
+    def test_backup_flag_overrides_off_config(self, agentic_os_home, capsys):
         """--backup wins over config off for a single run."""
-        self._set_mode(hermes_home, "off")
+        self._set_mode(agentic_os_home, "off")
         from agentic_os_cli.main import _run_pre_update_backup
         snap_id = _run_pre_update_backup(Namespace(no_backup=False, backup=True))
         out = capsys.readouterr().out
         assert snap_id is not None
         assert "Creating pre-update backup" in out
-        assert len(self._zips(hermes_home)) == 1
+        assert len(self._zips(agentic_os_home)) == 1
 
 
 # ---------------------------------------------------------------------------
@@ -2360,28 +2360,28 @@ class TestPreMigrationBackup:
     ``hermes claw migrate`` runs before mutating ~/.agentic-os/."""
 
     @pytest.fixture
-    def hermes_home(self, tmp_path):
+    def agentic_os_home(self, tmp_path):
         root = tmp_path / ".hermes"
         root.mkdir()
         _make_hermes_tree(root)
         return root
 
-    def test_creates_backup_under_backups_dir(self, hermes_home):
+    def test_creates_backup_under_backups_dir(self, agentic_os_home):
         from agentic_os_cli.backup import create_pre_migration_backup
-        out = create_pre_migration_backup(hermes_home=hermes_home)
+        out = create_pre_migration_backup(agentic_os_home=agentic_os_home)
         assert out is not None
         assert out.exists()
         # Shares the backups/ directory with pre-update backups so `hermes
         # import` and the update-backup listing both pick them up.
-        assert out.parent == hermes_home / "backups"
+        assert out.parent == agentic_os_home / "backups"
         assert out.name.startswith("pre-migration-")
         assert out.suffix == ".zip"
 
-    def test_backup_uses_shared_exclusion_rules(self, hermes_home):
+    def test_backup_uses_shared_exclusion_rules(self, agentic_os_home):
         """Pre-migration backup reuses the same exclusion rules as
         ``hermes backup`` / ``create_pre_update_backup`` — no drift."""
         from agentic_os_cli.backup import create_pre_migration_backup
-        out = create_pre_migration_backup(hermes_home=hermes_home)
+        out = create_pre_migration_backup(agentic_os_home=agentic_os_home)
         assert out is not None
         with zipfile.ZipFile(out) as zf:
             names = set(zf.namelist())
@@ -2394,57 +2394,57 @@ class TestPreMigrationBackup:
         assert not any("__pycache__" in n for n in names)
         assert "gateway.pid" not in names
 
-    def test_restorable_with_hermes_import(self, hermes_home, tmp_path):
+    def test_restorable_with_hermes_import(self, agentic_os_home, tmp_path):
         """The zip produced by pre-migration backup must be a valid Hermes
         backup — `hermes import` should accept it."""
         from agentic_os_cli.backup import create_pre_migration_backup, _validate_backup_zip
-        out = create_pre_migration_backup(hermes_home=hermes_home)
+        out = create_pre_migration_backup(agentic_os_home=agentic_os_home)
         assert out is not None
         with zipfile.ZipFile(out) as zf:
             valid, _reason = _validate_backup_zip(zf)
         assert valid, "pre-migration zip failed _validate_backup_zip"
 
-    def test_does_not_recurse_into_prior_backups(self, hermes_home):
+    def test_does_not_recurse_into_prior_backups(self, agentic_os_home):
         from agentic_os_cli.backup import create_pre_migration_backup
-        out1 = create_pre_migration_backup(hermes_home=hermes_home)
+        out1 = create_pre_migration_backup(agentic_os_home=agentic_os_home)
         assert out1 is not None
-        out2 = create_pre_migration_backup(hermes_home=hermes_home)
+        out2 = create_pre_migration_backup(agentic_os_home=agentic_os_home)
         assert out2 is not None
         with zipfile.ZipFile(out2) as zf:
             names = zf.namelist()
         assert not any(n.startswith("backups/") for n in names)
 
-    def test_rotation_keeps_only_n(self, hermes_home):
+    def test_rotation_keeps_only_n(self, agentic_os_home):
         import time as _t
         from agentic_os_cli.backup import create_pre_migration_backup
 
         created = []
         for _ in range(7):
-            out = create_pre_migration_backup(hermes_home=hermes_home, keep=3)
+            out = create_pre_migration_backup(agentic_os_home=agentic_os_home, keep=3)
             if out is not None:
                 created.append(out)
             _t.sleep(1.05)  # timestamp resolution
 
-        remaining = sorted((hermes_home / "backups").glob("pre-migration-*.zip"))
+        remaining = sorted((agentic_os_home / "backups").glob("pre-migration-*.zip"))
         assert len(remaining) <= 3, f"expected <=3 backups retained, got {len(remaining)}"
 
     def test_missing_agentic_os_home_returns_none(self, tmp_path):
         """Fresh install with no ~/.agentic-os yet — nothing to back up."""
         from agentic_os_cli.backup import create_pre_migration_backup
         missing = tmp_path / "does-not-exist"
-        out = create_pre_migration_backup(hermes_home=missing)
+        out = create_pre_migration_backup(agentic_os_home=missing)
         assert out is None
 
-    def test_does_not_touch_pre_update_backups(self, hermes_home):
+    def test_does_not_touch_pre_update_backups(self, agentic_os_home):
         """Pre-migration rotation must only prune pre-migration-*.zip files,
         leaving pre-update-*.zip backups untouched."""
         from agentic_os_cli.backup import create_pre_update_backup, create_pre_migration_backup
-        update_backup = create_pre_update_backup(hermes_home=hermes_home, keep=5)
+        update_backup = create_pre_update_backup(agentic_os_home=agentic_os_home, keep=5)
         assert update_backup is not None and update_backup.exists()
         # Spin up a lot of migration backups with keep=1
         import time as _t
         for _ in range(3):
-            out = create_pre_migration_backup(hermes_home=hermes_home, keep=1)
+            out = create_pre_migration_backup(agentic_os_home=agentic_os_home, keep=1)
             assert out is not None
             _t.sleep(1.05)
         # Update backup must still be there
@@ -2465,23 +2465,23 @@ class TestRestoreCronJobsIfEmptied:
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text(json.dumps({"jobs": jobs}))
 
-    def _make_snapshot(self, hermes_home: Path, label="pre-update"):
+    def _make_snapshot(self, agentic_os_home: Path, label="pre-update"):
         from agentic_os_cli.backup import create_quick_snapshot
-        return create_quick_snapshot(label=label, hermes_home=hermes_home, keep=5)
+        return create_quick_snapshot(label=label, agentic_os_home=agentic_os_home, keep=5)
 
     def test_restores_when_emptied_after_migration(self, tmp_path):
         from agentic_os_cli.backup import restore_cron_jobs_if_emptied
-        hermes_home = tmp_path / ".hermes"
-        jobs_path = hermes_home / "cron" / "jobs.json"
+        agentic_os_home = tmp_path / ".hermes"
+        jobs_path = agentic_os_home / "cron" / "jobs.json"
         # Pre-update: 3 real jobs.
         self._seed_jobs(jobs_path, [{"id": "a"}, {"id": "b"}, {"id": "c"}])
-        snap_id = self._make_snapshot(hermes_home)
+        snap_id = self._make_snapshot(agentic_os_home)
         assert snap_id
 
         # Migration silently empties the file (valid JSON, zero jobs).
         jobs_path.write_text(json.dumps({"jobs": []}))
 
-        result = restore_cron_jobs_if_emptied(snap_id, hermes_home=hermes_home)
+        result = restore_cron_jobs_if_emptied(snap_id, agentic_os_home=agentic_os_home)
         assert result is not None
         assert result["restored"] is True
         assert result["job_count"] == 3
@@ -2493,33 +2493,33 @@ class TestRestoreCronJobsIfEmptied:
 
     def test_noop_when_live_file_still_has_jobs(self, tmp_path):
         from agentic_os_cli.backup import restore_cron_jobs_if_emptied
-        hermes_home = tmp_path / ".hermes"
-        jobs_path = hermes_home / "cron" / "jobs.json"
+        agentic_os_home = tmp_path / ".hermes"
+        jobs_path = agentic_os_home / "cron" / "jobs.json"
         self._seed_jobs(jobs_path, [{"id": "a"}, {"id": "b"}])
-        snap_id = self._make_snapshot(hermes_home)
+        snap_id = self._make_snapshot(agentic_os_home)
 
         # Healthy path: file unchanged after update.
-        result = restore_cron_jobs_if_emptied(snap_id, hermes_home=hermes_home)
+        result = restore_cron_jobs_if_emptied(snap_id, agentic_os_home=agentic_os_home)
         assert result is None
 
     def test_restores_when_partial_job_loss(self, tmp_path):
         """Desktop scheduler overwrites jobs.json with its own small set,
         losing tool-created crons while keeping desktop-tracked ones."""
         from agentic_os_cli.backup import restore_cron_jobs_if_emptied
-        hermes_home = tmp_path / ".hermes"
-        jobs_path = hermes_home / "cron" / "jobs.json"
+        agentic_os_home = tmp_path / ".hermes"
+        jobs_path = agentic_os_home / "cron" / "jobs.json"
         # Pre-update: 19 jobs (18 tool-created + 1 desktop watchdog).
         self._seed_jobs(
             jobs_path,
             [{"id": f"job-{i}"} for i in range(19)],
         )
-        snap_id = self._make_snapshot(hermes_home)
+        snap_id = self._make_snapshot(agentic_os_home)
         assert snap_id
 
         # Desktop scheduler overwrites with only its own 1 job.
         jobs_path.write_text(json.dumps({"jobs": [{"id": "desktop-watchdog"}]}))
 
-        result = restore_cron_jobs_if_emptied(snap_id, hermes_home=hermes_home)
+        result = restore_cron_jobs_if_emptied(snap_id, agentic_os_home=agentic_os_home)
         assert result is not None
         assert result["restored"] is True
         assert result["job_count"] == 19
@@ -2530,14 +2530,14 @@ class TestRestoreCronJobsIfEmptied:
 
     def test_noop_when_snapshot_had_no_jobs(self, tmp_path):
         from agentic_os_cli.backup import restore_cron_jobs_if_emptied
-        hermes_home = tmp_path / ".hermes"
-        jobs_path = hermes_home / "cron" / "jobs.json"
+        agentic_os_home = tmp_path / ".hermes"
+        jobs_path = agentic_os_home / "cron" / "jobs.json"
         # Pre-update genuinely had zero jobs; current is also empty.
         self._seed_jobs(jobs_path, [])
-        snap_id = self._make_snapshot(hermes_home)
+        snap_id = self._make_snapshot(agentic_os_home)
         jobs_path.write_text(json.dumps({"jobs": []}))
 
-        result = restore_cron_jobs_if_emptied(snap_id, hermes_home=hermes_home)
+        result = restore_cron_jobs_if_emptied(snap_id, agentic_os_home=agentic_os_home)
         assert result is None
 
     def test_bom_live_file_still_counted(self, tmp_path):
@@ -2545,17 +2545,17 @@ class TestRestoreCronJobsIfEmptied:
         _count_cron_jobs report None — that would silently disable the
         auto-restore safety net. utf-8-sig matches cron/jobs.load_jobs."""
         from agentic_os_cli.backup import _count_cron_jobs, restore_cron_jobs_if_emptied
-        hermes_home = tmp_path / ".hermes"
-        jobs_path = hermes_home / "cron" / "jobs.json"
+        agentic_os_home = tmp_path / ".hermes"
+        jobs_path = agentic_os_home / "cron" / "jobs.json"
         self._seed_jobs(jobs_path, [{"id": "a"}, {"id": "b"}, {"id": "c"}])
-        snap_id = self._make_snapshot(hermes_home)
+        snap_id = self._make_snapshot(agentic_os_home)
         assert snap_id
 
         # Migration empties the file AND a Windows editor leaves a BOM.
         jobs_path.write_bytes(b"\xef\xbb\xbf" + json.dumps({"jobs": []}).encode())
         assert _count_cron_jobs(jobs_path) == 0  # not None
 
-        result = restore_cron_jobs_if_emptied(snap_id, hermes_home=hermes_home)
+        result = restore_cron_jobs_if_emptied(snap_id, agentic_os_home=agentic_os_home)
         assert result is not None
         assert result["restored"] is True
         assert result["job_count"] == 3
@@ -2564,37 +2564,37 @@ class TestRestoreCronJobsIfEmptied:
         """An unparseable live file is left alone — that's a different failure
         mode the user should see, not silently overwrite."""
         from agentic_os_cli.backup import restore_cron_jobs_if_emptied
-        hermes_home = tmp_path / ".hermes"
-        jobs_path = hermes_home / "cron" / "jobs.json"
+        agentic_os_home = tmp_path / ".hermes"
+        jobs_path = agentic_os_home / "cron" / "jobs.json"
         self._seed_jobs(jobs_path, [{"id": "a"}])
-        snap_id = self._make_snapshot(hermes_home)
+        snap_id = self._make_snapshot(agentic_os_home)
         jobs_path.write_text("{ this is not valid json")
 
-        result = restore_cron_jobs_if_emptied(snap_id, hermes_home=hermes_home)
+        result = restore_cron_jobs_if_emptied(snap_id, agentic_os_home=agentic_os_home)
         assert result is None
         # File left untouched.
         assert jobs_path.read_text() == "{ this is not valid json"
 
     def test_noop_when_snapshot_id_missing(self, tmp_path):
         from agentic_os_cli.backup import restore_cron_jobs_if_emptied
-        hermes_home = tmp_path / ".hermes"
-        jobs_path = hermes_home / "cron" / "jobs.json"
+        agentic_os_home = tmp_path / ".hermes"
+        jobs_path = agentic_os_home / "cron" / "jobs.json"
         self._seed_jobs(jobs_path, [])
-        assert restore_cron_jobs_if_emptied(None, hermes_home=hermes_home) is None
-        assert restore_cron_jobs_if_emptied("", hermes_home=hermes_home) is None
+        assert restore_cron_jobs_if_emptied(None, agentic_os_home=agentic_os_home) is None
+        assert restore_cron_jobs_if_emptied("", agentic_os_home=agentic_os_home) is None
 
     def test_restores_legacy_bare_list_snapshot_shape(self, tmp_path):
         """A legacy snapshot storing a bare JSON list (not {"jobs": [...]}) is
         still counted and restored."""
         from agentic_os_cli.backup import restore_cron_jobs_if_emptied
-        hermes_home = tmp_path / ".hermes"
-        jobs_path = hermes_home / "cron" / "jobs.json"
+        agentic_os_home = tmp_path / ".hermes"
+        jobs_path = agentic_os_home / "cron" / "jobs.json"
         jobs_path.parent.mkdir(parents=True, exist_ok=True)
         jobs_path.write_text(json.dumps([{"id": "a"}, {"id": "b"}]))
-        snap_id = self._make_snapshot(hermes_home)
+        snap_id = self._make_snapshot(agentic_os_home)
 
         jobs_path.write_text(json.dumps({"jobs": []}))
-        result = restore_cron_jobs_if_emptied(snap_id, hermes_home=hermes_home)
+        result = restore_cron_jobs_if_emptied(snap_id, agentic_os_home=agentic_os_home)
         assert result is not None
         assert result["job_count"] == 2
 
@@ -2606,17 +2606,17 @@ class TestRestoreCronJobsIfEmptied:
 # ---------------------------------------------------------------------------
 
 class TestMemoryProviderExternalPaths:
-    def _make_min_tree(self, hermes_home: Path) -> None:
-        hermes_home.mkdir(parents=True, exist_ok=True)
-        (hermes_home / "config.yaml").write_text("model:\n  provider: openrouter\n")
-        (hermes_home / ".env").write_text("OPENROUTER_API_KEY=sk-test\n")
-        (hermes_home / "state.db").write_bytes(b"x")
+    def _make_min_tree(self, agentic_os_home: Path) -> None:
+        agentic_os_home.mkdir(parents=True, exist_ok=True)
+        (agentic_os_home / "config.yaml").write_text("model:\n  provider: openrouter\n")
+        (agentic_os_home / ".env").write_text("OPENROUTER_API_KEY=sk-test\n")
+        (agentic_os_home / "state.db").write_bytes(b"x")
 
     def test_backup_captures_external_paths_under_external_prefix(self, tmp_path, monkeypatch):
         """Provider state under ~/.honcho is archived beneath _external/,
         encoded relative to the home directory."""
-        hermes_home = tmp_path / ".hermes"
-        self._make_min_tree(hermes_home)
+        agentic_os_home = tmp_path / ".hermes"
+        self._make_min_tree(agentic_os_home)
         # External provider state living OUTSIDE AGENTIC_OS_HOME.
         honcho = tmp_path / ".honcho"
         honcho.mkdir()
@@ -2624,7 +2624,7 @@ class TestMemoryProviderExternalPaths:
         (honcho / "sub").mkdir()
         (honcho / "sub" / "x.json").write_text('{"a":1}')
 
-        monkeypatch.setenv("AGENTIC_OS_HOME", str(hermes_home))
+        monkeypatch.setenv("AGENTIC_OS_HOME", str(agentic_os_home))
         monkeypatch.setattr(Path, "home", lambda: tmp_path)
 
         import agentic_os_cli.backup as backup_mod
@@ -2645,13 +2645,13 @@ class TestMemoryProviderExternalPaths:
     def test_backup_skips_external_paths_outside_home(self, tmp_path, monkeypatch):
         """A declared path outside the home dir is not portable and must be
         skipped, never archived."""
-        hermes_home = tmp_path / ".hermes"
-        self._make_min_tree(hermes_home)
+        agentic_os_home = tmp_path / ".hermes"
+        self._make_min_tree(agentic_os_home)
         outside = tmp_path.parent / "outside-home-secret"
         outside.mkdir(exist_ok=True)
         (outside / "leak.json").write_text('{"secret":1}')
 
-        monkeypatch.setenv("AGENTIC_OS_HOME", str(hermes_home))
+        monkeypatch.setenv("AGENTIC_OS_HOME", str(agentic_os_home))
         monkeypatch.setattr(Path, "home", lambda: tmp_path)
 
         import agentic_os_cli.backup as backup_mod
@@ -2674,8 +2674,8 @@ class TestMemoryProviderExternalPaths:
         and credential-shaped files get 0600."""
         dst_home = tmp_path / "dst"
         dst_home.mkdir()
-        hermes_home = dst_home / ".hermes"
-        hermes_home.mkdir()
+        agentic_os_home = dst_home / ".hermes"
+        agentic_os_home.mkdir()
 
         zip_path = tmp_path / "backup.zip"
         with zipfile.ZipFile(zip_path, "w") as zf:
@@ -2684,7 +2684,7 @@ class TestMemoryProviderExternalPaths:
             zf.writestr("state.db", "")
             zf.writestr("_external/.honcho/config.json", '{"peer":"bob"}')
 
-        monkeypatch.setenv("AGENTIC_OS_HOME", str(hermes_home))
+        monkeypatch.setenv("AGENTIC_OS_HOME", str(agentic_os_home))
         monkeypatch.setattr(Path, "home", lambda: dst_home)
 
         from agentic_os_cli.backup import run_import
@@ -2696,14 +2696,14 @@ class TestMemoryProviderExternalPaths:
         # Credential-shaped file tightened.
         assert (restored.stat().st_mode & 0o777) == 0o600
         # External state did NOT leak into AGENTIC_OS_HOME.
-        assert not (hermes_home / "_external").exists()
+        assert not (agentic_os_home / "_external").exists()
 
     def test_import_blocks_external_path_traversal(self, tmp_path, monkeypatch):
         """A malicious _external/ member that escapes the home dir is blocked."""
         dst_home = tmp_path / "dst"
         dst_home.mkdir()
-        hermes_home = dst_home / ".hermes"
-        hermes_home.mkdir()
+        agentic_os_home = dst_home / ".hermes"
+        agentic_os_home.mkdir()
         sentinel = tmp_path / "PWNED"
 
         zip_path = tmp_path / "backup.zip"
@@ -2713,7 +2713,7 @@ class TestMemoryProviderExternalPaths:
             zf.writestr("state.db", "")
             zf.writestr("_external/../../PWNED", "pwned")
 
-        monkeypatch.setenv("AGENTIC_OS_HOME", str(hermes_home))
+        monkeypatch.setenv("AGENTIC_OS_HOME", str(agentic_os_home))
         monkeypatch.setattr(Path, "home", lambda: dst_home)
 
         from agentic_os_cli.backup import run_import

@@ -25,7 +25,7 @@ import pytest
 
 
 @pytest.fixture
-def hermes_home(tmp_path, monkeypatch):
+def agentic_os_home(tmp_path, monkeypatch):
     home = tmp_path / ".hermes"
     home.mkdir()
     monkeypatch.setenv("AGENTIC_OS_HOME", str(home))
@@ -85,7 +85,7 @@ class _StubChild:
 
 class TestDumpSubagentTimeoutDiagnostic:
 
-    def test_writes_log_with_expected_sections(self, hermes_home):
+    def test_writes_log_with_expected_sections(self, agentic_os_home):
         from tools.delegate_tool import _dump_subagent_timeout_diagnostic
         child = _StubChild(subagent_id="sa-7-abc123")
 
@@ -112,7 +112,7 @@ class TestDumpSubagentTimeoutDiagnostic:
         p = Path(path)
         assert p.is_file()
         # File lives under AGENTIC_OS_HOME/logs/
-        assert p.parent == hermes_home / "logs"
+        assert p.parent == agentic_os_home / "logs"
         assert p.name.startswith("subagent-timeout-sa-7-abc123-")
         assert p.suffix == ".log"
 
@@ -145,7 +145,7 @@ class TestDumpSubagentTimeoutDiagnostic:
         # The thread is parked inside _hang.wait → cond.wait → waiter.acquire
         assert "acquire" in content or "wait" in content
 
-    def test_truncates_very_long_goal(self, hermes_home):
+    def test_truncates_very_long_goal(self, agentic_os_home):
         from tools.delegate_tool import _dump_subagent_timeout_diagnostic
         child = _StubChild()
         huge_goal = "x" * 5000
@@ -166,7 +166,7 @@ class TestDumpSubagentTimeoutDiagnostic:
         goal_block = content.split("## Goal", 1)[1].split("## Child config", 1)[0]
         assert len(goal_block) < 1200
 
-    def test_missing_worker_thread_is_handled(self, hermes_home):
+    def test_missing_worker_thread_is_handled(self, agentic_os_home):
         from tools.delegate_tool import _dump_subagent_timeout_diagnostic
         child = _StubChild()
         path = _dump_subagent_timeout_diagnostic(
@@ -181,7 +181,7 @@ class TestDumpSubagentTimeoutDiagnostic:
         content = Path(path).read_text()
         assert "<no worker thread handle>" in content
 
-    def test_exited_worker_thread_is_handled(self, hermes_home):
+    def test_exited_worker_thread_is_handled(self, agentic_os_home):
         from tools.delegate_tool import _dump_subagent_timeout_diagnostic
         child = _StubChild()
         # A thread that has already finished
@@ -250,7 +250,7 @@ class TestRunSingleChildTimeoutDump:
             parent_agent=parent,
         )
 
-    def test_zero_api_calls_writes_dump_and_surfaces_path(self, hermes_home, monkeypatch):
+    def test_zero_api_calls_writes_dump_and_surfaces_path(self, agentic_os_home, monkeypatch):
         child = _StubChild(api_call_count=0, hang_seconds=10.0)
         result = self._invoke_with_short_timeout(child, monkeypatch)
 
@@ -259,14 +259,14 @@ class TestRunSingleChildTimeoutDump:
         assert result["diagnostic_path"] is not None
         dump_path = Path(result["diagnostic_path"])
         assert dump_path.is_file()
-        assert dump_path.parent == hermes_home / "logs"
+        assert dump_path.parent == agentic_os_home / "logs"
 
         # Error message surfaces the path and the "no API call" phrasing
         assert "without making any API call" in result["error"]
         assert "Diagnostic:" in result["error"]
         assert str(dump_path) in result["error"]
 
-    def test_nonzero_api_calls_skips_dump_and_uses_old_message(self, hermes_home, monkeypatch):
+    def test_nonzero_api_calls_skips_dump_and_uses_old_message(self, agentic_os_home, monkeypatch):
         child = _StubChild(api_call_count=5, hang_seconds=10.0)
         result = self._invoke_with_short_timeout(child, monkeypatch)
 
@@ -278,7 +278,7 @@ class TestRunSingleChildTimeoutDump:
         assert result.get("diagnostic_path") is None
         assert "stuck on a slow API call" in result["error"]
         # And no subagent-timeout-* file should exist under logs/
-        logs_dir = hermes_home / "logs"
+        logs_dir = agentic_os_home / "logs"
         if logs_dir.is_dir():
             dumps = list(logs_dir.glob("subagent-timeout-*.log"))
             assert dumps == []

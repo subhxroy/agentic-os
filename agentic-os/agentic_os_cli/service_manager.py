@@ -348,11 +348,11 @@ def _profile_dir_for_gateway_service(name: str) -> Path:
 
     profile = name[len(S6_SERVICE_PREFIX):] if name.startswith(S6_SERVICE_PREFIX) else name
     validate_profile_name(profile)
-    hermes_home = Path(os.environ.get("AGENTIC_OS_HOME", "/opt/data"))
-    if hermes_home.parent.name == "profiles":
-        root = hermes_home.parent.parent
+    agentic_os_home = Path(os.environ.get("AGENTIC_OS_HOME", "/opt/data"))
+    if agentic_os_home.parent.name == "profiles":
+        root = agentic_os_home.parent.parent
     else:
-        root = hermes_home
+        root = agentic_os_home
     return root if profile == "default" else root / "profiles" / profile
 
 

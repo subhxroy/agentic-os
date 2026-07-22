@@ -92,7 +92,7 @@ export function getRegisteredCount(): number {
  * Version of the plugin SDK contract (see ``plugins/sdk.d.ts``). Bump the
  * major on any backwards-incompatible change to the exposed surface;
  * additive changes (new optional fields / helpers) don't require a bump.
- * Exposed at runtime as ``window.__HERMES_PLUGIN_SDK__.sdkVersion`` so a
+ * Exposed at runtime as ``window.__AGENTIC_OS_PLUGIN_SDK__.sdkVersion`` so a
  * plugin (or a future host-side compatibility gate) can read it.
  */
 export const SDK_CONTRACT_VERSION = "1.1.0";
@@ -107,7 +107,7 @@ export function exposePluginSDK() {
     registerSlot,
   };
 
-  window.__HERMES_PLUGIN_SDK__ = {
+  window.__AGENTIC_OS_PLUGIN_SDK__ = {
     // Contract version of the plugin SDK surface (see plugins/sdk.d.ts).
     // Bump on backwards-incompatible changes; additive changes don't need it.
     sdkVersion: SDK_CONTRACT_VERSION,

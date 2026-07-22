@@ -723,9 +723,9 @@ class TestConfigDrivenPolicy:
     def test_policy_loaded_from_yaml(self, tmp_path, monkeypatch):
         from agent.plugin_llm import _resolve_trust_policy
 
-        hermes_home = tmp_path / ".hermes"
-        hermes_home.mkdir()
-        (hermes_home / "config.yaml").write_text(
+        agentic_os_home = tmp_path / ".hermes"
+        agentic_os_home.mkdir()
+        (agentic_os_home / "config.yaml").write_text(
             """
 plugins:
   entries:
@@ -741,7 +741,7 @@ plugins:
 """,
             encoding="utf-8",
         )
-        monkeypatch.setenv("AGENTIC_OS_HOME", str(hermes_home))
+        monkeypatch.setenv("AGENTIC_OS_HOME", str(agentic_os_home))
         from agentic_os_cli import config as _config_mod
         _config_mod._config_cache = None  # type: ignore[attr-defined]
 
@@ -757,10 +757,10 @@ plugins:
     def test_missing_plugin_entry_yields_default_deny(self, tmp_path, monkeypatch):
         from agent.plugin_llm import _resolve_trust_policy
 
-        hermes_home = tmp_path / ".hermes"
-        hermes_home.mkdir()
-        (hermes_home / "config.yaml").write_text("plugins: {}\n", encoding="utf-8")
-        monkeypatch.setenv("AGENTIC_OS_HOME", str(hermes_home))
+        agentic_os_home = tmp_path / ".hermes"
+        agentic_os_home.mkdir()
+        (agentic_os_home / "config.yaml").write_text("plugins: {}\n", encoding="utf-8")
+        monkeypatch.setenv("AGENTIC_OS_HOME", str(agentic_os_home))
         from agentic_os_cli import config as _config_mod
         _config_mod._config_cache = None  # type: ignore[attr-defined]
 

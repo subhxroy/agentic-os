@@ -968,7 +968,7 @@ class TestRunJobSessionPersistence:
 
         with patch("cron.scheduler._agentic_os_home", tmp_path), \
              patch("cron.scheduler._resolve_origin", return_value=None), \
-             patch("agentic_os_cli.env_loader.load_hermes_dotenv"), \
+             patch("agentic_os_cli.env_loader.load_agentic_os_dotenv"), \
              patch("agentic_os_cli.env_loader.reset_secret_source_cache"), \
              patch("agentic_os_state.SessionDB", return_value=fake_db), \
              patch(
@@ -1015,7 +1015,7 @@ class TestRunJobSessionPersistence:
 
         with patch("cron.scheduler._agentic_os_home", tmp_path), \
              patch("cron.scheduler._resolve_origin", return_value=None), \
-             patch("agentic_os_cli.env_loader.load_hermes_dotenv"), \
+             patch("agentic_os_cli.env_loader.load_agentic_os_dotenv"), \
              patch("agentic_os_cli.env_loader.reset_secret_source_cache"), \
              patch("agentic_os_state.SessionDB", return_value=fake_db), \
              patch(
@@ -1059,7 +1059,7 @@ class TestRunJobSessionPersistence:
 
         with patch("cron.scheduler._agentic_os_home", tmp_path), \
              patch("cron.scheduler._resolve_origin", return_value=None), \
-             patch("agentic_os_cli.env_loader.load_hermes_dotenv"), \
+             patch("agentic_os_cli.env_loader.load_agentic_os_dotenv"), \
              patch("agentic_os_cli.env_loader.reset_secret_source_cache"), \
              patch("agentic_os_state.SessionDB", return_value=fake_db), \
              patch(
@@ -1100,7 +1100,7 @@ class TestRunJobSessionPersistence:
 
         with patch("cron.scheduler._agentic_os_home", tmp_path), \
              patch("cron.scheduler._resolve_origin", return_value=None), \
-             patch("agentic_os_cli.env_loader.load_hermes_dotenv"), \
+             patch("agentic_os_cli.env_loader.load_agentic_os_dotenv"), \
              patch("agentic_os_cli.env_loader.reset_secret_source_cache"), \
              patch("agentic_os_state.SessionDB", return_value=fake_db), \
              patch(
@@ -1138,7 +1138,7 @@ class TestRunJobSessionPersistence:
 
         with patch("cron.scheduler._agentic_os_home", tmp_path), \
              patch("cron.scheduler._resolve_origin", return_value=None), \
-             patch("agentic_os_cli.env_loader.load_hermes_dotenv"), \
+             patch("agentic_os_cli.env_loader.load_agentic_os_dotenv"), \
              patch("agentic_os_cli.env_loader.reset_secret_source_cache"), \
              patch("agentic_os_state.SessionDB", return_value=fake_db), \
              patch(
@@ -1176,7 +1176,7 @@ class TestRunJobSessionPersistence:
 
         with patch("cron.scheduler._agentic_os_home", tmp_path), \
              patch("cron.scheduler._resolve_origin", return_value=None), \
-             patch("agentic_os_cli.env_loader.load_hermes_dotenv"), \
+             patch("agentic_os_cli.env_loader.load_agentic_os_dotenv"), \
              patch("agentic_os_cli.env_loader.reset_secret_source_cache"), \
              patch("agentic_os_state.SessionDB", return_value=fake_db), \
              patch(
@@ -1219,7 +1219,7 @@ class TestRunJobSessionPersistence:
         base = [
             patch("cron.scheduler._agentic_os_home", tmp_path),
             patch("cron.scheduler._resolve_origin", return_value=None),
-            patch("agentic_os_cli.env_loader.load_hermes_dotenv"),
+            patch("agentic_os_cli.env_loader.load_agentic_os_dotenv"),
             patch("agentic_os_cli.env_loader.reset_secret_source_cache"),
             patch("agentic_os_state.SessionDB", return_value=fake_db),
             patch(
@@ -1343,7 +1343,7 @@ class TestRunJobSessionPersistence:
 
         with patch("cron.scheduler._agentic_os_home", tmp_path), \
              patch("cron.scheduler._resolve_origin", return_value=None), \
-             patch("agentic_os_cli.env_loader.load_hermes_dotenv"), \
+             patch("agentic_os_cli.env_loader.load_agentic_os_dotenv"), \
              patch("agentic_os_cli.env_loader.reset_secret_source_cache"), \
              patch("agentic_os_state.SessionDB", return_value=fake_db), \
              patch(
@@ -1420,7 +1420,7 @@ class TestRunJobSessionPersistence:
 
         with patch("cron.scheduler._agentic_os_home", tmp_path), \
              patch("cron.scheduler._resolve_origin", return_value=None), \
-             patch("agentic_os_cli.env_loader.load_hermes_dotenv"), \
+             patch("agentic_os_cli.env_loader.load_agentic_os_dotenv"), \
              patch("agentic_os_cli.env_loader.reset_secret_source_cache"), \
              patch("agentic_os_state.SessionDB", return_value=fake_db), \
              patch(
@@ -1460,7 +1460,7 @@ class TestRunJobSessionPersistence:
 
         with patch("cron.scheduler._agentic_os_home", tmp_path), \
              patch("cron.scheduler._resolve_origin", return_value=None), \
-             patch("agentic_os_cli.env_loader.load_hermes_dotenv"), \
+             patch("agentic_os_cli.env_loader.load_agentic_os_dotenv"), \
              patch("agentic_os_cli.env_loader.reset_secret_source_cache"), \
              patch("agentic_os_state.SessionDB", return_value=fake_db), \
              patch(
@@ -1503,7 +1503,7 @@ class TestRunJobSessionPersistence:
 
         with patch("cron.scheduler._agentic_os_home", tmp_path), \
              patch("cron.scheduler._resolve_origin", return_value=None), \
-             patch("agentic_os_cli.env_loader.load_hermes_dotenv"), \
+             patch("agentic_os_cli.env_loader.load_agentic_os_dotenv"), \
              patch("agentic_os_cli.env_loader.reset_secret_source_cache"), \
              patch("agentic_os_state.SessionDB", return_value=fake_db), \
              patch(
@@ -1709,7 +1709,7 @@ class TestRunJobSessionPersistence:
         this AGENTIC_OS_HOME in ``_APPLIED_HOMES``, so the external-secret pull
         no-ops and only the placeholder is re-applied. The scheduler must call
         ``reset_secret_source_cache()`` (forcing the re-pull) and route through
-        ``load_hermes_dotenv`` (which then re-applies external secret sources).
+        ``load_agentic_os_dotenv`` (which then re-applies external secret sources).
         """
         job = {"id": "bsm-job", "name": "bsm", "prompt": "hello"}
         fake_db = MagicMock()
@@ -1725,7 +1725,7 @@ class TestRunJobSessionPersistence:
         with patch("cron.scheduler._agentic_os_home", tmp_path), \
              patch("cron.scheduler._resolve_origin", return_value=None), \
              patch("agentic_os_cli.env_loader.reset_secret_source_cache", _record_reset), \
-             patch("agentic_os_cli.env_loader.load_hermes_dotenv", _record_load), \
+             patch("agentic_os_cli.env_loader.load_agentic_os_dotenv", _record_load), \
              patch("agentic_os_state.SessionDB", return_value=fake_db), \
              patch(
                  "agentic_os_cli.runtime_provider.resolve_runtime_provider",
@@ -1843,7 +1843,7 @@ class TestRunJobConfigLogging:
         # (>30s wall clock) under load. See PR #33661 follow-up.
         with patch("cron.scheduler._agentic_os_home", tmp_path), \
              patch("cron.scheduler._resolve_origin", return_value=None), \
-             patch("agentic_os_cli.env_loader.load_hermes_dotenv"), \
+             patch("agentic_os_cli.env_loader.load_agentic_os_dotenv"), \
              patch("agentic_os_cli.env_loader.reset_secret_source_cache"), \
              patch("agentic_os_cli.runtime_provider.resolve_runtime_provider",
                    return_value={"provider": "openrouter", "api_key": "x",
@@ -1878,7 +1878,7 @@ class TestRunJobConfigLogging:
 
         with patch("cron.scheduler._agentic_os_home", tmp_path), \
              patch("cron.scheduler._resolve_origin", return_value=None), \
-             patch("agentic_os_cli.env_loader.load_hermes_dotenv"), \
+             patch("agentic_os_cli.env_loader.load_agentic_os_dotenv"), \
              patch("agentic_os_cli.env_loader.reset_secret_source_cache"), \
              patch("agentic_os_cli.runtime_provider.resolve_runtime_provider",
                    return_value={"provider": "openrouter", "api_key": "x",
@@ -1917,7 +1917,7 @@ class TestRunJobConfigEnvVarExpansion:
 
         with patch("cron.scheduler._agentic_os_home", tmp_path), \
              patch("cron.scheduler._resolve_origin", return_value=None), \
-             patch("agentic_os_cli.env_loader.load_hermes_dotenv"), \
+             patch("agentic_os_cli.env_loader.load_agentic_os_dotenv"), \
              patch("agentic_os_cli.env_loader.reset_secret_source_cache"), \
              patch("agentic_os_state.SessionDB", return_value=fake_db), \
              patch("agentic_os_cli.runtime_provider.resolve_runtime_provider",
@@ -1951,7 +1951,7 @@ class TestRunJobConfigEnvVarExpansion:
 
         with patch("cron.scheduler._agentic_os_home", tmp_path), \
              patch("cron.scheduler._resolve_origin", return_value=None), \
-             patch("agentic_os_cli.env_loader.load_hermes_dotenv"), \
+             patch("agentic_os_cli.env_loader.load_agentic_os_dotenv"), \
              patch("agentic_os_cli.env_loader.reset_secret_source_cache"), \
              patch("agentic_os_state.SessionDB", return_value=fake_db), \
              patch("agentic_os_cli.runtime_provider.resolve_runtime_provider",
@@ -1982,7 +1982,7 @@ class TestRunJobConfigEnvVarExpansion:
 
         with patch("cron.scheduler._agentic_os_home", tmp_path), \
              patch("cron.scheduler._resolve_origin", return_value=None), \
-             patch("agentic_os_cli.env_loader.load_hermes_dotenv"), \
+             patch("agentic_os_cli.env_loader.load_agentic_os_dotenv"), \
              patch("agentic_os_cli.env_loader.reset_secret_source_cache"), \
              patch("agentic_os_state.SessionDB", return_value=fake_db), \
              patch("agentic_os_cli.runtime_provider.resolve_runtime_provider",
@@ -2038,7 +2038,7 @@ class TestRunJobConfigEnvVarExpansion:
 
         with patch("cron.scheduler._agentic_os_home", tmp_path), \
              patch("cron.scheduler._resolve_origin", return_value=None), \
-             patch("agentic_os_cli.env_loader.load_hermes_dotenv"), \
+             patch("agentic_os_cli.env_loader.load_agentic_os_dotenv"), \
              patch("agentic_os_cli.env_loader.reset_secret_source_cache"), \
              patch("agentic_os_state.SessionDB", return_value=fake_db), \
              patch("agentic_os_cli.runtime_provider.resolve_runtime_provider",
@@ -2097,7 +2097,7 @@ class TestRunJobConfigEnvVarExpansion:
 
         with patch("cron.scheduler._agentic_os_home", tmp_path), \
              patch("cron.scheduler._resolve_origin", return_value=None), \
-             patch("agentic_os_cli.env_loader.load_hermes_dotenv"), \
+             patch("agentic_os_cli.env_loader.load_agentic_os_dotenv"), \
              patch("agentic_os_cli.env_loader.reset_secret_source_cache"), \
              patch("agentic_os_state.SessionDB", return_value=fake_db), \
              patch("agentic_os_cli.runtime_provider.resolve_runtime_provider",
@@ -2142,7 +2142,7 @@ class TestRunJobModelResolution:
 
         with patch("cron.scheduler._agentic_os_home", tmp_path), \
              patch("cron.scheduler._resolve_origin", return_value=None), \
-             patch("agentic_os_cli.env_loader.load_hermes_dotenv"), \
+             patch("agentic_os_cli.env_loader.load_agentic_os_dotenv"), \
              patch("agentic_os_cli.env_loader.reset_secret_source_cache"), \
              patch("agentic_os_state.SessionDB", return_value=fake_db), \
              patch("agentic_os_cli.runtime_provider.resolve_runtime_provider",
@@ -2167,7 +2167,7 @@ class TestRunJobModelResolution:
 
         with patch("cron.scheduler._agentic_os_home", tmp_path), \
              patch("cron.scheduler._resolve_origin", return_value=None), \
-             patch("agentic_os_cli.env_loader.load_hermes_dotenv"), \
+             patch("agentic_os_cli.env_loader.load_agentic_os_dotenv"), \
              patch("agentic_os_cli.env_loader.reset_secret_source_cache"), \
              patch("agentic_os_state.SessionDB", return_value=fake_db), \
              patch("agentic_os_cli.runtime_provider.resolve_runtime_provider",
@@ -2200,7 +2200,7 @@ class TestRunJobModelResolution:
 
         with patch("cron.scheduler._agentic_os_home", tmp_path), \
              patch("cron.scheduler._resolve_origin", return_value=None), \
-             patch("agentic_os_cli.env_loader.load_hermes_dotenv"), \
+             patch("agentic_os_cli.env_loader.load_agentic_os_dotenv"), \
              patch("agentic_os_cli.env_loader.reset_secret_source_cache"), \
              patch("agentic_os_state.SessionDB", return_value=fake_db), \
              patch("agentic_os_cli.runtime_provider.resolve_runtime_provider",
@@ -2224,7 +2224,7 @@ class TestRunJobModelResolution:
 
         with patch("cron.scheduler._agentic_os_home", tmp_path), \
              patch("cron.scheduler._resolve_origin", return_value=None), \
-             patch("agentic_os_cli.env_loader.load_hermes_dotenv"), \
+             patch("agentic_os_cli.env_loader.load_agentic_os_dotenv"), \
              patch("agentic_os_cli.env_loader.reset_secret_source_cache"), \
              patch("agentic_os_state.SessionDB", return_value=fake_db), \
              patch("agentic_os_cli.runtime_provider.resolve_runtime_provider",
@@ -2254,7 +2254,7 @@ class TestRunJobModelResolution:
 
         with patch("cron.scheduler._agentic_os_home", tmp_path), \
              patch("cron.scheduler._resolve_origin", return_value=None), \
-             patch("agentic_os_cli.env_loader.load_hermes_dotenv"), \
+             patch("agentic_os_cli.env_loader.load_agentic_os_dotenv"), \
              patch("agentic_os_cli.env_loader.reset_secret_source_cache"), \
              patch("agentic_os_state.SessionDB", return_value=fake_db), \
              patch("agentic_os_cli.runtime_provider.resolve_runtime_provider",
@@ -2281,7 +2281,7 @@ class TestRunJobModelResolution:
 
         with patch("cron.scheduler._agentic_os_home", tmp_path), \
              patch("cron.scheduler._resolve_origin", return_value=None), \
-             patch("agentic_os_cli.env_loader.load_hermes_dotenv"), \
+             patch("agentic_os_cli.env_loader.load_agentic_os_dotenv"), \
              patch("agentic_os_cli.env_loader.reset_secret_source_cache"), \
              patch("agentic_os_state.SessionDB", return_value=fake_db), \
              patch("agentic_os_cli.runtime_provider.resolve_runtime_provider",
@@ -2312,7 +2312,7 @@ class TestRunJobModelResolution:
 
         with patch("cron.scheduler._agentic_os_home", tmp_path), \
              patch("cron.scheduler._resolve_origin", return_value=None), \
-             patch("agentic_os_cli.env_loader.load_hermes_dotenv"), \
+             patch("agentic_os_cli.env_loader.load_agentic_os_dotenv"), \
              patch("agentic_os_cli.env_loader.reset_secret_source_cache"), \
              patch("agentic_os_state.SessionDB", return_value=fake_db), \
              patch("agentic_os_cli.runtime_provider.resolve_runtime_provider",
@@ -2337,7 +2337,7 @@ class TestRunJobModelResolution:
 
         with patch("cron.scheduler._agentic_os_home", tmp_path), \
              patch("cron.scheduler._resolve_origin", return_value=None), \
-             patch("agentic_os_cli.env_loader.load_hermes_dotenv"), \
+             patch("agentic_os_cli.env_loader.load_agentic_os_dotenv"), \
              patch("agentic_os_cli.env_loader.reset_secret_source_cache"), \
              patch("agentic_os_state.SessionDB", return_value=fake_db), \
              patch("agentic_os_cli.runtime_provider.resolve_runtime_provider",
@@ -2380,7 +2380,7 @@ class TestRunJobSkillBacked:
 
         with patch("cron.scheduler._agentic_os_home", tmp_path), \
              patch("cron.scheduler._resolve_origin", return_value=None), \
-             patch("agentic_os_cli.env_loader.load_hermes_dotenv"), \
+             patch("agentic_os_cli.env_loader.load_agentic_os_dotenv"), \
              patch("agentic_os_cli.env_loader.reset_secret_source_cache"), \
              patch("agentic_os_state.SessionDB", return_value=fake_db), \
              patch(
@@ -2441,7 +2441,7 @@ class TestRunJobSkillBacked:
         with patch("cron.scheduler._agentic_os_home", tmp_path), \
              patch("cron.scheduler._resolve_origin", return_value=None), \
              patch("tools.credential_files._resolve_agentic_os_home", return_value=tmp_path), \
-             patch("agentic_os_cli.env_loader.load_hermes_dotenv"), \
+             patch("agentic_os_cli.env_loader.load_agentic_os_dotenv"), \
              patch("agentic_os_cli.env_loader.reset_secret_source_cache"), \
              patch("agentic_os_state.SessionDB", return_value=fake_db), \
              patch(
@@ -2480,7 +2480,7 @@ class TestRunJobSkillBacked:
 
         with patch("cron.scheduler._agentic_os_home", tmp_path), \
              patch("cron.scheduler._resolve_origin", return_value=None), \
-             patch("agentic_os_cli.env_loader.load_hermes_dotenv"), \
+             patch("agentic_os_cli.env_loader.load_agentic_os_dotenv"), \
              patch("agentic_os_cli.env_loader.reset_secret_source_cache"), \
              patch("agentic_os_state.SessionDB", return_value=fake_db), \
              patch(
@@ -2527,7 +2527,7 @@ class TestRunJobSkillBacked:
 
         with patch("cron.scheduler._agentic_os_home", tmp_path), \
              patch("cron.scheduler._resolve_origin", return_value=None), \
-             patch("agentic_os_cli.env_loader.load_hermes_dotenv"), \
+             patch("agentic_os_cli.env_loader.load_agentic_os_dotenv"), \
              patch("agentic_os_cli.env_loader.reset_secret_source_cache"), \
              patch("agentic_os_state.SessionDB", return_value=fake_db), \
              patch(

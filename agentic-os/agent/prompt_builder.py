@@ -1208,7 +1208,7 @@ def build_environment_hints() -> str:
     # it's part of the stable, cache-safe system prompt. The env var is the
     # build-time/embedder mechanism (set in a container ENV); config.yaml
     # ``agent.environment_hint`` is the user-facing surface. Env var wins.
-    extra = (os.getenv("HERMES_ENVIRONMENT_HINT") or "").strip()
+    extra = (os.getenv("AGENTIC_OS_ENVIRONMENT_HINT") or "").strip()
     if not extra:
         try:
             from agentic_os_cli.config import load_config

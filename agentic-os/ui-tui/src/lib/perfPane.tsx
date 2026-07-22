@@ -15,8 +15,8 @@ import { appendFileSync, mkdirSync } from 'node:fs'
 import { homedir } from 'node:os'
 import { dirname, join } from 'node:path'
 
-import type { FrameEvent } from '@hermes/ink'
-import { scrollFastPathStats } from '@hermes/ink'
+import type { FrameEvent } from '@agentic-os/ink'
+import { scrollFastPathStats } from '@agentic-os/ink'
 import { Profiler, type ProfilerOnRenderCallback, type ReactNode } from 'react'
 
 const ENABLED = /^(?:1|true|yes|on)$/i.test((process.env.HERMES_DEV_PERF ?? '').trim())

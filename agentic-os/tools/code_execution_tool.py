@@ -165,7 +165,7 @@ _HERMES_CHILD_ALLOWED = frozenset({
     "AGENTIC_OS_HOME",
     "HERMES_PROFILE",
     "HERMES_CONFIG",
-    "HERMES_ENV",
+    "AGENTIC_OS_ENV",
 })
 
 # Windows-only: a handful of variables are required by the OS/CRT itself.

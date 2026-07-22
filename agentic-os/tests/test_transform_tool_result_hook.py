@@ -165,8 +165,8 @@ def test_transform_tool_result_integration_with_real_plugin(monkeypatch, tmp_pat
     """End-to-end: load a real plugin from AGENTIC_OS_HOME and verify it rewrites results."""
     import yaml
 
-    hermes_home = Path(os.environ["AGENTIC_OS_HOME"])
-    plugins_dir = hermes_home / "plugins"
+    agentic_os_home = Path(os.environ["AGENTIC_OS_HOME"])
+    plugins_dir = agentic_os_home / "plugins"
     plugin_dir = plugins_dir / "transform_result_canon"
     plugin_dir.mkdir(parents=True)
     (plugin_dir / "plugin.yaml").write_text("name: transform_result_canon\n", encoding="utf-8")
@@ -177,7 +177,7 @@ def test_transform_tool_result_integration_with_real_plugin(monkeypatch, tmp_pat
         encoding="utf-8",
     )
     # Plugins are opt-in — must be listed in plugins.enabled to load.
-    cfg_path = hermes_home / "config.yaml"
+    cfg_path = agentic_os_home / "config.yaml"
     cfg_path.write_text(
         yaml.safe_dump({"plugins": {"enabled": ["transform_result_canon"]}}),
         encoding="utf-8",

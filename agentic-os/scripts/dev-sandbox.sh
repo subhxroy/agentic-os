@@ -159,10 +159,10 @@ else
 fi
 
 export AGENTIC_OS_HOME="$SANDBOX_ROOT/hermes-home"
-export HERMES_DESKTOP_USER_DATA_DIR="$SANDBOX_ROOT/user-data"
-export HERMES_DESKTOP_APP_NAME="$SANDBOX_NAME"
+export AGENTIC_OS_DESKTOP_USER_DATA_DIR="$SANDBOX_ROOT/user-data"
+export AGENTIC_OS_DESKTOP_APP_NAME="$SANDBOX_NAME"
 
-mkdir -p "$AGENTIC_OS_HOME" "$HERMES_DESKTOP_USER_DATA_DIR"
+mkdir -p "$AGENTIC_OS_HOME" "$AGENTIC_OS_DESKTOP_USER_DATA_DIR"
 
 if [ -n "$SEED_DIR" ]; then
   # Only seed when the sandbox AGENTIC_OS_HOME is empty — avoids clobbering an
@@ -176,8 +176,8 @@ if [ -n "$SEED_DIR" ]; then
 fi
 
 echo "[sandbox] AGENTIC_OS_HOME=$AGENTIC_OS_HOME" >&2
-echo "[sandbox] userData=$HERMES_DESKTOP_USER_DATA_DIR" >&2
-echo "[sandbox] appName=$HERMES_DESKTOP_APP_NAME" >&2
+echo "[sandbox] userData=$AGENTIC_OS_DESKTOP_USER_DATA_DIR" >&2
+echo "[sandbox] appName=$AGENTIC_OS_DESKTOP_APP_NAME" >&2
 if [ "$PERSISTENT" = true ]; then
   echo "[sandbox] persistent: $SANDBOX_ROOT" >&2
 else

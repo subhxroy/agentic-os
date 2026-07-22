@@ -23,7 +23,7 @@ from agentic_os_constants import (
     reset_AGENTIC_OS_HOME_OVERRIDE,
     set_AGENTIC_OS_HOME_OVERRIDE,
 )
-from agentic_os_cli.env_loader import load_hermes_dotenv
+from agentic_os_cli.env_loader import load_agentic_os_dotenv
 from utils import is_truthy_value
 from tools.environments.local import agentic_os_subprocess_env
 from agent.replay_cleanup import sanitize_replay_history
@@ -39,8 +39,8 @@ from tui_gateway.transport import (
 logger = logging.getLogger(__name__)
 
 _agentic_os_home = get_agentic_os_home()
-load_hermes_dotenv(
-    hermes_home=_agentic_os_home, project_env=Path(__file__).parent.parent / ".env"
+load_agentic_os_dotenv(
+    agentic_os_home=_agentic_os_home, project_env=Path(__file__).parent.parent / ".env"
 )
 
 
@@ -2443,9 +2443,9 @@ def _resolve_session_platform() -> str:
     TUI-only slash commands (``/reload-mcp``, …) to chat-panel users.
 
     Resolution:
-      * ``HERMES_DESKTOP=1`` and ``HERMES_DESKTOP_TERMINAL`` unset → "desktop"
+      * ``HERMES_DESKTOP=1`` and ``AGENTIC_OS_DESKTOP_TERMINAL`` unset → "desktop"
         (the chat-panel backend — a graphical React surface, not a terminal).
-      * ``HERMES_DESKTOP_TERMINAL=1`` → "tui"
+      * ``AGENTIC_OS_DESKTOP_TERMINAL=1`` → "tui"
         (``hermes --tui`` running in the desktop's embedded terminal pane;
         it IS a TUI, just embedded. The clarifier attached to the tui hint
         in system_prompt.py tells the agent about the embedding.)
@@ -2453,7 +2453,7 @@ def _resolve_session_platform() -> str:
         (standalone ``hermes --tui``.)
     """
     if is_truthy_value(os.environ.get("HERMES_DESKTOP")) and not is_truthy_value(
-        os.environ.get("HERMES_DESKTOP_TERMINAL")
+        os.environ.get("AGENTIC_OS_DESKTOP_TERMINAL")
     ):
         return "desktop"
     return "tui"
@@ -11175,14 +11175,14 @@ def _(rid, params: dict) -> dict:
                 if has_history
                 else None
             ),
-            "Restart exactly the app intended for the Preview URL, not Hermes Desktop itself.",
+            "Restart exactly the app intended for the Preview URL, not Agentic OS Desktop itself.",
             "The Preview URL and port are the target. Preserve that target unless you conclude it is impossible.",
             "If the prior conversation shows a specific command that bound this URL/port, prefer re-running THAT exact command (in the same cwd) over guessing a new one.",
             "First inspect what process, if any, owns the Preview URL port. If a stale server exists, inspect its cwd and prefer that cwd over the Hermes/Desktop process cwd.",
             "The Current working directory is only a hint. Do not assume it is the preview app root when the port owner or files indicate another root.",
             "If the console shows a module-script MIME error for src/main.tsx or similar, a static server is serving source files. Do not restart python -m http.server or any dumb static server for that app.",
             "For module-script MIME failures, inspect package.json/vite config in the candidate app root and start the real dev server/bundler (for example npm/pnpm/yarn dev) so module transforms happen.",
-            "Before declaring success, verify the Preview URL responds with the intended app, not Hermes Desktop. If it serves Hermes/Desktop UI or another unrelated app, stop that process and report failure.",
+            "Before declaring success, verify the Preview URL responds with the intended app, not Agentic OS Desktop. If it serves Hermes/Desktop UI or another unrelated app, stop that process and report failure.",
             "Do not modify files. Do not ask the user unless blocked.",
             "Prefer existing project scripts or commands when they are clear.",
             "If a stale process owns the needed port, handle it safely.",
@@ -12061,9 +12061,9 @@ def _is_repo_junk(root: str) -> bool:
 
     real = os.path.realpath(root)
     home = os.path.realpath(os.path.expanduser("~"))
-    hermes_home = os.path.realpath(str(get_agentic_os_home()))
+    agentic_os_home = os.path.realpath(str(get_agentic_os_home()))
 
-    return real == home or real == hermes_home or real.startswith(hermes_home + os.sep)
+    return real == home or real == agentic_os_home or real.startswith(agentic_os_home + os.sep)
 
 
 def _is_session_cwd_junk(cwd: str) -> bool:
@@ -12081,8 +12081,8 @@ def _is_session_cwd_junk(cwd: str) -> bool:
 
     real = os.path.normcase(os.path.realpath(cwd))
     home = os.path.normcase(os.path.realpath(os.path.expanduser("~")))
-    hermes_home = os.path.normcase(os.path.realpath(str(get_agentic_os_home())))
-    return real == home or real == hermes_home
+    agentic_os_home = os.path.normcase(os.path.realpath(str(get_agentic_os_home())))
+    return real == home or real == agentic_os_home
 
 
 def _repo_discovery_policy(raw: dict | None = None) -> dict:

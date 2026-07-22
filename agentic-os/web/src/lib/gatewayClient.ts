@@ -19,7 +19,7 @@ import {
   type ConnectionState,
   type GatewayEvent,
   type GatewayEventName,
-} from "@hermes/shared";
+} from "@agentic-os/shared";
 
 import { HERMES_BASE_PATH, buildWsAuthParam } from "@/lib/api";
 

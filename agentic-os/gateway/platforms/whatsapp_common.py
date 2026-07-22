@@ -478,8 +478,8 @@ def resolve_whatsapp_bridge_dir() -> Path:
     install_bridge = _Path(__file__).resolve().parents[2] / "scripts" / "whatsapp-bridge"
 
     # Try AGENTIC_OS_HOME location first
-    hermes_home = get_agentic_os_home()
-    hermes_home_bridge = hermes_home / "scripts" / "whatsapp-bridge"
+    agentic_os_home = get_agentic_os_home()
+    agentic_os_home_bridge = agentic_os_home / "scripts" / "whatsapp-bridge"
 
     # Check if install dir is writable
     try:
@@ -494,17 +494,17 @@ def resolve_whatsapp_bridge_dir() -> Path:
         return install_bridge
 
     # Install dir is read-only, mirror to AGENTIC_OS_HOME if needed
-    if hermes_home_bridge.exists():
-        return hermes_home_bridge
+    if agentic_os_home_bridge.exists():
+        return agentic_os_home_bridge
 
     # Mirror the bridge source to AGENTIC_OS_HOME
     try:
-        hermes_home_bridge.parent.mkdir(parents=True, exist_ok=True)
+        agentic_os_home_bridge.parent.mkdir(parents=True, exist_ok=True)
         shutil.copytree(
             install_bridge,
-            hermes_home_bridge,
+            agentic_os_home_bridge,
             dirs_exist_ok=False,
         )
-        return hermes_home_bridge
+        return agentic_os_home_bridge
     except Exception:
         return install_bridge

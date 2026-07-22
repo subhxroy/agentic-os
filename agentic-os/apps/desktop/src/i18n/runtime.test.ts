@@ -61,7 +61,7 @@ describe('desktop i18n runtime translator', () => {
       boot.ready = undefined
       setRuntimeI18nLocale('ja')
 
-      expect(translateNow('boot.ready')).toBe('Hermes Desktop is ready')
+      expect(translateNow('boot.ready')).toBe('Agentic OS Desktop is ready')
     } finally {
       boot.ready = originalReady
     }

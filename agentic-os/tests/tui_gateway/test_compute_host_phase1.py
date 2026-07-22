@@ -290,7 +290,7 @@ def test_supervisor_crash_emits_turn_error_and_respawns(tmp_path):
     script.write_text(
         """
 import json, os, sys
-print(json.dumps({'type':'hello','host_pid':os.getpid(),'boot_id':'boot-1','build_sha':'test','hermes_home':os.environ.get('AGENTIC_OS_HOME','')}), flush=True)
+print(json.dumps({'type':'hello','host_pid':os.getpid(),'boot_id':'boot-1','build_sha':'test','agentic_os_home':os.environ.get('AGENTIC_OS_HOME','')}), flush=True)
 for raw in sys.stdin:
     frame=json.loads(raw)
     if frame.get('type') == 'shutdown':

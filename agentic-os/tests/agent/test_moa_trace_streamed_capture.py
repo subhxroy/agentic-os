@@ -24,9 +24,9 @@ from agent.moa_loop import MoAChatCompletions
 
 def _enable_traces(tmp_path, monkeypatch):
     """Point AGENTIC_OS_HOME at a temp dir and turn moa.save_traces on."""
-    hermes_home = tmp_path / ".hermes"
-    hermes_home.mkdir()
-    monkeypatch.setenv("AGENTIC_OS_HOME", str(hermes_home))
+    agentic_os_home = tmp_path / ".hermes"
+    agentic_os_home.mkdir()
+    monkeypatch.setenv("AGENTIC_OS_HOME", str(agentic_os_home))
 
     # save_moa_turn reads config via agentic_os_cli.config.load_config; stub it to
     # return traces-on so the test doesn't depend on a real config file.
@@ -45,7 +45,7 @@ def _enable_traces(tmp_path, monkeypatch):
     monkeypatch.setattr(
         cfg, "load_config", lambda: {"moa": {"save_traces": True}}, raising=False
     )
-    return hermes_home / "moa-traces"
+    return agentic_os_home / "moa-traces"
 
 
 def _make_completions_with_pending(streamed: bool, inline_output):

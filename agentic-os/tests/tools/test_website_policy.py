@@ -242,9 +242,9 @@ def test_load_website_blocklist_wraps_shared_file_read_errors(tmp_path, monkeypa
 
 
 def test_check_website_access_uses_dynamic_agentic_os_home(monkeypatch, tmp_path):
-    hermes_home = tmp_path / "hermes-home"
-    hermes_home.mkdir()
-    (hermes_home / "config.yaml").write_text(
+    agentic_os_home = tmp_path / "hermes-home"
+    agentic_os_home.mkdir()
+    (agentic_os_home / "config.yaml").write_text(
         yaml.safe_dump(
             {
                 "security": {
@@ -259,7 +259,7 @@ def test_check_website_access_uses_dynamic_agentic_os_home(monkeypatch, tmp_path
         encoding="utf-8",
     )
 
-    monkeypatch.setenv("AGENTIC_OS_HOME", str(hermes_home))
+    monkeypatch.setenv("AGENTIC_OS_HOME", str(agentic_os_home))
 
     # Invalidate the module-level cache so the new AGENTIC_OS_HOME is picked up.
     # A prior test may have cached a default policy (enabled=False) under the

@@ -8,11 +8,11 @@ from plugins.memory.retaindb import RetainDBMemoryProvider
 
 
 def test_upload_file_rejects_hermes_credential_store(tmp_path, monkeypatch):
-    hermes_home = tmp_path / "hermes_home"
-    hermes_home.mkdir()
-    auth_json = hermes_home / "auth.json"
+    agentic_os_home = tmp_path / "agentic_os_home"
+    agentic_os_home.mkdir()
+    auth_json = agentic_os_home / "auth.json"
     auth_json.write_text('{"OPENAI_API_KEY":"sk-test-secret"}', encoding="utf-8")
-    monkeypatch.setattr(fs, "_agentic_os_home_path", lambda: hermes_home)
+    monkeypatch.setattr(fs, "_agentic_os_home_path", lambda: agentic_os_home)
 
     provider = RetainDBMemoryProvider()
     provider._client = MagicMock()

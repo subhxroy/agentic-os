@@ -269,7 +269,7 @@ def _legacy_posix_scrubber(source_env, is_passthrough):
     _SECRET_SUBSTRINGS = ("KEY", "TOKEN", "SECRET", "PASSWORD", "CREDENTIAL",
                           "PASSWD", "AUTH", "DSN", "WEBHOOK")
     _HERMES_CHILD_ALLOWED = frozenset({
-        "AGENTIC_OS_HOME", "HERMES_PROFILE", "HERMES_CONFIG", "HERMES_ENV",
+        "AGENTIC_OS_HOME", "HERMES_PROFILE", "HERMES_CONFIG", "AGENTIC_OS_ENV",
     })
     out = {}
     for k, v in source_env.items():

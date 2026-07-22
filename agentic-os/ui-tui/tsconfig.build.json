@@ -2,7 +2,7 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "paths": {
-      "@hermes/ink": ["src/types/agentic-os-ink.d.ts"]
+      "@agentic-os/ink": ["src/types/agentic-os-ink.d.ts"]
     }
   }
 }

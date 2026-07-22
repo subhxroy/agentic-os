@@ -79,7 +79,7 @@ export interface OnboardingContext {
   requestGateway: <T = unknown>(method: string, params?: Record<string, unknown>) => Promise<T>
 }
 
-const CONFIGURED_CACHE_KEY = 'hermes-desktop-onboarded-v1'
+const CONFIGURED_CACHE_KEY = 'agentic-os-desktop-onboarded-v1'
 const SKIP_CACHE_KEY = 'hermes-onboarding-skipped-v1'
 const POLL_MS = 2000
 const COPY_FLASH_MS = 1500
@@ -526,7 +526,7 @@ export async function refreshOnboarding(ctx: OnboardingContext) {
       kind: 'error',
       title: 'Runtime not ready',
       message:
-        'Hermes Desktop could not verify the running backend on startup. Some features may be unavailable until the gateway is reachable.'
+        'Agentic OS Desktop could not verify the running backend on startup. Some features may be unavailable until the gateway is reachable.'
     })
 
     return false
@@ -551,9 +551,9 @@ export async function refreshOnboarding(ctx: OnboardingContext) {
 // the flow never silently stalls in a waiting state. Mirrors the pattern in
 // apps/desktop/src/app/artifacts/index.tsx.
 async function openSignInUrl(url: string) {
-  if (window.hermesDesktop?.openExternal) {
+  if (window.agenticOSDesktop?.openExternal) {
     try {
-      await window.hermesDesktop.openExternal(url)
+      await window.agenticOSDesktop.openExternal(url)
 
       return
     } catch {

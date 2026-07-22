@@ -242,7 +242,7 @@ def test_stale_env_cwd_from_different_session_is_ignored(monkeypatch):
 
     class FakeEnv:
         env = {}
-        cwd = "/home/user/src/hermes-desktop-tipc/apps/desktop"
+        cwd = "/home/user/src/agentic-os-desktop-tipc/apps/desktop"
         cwd_owner = "session-A-key"
 
         def execute(self, command, **kwargs):
@@ -266,7 +266,7 @@ def test_stale_env_cwd_from_different_session_is_ignored(monkeypatch):
 
     assert result["exit_code"] == 0
     # The command must run in the config cwd (agentic-os), NOT the stale
-    # env.cwd left by session A (hermes-desktop-tipc).
+    # env.cwd left by session A (agentic-os-desktop-tipc).
     assert calls == [("pwd", {"timeout": 60, "cwd": "/home/user/src/agentic-os", "bounded_capture": True})]
 
 

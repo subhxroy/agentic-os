@@ -148,11 +148,11 @@ def test_reraises_when_imported_token_lacks_refresh_token(monkeypatch):
 
 def test_self_heals_missing_singleton_access_token_from_codex_cli(tmp_path, monkeypatch):
     """Exact cron failure path: Hermes auth has refresh_token but missing access_token."""
-    hermes_home = tmp_path / "hermes"
+    agentic_os_home = tmp_path / "hermes"
     codex_home = tmp_path / "codex"
-    hermes_home.mkdir()
+    agentic_os_home.mkdir()
     codex_home.mkdir()
-    (hermes_home / "auth.json").write_text(json.dumps({
+    (agentic_os_home / "auth.json").write_text(json.dumps({
         "version": 1,
         "providers": {
             "openai-codex": {
@@ -168,14 +168,14 @@ def test_self_heals_missing_singleton_access_token_from_codex_cli(tmp_path, monk
             "refresh_token": "fresh-refresh",
         },
     }))
-    monkeypatch.setenv("AGENTIC_OS_HOME", str(hermes_home))
+    monkeypatch.setenv("AGENTIC_OS_HOME", str(agentic_os_home))
     monkeypatch.setenv("CODEX_HOME", str(codex_home))
 
     resolved = resolve_codex_runtime_credentials()
 
     assert resolved["api_key"] == "fresh-access"
     assert resolved["source"] == "hermes-auth-store"
-    stored = json.loads((hermes_home / "auth.json").read_text())
+    stored = json.loads((agentic_os_home / "auth.json").read_text())
     tokens = stored["providers"]["openai-codex"]["tokens"]
     assert tokens["access_token"] == "fresh-access"
     assert tokens["refresh_token"] == "fresh-refresh"
@@ -183,11 +183,11 @@ def test_self_heals_missing_singleton_access_token_from_codex_cli(tmp_path, monk
 
 def test_missing_singleton_access_token_reraises_when_codex_cli_half_token(tmp_path, monkeypatch):
     """Missing access_token must not be masked by a malformed Codex CLI import."""
-    hermes_home = tmp_path / "hermes"
+    agentic_os_home = tmp_path / "hermes"
     codex_home = tmp_path / "codex"
-    hermes_home.mkdir()
+    agentic_os_home.mkdir()
     codex_home.mkdir()
-    (hermes_home / "auth.json").write_text(json.dumps({
+    (agentic_os_home / "auth.json").write_text(json.dumps({
         "version": 1,
         "providers": {
             "openai-codex": {
@@ -199,7 +199,7 @@ def test_missing_singleton_access_token_reraises_when_codex_cli_half_token(tmp_p
     (codex_home / "auth.json").write_text(json.dumps({
         "tokens": {"access_token": "fresh-only"},
     }))
-    monkeypatch.setenv("AGENTIC_OS_HOME", str(hermes_home))
+    monkeypatch.setenv("AGENTIC_OS_HOME", str(agentic_os_home))
     monkeypatch.setenv("CODEX_HOME", str(codex_home))
 
     with pytest.raises(AuthError) as ei:

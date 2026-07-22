@@ -344,12 +344,12 @@ class TestResolveSessionName:
 
 class TestResolveConfigPath:
     def test_prefers_agentic_os_home_when_exists(self, tmp_path):
-        hermes_home = tmp_path / "hermes"
-        hermes_home.mkdir()
-        local_cfg = hermes_home / "honcho.json"
+        agentic_os_home = tmp_path / "hermes"
+        agentic_os_home.mkdir()
+        local_cfg = agentic_os_home / "honcho.json"
         local_cfg.write_text('{"apiKey": "local"}')
 
-        with patch.dict(os.environ, {"AGENTIC_OS_HOME": str(hermes_home)}):
+        with patch.dict(os.environ, {"AGENTIC_OS_HOME": str(agentic_os_home)}):
             result = resolve_config_path()
         assert result == local_cfg
 
@@ -386,10 +386,10 @@ class TestResolveConfigPath:
     def test_global_fallback_uses_home_at_call_time(self, tmp_path):
         fake_home = tmp_path / "fakehome"
         fake_home.mkdir()
-        hermes_home = tmp_path / "hermes"
-        hermes_home.mkdir()
+        agentic_os_home = tmp_path / "hermes"
+        agentic_os_home.mkdir()
 
-        with patch.dict(os.environ, {"AGENTIC_OS_HOME": str(hermes_home)}), \
+        with patch.dict(os.environ, {"AGENTIC_OS_HOME": str(agentic_os_home)}), \
              patch.object(Path, "home", return_value=fake_home):
             assert resolve_global_config_path() == fake_home / ".honcho" / "config.json"
             assert resolve_config_path() == fake_home / ".honcho" / "config.json"
@@ -417,15 +417,15 @@ class TestResolveConfigPath:
         assert config.workspace_id == "default-ws"
 
     def test_from_global_config_uses_local_path(self, tmp_path):
-        hermes_home = tmp_path / "hermes"
-        hermes_home.mkdir()
-        local_cfg = hermes_home / "honcho.json"
+        agentic_os_home = tmp_path / "hermes"
+        agentic_os_home.mkdir()
+        local_cfg = agentic_os_home / "honcho.json"
         local_cfg.write_text(json.dumps({
             "apiKey": "***",
             "workspace": "local-ws",
         }))
 
-        with patch.dict(os.environ, {"AGENTIC_OS_HOME": str(hermes_home)}), \
+        with patch.dict(os.environ, {"AGENTIC_OS_HOME": str(agentic_os_home)}), \
              patch.object(Path, "home", return_value=tmp_path):
             config = HonchoClientConfig.from_global_config()
         assert config.api_key == "***"
@@ -680,7 +680,7 @@ class TestGetHonchoClient:
         not importlib.util.find_spec("honcho"),
         reason="honcho SDK not installed"
     )
-    def test_hermes_config_timeout_override_used_when_config_timeout_missing(self):
+    def test_agentic_os_config_timeout_override_used_when_config_timeout_missing(self):
         fake_honcho = MagicMock(name="Honcho")
         cfg = HonchoClientConfig(
             api_key="test-key",

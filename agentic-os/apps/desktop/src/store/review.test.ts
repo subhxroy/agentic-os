@@ -38,7 +38,7 @@ import {
 import { $currentCwd } from './session'
 
 // requestOneShot is the only cross-module dependency that must be faked (it
-// reaches the gateway); everything else routes through window.hermesDesktop.git,
+// reaches the gateway); everything else routes through window.agenticOSDesktop.git,
 // which we stub per-test like the sibling coding-status.test.ts does.
 const requestOneShot = vi.fn(async (_args: unknown) => 'generated message')
 vi.mock('@/lib/oneshot', () => ({ requestOneShot: (args: unknown) => requestOneShot(args) }))
@@ -52,7 +52,7 @@ function file(path: string, over: Partial<HermesReviewFile> = {}): HermesReviewF
 
 type ReviewStub = Record<string, ReturnType<typeof vi.fn>>
 
-// Install a review bridge on window.hermesDesktop. Any op not supplied defaults
+// Install a review bridge on window.agenticOSDesktop. Any op not supplied defaults
 // to a resolved no-op so a test only declares what it exercises.
 function stubReview(over: ReviewStub = {}) {
   const review: ReviewStub = {
@@ -69,7 +69,7 @@ function stubReview(over: ReviewStub = {}) {
     ...over
   }
 
-  ;(window as unknown as { hermesDesktop?: unknown }).hermesDesktop = {
+  ;(window as unknown as { agenticOSDesktop?: unknown }).agenticOSDesktop = {
     git: { review },
     openExternal: vi.fn()
   }
@@ -96,7 +96,7 @@ beforeEach(() => {
 })
 
 afterEach(() => {
-  delete (window as unknown as { hermesDesktop?: unknown }).hermesDesktop
+  delete (window as unknown as { agenticOSDesktop?: unknown }).agenticOSDesktop
 })
 
 describe('refreshReview', () => {
@@ -113,7 +113,7 @@ describe('refreshReview', () => {
   })
 
   it('flags not-a-repo (and clears loading) when there is no bridge/cwd', async () => {
-    delete (window as unknown as { hermesDesktop?: unknown }).hermesDesktop
+    delete (window as unknown as { agenticOSDesktop?: unknown }).agenticOSDesktop
     $reviewOpen.set(true)
     $reviewLoading.set(true)
 
@@ -205,7 +205,7 @@ describe('selectReviewFile / clearReviewSelection', () => {
   })
 
   it('sets diff null when there is no bridge', async () => {
-    delete (window as unknown as { hermesDesktop?: unknown }).hermesDesktop
+    delete (window as unknown as { agenticOSDesktop?: unknown }).agenticOSDesktop
 
     await selectReviewFile(file('a.ts'))
 
@@ -354,7 +354,7 @@ describe('ship flow', () => {
 
     expect(review.createPr).not.toHaveBeenCalled()
     expect(
-      (window.hermesDesktop as unknown as { openExternal: ReturnType<typeof vi.fn> }).openExternal
+      (window.agenticOSDesktop as unknown as { openExternal: ReturnType<typeof vi.fn> }).openExternal
     ).toHaveBeenCalledWith('https://example.com/pr/9')
   })
 
@@ -366,7 +366,7 @@ describe('ship flow', () => {
 
     expect(review.createPr).toHaveBeenCalledWith('/repo')
     expect(
-      (window.hermesDesktop as unknown as { openExternal: ReturnType<typeof vi.fn> }).openExternal
+      (window.agenticOSDesktop as unknown as { openExternal: ReturnType<typeof vi.fn> }).openExternal
     ).toHaveBeenCalledWith('https://example.com/pr/new')
   })
 })
@@ -386,7 +386,7 @@ describe('refreshShipInfo', () => {
   })
 
   it('resets ship info when there is no bridge', async () => {
-    delete (window as unknown as { hermesDesktop?: unknown }).hermesDesktop
+    delete (window as unknown as { agenticOSDesktop?: unknown }).agenticOSDesktop
     $reviewShipInfo.set({ ghReady: true, pr: { url: 'x' } } as HermesReviewShipInfo)
 
     await refreshShipInfo()

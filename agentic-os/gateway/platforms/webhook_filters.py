@@ -35,15 +35,15 @@ def _resolve_profile_path(path_value: Any) -> Optional[Path]:
         return None
     from agentic_os_constants import get_agentic_os_home
 
-    hermes_home = get_agentic_os_home()
+    agentic_os_home = get_agentic_os_home()
     if raw == "~/.agentic-os":
-        return hermes_home
+        return agentic_os_home
     if raw.startswith("~/.agentic-os/"):
-        return hermes_home / raw.removeprefix("~/.agentic-os/")
+        return agentic_os_home / raw.removeprefix("~/.agentic-os/")
     path = Path(raw).expanduser()
     if path.is_absolute():
         return path
-    return hermes_home / path
+    return agentic_os_home / path
 
 
 def _resolve_script_path(script_value: Any) -> tuple[Optional[Path], Optional[str]]:

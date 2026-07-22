@@ -364,12 +364,12 @@ def _resolve_path(cwd: Path, target: str, *, allowed_root: Path | None = None) -
 def _ensure_reference_path_allowed(path: Path) -> None:
     from agentic_os_constants import get_agentic_os_home
     home = Path(os.path.expanduser("~")).resolve()
-    hermes_home = get_agentic_os_home().resolve()
+    agentic_os_home = get_agentic_os_home().resolve()
 
     blocked_exact = {home / rel for rel in _SENSITIVE_HOME_FILES}
-    blocked_exact.add(hermes_home / ".env")
+    blocked_exact.add(agentic_os_home / ".env")
     blocked_dirs = [home / rel for rel in _SENSITIVE_HOME_DIRS]
-    blocked_dirs.extend(hermes_home / rel for rel in _SENSITIVE_HERMES_DIRS)
+    blocked_dirs.extend(agentic_os_home / rel for rel in _SENSITIVE_HERMES_DIRS)
 
     if path in blocked_exact:
         raise ValueError("path is a sensitive credential file and cannot be attached")

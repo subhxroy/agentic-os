@@ -351,8 +351,8 @@ def _main() -> int:
     import sys
 
     try:
-        from agentic_os_cli.env_loader import load_hermes_dotenv
-        load_hermes_dotenv()
+        from agentic_os_cli.env_loader import load_agentic_os_dotenv
+        load_agentic_os_dotenv()
     except Exception:
         pass
 

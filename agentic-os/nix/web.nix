@@ -1,7 +1,7 @@
 # nix/web.nix — Hermes Web Dashboard (Vite/React) frontend build
 { pkgs, hermesNpmLib, ... }:
 let
-  # @hermes/shared ships as a file: workspace dep of web, so its source
+  # @agentic-os/shared ships as a file: workspace dep of web, so its source
   # must be in the filtered src tree too.
   npm = hermesNpmLib.mkNpmPassthru {
     dirs = [

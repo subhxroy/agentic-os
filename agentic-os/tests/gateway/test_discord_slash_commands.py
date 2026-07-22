@@ -620,7 +620,7 @@ async def test_auto_create_thread_strips_mention_syntax_from_name(adapter):
 @pytest.mark.asyncio
 async def test_auto_create_thread_falls_back_to_hermes_when_only_mentions(adapter):
     """If a message contains only mention syntax, the stripped content is
-    empty — fall back to the 'Hermes' default rather than ''."""
+    empty — fall back to the 'Agentic OS' default rather than ''."""
     thread = SimpleNamespace(id=999, name="Hermes")
     message = SimpleNamespace(
         content="<@&1490963422786093149>",

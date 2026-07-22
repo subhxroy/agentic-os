@@ -14,10 +14,10 @@ import pytest
 @pytest.fixture
 def memory_env(tmp_path, monkeypatch):
     """Set up a fake AGENTIC_OS_HOME with memory files."""
-    hermes_home = tmp_path / ".hermes"
-    memories = hermes_home / "memories"
+    agentic_os_home = tmp_path / ".hermes"
+    memories = agentic_os_home / "memories"
     memories.mkdir(parents=True)
-    monkeypatch.setenv("AGENTIC_OS_HOME", str(hermes_home))
+    monkeypatch.setenv("AGENTIC_OS_HOME", str(agentic_os_home))
 
     # Create sample memory files
     (memories / "MEMORY.md").write_text(
@@ -28,7 +28,7 @@ def memory_env(tmp_path, monkeypatch):
         "§\nUser is Teknium\n§\nTimezone: US Pacific",
         encoding="utf-8",
     )
-    return hermes_home, memories
+    return agentic_os_home, memories
 
 
 def _run_memory_reset(target="all", yes=False, monkeypatch=None, confirm_input="no"):
@@ -64,7 +64,7 @@ class TestMemoryReset:
 
     def test_reset_all_with_yes_flag(self, memory_env):
         """--yes flag should skip confirmation and delete both files."""
-        hermes_home, memories = memory_env
+        agentic_os_home, memories = memory_env
         assert (memories / "MEMORY.md").exists()
         assert (memories / "USER.md").exists()
 
@@ -75,7 +75,7 @@ class TestMemoryReset:
 
     def test_reset_memory_only(self, memory_env):
         """--target memory should only delete MEMORY.md."""
-        hermes_home, memories = memory_env
+        agentic_os_home, memories = memory_env
 
         result = _run_memory_reset(target="memory", yes=True)
         assert result == "deleted"
@@ -84,7 +84,7 @@ class TestMemoryReset:
 
     def test_reset_user_only(self, memory_env):
         """--target user should only delete USER.md."""
-        hermes_home, memories = memory_env
+        agentic_os_home, memories = memory_env
 
         result = _run_memory_reset(target="user", yes=True)
         assert result == "deleted"
@@ -93,16 +93,16 @@ class TestMemoryReset:
 
     def test_reset_no_files_exist(self, tmp_path, monkeypatch):
         """Should return 'nothing' when no memory files exist."""
-        hermes_home = tmp_path / ".hermes"
-        (hermes_home / "memories").mkdir(parents=True)
-        monkeypatch.setenv("AGENTIC_OS_HOME", str(hermes_home))
+        agentic_os_home = tmp_path / ".hermes"
+        (agentic_os_home / "memories").mkdir(parents=True)
+        monkeypatch.setenv("AGENTIC_OS_HOME", str(agentic_os_home))
 
         result = _run_memory_reset(target="all", yes=True)
         assert result == "nothing"
 
     def test_reset_confirmation_denied(self, memory_env):
         """Without --yes and without typing 'yes', should be cancelled."""
-        hermes_home, memories = memory_env
+        agentic_os_home, memories = memory_env
 
         result = _run_memory_reset(target="all", yes=False, confirm_input="no")
         assert result == "cancelled"
@@ -112,7 +112,7 @@ class TestMemoryReset:
 
     def test_reset_confirmation_accepted(self, memory_env):
         """Typing 'yes' should proceed with deletion."""
-        hermes_home, memories = memory_env
+        agentic_os_home, memories = memory_env
 
         result = _run_memory_reset(target="all", yes=False, confirm_input="yes")
         assert result == "deleted"
@@ -135,7 +135,7 @@ class TestMemoryReset:
 
     def test_reset_partial_files(self, memory_env):
         """Reset should work when only one memory file exists."""
-        hermes_home, memories = memory_env
+        agentic_os_home, memories = memory_env
         (memories / "USER.md").unlink()
 
         result = _run_memory_reset(target="all", yes=True)
@@ -144,10 +144,10 @@ class TestMemoryReset:
 
     def test_reset_empty_memories_dir(self, tmp_path, monkeypatch):
         """No memories dir at all should report nothing."""
-        hermes_home = tmp_path / ".hermes"
-        hermes_home.mkdir(parents=True)
+        agentic_os_home = tmp_path / ".hermes"
+        agentic_os_home.mkdir(parents=True)
         # No memories dir
-        monkeypatch.setenv("AGENTIC_OS_HOME", str(hermes_home))
+        monkeypatch.setenv("AGENTIC_OS_HOME", str(agentic_os_home))
 
         # The memories dir won't exist; get_agentic_os_home() / "memories" won't have files
         result = _run_memory_reset(target="all", yes=True)

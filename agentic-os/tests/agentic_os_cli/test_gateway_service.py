@@ -2041,8 +2041,8 @@ class TestSystemUnitHermesHome:
         # User-scope units should still use the calling user's AGENTIC_OS_HOME
         unit = gateway_cli.generate_systemd_unit(system=False)
 
-        hermes_home = str(gateway_cli.get_agentic_os_home().resolve())
-        assert f'AGENTIC_OS_HOME={hermes_home}' in unit
+        agentic_os_home = str(gateway_cli.get_agentic_os_home().resolve())
+        assert f'AGENTIC_OS_HOME={agentic_os_home}' in unit
 
 
 class TestSystemUnitRefreshSyncsHermesHome:
@@ -2496,11 +2496,11 @@ class TestProfileArg:
 
     def test_default_agentic_os_home_returns_empty(self, tmp_path, monkeypatch):
         """Default ~/.agentic-os should not produce a --profile flag."""
-        hermes_home = tmp_path / ".hermes"
-        hermes_home.mkdir()
+        agentic_os_home = tmp_path / ".hermes"
+        agentic_os_home.mkdir()
         monkeypatch.setattr(Path, "home", lambda: tmp_path)
-        monkeypatch.setenv("AGENTIC_OS_HOME", str(hermes_home))
-        result = gateway_cli._profile_arg(str(hermes_home))
+        monkeypatch.setenv("AGENTIC_OS_HOME", str(agentic_os_home))
+        result = gateway_cli._profile_arg(str(agentic_os_home))
         assert result == ""
 
     def test_named_profile_returns_flag(self, tmp_path, monkeypatch):

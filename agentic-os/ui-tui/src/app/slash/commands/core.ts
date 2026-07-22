@@ -1,4 +1,4 @@
-import { forceRedraw, type MouseTrackingMode } from '@hermes/ink'
+import { forceRedraw, type MouseTrackingMode } from '@agentic-os/ink'
 
 import { DASHBOARD_TUI_MODE, NO_CONFIRM_DESTRUCTIVE } from '../../../config/env.js'
 import { dailyFortune, randomFortune } from '../../../content/fortunes.js'

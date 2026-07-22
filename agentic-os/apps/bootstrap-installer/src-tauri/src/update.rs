@@ -1,6 +1,6 @@
 //! Update orchestration.
 //!
-//! Driven when the installer is launched as `Hermes-Setup.exe --update` (see
+//! Driven when the installer is launched as `Agentic-OS-Setup.exe --update` (see
 //! `AppMode` in lib.rs). The desktop app hands off to us — it exits, then we:
 //!
 //!   1. wait for the old Hermes desktop process to fully exit (so both the
@@ -143,8 +143,8 @@ impl Drop for UpdateMarkerGuard {
 }
 
 async fn run_update(app: AppHandle) -> Result<()> {
-    let hermes_home = crate::paths::hermes_home();
-    let install_root = hermes_home.join("agentic-os");
+    let agentic_os_home = crate::paths::agentic_os_home();
+    let install_root = agentic_os_home.join("agentic-os");
 
     // Mutual exclusion (#50238): publish an "update in progress" marker for the
     // entire duration of this update. A desktop instance the user relaunches
@@ -316,7 +316,7 @@ async fn run_update(app: AppHandle) -> Result<()> {
             let msg = format!(
                 "hermes update failed (exit {:?}). See {} for details.",
                 other,
-                crate::paths::hermes_home()
+                crate::paths::agentic_os_home()
                     .join("logs")
                     .join("update.log")
                     .display()
@@ -732,10 +732,10 @@ fn resolve_hermes(install_root: &Path) -> Option<PathBuf> {
 }
 
 fn update_child_env(install_root: &Path) -> Vec<(String, OsString)> {
-    let hermes_home = crate::paths::hermes_home();
+    let agentic_os_home = crate::paths::agentic_os_home();
     let mut envs = vec![(
         "AGENTIC_OS_HOME".to_string(),
-        hermes_home.as_os_str().to_os_string(),
+        agentic_os_home.as_os_str().to_os_string(),
     )];
     // `hermes update` is a Python CLI writing to a pipe here, so CPython
     // block-buffers its stdout: nothing reaches run_streamed (and the live
@@ -745,7 +745,7 @@ fn update_child_env(install_root: &Path) -> Vec<(String, OsString)> {
     // output instead.
     envs.push(("PYTHONUNBUFFERED".to_string(), OsString::from("1")));
     if let Some(path) = path_with_prepended_entries(&[
-        hermes_home.join("node").join("bin"),
+        agentic_os_home.join("node").join("bin"),
         venv_bin_dir(install_root),
     ]) {
         envs.push(("PATH".to_string(), path));
@@ -865,7 +865,7 @@ async fn install_macos_app_update(
     let ditto = Command::new("/usr/bin/ditto")
         .arg(&rebuilt_app)
         .arg(&tmp)
-        .current_dir(crate::paths::hermes_home())
+        .current_dir(crate::paths::agentic_os_home())
         .status()
         .await
         .map_err(|e| anyhow!("running ditto: {e}"))?;
@@ -885,7 +885,7 @@ async fn install_macos_app_update(
         .arg("-dr")
         .arg("com.apple.quarantine")
         .arg(target_app)
-        .current_dir(crate::paths::hermes_home())
+        .current_dir(crate::paths::agentic_os_home())
         .status()
         .await;
 

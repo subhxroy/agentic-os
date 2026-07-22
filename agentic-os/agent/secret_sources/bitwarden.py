@@ -6,7 +6,7 @@ so they don't have to live in plaintext in ``~/.agentic-os/.env``.
 Design summary
 --------------
 
-* The ``bws`` binary is auto-installed into ``<hermes_home>/bin/bws`` on
+* The ``bws`` binary is auto-installed into ``<agentic_os_home>/bin/bws`` on
   first use.  Hermes pins one version (``_BWS_VERSION``) and downloads
   the matching asset from the official GitHub Releases page, verifying
   the SHA-256 against the release's published checksum file.
@@ -75,7 +75,7 @@ _BWS_CHECKSUM_NAME = f"bws-sha256-checksums-{_BWS_VERSION}.txt"
 _BWS_DOWNLOAD_TIMEOUT = 60
 _BWS_RUN_TIMEOUT = 30
 
-# In-process cache so repeated load_hermes_dotenv() calls (CLI startup,
+# In-process cache so repeated load_agentic_os_dotenv() calls (CLI startup,
 # gateway hot-reload, test suites) don't re-fetch from BSM.
 _CacheKey = Tuple[str, str, str]  # (access_token_fingerprint, project_id, server_url)
 _CACHE: Dict[_CacheKey, _CachedFetch] = {}
@@ -86,7 +86,7 @@ _CACHE: Dict[_CacheKey, _CachedFetch] = {}
 # fetches WITHIN one process; this saves repeated fetches ACROSS processes.
 #
 # Layout: one JSON object per cache key, written atomically with mode 0600 in
-# <hermes_home>/cache/bws_cache.json. The file holds only the secret VALUES,
+# <agentic_os_home>/cache/bws_cache.json. The file holds only the secret VALUES,
 # never the access token. It's plaintext-equivalent to ~/.agentic-os/.env (which
 # we already accept) but kept out of the .env file so users editing it won't
 # accidentally commit BSM-sourced secrets. The atomic-write/0600/TTL mechanics
@@ -106,7 +106,7 @@ _DISK_CACHE: DiskCache = DiskCache(
 
 
 def _disk_cache_path(home_path: Optional[Path] = None) -> Path:
-    """Return the disk cache path under hermes_home/cache/.
+    """Return the disk cache path under agentic_os_home/cache/.
 
     Thin wrapper over the shared DiskCache, kept for tests and any direct
     callers; falls back to `$AGENTIC_OS_HOME` / `~/.agentic-os` when home is None.
@@ -130,7 +130,7 @@ def find_bws(*, install_if_missing: bool = False) -> Optional[Path]:
     """Return a path to a usable ``bws`` binary, or None.
 
     Resolution order:
-      1. ``<hermes_home>/bin/bws``  (our managed copy — preferred)
+      1. ``<agentic_os_home>/bin/bws``  (our managed copy — preferred)
       2. ``shutil.which("bws")``    (system PATH)
 
     When ``install_if_missing`` is True and neither resolves, this calls
@@ -371,7 +371,7 @@ def fetch_bitwarden_secrets(
 
     Caching is a two-layer LRU: an in-process dict (for hot-reload paths
     inside one process) and a disk-persisted JSON file under
-    ``<hermes_home>/cache/bws_cache.json`` (for back-to-back CLI invocations).
+    ``<agentic_os_home>/cache/bws_cache.json`` (for back-to-back CLI invocations).
     Both share the same TTL.  Pass ``home_path`` so disk cache lookups find
     the right directory in tests / non-standard installs; otherwise we fall
     back to ``$AGENTIC_OS_HOME`` / ``~/.agentic-os``.
@@ -541,7 +541,7 @@ def apply_bitwarden_secrets(
 ) -> FetchResult:
     """Pull secrets from BSM and set them on ``os.environ``.
 
-    This is the function ``load_hermes_dotenv()`` calls after the .env
+    This is the function ``load_agentic_os_dotenv()`` calls after the .env
     files have loaded.  It is intentionally defensive — any failure
     returns a :class:`FetchResult` with ``error`` set; it never raises.
 

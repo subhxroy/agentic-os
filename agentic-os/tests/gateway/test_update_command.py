@@ -140,13 +140,13 @@ class TestHandleUpdateCommand:
         (fake_root / "gateway").mkdir()
         (fake_root / "gateway" / "run.py").touch()
         fake_file = str(fake_root / "gateway" / "run.py")
-        hermes_home = tmp_path / "hermes"
-        hermes_home.mkdir()
+        agentic_os_home = tmp_path / "hermes"
+        agentic_os_home.mkdir()
 
         mock_popen = MagicMock()
         fake_spec = MagicMock()
 
-        with patch("gateway.run._agentic_os_home", hermes_home), \
+        with patch("gateway.run._agentic_os_home", agentic_os_home), \
              patch("gateway.run.__file__", fake_file), \
              patch("shutil.which", return_value=None), \
              patch("importlib.util.find_spec", return_value=fake_spec), \
@@ -206,16 +206,16 @@ class TestHandleUpdateCommand:
         (fake_root / "gateway").mkdir()
         (fake_root / "gateway" / "run.py").touch()
         fake_file = str(fake_root / "gateway" / "run.py")
-        hermes_home = tmp_path / "hermes"
-        hermes_home.mkdir()
+        agentic_os_home = tmp_path / "hermes"
+        agentic_os_home.mkdir()
 
-        with patch("gateway.run._agentic_os_home", hermes_home), \
+        with patch("gateway.run._agentic_os_home", agentic_os_home), \
              patch("gateway.run.__file__", fake_file), \
              patch("shutil.which", side_effect=lambda x: "/usr/bin/hermes" if x == "hermes" else "/usr/bin/setsid"), \
              patch("subprocess.Popen"):
             result = await runner._handle_update_command(event)
 
-        pending_path = hermes_home / ".update_pending.json"
+        pending_path = agentic_os_home / ".update_pending.json"
         assert pending_path.exists()
         data = json.loads(pending_path.read_text())
         assert data["platform"] == "telegram"
@@ -223,7 +223,7 @@ class TestHandleUpdateCommand:
         assert data["chat_type"] == "dm"
         assert data["message_id"] == "m-update"
         assert "timestamp" in data
-        assert not (hermes_home / ".update_exit_code").exists()
+        assert not (agentic_os_home / ".update_exit_code").exists()
 
     @pytest.mark.asyncio
     async def test_writes_pending_marker_with_thread_id(self, tmp_path):
@@ -242,16 +242,16 @@ class TestHandleUpdateCommand:
         (fake_root / "gateway").mkdir()
         (fake_root / "gateway" / "run.py").touch()
         fake_file = str(fake_root / "gateway" / "run.py")
-        hermes_home = tmp_path / "hermes"
-        hermes_home.mkdir()
+        agentic_os_home = tmp_path / "hermes"
+        agentic_os_home.mkdir()
 
-        with patch("gateway.run._agentic_os_home", hermes_home), \
+        with patch("gateway.run._agentic_os_home", agentic_os_home), \
              patch("gateway.run.__file__", fake_file), \
              patch("shutil.which", side_effect=lambda x: "/usr/bin/hermes" if x == "hermes" else "/usr/bin/setsid"), \
              patch("subprocess.Popen"):
             await runner._handle_update_command(event)
 
-        data = json.loads((hermes_home / ".update_pending.json").read_text())
+        data = json.loads((agentic_os_home / ".update_pending.json").read_text())
         assert data["thread_id"] == "777"
         assert data["message_id"] == "m-update-thread"
 
@@ -267,11 +267,11 @@ class TestHandleUpdateCommand:
         (fake_root / "gateway").mkdir()
         (fake_root / "gateway" / "run.py").touch()
         fake_file = str(fake_root / "gateway" / "run.py")
-        hermes_home = tmp_path / "hermes"
-        hermes_home.mkdir()
+        agentic_os_home = tmp_path / "hermes"
+        agentic_os_home.mkdir()
 
         mock_popen = MagicMock()
-        with patch("gateway.run._agentic_os_home", hermes_home), \
+        with patch("gateway.run._agentic_os_home", agentic_os_home), \
              patch("gateway.run.__file__", fake_file), \
              patch("shutil.which", side_effect=lambda x: f"/usr/bin/{x}"), \
              patch("subprocess.Popen", mock_popen):
@@ -296,8 +296,8 @@ class TestHandleUpdateCommand:
         (fake_root / "gateway").mkdir()
         (fake_root / "gateway" / "run.py").touch()
         fake_file = str(fake_root / "gateway" / "run.py")
-        hermes_home = tmp_path / "hermes"
-        hermes_home.mkdir()
+        agentic_os_home = tmp_path / "hermes"
+        agentic_os_home.mkdir()
 
         mock_popen = MagicMock()
 
@@ -308,7 +308,7 @@ class TestHandleUpdateCommand:
                 return None
             return None
 
-        with patch("gateway.run._agentic_os_home", hermes_home), \
+        with patch("gateway.run._agentic_os_home", agentic_os_home), \
              patch("gateway.run.__file__", fake_file), \
              patch("shutil.which", side_effect=which_no_setsid), \
              patch("subprocess.Popen", mock_popen):
@@ -336,10 +336,10 @@ class TestHandleUpdateCommand:
         (fake_root / "gateway").mkdir()
         (fake_root / "gateway" / "run.py").touch()
         fake_file = str(fake_root / "gateway" / "run.py")
-        hermes_home = tmp_path / "hermes"
-        hermes_home.mkdir()
+        agentic_os_home = tmp_path / "hermes"
+        agentic_os_home.mkdir()
 
-        with patch("gateway.run._agentic_os_home", hermes_home), \
+        with patch("gateway.run._agentic_os_home", agentic_os_home), \
              patch("gateway.run.__file__", fake_file), \
              patch("shutil.which", side_effect=lambda x: f"/usr/bin/{x}"), \
              patch("subprocess.Popen", side_effect=OSError("spawn failed")):
@@ -347,8 +347,8 @@ class TestHandleUpdateCommand:
 
         assert "Failed to start update" in result
         # Pending file should be cleaned up
-        assert not (hermes_home / ".update_pending.json").exists()
-        assert not (hermes_home / ".update_exit_code").exists()
+        assert not (agentic_os_home / ".update_pending.json").exists()
+        assert not (agentic_os_home / ".update_exit_code").exists()
 
     @pytest.mark.asyncio
     async def test_returns_user_friendly_message(self, tmp_path):
@@ -362,10 +362,10 @@ class TestHandleUpdateCommand:
         (fake_root / "gateway").mkdir()
         (fake_root / "gateway" / "run.py").touch()
         fake_file = str(fake_root / "gateway" / "run.py")
-        hermes_home = tmp_path / "hermes"
-        hermes_home.mkdir()
+        agentic_os_home = tmp_path / "hermes"
+        agentic_os_home.mkdir()
 
-        with patch("gateway.run._agentic_os_home", hermes_home), \
+        with patch("gateway.run._agentic_os_home", agentic_os_home), \
              patch("gateway.run.__file__", fake_file), \
              patch("shutil.which", side_effect=lambda x: f"/usr/bin/{x}"), \
              patch("subprocess.Popen"):
@@ -538,10 +538,10 @@ class TestSendUpdateNotification:
     async def test_no_pending_file_is_noop(self, tmp_path):
         """Does nothing when no pending file exists."""
         runner = _make_runner()
-        hermes_home = tmp_path / "hermes"
-        hermes_home.mkdir()
+        agentic_os_home = tmp_path / "hermes"
+        agentic_os_home.mkdir()
 
-        with patch("gateway.run._agentic_os_home", hermes_home):
+        with patch("gateway.run._agentic_os_home", agentic_os_home):
             # Should not raise
             await runner._send_update_notification()
 
@@ -549,19 +549,19 @@ class TestSendUpdateNotification:
     async def test_defers_notification_while_update_still_running(self, tmp_path):
         """Returns False and keeps marker files when the update has not exited yet."""
         runner = _make_runner()
-        hermes_home = tmp_path / "hermes"
-        hermes_home.mkdir()
+        agentic_os_home = tmp_path / "hermes"
+        agentic_os_home.mkdir()
 
-        pending_path = hermes_home / ".update_pending.json"
+        pending_path = agentic_os_home / ".update_pending.json"
         pending_path.write_text(json.dumps({
             "platform": "telegram", "chat_id": "67890", "user_id": "12345",
         }))
-        (hermes_home / ".update_output.txt").write_text("still running")
+        (agentic_os_home / ".update_output.txt").write_text("still running")
 
         mock_adapter = AsyncMock()
         runner.adapters = {Platform.TELEGRAM: mock_adapter}
 
-        with patch("gateway.run._agentic_os_home", hermes_home):
+        with patch("gateway.run._agentic_os_home", agentic_os_home):
             result = await runner._send_update_notification()
 
         assert result is False
@@ -572,20 +572,20 @@ class TestSendUpdateNotification:
     async def test_recovers_from_claimed_pending_file(self, tmp_path):
         """A claimed pending file from a crashed notifier is still deliverable."""
         runner = _make_runner()
-        hermes_home = tmp_path / "hermes"
-        hermes_home.mkdir()
+        agentic_os_home = tmp_path / "hermes"
+        agentic_os_home.mkdir()
 
-        claimed_path = hermes_home / ".update_pending.claimed.json"
+        claimed_path = agentic_os_home / ".update_pending.claimed.json"
         claimed_path.write_text(json.dumps({
             "platform": "telegram", "chat_id": "67890", "user_id": "12345",
         }))
-        (hermes_home / ".update_output.txt").write_text("done")
-        (hermes_home / ".update_exit_code").write_text("0")
+        (agentic_os_home / ".update_output.txt").write_text("done")
+        (agentic_os_home / ".update_exit_code").write_text("0")
 
         mock_adapter = AsyncMock()
         runner.adapters = {Platform.TELEGRAM: mock_adapter}
 
-        with patch("gateway.run._agentic_os_home", hermes_home):
+        with patch("gateway.run._agentic_os_home", agentic_os_home):
             result = await runner._send_update_notification()
 
         assert result is True
@@ -596,8 +596,8 @@ class TestSendUpdateNotification:
     async def test_sends_notification_with_output(self, tmp_path):
         """Sends update output to the correct platform and chat."""
         runner = _make_runner()
-        hermes_home = tmp_path / "hermes"
-        hermes_home.mkdir()
+        agentic_os_home = tmp_path / "hermes"
+        agentic_os_home.mkdir()
 
         # Write pending marker
         pending = {
@@ -606,18 +606,18 @@ class TestSendUpdateNotification:
             "user_id": "12345",
             "timestamp": "2026-03-04T21:00:00",
         }
-        (hermes_home / ".update_pending.json").write_text(json.dumps(pending))
-        (hermes_home / ".update_output.txt").write_text(
+        (agentic_os_home / ".update_pending.json").write_text(json.dumps(pending))
+        (agentic_os_home / ".update_output.txt").write_text(
             "→ Found 3 new commit(s)\n✓ Code updated!\n✓ Update complete!"
         )
-        (hermes_home / ".update_exit_code").write_text("0")
+        (agentic_os_home / ".update_exit_code").write_text("0")
 
         # Mock the adapter
         mock_adapter = AsyncMock()
         mock_adapter.send = AsyncMock()
         runner.adapters = {Platform.TELEGRAM: mock_adapter}
 
-        with patch("gateway.run._agentic_os_home", hermes_home):
+        with patch("gateway.run._agentic_os_home", agentic_os_home):
             await runner._send_update_notification()
 
         mock_adapter.send.assert_called_once()
@@ -629,8 +629,8 @@ class TestSendUpdateNotification:
     async def test_sends_notification_with_thread_metadata(self, tmp_path):
         """Final update notification preserves thread metadata when present."""
         runner = _make_runner()
-        hermes_home = tmp_path / "hermes"
-        hermes_home.mkdir()
+        agentic_os_home = tmp_path / "hermes"
+        agentic_os_home.mkdir()
 
         pending = {
             "platform": "telegram",
@@ -640,14 +640,14 @@ class TestSendUpdateNotification:
             "message_id": "m-update-thread",
             "user_id": "12345",
         }
-        (hermes_home / ".update_pending.json").write_text(json.dumps(pending))
-        (hermes_home / ".update_output.txt").write_text("done")
-        (hermes_home / ".update_exit_code").write_text("0")
+        (agentic_os_home / ".update_pending.json").write_text(json.dumps(pending))
+        (agentic_os_home / ".update_output.txt").write_text("done")
+        (agentic_os_home / ".update_exit_code").write_text("0")
 
         mock_adapter = AsyncMock()
         runner.adapters = {Platform.TELEGRAM: mock_adapter}
 
-        with patch("gateway.run._agentic_os_home", hermes_home):
+        with patch("gateway.run._agentic_os_home", agentic_os_home):
             await runner._send_update_notification()
 
         assert mock_adapter.send.call_args.kwargs["metadata"] == {
@@ -661,20 +661,20 @@ class TestSendUpdateNotification:
     async def test_strips_ansi_codes(self, tmp_path):
         """ANSI escape codes are removed from output."""
         runner = _make_runner()
-        hermes_home = tmp_path / "hermes"
-        hermes_home.mkdir()
+        agentic_os_home = tmp_path / "hermes"
+        agentic_os_home.mkdir()
 
         pending = {"platform": "telegram", "chat_id": "111", "user_id": "222"}
-        (hermes_home / ".update_pending.json").write_text(json.dumps(pending))
-        (hermes_home / ".update_output.txt").write_text(
+        (agentic_os_home / ".update_pending.json").write_text(json.dumps(pending))
+        (agentic_os_home / ".update_output.txt").write_text(
             "\x1b[32m✓ Code updated!\x1b[0m\n\x1b[1mDone\x1b[0m"
         )
-        (hermes_home / ".update_exit_code").write_text("0")
+        (agentic_os_home / ".update_exit_code").write_text("0")
 
         mock_adapter = AsyncMock()
         runner.adapters = {Platform.TELEGRAM: mock_adapter}
 
-        with patch("gateway.run._agentic_os_home", hermes_home):
+        with patch("gateway.run._agentic_os_home", agentic_os_home):
             await runner._send_update_notification()
 
         sent_text = mock_adapter.send.call_args[0][1]
@@ -685,18 +685,18 @@ class TestSendUpdateNotification:
     async def test_truncates_long_output(self, tmp_path):
         """Output longer than 3500 chars is truncated."""
         runner = _make_runner()
-        hermes_home = tmp_path / "hermes"
-        hermes_home.mkdir()
+        agentic_os_home = tmp_path / "hermes"
+        agentic_os_home.mkdir()
 
         pending = {"platform": "telegram", "chat_id": "111", "user_id": "222"}
-        (hermes_home / ".update_pending.json").write_text(json.dumps(pending))
-        (hermes_home / ".update_output.txt").write_text("x" * 5000)
-        (hermes_home / ".update_exit_code").write_text("0")
+        (agentic_os_home / ".update_pending.json").write_text(json.dumps(pending))
+        (agentic_os_home / ".update_output.txt").write_text("x" * 5000)
+        (agentic_os_home / ".update_exit_code").write_text("0")
 
         mock_adapter = AsyncMock()
         runner.adapters = {Platform.TELEGRAM: mock_adapter}
 
-        with patch("gateway.run._agentic_os_home", hermes_home):
+        with patch("gateway.run._agentic_os_home", agentic_os_home):
             await runner._send_update_notification()
 
         sent_text = mock_adapter.send.call_args[0][1]
@@ -709,18 +709,18 @@ class TestSendUpdateNotification:
     async def test_sends_failure_message_when_update_fails(self, tmp_path):
         """Non-zero exit codes produce a failure notification with captured output."""
         runner = _make_runner()
-        hermes_home = tmp_path / "hermes"
-        hermes_home.mkdir()
+        agentic_os_home = tmp_path / "hermes"
+        agentic_os_home.mkdir()
 
         pending = {"platform": "telegram", "chat_id": "111", "user_id": "222"}
-        (hermes_home / ".update_pending.json").write_text(json.dumps(pending))
-        (hermes_home / ".update_output.txt").write_text("Traceback: boom")
-        (hermes_home / ".update_exit_code").write_text("1")
+        (agentic_os_home / ".update_pending.json").write_text(json.dumps(pending))
+        (agentic_os_home / ".update_output.txt").write_text("Traceback: boom")
+        (agentic_os_home / ".update_exit_code").write_text("1")
 
         mock_adapter = AsyncMock()
         runner.adapters = {Platform.TELEGRAM: mock_adapter}
 
-        with patch("gateway.run._agentic_os_home", hermes_home):
+        with patch("gateway.run._agentic_os_home", agentic_os_home):
             result = await runner._send_update_notification()
 
         assert result is True
@@ -732,18 +732,18 @@ class TestSendUpdateNotification:
     async def test_sends_generic_message_when_no_output(self, tmp_path):
         """Sends a success message even if the output file is missing."""
         runner = _make_runner()
-        hermes_home = tmp_path / "hermes"
-        hermes_home.mkdir()
+        agentic_os_home = tmp_path / "hermes"
+        agentic_os_home.mkdir()
 
         pending = {"platform": "telegram", "chat_id": "111", "user_id": "222"}
-        (hermes_home / ".update_pending.json").write_text(json.dumps(pending))
+        (agentic_os_home / ".update_pending.json").write_text(json.dumps(pending))
         # No .update_output.txt created
-        (hermes_home / ".update_exit_code").write_text("0")
+        (agentic_os_home / ".update_exit_code").write_text("0")
 
         mock_adapter = AsyncMock()
         runner.adapters = {Platform.TELEGRAM: mock_adapter}
 
-        with patch("gateway.run._agentic_os_home", hermes_home):
+        with patch("gateway.run._agentic_os_home", agentic_os_home):
             await runner._send_update_notification()
 
         sent_text = mock_adapter.send.call_args[0][1]
@@ -753,12 +753,12 @@ class TestSendUpdateNotification:
     async def test_cleans_up_files_after_notification(self, tmp_path):
         """Both marker and output files are deleted after notification."""
         runner = _make_runner()
-        hermes_home = tmp_path / "hermes"
-        hermes_home.mkdir()
+        agentic_os_home = tmp_path / "hermes"
+        agentic_os_home.mkdir()
 
-        pending_path = hermes_home / ".update_pending.json"
-        output_path = hermes_home / ".update_output.txt"
-        exit_code_path = hermes_home / ".update_exit_code"
+        pending_path = agentic_os_home / ".update_pending.json"
+        output_path = agentic_os_home / ".update_output.txt"
+        exit_code_path = agentic_os_home / ".update_exit_code"
         pending_path.write_text(json.dumps({
             "platform": "telegram", "chat_id": "111", "user_id": "222",
         }))
@@ -768,7 +768,7 @@ class TestSendUpdateNotification:
         mock_adapter = AsyncMock()
         runner.adapters = {Platform.TELEGRAM: mock_adapter}
 
-        with patch("gateway.run._agentic_os_home", hermes_home):
+        with patch("gateway.run._agentic_os_home", agentic_os_home):
             await runner._send_update_notification()
 
         assert not pending_path.exists()
@@ -779,12 +779,12 @@ class TestSendUpdateNotification:
     async def test_cleans_up_on_error(self, tmp_path):
         """Files are cleaned up even if notification fails."""
         runner = _make_runner()
-        hermes_home = tmp_path / "hermes"
-        hermes_home.mkdir()
+        agentic_os_home = tmp_path / "hermes"
+        agentic_os_home.mkdir()
 
-        pending_path = hermes_home / ".update_pending.json"
-        output_path = hermes_home / ".update_output.txt"
-        exit_code_path = hermes_home / ".update_exit_code"
+        pending_path = agentic_os_home / ".update_pending.json"
+        output_path = agentic_os_home / ".update_output.txt"
+        exit_code_path = agentic_os_home / ".update_exit_code"
         pending_path.write_text(json.dumps({
             "platform": "telegram", "chat_id": "111", "user_id": "222",
         }))
@@ -796,7 +796,7 @@ class TestSendUpdateNotification:
         mock_adapter.send.side_effect = RuntimeError("network error")
         runner.adapters = {Platform.TELEGRAM: mock_adapter}
 
-        with patch("gateway.run._agentic_os_home", hermes_home):
+        with patch("gateway.run._agentic_os_home", agentic_os_home):
             await runner._send_update_notification()
 
         # Files should still be cleaned up (finally block)
@@ -808,13 +808,13 @@ class TestSendUpdateNotification:
     async def test_handles_corrupt_pending_file(self, tmp_path):
         """Gracefully handles a malformed pending JSON file."""
         runner = _make_runner()
-        hermes_home = tmp_path / "hermes"
-        hermes_home.mkdir()
+        agentic_os_home = tmp_path / "hermes"
+        agentic_os_home.mkdir()
 
-        pending_path = hermes_home / ".update_pending.json"
+        pending_path = agentic_os_home / ".update_pending.json"
         pending_path.write_text("{corrupt json!!")
 
-        with patch("gateway.run._agentic_os_home", hermes_home):
+        with patch("gateway.run._agentic_os_home", agentic_os_home):
             # Should not raise
             await runner._send_update_notification()
 
@@ -831,13 +831,13 @@ class TestSendUpdateNotification:
         retry can deliver once the platform is back.
         """
         runner = _make_runner()
-        hermes_home = tmp_path / "hermes"
-        hermes_home.mkdir()
+        agentic_os_home = tmp_path / "hermes"
+        agentic_os_home.mkdir()
 
         pending = {"platform": "discord", "chat_id": "111", "user_id": "222"}
-        pending_path = hermes_home / ".update_pending.json"
-        output_path = hermes_home / ".update_output.txt"
-        exit_code_path = hermes_home / ".update_exit_code"
+        pending_path = agentic_os_home / ".update_pending.json"
+        output_path = agentic_os_home / ".update_output.txt"
+        exit_code_path = agentic_os_home / ".update_exit_code"
         pending_path.write_text(json.dumps(pending))
         output_path.write_text("Done")
         exit_code_path.write_text("0")
@@ -846,7 +846,7 @@ class TestSendUpdateNotification:
         mock_adapter = AsyncMock()
         runner.adapters = {Platform.TELEGRAM: mock_adapter}
 
-        with patch("gateway.run._agentic_os_home", hermes_home):
+        with patch("gateway.run._agentic_os_home", agentic_os_home):
             result = await runner._send_update_notification()
 
         # No send (wrong platform offline) and the result is deferred.
@@ -857,7 +857,7 @@ class TestSendUpdateNotification:
         assert output_path.exists()
         assert exit_code_path.exists()
         # The marker stays in its canonical pending location (claim restored).
-        assert not (hermes_home / ".update_pending.claimed.json").exists()
+        assert not (agentic_os_home / ".update_pending.claimed.json").exists()
 
     @pytest.mark.asyncio
     async def test_deferred_notification_delivers_after_reconnect(self, tmp_path):
@@ -869,19 +869,19 @@ class TestSendUpdateNotification:
         cleans up — exactly once.
         """
         runner = _make_runner()
-        hermes_home = tmp_path / "hermes"
-        hermes_home.mkdir()
+        agentic_os_home = tmp_path / "hermes"
+        agentic_os_home.mkdir()
 
         pending = {"platform": "discord", "chat_id": "111", "user_id": "222"}
-        pending_path = hermes_home / ".update_pending.json"
-        output_path = hermes_home / ".update_output.txt"
-        exit_code_path = hermes_home / ".update_exit_code"
+        pending_path = agentic_os_home / ".update_pending.json"
+        output_path = agentic_os_home / ".update_output.txt"
+        exit_code_path = agentic_os_home / ".update_exit_code"
         pending_path.write_text(json.dumps(pending))
         output_path.write_text("✓ Update complete!")
         exit_code_path.write_text("0")
 
         # First pass: target platform (discord) is still offline → defer.
-        with patch("gateway.run._agentic_os_home", hermes_home):
+        with patch("gateway.run._agentic_os_home", agentic_os_home):
             first = await runner._send_update_notification()
 
         assert first is False
@@ -891,7 +891,7 @@ class TestSendUpdateNotification:
         mock_adapter = AsyncMock()
         runner.adapters = {Platform.DISCORD: mock_adapter}
 
-        with patch("gateway.run._agentic_os_home", hermes_home):
+        with patch("gateway.run._agentic_os_home", agentic_os_home):
             second = await runner._send_update_notification()
 
         assert second is True
@@ -902,7 +902,7 @@ class TestSendUpdateNotification:
         assert not pending_path.exists()
         assert not output_path.exists()
         assert not exit_code_path.exists()
-        assert not (hermes_home / ".update_pending.claimed.json").exists()
+        assert not (agentic_os_home / ".update_pending.claimed.json").exists()
 
 
 # ---------------------------------------------------------------------------

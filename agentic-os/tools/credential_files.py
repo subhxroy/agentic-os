@@ -82,7 +82,7 @@ def register_credential_file(
     — the same guard that stops the agent reading them with ``read_file``, so
     the mount surface cannot hand a skill what the read surface denies it.
     """
-    hermes_home = _resolve_agentic_os_home()
+    agentic_os_home = _resolve_agentic_os_home()
 
     # Reject absolute paths — they bypass the AGENTIC_OS_HOME sandbox entirely.
     if os.path.isabs(relative_path):
@@ -92,13 +92,13 @@ def register_credential_file(
         )
         return False
 
-    host_path = hermes_home / relative_path
+    host_path = agentic_os_home / relative_path
 
     # Resolve symlinks and normalise ``..`` before the containment check so
     # that traversal like ``../. ssh/id_rsa`` cannot escape AGENTIC_OS_HOME.
     from tools.path_security import validate_within_dir
 
-    containment_error = validate_within_dir(host_path, hermes_home)
+    containment_error = validate_within_dir(host_path, agentic_os_home)
     if containment_error:
         logger.warning(
             "credential_files: rejected path traversal %r (%s)",
@@ -182,7 +182,7 @@ def _load_config_files() -> List[Dict[str, str]]:
     result: List[Dict[str, str]] = []
     try:
         from agentic_os_cli.config import read_raw_config
-        hermes_home = _resolve_agentic_os_home()
+        agentic_os_home = _resolve_agentic_os_home()
         cfg = read_raw_config()
         cred_files = cfg_get(cfg, "terminal", "credential_files")
         if isinstance(cred_files, list):
@@ -196,8 +196,8 @@ def _load_config_files() -> List[Dict[str, str]]:
                             "credential_files: rejected absolute config path %r", rel,
                         )
                         continue
-                    host_path = hermes_home / rel
-                    containment_error = validate_within_dir(host_path, hermes_home)
+                    host_path = agentic_os_home / rel
+                    containment_error = validate_within_dir(host_path, agentic_os_home)
                     if containment_error:
                         logger.warning(
                             "credential_files: rejected config path traversal %r (%s)",
@@ -264,8 +264,8 @@ def get_skills_directory_mount(
     at ``<container_base>/external_skills/<index>``.
     """
     mounts = []
-    hermes_home = _resolve_agentic_os_home()
-    skills_dir = hermes_home / "skills"
+    agentic_os_home = _resolve_agentic_os_home()
+    skills_dir = agentic_os_home / "skills"
     if skills_dir.is_dir():
         host_path = _safe_skills_path(skills_dir)
         mounts.append({
@@ -347,8 +347,8 @@ def iter_skills_files(
     """
     result: List[Dict[str, str]] = []
 
-    hermes_home = _resolve_agentic_os_home()
-    skills_dir = hermes_home / "skills"
+    agentic_os_home = _resolve_agentic_os_home()
+    skills_dir = agentic_os_home / "skills"
     if skills_dir.is_dir():
         container_root = f"{container_base.rstrip('/')}/skills"
         for item in skills_dir.rglob("*"):

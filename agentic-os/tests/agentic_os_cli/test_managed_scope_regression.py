@@ -10,8 +10,8 @@ import pytest
 
 
 @pytest.fixture
-def hermes_home(tmp_path, monkeypatch):
-    home = tmp_path / "hermes_home"
+def agentic_os_home(tmp_path, monkeypatch):
+    home = tmp_path / "agentic_os_home"
     home.mkdir()
     monkeypatch.setenv("AGENTIC_OS_HOME", str(home))
     # No managed dir: point the override at a guaranteed-absent path so a real
@@ -34,11 +34,11 @@ def _write_user_config(home, body: str):
     cfg._RAW_CONFIG_CACHE.clear()
 
 
-def test_user_config_overrides_default(hermes_home, monkeypatch):
+def test_user_config_overrides_default(agentic_os_home, monkeypatch):
     from agentic_os_cli.config import load_config, cfg_get
 
     _write_user_config(
-        hermes_home,
+        agentic_os_home,
         """
         model:
           default: user/model-x
@@ -48,12 +48,12 @@ def test_user_config_overrides_default(hermes_home, monkeypatch):
     assert cfg_get(cfg, "model", "default") == "user/model-x"
 
 
-def test_env_expansion_in_user_config(hermes_home, monkeypatch):
+def test_env_expansion_in_user_config(agentic_os_home, monkeypatch):
     from agentic_os_cli.config import load_config, cfg_get
 
     monkeypatch.setenv("MY_BASE", "https://example.test")
     _write_user_config(
-        hermes_home,
+        agentic_os_home,
         """
         providers:
           custom:
@@ -64,12 +64,12 @@ def test_env_expansion_in_user_config(hermes_home, monkeypatch):
     assert cfg_get(cfg, "providers", "custom", "base_url") == "https://example.test/v1"
 
 
-def test_no_managed_dir_means_user_value_wins(hermes_home):
+def test_no_managed_dir_means_user_value_wins(agentic_os_home):
     """Sanity: with the managed override pointing at an absent dir, nothing changes."""
     from agentic_os_cli.config import load_config, cfg_get
 
     _write_user_config(
-        hermes_home,
+        agentic_os_home,
         """
         model:
           default: user/model-y
@@ -79,21 +79,21 @@ def test_no_managed_dir_means_user_value_wins(hermes_home):
 
 
 def test_user_env_overrides_shell(tmp_path, monkeypatch):
-    from agentic_os_cli.env_loader import load_hermes_dotenv
+    from agentic_os_cli.env_loader import load_agentic_os_dotenv
 
     home = tmp_path / "home"
     home.mkdir()
     (home / ".env").write_text("FOO_TOKEN=from_user_env\n", encoding="utf-8")
     monkeypatch.setenv("FOO_TOKEN", "from_shell")
-    load_hermes_dotenv(hermes_home=str(home))
+    load_agentic_os_dotenv(agentic_os_home=str(home))
     assert os.environ["FOO_TOKEN"] == "from_user_env"
 
 
 def test_missing_user_env_is_noop(tmp_path, monkeypatch):
-    from agentic_os_cli.env_loader import load_hermes_dotenv
+    from agentic_os_cli.env_loader import load_agentic_os_dotenv
 
     home = tmp_path / "home"
     home.mkdir()
     monkeypatch.setenv("BAR_TOKEN", "from_shell")
-    load_hermes_dotenv(hermes_home=str(home))
+    load_agentic_os_dotenv(agentic_os_home=str(home))
     assert os.environ["BAR_TOKEN"] == "from_shell"

@@ -210,13 +210,13 @@ describe('workspaceCwdForNewSession', () => {
     $connection.set(null)
     $currentCwd.set('')
     $activeSessionId.set(null)
-    window.localStorage.removeItem('hermes.desktop.workspace-cwd')
-    window.localStorage.removeItem('hermes.desktop.workspace-cwd.remote.http%3A%2F%2Fbackend-a.default')
-    window.localStorage.removeItem('hermes.desktop.workspace-cwd.remote.http%3A%2F%2Fbackend-b.default')
+    window.localStorage.removeItem('agentic-os.desktop.workspace-cwd')
+    window.localStorage.removeItem('agentic-os.desktop.workspace-cwd.remote.http%3A%2F%2Fbackend-a.default')
+    window.localStorage.removeItem('agentic-os.desktop.workspace-cwd.remote.http%3A%2F%2Fbackend-b.default')
   })
 
   it('prefers the configured default over the sticky remembered workspace', () => {
-    window.localStorage.setItem('hermes.desktop.workspace-cwd', '/home/user/sticky')
+    window.localStorage.setItem('agentic-os.desktop.workspace-cwd', '/home/user/sticky')
     applyConfiguredDefaultProjectDir('/home/user/configured')
 
     expect(workspaceCwdForNewSession()).toBe('/home/user/configured')
@@ -226,7 +226,7 @@ describe('workspaceCwdForNewSession', () => {
     // A bare new chat must NOT inherit the sticky/remembered or live workspace —
     // that's the "why is my new session already on a branch" bug. Only an
     // explicit configured default pre-attaches.
-    window.localStorage.setItem('hermes.desktop.workspace-cwd', '/home/user/sticky')
+    window.localStorage.setItem('agentic-os.desktop.workspace-cwd', '/home/user/sticky')
     $currentCwd.set('/home/user/live')
 
     expect(workspaceCwdForNewSession()).toBe('')
@@ -242,7 +242,7 @@ describe('workspaceCwdForNewSession', () => {
   })
 
   it('keeps remote workspace memory separate from local and other remotes', () => {
-    window.localStorage.setItem('hermes.desktop.workspace-cwd', '/local/project')
+    window.localStorage.setItem('agentic-os.desktop.workspace-cwd', '/local/project')
     $currentCwd.set('/live/session/path')
     $connection.set({ baseUrl: 'http://backend-a', mode: 'remote' } as never)
 

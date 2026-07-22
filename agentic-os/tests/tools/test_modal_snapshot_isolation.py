@@ -62,10 +62,10 @@ def _install_modal_test_modules(
     agentic_os_cli = types.ModuleType("agentic_os_cli")
     agentic_os_cli.__path__ = []  # type: ignore[attr-defined]
     sys.modules["agentic_os_cli"] = agentic_os_cli
-    hermes_home = tmp_path / "hermes-home"
-    os.environ["AGENTIC_OS_HOME"] = str(hermes_home)
+    agentic_os_home = tmp_path / "hermes-home"
+    os.environ["AGENTIC_OS_HOME"] = str(agentic_os_home)
     sys.modules["agentic_os_cli.config"] = types.SimpleNamespace(
-        get_agentic_os_home=lambda: hermes_home,
+        get_agentic_os_home=lambda: agentic_os_home,
     )
 
     tools_package = types.ModuleType("tools")
@@ -190,7 +190,7 @@ def _install_modal_test_modules(
     )
 
     return {
-        "snapshot_store": hermes_home / "modal_snapshots.json",
+        "snapshot_store": agentic_os_home / "modal_snapshots.json",
         "create_calls": create_calls,
         "from_id_calls": from_id_calls,
         "registry_calls": registry_calls,

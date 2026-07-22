@@ -28,10 +28,10 @@ def _isolate_env(tmp_path, monkeypatch):
     but we want the plugin to work with a predictable subpath. We reset
     AGENTIC_OS_HOME here for clarity.
     """
-    hermes_home = tmp_path / ".hermes"
-    hermes_home.mkdir()
-    monkeypatch.setenv("AGENTIC_OS_HOME", str(hermes_home))
-    yield hermes_home
+    agentic_os_home = tmp_path / ".hermes"
+    agentic_os_home.mkdir()
+    monkeypatch.setenv("AGENTIC_OS_HOME", str(agentic_os_home))
+    yield agentic_os_home
 
 
 def _load_lib():
@@ -584,10 +584,10 @@ class TestSlashCommand:
 # ---------------------------------------------------------------------------
 
 class TestBundledDiscovery:
-    def _write_enabled_config(self, hermes_home, names):
+    def _write_enabled_config(self, agentic_os_home, names):
         """Write plugins.enabled allow-list to config.yaml."""
         import yaml
-        cfg_path = hermes_home / "config.yaml"
+        cfg_path = agentic_os_home / "config.yaml"
         cfg_path.write_text(yaml.safe_dump({"plugins": {"enabled": list(names)}}))
 
     def test_disk_cleanup_discovered_but_not_loaded_by_default(self, _isolate_env):

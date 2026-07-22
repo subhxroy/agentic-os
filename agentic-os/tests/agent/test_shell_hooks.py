@@ -27,7 +27,7 @@ def _write_script(tmp_path: Path, name: str, body: str) -> Path:
 
 
 def _allowlist_pair(monkeypatch, tmp_path, event: str, command: str) -> None:
-    monkeypatch.setenv("AGENTIC_OS_HOME", str(tmp_path / "hermes_home"))
+    monkeypatch.setenv("AGENTIC_OS_HOME", str(tmp_path / "agentic_os_home"))
     shell_hooks._record_approval(event, command)
 
 

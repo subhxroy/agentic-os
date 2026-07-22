@@ -193,10 +193,10 @@ def _discover_homebrew_node_dirs() -> tuple[str, ...]:
 
 def _browser_candidate_path_dirs() -> list[str]:
     """Return ordered browser CLI PATH candidates shared by discovery and execution."""
-    hermes_home = get_agentic_os_home()
-    hermes_node_bin = str(hermes_home / "node" / "bin")
-    hermes_node_root = str(hermes_home / "node")
-    hermes_nm_bin = str(hermes_home / "node_modules" / ".bin")
+    agentic_os_home = get_agentic_os_home()
+    hermes_node_bin = str(agentic_os_home / "node" / "bin")
+    hermes_node_root = str(agentic_os_home / "node")
+    hermes_nm_bin = str(agentic_os_home / "node_modules" / ".bin")
     return [hermes_node_bin, hermes_node_root, hermes_nm_bin, *list(_discover_homebrew_node_dirs()), *_SANE_PATH_DIRS]
 
 
@@ -3911,14 +3911,14 @@ def _maybe_start_recording(task_id: str):
             return
     try:
         from agentic_os_cli.config import read_raw_config
-        hermes_home = get_agentic_os_home()
+        agentic_os_home = get_agentic_os_home()
         cfg = read_raw_config()
         record_enabled = cfg_get(cfg, "browser", "record_sessions", default=False)
 
         if not record_enabled:
             return
 
-        recordings_dir = hermes_home / "browser_recordings"
+        recordings_dir = agentic_os_home / "browser_recordings"
         recordings_dir.mkdir(parents=True, exist_ok=True)
         _cleanup_old_recordings(max_age_hours=72)
 
@@ -4359,8 +4359,8 @@ def _cleanup_old_screenshots(screenshots_dir, max_age_hours=24):
 def _cleanup_old_recordings(max_age_hours=72):
     """Remove browser recordings older than max_age_hours to prevent disk bloat."""
     try:
-        hermes_home = get_agentic_os_home()
-        recordings_dir = hermes_home / "browser_recordings"
+        agentic_os_home = get_agentic_os_home()
+        recordings_dir = agentic_os_home / "browser_recordings"
         if not recordings_dir.exists():
             return
         cutoff = time.time() - (max_age_hours * 3600)

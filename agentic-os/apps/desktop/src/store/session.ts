@@ -1,4 +1,4 @@
-import type { ConnectionState } from '@hermes/shared'
+import type { ConnectionState } from '@agentic-os/shared'
 import { atom, computed } from 'nanostores'
 
 import { lastVisibleMessageIsUser } from '@/app/chat/thread-loading'
@@ -11,29 +11,29 @@ import type { SessionInfo, UsageStats } from '@/types/hermes'
 type Updater<T> = T | ((current: T) => T)
 export type ComposerModelSource = '' | 'default' | 'manual'
 
-const WORKSPACE_CWD_KEY = 'hermes.desktop.workspace-cwd'
+const WORKSPACE_CWD_KEY = 'agentic-os.desktop.workspace-cwd'
 
 // The composer's model/effort/fast is sticky UI state, NOT the profile default
 // (that lives in Settings → Model). Persisting it in localStorage makes a pick
 // follow across Cmd+N and app restarts instead of snapping back to the default.
 // It's deliberately global (not per-profile): a profile switch force-reseeds to
 // that profile's default, while within a profile new chats keep your last pick.
-const COMPOSER_MODEL_KEY = 'hermes.desktop.composer.model'
-const COMPOSER_PROVIDER_KEY = 'hermes.desktop.composer.provider'
-const COMPOSER_MODEL_SOURCE_KEY = 'hermes.desktop.composer.model-source'
-const COMPOSER_EFFORT_KEY = 'hermes.desktop.composer.reasoning-effort'
-const COMPOSER_FAST_KEY = 'hermes.desktop.composer.fast'
+const COMPOSER_MODEL_KEY = 'agentic-os.desktop.composer.model'
+const COMPOSER_PROVIDER_KEY = 'agentic-os.desktop.composer.provider'
+const COMPOSER_MODEL_SOURCE_KEY = 'agentic-os.desktop.composer.model-source'
+const COMPOSER_EFFORT_KEY = 'agentic-os.desktop.composer.reasoning-effort'
+const COMPOSER_FAST_KEY = 'agentic-os.desktop.composer.fast'
 
 // The last chat the user had open, so a relaunch lands back on it instead of an
 // empty new-chat. Stored (not runtime) id — the route is keyed by stored id.
-const LAST_SESSION_KEY = 'hermes.desktop.lastSessionId'
+const LAST_SESSION_KEY = 'agentic-os.desktop.lastSessionId'
 
 export const getRememberedSessionId = (): null | string => storedString(LAST_SESSION_KEY)
 export const setRememberedSessionId = (id: null | string) => persistString(LAST_SESSION_KEY, id)
 
 // The last non-overlay route (a page like /skills, or a session route), so a
 // relaunch lands back where you were instead of a bare new-chat.
-const LAST_ROUTE_KEY = 'hermes.desktop.lastRoute'
+const LAST_ROUTE_KEY = 'agentic-os.desktop.lastRoute'
 
 export const getRememberedRoute = (): null | string => storedString(LAST_ROUTE_KEY)
 export const setRememberedRoute = (path: null | string) => persistString(LAST_ROUTE_KEY, path)
@@ -57,7 +57,7 @@ export type NewChatWorkspaceTarget = null | string | undefined
 export const getConfiguredDefaultProjectDir = (): string => configuredDefaultProjectDir
 
 export async function syncConfiguredDefaultProjectDir(): Promise<string> {
-  const settings = window.hermesDesktop?.settings?.getDefaultProjectDir
+  const settings = window.agenticOSDesktop?.settings?.getDefaultProjectDir
 
   if (!settings) {
     configuredDefaultProjectDir = ''
@@ -75,7 +75,7 @@ export async function syncConfiguredDefaultProjectDir(): Promise<string> {
  *  packaged, optional Settings override). Clears stale install-dir paths that
  *  PR #37586's localStorage stickiness can preserve across the #37536 fix. */
 export async function ensureDefaultWorkspaceCwd(): Promise<void> {
-  const sanitize = window.hermesDesktop?.sanitizeWorkspaceCwd
+  const sanitize = window.agenticOSDesktop?.sanitizeWorkspaceCwd
 
   if (!sanitize) {
     return

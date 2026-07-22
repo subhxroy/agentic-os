@@ -77,8 +77,8 @@ class TestIsWriteDenied:
     def test_oauth_mcp_tokens_and_pairing_denied(self, path):
         """PKCE creds, mcp-tokens, and pairing entries must be write-denied."""
         from agentic_os_constants import get_agentic_os_home
-        hermes_home = get_agentic_os_home()
-        full_path = str(hermes_home / path)
+        agentic_os_home = get_agentic_os_home()
+        full_path = str(agentic_os_home / path)
         assert _is_write_denied(full_path) is True
 
     @pytest.mark.parametrize(
@@ -99,8 +99,8 @@ class TestIsWriteDenied:
     def test_oauth_traversal_denied(self, path):
         """Path traversal attempts to protected OAuth files must be blocked."""
         from agentic_os_constants import get_agentic_os_home
-        hermes_home = get_agentic_os_home()
-        full_path = str(hermes_home / path)
+        agentic_os_home = get_agentic_os_home()
+        full_path = str(agentic_os_home / path)
         assert _is_write_denied(full_path) is True
 
     @pytest.mark.parametrize(

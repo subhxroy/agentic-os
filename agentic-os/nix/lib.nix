@@ -228,7 +228,7 @@ in
   #   npm = hermesNpmLib.mkNpmPassthru { dirs = [ "ui-tui" ]; };
   #   npm = hermesNpmLib.mkNpmPassthru { dirs = [ "apps/desktop" "apps/shared" ]; };
   #   pkgs.buildNpmPackage (npm // {
-  #     pname = "hermes-tui";
+  #     pname = "agentic-os-tui";
   #     inherit version;
   #     buildPhase = '' ... '';
   #     installPhase = '' ... '';

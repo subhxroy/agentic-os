@@ -17,7 +17,7 @@ All three are **drop-in at runtime**: no repo clone, no `npm run build`, no patc
 If you just want to use the dashboard, see [Web Dashboard](./web-dashboard). If you want to reskin the terminal CLI (not the web dashboard), see [Skins & Themes](./skins) — the CLI skin system is unrelated to dashboard themes.
 
 :::note Not the desktop app
-This page covers the **web dashboard** (`hermes dashboard`) plugin system — `window.__HERMES_PLUGIN_SDK__`, a `manifest.json`, and a pre-built JS bundle. The **native desktop app** (`hermes desktop`) has its own, unrelated SDK — `@hermes/plugin-sdk`, a single ESM file, no build step — documented at [Desktop Plugin SDK](/developer-guide/desktop-plugin-sdk). Only the backend `plugin_api.py` namespace (`/api/plugins/<name>`) is shared between them.
+This page covers the **web dashboard** (`hermes dashboard`) plugin system — `window.__AGENTIC_OS_PLUGIN_SDK__`, a `manifest.json`, and a pre-built JS bundle. The **native desktop app** (`hermes desktop`) has its own, unrelated SDK — `@agentic-os/plugin-sdk`, a single ESM file, no build step — documented at [Desktop Plugin SDK](/developer-guide/desktop-plugin-sdk). Only the backend `plugin_api.py` namespace (`/api/plugins/<name>`) is shared between them.
 :::
 
 :::note How the pieces compose
@@ -363,7 +363,7 @@ Refresh the dashboard after creating the file. Switch themes live from the heade
 
 A dashboard plugin is a directory with a `manifest.json`, a pre-built JS bundle, and optionally a CSS file and a Python file with FastAPI routes. Plugins live next to other Hermes plugins in `~/.agentic-os/plugins/<name>/` — the dashboard extension is a `dashboard/` subfolder inside that plugin directory, so one plugin can extend both the CLI/gateway and the dashboard from a single install.
 
-Plugins don't bundle React or UI components. They use the **Plugin SDK** exposed on `window.__HERMES_PLUGIN_SDK__`. This keeps plugin bundles tiny (typically a few KB) and avoids version conflicts.
+Plugins don't bundle React or UI components. They use the **Plugin SDK** exposed on `window.__AGENTIC_OS_PLUGIN_SDK__`. This keeps plugin bundles tiny (typically a few KB) and avoids version conflicts.
 
 ### Quick start — your first plugin
 
@@ -397,7 +397,7 @@ Write the JS bundle (a plain IIFE — no build step needed):
 (function () {
   "use strict";
 
-  const SDK = window.__HERMES_PLUGIN_SDK__;
+  const SDK = window.__AGENTIC_OS_PLUGIN_SDK__;
   const { React } = SDK;
   const { Card, CardHeader, CardTitle, CardContent } = SDK.components;
 
@@ -494,10 +494,10 @@ Need a different icon? Open a PR to `web/src/App.tsx`'s `ICON_MAP` — pure addi
 
 ### The Plugin SDK
 
-Everything a plugin needs is on `window.__HERMES_PLUGIN_SDK__`. Plugins should never import React directly.
+Everything a plugin needs is on `window.__AGENTIC_OS_PLUGIN_SDK__`. Plugins should never import React directly.
 
 ```javascript
-const SDK = window.__HERMES_PLUGIN_SDK__;
+const SDK = window.__AGENTIC_OS_PLUGIN_SDK__;
 
 // React + hooks
 SDK.React                    // the React instance
@@ -675,7 +675,7 @@ Minimal example — pin a banner to the top of the Sessions page:
 ```javascript
 // ~/.agentic-os/plugins/session-notes/dashboard/dist/index.js
 (function () {
-  const SDK = window.__HERMES_PLUGIN_SDK__;
+  const SDK = window.__AGENTIC_OS_PLUGIN_SDK__;
   const { React } = SDK;
   const { Card, CardContent } = SDK.components;
 
@@ -824,7 +824,7 @@ curl http://127.0.0.1:9119/api/dashboard/plugins/rescan
 
 #### Plugin load lifecycle
 
-1. Dashboard loads. `main.tsx` exposes the SDK on `window.__HERMES_PLUGIN_SDK__` and the registry on `window.__HERMES_PLUGINS__`.
+1. Dashboard loads. `main.tsx` exposes the SDK on `window.__AGENTIC_OS_PLUGIN_SDK__` and the registry on `window.__HERMES_PLUGINS__`.
 2. `App.tsx` calls `usePlugins()` → fetches `GET /api/dashboard/plugins`.
 3. For each manifest: CSS `<link>` is injected (if declared), then a `<script>` tag loads the JS bundle.
 4. The plugin's IIFE runs and calls `window.__HERMES_PLUGINS__.register(name, Component)` — and optionally `.registerSlot(name, slot, Component)` for each slot.
@@ -890,7 +890,7 @@ Read the plugin source (`strike-freedom-cockpit/dashboard/dist/index.js` in the 
 
 | Global | Type | Provider |
 |--------|------|----------|
-| `window.__HERMES_PLUGIN_SDK__` | object | `registry.ts` — React, hooks, UI components, API client, utils. |
+| `window.__AGENTIC_OS_PLUGIN_SDK__` | object | `registry.ts` — React, hooks, UI components, API client, utils. |
 | `window.__HERMES_PLUGINS__.register(name, Component)` | function | Register a plugin's main component. |
 | `window.__HERMES_PLUGINS__.registerSlot(name, slot, Component)` | function | Register into a named shell slot. |
 

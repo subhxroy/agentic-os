@@ -222,12 +222,12 @@ from agentic_os_cli.browser_connect import (
     manual_chrome_debug_command,
     try_launch_chrome_debug,
 )
-from agentic_os_cli.env_loader import load_hermes_dotenv
+from agentic_os_cli.env_loader import load_agentic_os_dotenv
 from utils import base_url_host_matches, fast_safe_load
 
 _agentic_os_home = get_agentic_os_home()
 _project_env = Path(__file__).parent / '.env'
-load_hermes_dotenv(hermes_home=_agentic_os_home, project_env=_project_env)
+load_agentic_os_dotenv(agentic_os_home=_agentic_os_home, project_env=_project_env)
 
 
 _REASONING_TAGS = (
@@ -5210,7 +5210,7 @@ class HermesCLI(CLIAgentSetupMixin, CLICommandsMixin, CLIBillingMixin):
                 parts.append("⚠ YOLO")
             return self._trim_status_bar_text(" │ ".join(parts), width)
         except Exception:
-            return f"⚕ {self.model if getattr(self, 'model', None) else 'Hermes'}"
+            return f"⚕ {self.model if getattr(self, 'model', None) else 'Agentic OS'}"
 
     def _get_status_bar_fragments(self):
         if not self._status_bar_visible or getattr(self, '_model_picker_state', None):

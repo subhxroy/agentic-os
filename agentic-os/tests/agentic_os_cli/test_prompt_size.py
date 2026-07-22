@@ -14,8 +14,8 @@ from agentic_os_cli.prompt_size import (
 )
 
 
-def _seed_memory(hermes_home, memory_text="", user_text=""):
-    mem_dir = hermes_home / "memories"
+def _seed_memory(agentic_os_home, memory_text="", user_text=""):
+    mem_dir = agentic_os_home / "memories"
     mem_dir.mkdir(parents=True, exist_ok=True)
     if memory_text:
         (mem_dir / "MEMORY.md").write_text(memory_text, encoding="utf-8")
@@ -23,8 +23,8 @@ def _seed_memory(hermes_home, memory_text="", user_text=""):
         (mem_dir / "USER.md").write_text(user_text, encoding="utf-8")
 
 
-def _seed_skill(hermes_home, name, description):
-    skill_dir = hermes_home / "skills" / "demo" / name
+def _seed_skill(agentic_os_home, name, description):
+    skill_dir = agentic_os_home / "skills" / "demo" / name
     skill_dir.mkdir(parents=True, exist_ok=True)
     (skill_dir / "SKILL.md").write_text(
         f"---\nname: {name}\ndescription: {description}\n---\n# {name}\nbody\n",
@@ -34,11 +34,11 @@ def _seed_skill(hermes_home, name, description):
 
 @pytest.fixture
 def isolated_home(tmp_path, monkeypatch):
-    hermes_home = tmp_path / ".hermes"
-    hermes_home.mkdir()
-    monkeypatch.setenv("AGENTIC_OS_HOME", str(hermes_home))
+    agentic_os_home = tmp_path / ".hermes"
+    agentic_os_home.mkdir()
+    monkeypatch.setenv("AGENTIC_OS_HOME", str(agentic_os_home))
     monkeypatch.chdir(tmp_path)  # avoid picking up the repo's AGENTS.md
-    return hermes_home
+    return agentic_os_home
 
 
 def test_breakdown_keys_and_shape(isolated_home):

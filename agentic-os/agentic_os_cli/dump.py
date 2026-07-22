@@ -14,7 +14,7 @@ import sys
 from pathlib import Path
 
 from agentic_os_cli.config import get_agentic_os_home, get_env_path, get_project_root, load_config
-from agentic_os_cli.env_loader import load_hermes_dotenv
+from agentic_os_cli.env_loader import load_agentic_os_dotenv
 from agentic_os_constants import display_agentic_os_home
 from agent.skill_utils import is_excluded_skill_path
 
@@ -141,9 +141,9 @@ def _gateway_status() -> str:
         return "unknown" if sys.platform.startswith(("linux", "darwin")) else "N/A"
 
 
-def _count_skills(hermes_home: Path) -> int:
+def _count_skills(agentic_os_home: Path) -> int:
     """Count installed skills."""
-    skills_dir = hermes_home / "skills"
+    skills_dir = agentic_os_home / "skills"
     if not skills_dir.is_dir():
         return 0
     count = 0
@@ -161,9 +161,9 @@ def _count_mcp_servers(config: dict) -> int:
     return len(servers)
 
 
-def _cron_summary(hermes_home: Path) -> str:
+def _cron_summary(agentic_os_home: Path) -> str:
     """Return cron jobs summary."""
-    jobs_file = hermes_home / "cron" / "jobs.json"
+    jobs_file = agentic_os_home / "cron" / "jobs.json"
     if not jobs_file.exists():
         return "0"
     try:
@@ -280,13 +280,13 @@ def run_dump(args):
 
     # Load env from .env file so key checks work
     env_path = get_env_path()
-    load_hermes_dotenv(
-        hermes_home=env_path.parent,
+    load_agentic_os_dotenv(
+        agentic_os_home=env_path.parent,
         project_env=get_project_root() / ".env",
     )
 
     project_root = get_project_root()
-    hermes_home = get_agentic_os_home()
+    agentic_os_home = get_agentic_os_home()
 
     try:
         from agentic_os_cli import __version__
@@ -354,7 +354,7 @@ def run_dump(args):
     lines.append(f"python:           {sys.version.split()[0]}")
     lines.append(f"openai_sdk:       {openai_ver}")
     lines.append(f"profile:          {profile}")
-    lines.append(f"hermes_home:      {display_agentic_os_home()}")
+    lines.append(f"agentic_os_home:      {display_agentic_os_home()}")
     lines.append(f"model:            {model}")
     lines.append(f"provider:         {provider}")
     lines.append(f"terminal:         {backend}")
@@ -429,8 +429,8 @@ def run_dump(args):
 
     platforms = _configured_platforms()
     lines.append(f"  platforms:          {', '.join(platforms) if platforms else 'none'}")
-    lines.append(f"  cron_jobs:          {_cron_summary(hermes_home)}")
-    lines.append(f"  skills:             {_count_skills(hermes_home)}")
+    lines.append(f"  cron_jobs:          {_cron_summary(agentic_os_home)}")
+    lines.append(f"  skills:             {_count_skills(agentic_os_home)}")
 
     # Config overrides (non-default values)
     overrides = _config_overrides(config)

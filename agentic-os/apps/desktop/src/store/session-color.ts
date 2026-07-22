@@ -12,7 +12,7 @@ import type { SessionInfo } from '@/types/hermes'
 // this to the TUI later, promote this one atom to a backend SessionInfo.color
 // field — the resolver below and the picker UI stay exactly as they are.
 export const $sessionColorOverrides = persistentAtom<Record<string, string>>(
-  'hermes.desktop.sessionColors',
+  'agentic-os.desktop.sessionColors',
   {},
   Codecs.stringRecord
 )

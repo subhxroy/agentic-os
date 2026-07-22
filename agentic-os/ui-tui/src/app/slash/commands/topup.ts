@@ -1,4 +1,4 @@
-import { driveChargeSettlement, type SettlementOutcome } from '@hermes/shared/charge-settlement'
+import { driveChargeSettlement, type SettlementOutcome } from '@agentic-os/shared/charge-settlement'
 
 import type {
   BillingChargeResponse,

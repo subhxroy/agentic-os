@@ -19,8 +19,8 @@ PNG = b"\x89PNG\r\n\x1a\n" + b"\x00" * 64
 JPEG = b"\xff\xd8\xff" + b"\x00" * 64
 
 
-def _reload(monkeypatch, hermes_home: Path):
-    monkeypatch.setenv("AGENTIC_OS_HOME", str(hermes_home))
+def _reload(monkeypatch, agentic_os_home: Path):
+    monkeypatch.setenv("AGENTIC_OS_HOME", str(agentic_os_home))
     import agentic_os_constants
     importlib.reload(agentic_os_constants)
     import tools.image_source as isrc

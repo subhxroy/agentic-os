@@ -211,7 +211,7 @@ The classic CLI just prints `/agents` as a text summary; the TUI is where the ov
 Every `delegate_task` dispatch also creates one **append-only, human-readable log per task** so you (or the parent agent) can watch a subagent work in real time instead of waiting for the consolidated summary:
 
 ```
-<hermes_home>/cache/delegation/live/<delegation_id>/task-<n>.log
+<agentic_os_home>/cache/delegation/live/<delegation_id>/task-<n>.log
 ```
 
 The dispatch response includes the paths as `live_transcripts`, and the files are pre-created at dispatch time, so this works immediately:

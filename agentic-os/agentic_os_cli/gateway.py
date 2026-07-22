@@ -372,7 +372,7 @@ def _scan_gateway_pids(
             return (
                 f"--profile {current_profile_name_lc}" in command_lc
                 or f"-p {current_profile_name_lc}" in command_lc
-                or f"hermes_home={current_home_lc}" in command_lc
+                or f"agentic_os_home={current_home_lc}" in command_lc
             )
 
         # Default-profile case: no profile flag in argv. Accept as long as
@@ -383,8 +383,8 @@ def _scan_gateway_pids(
         if "--profile " in command_lc or " -p " in command_lc:
             return False
         if (
-            "hermes_home=" in command_lc
-            and f"hermes_home={current_home_lc}" not in command_lc
+            "agentic_os_home=" in command_lc
+            and f"agentic_os_home={current_home_lc}" not in command_lc
         ):
             return False
         return True
@@ -1752,14 +1752,14 @@ def _profile_suffix() -> str:
     return hashlib.sha256(str(home).encode()).hexdigest()[:8]
 
 
-def _profile_arg(hermes_home: str | None = None, default_root: str | Path | None = None) -> str:
+def _profile_arg(agentic_os_home: str | None = None, default_root: str | Path | None = None) -> str:
     """Return ``--profile <name>`` only when AGENTIC_OS_HOME is a named profile.
 
     For ``~/.agentic-os/profiles/<name>``, returns ``"--profile <name>"``.
     For the default profile or hash-based custom paths, returns the empty string.
 
     Args:
-        hermes_home: Optional explicit AGENTIC_OS_HOME path. Defaults to the current
+        agentic_os_home: Optional explicit AGENTIC_OS_HOME path. Defaults to the current
             ``get_agentic_os_home()`` value. Should be passed when generating a
             service definition for a different user (e.g. system service).
         default_root: Optional Hermes root to compare against. Used when
@@ -1770,7 +1770,7 @@ def _profile_arg(hermes_home: str | None = None, default_root: str | Path | None
     import re
     from agentic_os_constants import get_default_agentic_os_root
 
-    home = Path(hermes_home or str(get_agentic_os_home())).resolve()
+    home = Path(agentic_os_home or str(get_agentic_os_home())).resolve()
     default = Path(default_root).resolve() if default_root else get_default_agentic_os_root().resolve()
     if home == default:
         return ""
@@ -1785,14 +1785,14 @@ def _profile_arg(hermes_home: str | None = None, default_root: str | Path | None
     return ""
 
 
-def _profile_arg_for_target_user(hermes_home: str, target_home_dir: str) -> str:
+def _profile_arg_for_target_user(agentic_os_home: str, target_home_dir: str) -> str:
     """Return the profile arg for a system service running as another user."""
     target_root = Path(target_home_dir) / ".hermes"
     try:
-        Path(hermes_home).resolve().relative_to(target_root.resolve())
-        return _profile_arg(hermes_home, default_root=target_root)
+        Path(agentic_os_home).resolve().relative_to(target_root.resolve())
+        return _profile_arg(agentic_os_home, default_root=target_root)
     except ValueError:
-        return _profile_arg(hermes_home)
+        return _profile_arg(agentic_os_home)
 
 
 def get_service_name() -> str:
@@ -2673,11 +2673,11 @@ def _build_service_path_dirs(project_root: Path | None = None) -> list[str]:
     if _is_dir(node_bin):
         candidates.append(str(node_bin))
 
-    hermes_home = get_agentic_os_home()
-    hermes_node = hermes_home / "node" / "bin"
+    agentic_os_home = get_agentic_os_home()
+    hermes_node = agentic_os_home / "node" / "bin"
     if _is_dir(hermes_node):
         candidates.append(str(hermes_node))
-    hermes_nm = hermes_home / "node_modules" / ".bin"
+    hermes_nm = agentic_os_home / "node_modules" / ".bin"
     if _is_dir(hermes_nm):
         candidates.append(str(hermes_nm))
 
@@ -2712,17 +2712,17 @@ def _stable_service_working_dir() -> str:
     return str(PROJECT_ROOT)
 
 
-def _systemd_watchdog_seconds(hermes_home: str | Path | None = None) -> int:
+def _systemd_watchdog_seconds(agentic_os_home: str | Path | None = None) -> int:
     """Resolve the managed-overlay-aware watchdog setting for a service home."""
     override_token = None
     reset_home_override = None
-    if hermes_home is not None:
+    if agentic_os_home is not None:
         from agentic_os_constants import (
             reset_AGENTIC_OS_HOME_OVERRIDE,
             set_AGENTIC_OS_HOME_OVERRIDE,
         )
 
-        override_token = set_AGENTIC_OS_HOME_OVERRIDE(hermes_home)
+        override_token = set_AGENTIC_OS_HOME_OVERRIDE(agentic_os_home)
         reset_home_override = reset_AGENTIC_OS_HOME_OVERRIDE
     try:
         config = load_gateway_config()
@@ -2741,10 +2741,10 @@ def _systemd_watchdog_seconds(hermes_home: str | Path | None = None) -> int:
 
 
 def _systemd_watchdog_service_fields(
-    hermes_home: str | Path | None = None,
+    agentic_os_home: str | Path | None = None,
 ) -> tuple[str, str]:
     """Return systemd service fields for the effective gateway config."""
-    seconds = _systemd_watchdog_seconds(hermes_home)
+    seconds = _systemd_watchdog_seconds(agentic_os_home)
     if seconds <= 0:
         return "simple", ""
     return "notify", f"NotifyAccess=main\nWatchdogSec={seconds}s\n"
@@ -2788,11 +2788,11 @@ def generate_systemd_unit(system: bool = False, run_as_user: str | None = None) 
 
     if system:
         username, group_name, home_dir = _system_service_identity(run_as_user)
-        hermes_home = _agentic_os_home_for_target_user(home_dir)
+        agentic_os_home = _agentic_os_home_for_target_user(home_dir)
         systemd_type, systemd_watchdog_directives = _systemd_watchdog_service_fields(
-            hermes_home
+            agentic_os_home
         )
-        profile_arg = _profile_arg_for_target_user(hermes_home, home_dir)
+        profile_arg = _profile_arg_for_target_user(agentic_os_home, home_dir)
         # Remap all paths that may resolve under the calling user's home
         # (e.g. /root/) to the target user's home so the service can
         # actually access them.
@@ -2800,7 +2800,7 @@ def generate_systemd_unit(system: bool = False, run_as_user: str | None = None) 
         # Anchor cwd to the target user's AGENTIC_OS_HOME (stable, always exists)
         # rather than a remapped source-checkout path that can rot. See
         # _stable_service_working_dir() for the full rationale.
-        working_dir = str(hermes_home) if hermes_home else _remap_path_for_user(working_dir, home_dir)
+        working_dir = str(agentic_os_home) if agentic_os_home else _remap_path_for_user(working_dir, home_dir)
         venv_dir = _remap_path_for_user(venv_dir, home_dir)
         path_entries = [_remap_path_for_user(p, home_dir) for p in path_entries]
         path_entries.extend(_build_user_local_paths(Path(home_dir), path_entries))
@@ -2824,7 +2824,7 @@ Environment="USER={username}"
 Environment="LOGNAME={username}"
 Environment="PATH={sane_path}"
 Environment="VIRTUAL_ENV={venv_dir}"
-Environment="AGENTIC_OS_HOME={hermes_home}"
+Environment="AGENTIC_OS_HOME={agentic_os_home}"
 Restart=always
 RestartSec=5
 RestartForceExitStatus={GATEWAY_SERVICE_RESTART_EXIT_CODE}
@@ -2841,11 +2841,11 @@ StandardError=journal
 WantedBy=multi-user.target
 """
 
-    hermes_home = str(get_agentic_os_home().resolve())
+    agentic_os_home = str(get_agentic_os_home().resolve())
     systemd_type, systemd_watchdog_directives = _systemd_watchdog_service_fields(
-        hermes_home
+        agentic_os_home
     )
-    profile_arg = _profile_arg(hermes_home)
+    profile_arg = _profile_arg(agentic_os_home)
     path_entries.extend(_build_user_local_paths(Path.home(), path_entries))
     path_entries.extend(_build_wsl_interop_paths(path_entries))
     path_entries.extend(common_bin_paths)
@@ -2862,7 +2862,7 @@ Type={systemd_type}
 WorkingDirectory={working_dir}
 Environment="PATH={sane_path}"
 Environment="VIRTUAL_ENV={venv_dir}"
-Environment="AGENTIC_OS_HOME={hermes_home}"
+Environment="AGENTIC_OS_HOME={agentic_os_home}"
 Restart=always
 RestartSec=5
 RestartForceExitStatus={GATEWAY_SERVICE_RESTART_EXIT_CODE}
@@ -3947,11 +3947,11 @@ def generate_launchd_plist() -> str:
     # _stable_service_working_dir() for the rationale (same rot risk applies
     # to launchd's WorkingDirectory as to systemd's).
     working_dir = _stable_service_working_dir()
-    hermes_home = str(get_agentic_os_home().resolve())
+    agentic_os_home = str(get_agentic_os_home().resolve())
     log_dir = get_agentic_os_home() / "logs"
     log_dir.mkdir(parents=True, exist_ok=True)
     label = get_launchd_label()
-    profile_arg = _profile_arg(hermes_home)
+    profile_arg = _profile_arg(agentic_os_home)
     # Build a sane PATH for the launchd plist.  launchd provides only a
     # minimal default (/usr/bin:/bin:/usr/sbin:/sbin) which misses Homebrew,
     # nvm, cargo, etc.  We prepend venv/bin and node_modules/.bin (matching
@@ -4019,7 +4019,7 @@ def generate_launchd_plist() -> str:
         <key>VIRTUAL_ENV</key>
         <string>{venv_dir}</string>
         <key>AGENTIC_OS_HOME</key>
-        <string>{hermes_home}</string>
+        <string>{agentic_os_home}</string>
     </dict>
 
     <key>LimitLoadToSessionType</key>

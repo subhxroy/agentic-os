@@ -265,7 +265,7 @@ describe('applyUpdates terminal state', () => {
     resetUpdateApplyState()
     $updateOverlayOpen.set(true)
     ;(globalThis as unknown as { window: unknown }).window = {
-      hermesDesktop: { updates: { apply: applyMock } }
+      agenticOSDesktop: { updates: { apply: applyMock } }
     }
     vi.useRealTimers()
   })
@@ -477,7 +477,7 @@ describe('startUpdatePoller', () => {
     })
     $updateStatus.set(null)
     ;(globalThis as unknown as { window: unknown }).window = {
-      hermesDesktop: { updates: { check: checkMock, onProgress: onProgressMock } },
+      agenticOSDesktop: { updates: { check: checkMock, onProgress: onProgressMock } },
       addEventListener: vi.fn((event: string, handler: Function) => {
         listeners[event] = handler
       }),

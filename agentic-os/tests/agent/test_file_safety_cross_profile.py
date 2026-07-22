@@ -72,10 +72,10 @@ def fake_hermes(tmp_path, monkeypatch):
     }
 
 
-def _set_active_home(monkeypatch, hermes_home: Path):
+def _set_active_home(monkeypatch, agentic_os_home: Path):
     """Point file_safety._agentic_os_home_path at a specific profile dir."""
     import agent.file_safety as fs
-    monkeypatch.setattr(fs, "_agentic_os_home_path", lambda: hermes_home)
+    monkeypatch.setattr(fs, "_agentic_os_home_path", lambda: agentic_os_home)
 
 
 # ---------------------------------------------------------------------------
@@ -167,7 +167,7 @@ class TestClassifyCrossProfileTarget:
         # Path outside any Hermes root
         assert classify_cross_profile_target(str(tmp_path / "random.txt")) is None
 
-    def test_hermes_config_not_classified_as_cross_profile(self, fake_hermes, monkeypatch):
+    def test_agentic_os_config_not_classified_as_cross_profile(self, fake_hermes, monkeypatch):
         """Files under <root>/config.yaml or <root>/.env are NOT profile-scoped
         (already covered by build_write_denied_paths). Don't double-warn."""
         _set_active_home(monkeypatch, fake_hermes["security_home"])

@@ -12,7 +12,7 @@ let
   version = packageJson.version;
 in
 pkgs.buildNpmPackage (npm // {
-  pname = "hermes-tui";
+  pname = "agentic-os-tui";
   inherit version;
 
   doCheck = false;
@@ -26,12 +26,12 @@ pkgs.buildNpmPackage (npm // {
   installPhase = ''
     runHook preInstall
 
-    mkdir -p $out/lib/hermes-tui
+    mkdir -p $out/lib/agentic-os-tui
     # esbuild writes to ui-tui/dist/ from the source root (no cd).
-    cp -r ui-tui/dist $out/lib/hermes-tui/dist
+    cp -r ui-tui/dist $out/lib/agentic-os-tui/dist
 
     # package.json kept for "type": "module" resolution on `node dist/entry.js`.
-    cp ui-tui/package.json $out/lib/hermes-tui/
+    cp ui-tui/package.json $out/lib/agentic-os-tui/
 
     runHook postInstall
   '';

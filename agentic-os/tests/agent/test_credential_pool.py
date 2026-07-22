@@ -11,9 +11,9 @@ import pytest
 
 
 def _write_auth_store(tmp_path, payload: dict) -> None:
-    hermes_home = tmp_path / "hermes"
-    hermes_home.mkdir(parents=True, exist_ok=True)
-    (hermes_home / "auth.json").write_text(json.dumps(payload, indent=2))
+    agentic_os_home = tmp_path / "hermes"
+    agentic_os_home.mkdir(parents=True, exist_ok=True)
+    (agentic_os_home / "auth.json").write_text(json.dumps(payload, indent=2))
 
 
 def _jwt_with_claims(claims: dict) -> str:
@@ -1193,15 +1193,15 @@ def test_load_pool_prefers_dotenv_over_stale_os_environ(tmp_path, monkeypatch):
     os.environ and silently wrote the stale value into auth.json, causing
     persistent 401 errors after key rotation.
     """
-    hermes_home = tmp_path / "hermes"
-    hermes_home.mkdir()
-    monkeypatch.setenv("AGENTIC_OS_HOME", str(hermes_home))
+    agentic_os_home = tmp_path / "hermes"
+    agentic_os_home.mkdir()
+    monkeypatch.setenv("AGENTIC_OS_HOME", str(agentic_os_home))
 
     # Simulate the bug: parent shell exported a stale test key
     monkeypatch.setenv("OPENROUTER_API_KEY", "sk-or-STALE-from-shell")
 
     # User edited ~/.agentic-os/.env with the fresh key
-    (hermes_home / ".env").write_text(
+    (agentic_os_home / ".env").write_text(
         "OPENROUTER_API_KEY=sk-or-FRESH-from-dotenv\n"
     )
 
@@ -1225,13 +1225,13 @@ def test_load_pool_falls_back_to_os_environ_when_dotenv_empty(tmp_path, monkeypa
     os.environ. Guards against regressions that would break production
     deployments relying on runtime-injected env vars.
     """
-    hermes_home = tmp_path / "hermes"
-    hermes_home.mkdir()
-    monkeypatch.setenv("AGENTIC_OS_HOME", str(hermes_home))
+    agentic_os_home = tmp_path / "hermes"
+    agentic_os_home.mkdir()
+    monkeypatch.setenv("AGENTIC_OS_HOME", str(agentic_os_home))
     monkeypatch.setenv("OPENROUTER_API_KEY", "sk-or-from-runtime-env")
 
     # .env exists but does not define OPENROUTER_API_KEY
-    (hermes_home / ".env").write_text("SOME_OTHER_VAR=unrelated\n")
+    (agentic_os_home / ".env").write_text("SOME_OTHER_VAR=unrelated\n")
 
     _write_auth_store(tmp_path, {"version": 1, "providers": {}})
 

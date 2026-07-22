@@ -98,16 +98,16 @@ def _setup_logging() -> None:
 
 def _load_env() -> None:
     """Load .env from AGENTIC_OS_HOME (default ``~/.agentic-os``)."""
-    from agentic_os_cli.env_loader import load_hermes_dotenv
+    from agentic_os_cli.env_loader import load_agentic_os_dotenv
 
-    hermes_home = get_agentic_os_home()
-    loaded = load_hermes_dotenv(hermes_home=hermes_home)
+    agentic_os_home = get_agentic_os_home()
+    loaded = load_agentic_os_dotenv(agentic_os_home=agentic_os_home)
     if loaded:
         for env_file in loaded:
             logging.getLogger(__name__).info("Loaded env from %s", env_file)
     else:
         logging.getLogger(__name__).info(
-            "No .env found at %s, using system env", hermes_home / ".env"
+            "No .env found at %s, using system env", agentic_os_home / ".env"
         )
 
 

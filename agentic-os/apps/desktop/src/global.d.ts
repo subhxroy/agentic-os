@@ -1,4 +1,4 @@
-import type { GatewayWsUrlResult } from '@hermes/shared'
+import type { GatewayWsUrlResult } from '@agentic-os/shared'
 
 import type {
   PetOverlayBounds,
@@ -11,7 +11,7 @@ export {}
 
 declare global {
   interface Window {
-    hermesDesktop: {
+    agenticOSDesktop: {
       // Resolve a backend connection. Omit `profile` (or pass the primary) for
       // the window's backend; pass a named profile to lazily spawn/reuse that
       // profile's backend from the pool.
@@ -282,7 +282,7 @@ export interface DesktopVersionInfo {
 export type DesktopUninstallMode = 'full' | 'gui' | 'lite'
 
 export interface DesktopUninstallSummary {
-  hermes_home: string
+  agentic_os_home: string
   agent_installed: boolean
   gui_installed: boolean
   source_built_artifacts: string[]

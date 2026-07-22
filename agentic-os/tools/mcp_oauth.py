@@ -131,7 +131,7 @@ _USER_SKIPPED_SENTINEL = "__hermes_user_skipped__"
 # ---------------------------------------------------------------------------
 
 
-def _get_token_dir(hermes_home: str | Path | None = None) -> Path:
+def _get_token_dir(agentic_os_home: str | Path | None = None) -> Path:
     """Return the directory for MCP OAuth token files.
 
     Uses AGENTIC_OS_HOME so each profile gets its own OAuth tokens.
@@ -139,7 +139,7 @@ def _get_token_dir(hermes_home: str | Path | None = None) -> Path:
     """
     try:
         from agentic_os_constants import get_agentic_os_home
-        base = Path(hermes_home) if hermes_home is not None else Path(get_agentic_os_home())
+        base = Path(agentic_os_home) if agentic_os_home is not None else Path(get_agentic_os_home())
     except ImportError:
         base = Path(os.environ.get("AGENTIC_OS_HOME", str(Path.home() / ".hermes")))
     return base / "mcp-tokens"
@@ -388,9 +388,9 @@ class HermesTokenStorage:
         AGENTIC_OS_HOME/mcp-tokens/<server_name>.meta.json     -- oauth server metadata
     """
 
-    def __init__(self, server_name: str, *, hermes_home: str | Path | None = None):
+    def __init__(self, server_name: str, *, agentic_os_home: str | Path | None = None):
         self._server_name = _safe_filename(server_name)
-        self._agentic_os_home = Path(hermes_home) if hermes_home is not None else None
+        self._agentic_os_home = Path(agentic_os_home) if agentic_os_home is not None else None
 
     def _tokens_path(self) -> Path:
         return _get_token_dir(self._agentic_os_home) / f"{self._server_name}.json"
@@ -978,10 +978,10 @@ def _paste_callback_reader(result: dict) -> None:
 def remove_oauth_tokens(
     server_name: str,
     *,
-    hermes_home: str | Path | None = None,
+    agentic_os_home: str | Path | None = None,
 ) -> None:
     """Delete stored OAuth tokens and client info for a server."""
-    storage = HermesTokenStorage(server_name, hermes_home=hermes_home)
+    storage = HermesTokenStorage(server_name, agentic_os_home=agentic_os_home)
     storage.remove()
     logger.info("OAuth tokens removed for '%s'", server_name)
 

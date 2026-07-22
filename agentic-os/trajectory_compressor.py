@@ -49,11 +49,11 @@ from agentic_os_constants import OPENROUTER_BASE_URL, get_agentic_os_home
 from agent.retry_utils import jittered_backoff
 
 # Load .env from AGENTIC_OS_HOME first, then project root as a dev fallback.
-from agentic_os_cli.env_loader import load_hermes_dotenv
+from agentic_os_cli.env_loader import load_agentic_os_dotenv
 
 _agentic_os_home = get_agentic_os_home()
 _project_env = Path(__file__).parent / ".env"
-load_hermes_dotenv(hermes_home=_agentic_os_home, project_env=_project_env)
+load_agentic_os_dotenv(agentic_os_home=_agentic_os_home, project_env=_project_env)
 
 
 def _effective_temperature_for_model(

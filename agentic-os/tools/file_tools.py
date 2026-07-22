@@ -572,25 +572,25 @@ _SENSITIVE_PATH_PREFIXES = (
 )
 _SENSITIVE_EXACT_PATHS = {"/var/run/docker.sock", "/run/docker.sock"}
 
-_hermes_config_resolved: str | None = None
-_hermes_config_resolved_loaded = False
+_agentic_os_config_resolved: str | None = None
+_agentic_os_config_resolved_loaded = False
 
 
-def _get_hermes_config_resolved() -> str | None:
+def _get_agentic_os_config_resolved() -> str | None:
     """Return the resolved absolute path of the Hermes config file (cached)."""
-    global _hermes_config_resolved, _hermes_config_resolved_loaded
-    if _hermes_config_resolved_loaded:
-        return _hermes_config_resolved
-    _hermes_config_resolved_loaded = True
+    global _agentic_os_config_resolved, _agentic_os_config_resolved_loaded
+    if _agentic_os_config_resolved_loaded:
+        return _agentic_os_config_resolved
+    _agentic_os_config_resolved_loaded = True
     try:
         from agentic_os_cli.config import get_config_path
-        _hermes_config_resolved = str(get_config_path().resolve())
+        _agentic_os_config_resolved = str(get_config_path().resolve())
     except Exception:
         try:
-            _hermes_config_resolved = str(Path(_expand_tilde("~/.agentic-os/config.yaml")).resolve())
+            _agentic_os_config_resolved = str(Path(_expand_tilde("~/.agentic-os/config.yaml")).resolve())
         except Exception:
-            _hermes_config_resolved = None
-    return _hermes_config_resolved
+            _agentic_os_config_resolved = None
+    return _agentic_os_config_resolved
 
 
 def _check_sensitive_path(filepath: str, task_id: str = "default") -> str | None:
@@ -613,8 +613,8 @@ def _check_sensitive_path(filepath: str, task_id: str = "default") -> str | None
     # approvals.mode and other security settings live here; a malicious or
     # prompt-injected agent could silently disable exec approval by writing to
     # this file.
-    hermes_config = _get_hermes_config_resolved()
-    if hermes_config and (resolved == hermes_config or normalized == hermes_config):
+    agentic_os_config = _get_agentic_os_config_resolved()
+    if agentic_os_config and (resolved == agentic_os_config or normalized == agentic_os_config):
         return (
             f"Refusing to write to Hermes config file: {filepath}\n"
             "Agent cannot modify security-sensitive configuration. "

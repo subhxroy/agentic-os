@@ -605,9 +605,9 @@ export function ToolsetConfigPanel({ toolset, onConfiguredChange }: ToolsetConfi
 
       const url = start.verification_url
 
-      if (window.hermesDesktop?.openExternal) {
+      if (window.agenticOSDesktop?.openExternal) {
         try {
-          await window.hermesDesktop.openExternal(url)
+          await window.agenticOSDesktop.openExternal(url)
         } catch {
           window.open(url, '_blank', 'noopener,noreferrer')
         }

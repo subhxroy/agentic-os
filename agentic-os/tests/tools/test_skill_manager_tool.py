@@ -1246,10 +1246,10 @@ def _curator_pass(tmp_path, *, monkeypatch):
     searches, and flips ``is_background_review()`` → True so the consolidation
     guard fires.
     """
-    hermes_home = tmp_path / ".hermes"
-    skills_root = hermes_home / "skills"
+    agentic_os_home = tmp_path / ".hermes"
+    skills_root = agentic_os_home / "skills"
     skills_root.mkdir(parents=True, exist_ok=True)
-    monkeypatch.setenv("AGENTIC_OS_HOME", str(hermes_home))
+    monkeypatch.setenv("AGENTIC_OS_HOME", str(agentic_os_home))
     with patch("tools.skill_manager_tool.SKILLS_DIR", skills_root), \
          patch("tools.skills_tool.SKILLS_DIR", skills_root), \
          patch("agent.skill_utils.get_all_skills_dirs", return_value=[skills_root]), \

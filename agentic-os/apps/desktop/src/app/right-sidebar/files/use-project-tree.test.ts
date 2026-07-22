@@ -13,14 +13,14 @@ beforeEach(() => {
   $connection.set(null)
   resetProjectTreeState()
   readDir.mockReset()
-  ;(window as unknown as { hermesDesktop: { readDir: typeof readDir } }).hermesDesktop = { readDir }
+  ;(window as unknown as { agenticOSDesktop: { readDir: typeof readDir } }).agenticOSDesktop = { readDir }
 })
 
 afterEach(() => {
   cleanup()
   $connection.set(null)
   resetProjectTreeState()
-  delete (window as unknown as { hermesDesktop?: unknown }).hermesDesktop
+  delete (window as unknown as { agenticOSDesktop?: unknown }).agenticOSDesktop
 })
 
 function ok(entries: { name: string; path: string; isDirectory: boolean }[]): HermesReadDirResult {
@@ -128,7 +128,7 @@ describe('useProjectTree', () => {
 
       throw new Error(`unexpected path ${path}`)
     })
-    ;(window as unknown as { hermesDesktop: unknown }).hermesDesktop = { gitRoot, readDir, readFileDataUrl }
+    ;(window as unknown as { agenticOSDesktop: unknown }).agenticOSDesktop = { gitRoot, readDir, readFileDataUrl }
 
     $connection.set({ baseUrl: 'local-a', mode: 'local' } as never)
     await expect(readProjectDir('/repo/src', '/repo')).resolves.toMatchObject({
@@ -238,7 +238,7 @@ describe('useProjectTree', () => {
 
       throw new Error(`unexpected path ${path}`)
     })
-    ;(window as unknown as { hermesDesktop: unknown }).hermesDesktop = { readDir, sanitizeWorkspaceCwd }
+    ;(window as unknown as { agenticOSDesktop: unknown }).agenticOSDesktop = { readDir, sanitizeWorkspaceCwd }
 
     const { result } = renderHook(() => useProjectTree('/deleted/worktree'))
 
@@ -253,7 +253,7 @@ describe('useProjectTree', () => {
   it('keeps the root error when sanitize offers no usable fallback', async () => {
     const sanitizeWorkspaceCwd = vi.fn(async () => ({ cwd: '/deleted/worktree', sanitized: false }))
     readDir.mockResolvedValue({ entries: [], error: 'ENOENT' })
-    ;(window as unknown as { hermesDesktop: unknown }).hermesDesktop = { readDir, sanitizeWorkspaceCwd }
+    ;(window as unknown as { agenticOSDesktop: unknown }).agenticOSDesktop = { readDir, sanitizeWorkspaceCwd }
 
     const { result } = renderHook(() => useProjectTree('/deleted/worktree'))
 
@@ -261,8 +261,8 @@ describe('useProjectTree', () => {
     expect(result.current.effectiveCwd).toBe('/deleted/worktree')
   })
 
-  it('returns no-bridge gracefully when window.hermesDesktop is missing', async () => {
-    delete (window as unknown as { hermesDesktop?: unknown }).hermesDesktop
+  it('returns no-bridge gracefully when window.agenticOSDesktop is missing', async () => {
+    delete (window as unknown as { agenticOSDesktop?: unknown }).agenticOSDesktop
 
     const { result } = renderHook(() => useProjectTree('/p'))
 

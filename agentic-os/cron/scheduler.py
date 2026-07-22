@@ -594,8 +594,8 @@ def _get_agentic_os_home() -> Path:
 
 def _get_lock_paths() -> tuple[Path, Path]:
     """Resolve cron lock paths at call time so profile/env changes are honored."""
-    hermes_home = _get_agentic_os_home()
-    lock_dir = hermes_home / "cron"
+    agentic_os_home = _get_agentic_os_home()
+    lock_dir = agentic_os_home / "cron"
     return lock_dir, lock_dir / ".tick.lock"
 
 
@@ -3021,7 +3021,7 @@ def run_job(
 
         # Re-read .env and config.yaml fresh every run so provider/key
         # changes take effect without a gateway restart. Route through
-        # load_hermes_dotenv (not a bare load_dotenv) and reset the secret-
+        # load_agentic_os_dotenv (not a bare load_dotenv) and reset the secret-
         # source cache first: startup already applied external secrets and
         # recorded this AGENTIC_OS_HOME in _APPLIED_HOMES, so a naive reload would
         # re-apply only the .env placeholder and never re-resolve a Bitwarden/
@@ -3029,14 +3029,14 @@ def run_job(
         # (#33465). Clearing the cache forces the re-pull; the resolved secret
         # overrides the placeholder only when secrets.bitwarden.override_existing
         # is set (mirrors startup), and the Bitwarden value-cache keeps the
-        # forced re-pull off the network. load_hermes_dotenv also handles the
+        # forced re-pull off the network. load_agentic_os_dotenv also handles the
         # utf-8/latin-1 encoding fallback internally.
         from agentic_os_cli.env_loader import (
-            load_hermes_dotenv,
+            load_agentic_os_dotenv,
             reset_secret_source_cache,
         )
         reset_secret_source_cache()
-        load_hermes_dotenv(hermes_home=_get_agentic_os_home())
+        load_agentic_os_dotenv(agentic_os_home=_get_agentic_os_home())
 
         delivery_target = _resolve_delivery_target(job)
         if delivery_target:

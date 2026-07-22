@@ -172,11 +172,11 @@ class TestHelpers:
     def test_to_image_url_part_blocks_credential_store(self, tmp_path, monkeypatch):
         from plugins.image_gen.openrouter import _to_image_url_part
 
-        hermes_home = tmp_path / ".hermes"
-        hermes_home.mkdir()
-        auth_json = hermes_home / "auth.json"
+        agentic_os_home = tmp_path / ".hermes"
+        agentic_os_home.mkdir()
+        auth_json = agentic_os_home / "auth.json"
         auth_json.write_text('{"api_key":"sk-secret"}', encoding="utf-8")
-        monkeypatch.setenv("AGENTIC_OS_HOME", str(hermes_home))
+        monkeypatch.setenv("AGENTIC_OS_HOME", str(agentic_os_home))
 
         with pytest.raises(ValueError, match="credential store"):
             _to_image_url_part(str(auth_json))
@@ -188,11 +188,11 @@ class TestHelpers:
 
         from plugins.image_gen.openrouter import _to_image_url_part
 
-        hermes_home = tmp_path / ".hermes"
-        hermes_home.mkdir()
-        auth_json = hermes_home / "auth.json"
+        agentic_os_home = tmp_path / ".hermes"
+        agentic_os_home.mkdir()
+        auth_json = agentic_os_home / "auth.json"
         auth_json.write_text('{"api_key":"sk-secret"}', encoding="utf-8")
-        monkeypatch.setenv("AGENTIC_OS_HOME", str(hermes_home))
+        monkeypatch.setenv("AGENTIC_OS_HOME", str(agentic_os_home))
 
         real_read_bytes = _P.read_bytes
         read: list = []

@@ -480,7 +480,7 @@ def get_external_skills_dirs() -> List[Path]:
 
     from agentic_os_constants import get_agentic_os_home
 
-    hermes_home = get_agentic_os_home()
+    agentic_os_home = get_agentic_os_home()
     local_skills = get_skills_dir().resolve()
     seen: Set[Path] = set()
     result = []
@@ -494,7 +494,7 @@ def get_external_skills_dirs() -> List[Path]:
         p = Path(expanded)
         # Resolve relative paths against AGENTIC_OS_HOME, not cwd
         if not p.is_absolute():
-            p = (hermes_home / p).resolve()
+            p = (agentic_os_home / p).resolve()
         else:
             p = p.resolve()
         if p == local_skills:

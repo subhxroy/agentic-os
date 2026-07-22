@@ -24,21 +24,21 @@ sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 @pytest.fixture
 def cron_env(tmp_path, monkeypatch):
     """Isolated cron environment with temp AGENTIC_OS_HOME."""
-    hermes_home = tmp_path / ".hermes"
-    hermes_home.mkdir()
-    (hermes_home / "cron").mkdir()
-    (hermes_home / "cron" / "output").mkdir()
-    (hermes_home / "scripts").mkdir()
-    monkeypatch.setenv("AGENTIC_OS_HOME", str(hermes_home))
+    agentic_os_home = tmp_path / ".hermes"
+    agentic_os_home.mkdir()
+    (agentic_os_home / "cron").mkdir()
+    (agentic_os_home / "cron" / "output").mkdir()
+    (agentic_os_home / "scripts").mkdir()
+    monkeypatch.setenv("AGENTIC_OS_HOME", str(agentic_os_home))
 
     # Clear cached module-level paths
     import cron.jobs as jobs_mod
-    monkeypatch.setattr(jobs_mod, "HERMES_DIR", hermes_home)
-    monkeypatch.setattr(jobs_mod, "CRON_DIR", hermes_home / "cron")
-    monkeypatch.setattr(jobs_mod, "JOBS_FILE", hermes_home / "cron" / "jobs.json")
-    monkeypatch.setattr(jobs_mod, "OUTPUT_DIR", hermes_home / "cron" / "output")
+    monkeypatch.setattr(jobs_mod, "HERMES_DIR", agentic_os_home)
+    monkeypatch.setattr(jobs_mod, "CRON_DIR", agentic_os_home / "cron")
+    monkeypatch.setattr(jobs_mod, "JOBS_FILE", agentic_os_home / "cron" / "jobs.json")
+    monkeypatch.setattr(jobs_mod, "OUTPUT_DIR", agentic_os_home / "cron" / "output")
 
-    return hermes_home
+    return agentic_os_home
 
 
 class TestJobScriptField:

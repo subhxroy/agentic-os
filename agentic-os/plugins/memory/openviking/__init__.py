@@ -1960,13 +1960,13 @@ class OpenVikingMemoryProvider(MemoryProvider):
                 display[key] = "(set)"
         return display
 
-    def post_setup(self, hermes_home: str, config: dict) -> None:
+    def post_setup(self, agentic_os_home: str, config: dict) -> None:
         """Custom setup that can reuse OpenViking's shared CLI config."""
         from agentic_os_cli.config import save_config
         from agentic_os_cli.memory_setup import _CANCELLED, _curses_select, _print_cancelled_setup, _prompt
 
-        hermes_home_path = Path(hermes_home)
-        env_path = hermes_home_path / ".env"
+        agentic_os_home_path = Path(agentic_os_home)
+        env_path = agentic_os_home_path / ".env"
         if not isinstance(config.get("memory"), dict):
             config["memory"] = {}
         provider_config = config["memory"].get("openviking", {})

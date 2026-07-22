@@ -154,7 +154,7 @@ def begin_authorization(
     """Start an authorization: return ``(authorize_url, state)`` and stash PKCE.
 
     ``source`` tags the authorize link with the initiating surface
-    (``hermes-desktop`` / ``hermes-cli``) so the consent side can attribute
+    (``agentic-os-desktop`` / ``hermes-cli``) so the consent side can attribute
     connects and vary behavior per surface. ``config_path`` is a home-relative
     *display* string for the consent screen (never the absolute path); callers
     pass the actual write path separately to ``complete_authorization``.
@@ -400,7 +400,7 @@ def start_loopback_flow_background(
     *,
     config_path: Path | None = None,
     host: str | None = None,
-    source: str = "hermes-desktop",
+    source: str = "agentic-os-desktop",
     timeout: float = 300.0,
 ) -> dict[str, str]:
     """Launch the loopback flow in a daemon thread; returns the initial status.

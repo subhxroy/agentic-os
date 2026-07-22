@@ -1,4 +1,4 @@
-import { type ConnectionState, type GatewayEvent, resolveGatewayWsUrl } from '@hermes/shared'
+import { type ConnectionState, type GatewayEvent, resolveGatewayWsUrl } from '@agentic-os/shared'
 import { atom } from 'nanostores'
 
 import { HermesGateway } from '@/hermes'
@@ -103,7 +103,7 @@ function clearTimer(entry: Secondary): void {
 }
 
 async function openSecondary(entry: Secondary): Promise<void> {
-  const desktop = window.hermesDesktop
+  const desktop = window.agenticOSDesktop
 
   if (!desktop) {
     return
@@ -271,7 +271,7 @@ export function reconnectSecondaryGateways(): void {
 // Keep the idle reaper from killing a backend we still need: ping every live
 // secondary. The active one is pinged separately (touchActiveGatewayBackend).
 export function touchSecondaryGateways(): void {
-  const desktop = window.hermesDesktop
+  const desktop = window.agenticOSDesktop
 
   for (const entry of secondaries.values()) {
     if (entry.wantOpen) {

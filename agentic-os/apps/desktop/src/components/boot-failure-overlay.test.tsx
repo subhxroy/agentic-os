@@ -26,13 +26,13 @@ function failBoot() {
 }
 
 function stubDesktop(config: Record<string, unknown>) {
-  const original = window.hermesDesktop
-  Object.defineProperty(window, 'hermesDesktop', {
+  const original = window.agenticOSDesktop
+  Object.defineProperty(window, 'agenticOSDesktop', {
     configurable: true,
     value: { getRecentLogs: async () => ({ lines: [] }), getConnectionConfig: async () => config }
   })
 
-  return () => Object.defineProperty(window, 'hermesDesktop', { configurable: true, value: original })
+  return () => Object.defineProperty(window, 'agenticOSDesktop', { configurable: true, value: original })
 }
 
 const remoteToken = {

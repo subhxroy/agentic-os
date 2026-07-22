@@ -76,14 +76,14 @@ def test_all_profiles_register():
 def test_user_plugin_overrides_bundled(tmp_path, monkeypatch):
     """A user plugin with the same name must override the bundled profile."""
     # Point AGENTIC_OS_HOME at a fresh temp dir
-    hermes_home = tmp_path / ".hermes"
-    hermes_home.mkdir()
-    monkeypatch.setenv("AGENTIC_OS_HOME", str(hermes_home))
+    agentic_os_home = tmp_path / ".hermes"
+    agentic_os_home.mkdir()
+    monkeypatch.setenv("AGENTIC_OS_HOME", str(agentic_os_home))
     # get_agentic_os_home() may be module-cached depending on codebase; ensure the
     # env var is the source of truth. Most code paths re-read it each call.
 
     # Drop a user plugin that replaces 'gmi'
-    user_gmi = hermes_home / "plugins" / "model-providers" / "gmi"
+    user_gmi = agentic_os_home / "plugins" / "model-providers" / "gmi"
     user_gmi.mkdir(parents=True)
     (user_gmi / "__init__.py").write_text(
         "from providers import register_provider\n"
@@ -124,12 +124,12 @@ def test_general_plugin_manager_skips_model_provider_kind(tmp_path, monkeypatch)
     (providers/__init__.py handles them). It records the manifest only."""
     from agentic_os_cli import plugins as plugin_mod
 
-    hermes_home = tmp_path / ".hermes"
-    hermes_home.mkdir()
-    monkeypatch.setenv("AGENTIC_OS_HOME", str(hermes_home))
+    agentic_os_home = tmp_path / ".hermes"
+    agentic_os_home.mkdir()
+    monkeypatch.setenv("AGENTIC_OS_HOME", str(agentic_os_home))
 
     # Create a user-installed plugin with an explicit kind: model-provider.
-    user_plugin = hermes_home / "plugins" / "test-model-provider"
+    user_plugin = agentic_os_home / "plugins" / "test-model-provider"
     user_plugin.mkdir(parents=True)
     (user_plugin / "plugin.yaml").write_text(
         "name: test-model-provider\n"

@@ -394,7 +394,7 @@ def _make_hermes_provider_class() -> Optional[type]:
             try:
                 await get_manager().invalidate_if_disk_changed(
                     self._hermes_server_name,
-                    hermes_home=self._agentic_os_home,
+                    agentic_os_home=self._agentic_os_home,
                 )
             except Exception as exc:  # pragma: no cover — defensive
                 logger.debug(
@@ -502,11 +502,11 @@ class MCPOAuthManager:
     @staticmethod
     def _key(
         server_name: str,
-        hermes_home: str | Path | None = None,
+        agentic_os_home: str | Path | None = None,
     ) -> tuple[str, str]:
         from agentic_os_constants import get_agentic_os_home
 
-        home = Path(hermes_home) if hermes_home is not None else get_agentic_os_home()
+        home = Path(agentic_os_home) if agentic_os_home is not None else get_agentic_os_home()
         return (str(home.expanduser().resolve(strict=False)), server_name)
 
     def _build_provider(
@@ -586,7 +586,7 @@ class MCPOAuthManager:
         self,
         server_name: str,
         *,
-        hermes_home: str | Path | None = None,
+        agentic_os_home: str | Path | None = None,
     ) -> _ProviderEntry | None:
         """Evict the provider from cache AND delete tokens from disk.
 
@@ -594,10 +594,10 @@ class MCPOAuthManager:
         ``hermes mcp login <name>`` during forced re-auth.
         """
         with self._entries_lock:
-            entry = self._entries.pop(self._key(server_name, hermes_home), None)
+            entry = self._entries.pop(self._key(server_name, agentic_os_home), None)
 
         from tools.mcp_oauth import remove_oauth_tokens
-        remove_oauth_tokens(server_name, hermes_home=hermes_home)
+        remove_oauth_tokens(server_name, agentic_os_home=agentic_os_home)
         logger.info(
             "MCP OAuth '%s': evicted from cache and removed from disk",
             server_name,
@@ -609,23 +609,23 @@ class MCPOAuthManager:
         server_name: str,
         entry: _ProviderEntry | None,
         *,
-        hermes_home: str | Path | None = None,
+        agentic_os_home: str | Path | None = None,
     ) -> None:
         """Restore a provider entry removed for a failed reauthorization."""
         if entry is None:
             return
         with self._entries_lock:
-            self._entries.setdefault(self._key(server_name, hermes_home), entry)
+            self._entries.setdefault(self._key(server_name, agentic_os_home), entry)
 
     def evict(
         self,
         server_name: str,
         *,
-        hermes_home: str | Path | None = None,
+        agentic_os_home: str | Path | None = None,
     ) -> None:
         """Drop only the in-process provider, preserving persisted OAuth state."""
         with self._entries_lock:
-            self._entries.pop(self._key(server_name, hermes_home), None)
+            self._entries.pop(self._key(server_name, agentic_os_home), None)
 
     # -- Disk watch ----------------------------------------------------------
 
@@ -633,7 +633,7 @@ class MCPOAuthManager:
         self,
         server_name: str,
         *,
-        hermes_home: str | Path | None = None,
+        agentic_os_home: str | Path | None = None,
     ) -> bool:
         """If the tokens file on disk has a newer mtime than last-seen, force
         the MCP SDK provider to reload its in-memory state.
@@ -645,12 +645,12 @@ class MCPOAuthManager:
         """
         from tools.mcp_oauth import _get_token_dir, _safe_filename
 
-        entry = self._entries.get(self._key(server_name, hermes_home))
+        entry = self._entries.get(self._key(server_name, agentic_os_home))
         if entry is None or entry.provider is None:
             return False
 
         async with entry.lock:
-            tokens_path = _get_token_dir(hermes_home) / f"{_safe_filename(server_name)}.json"
+            tokens_path = _get_token_dir(agentic_os_home) / f"{_safe_filename(server_name)}.json"
             try:
                 mtime_ns = tokens_path.stat().st_mtime_ns
             except (FileNotFoundError, OSError):

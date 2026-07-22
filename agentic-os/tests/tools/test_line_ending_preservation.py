@@ -14,7 +14,7 @@ import pytest
 
 
 @pytest.fixture
-def hermes_home(monkeypatch, tmp_path):
+def agentic_os_home(monkeypatch, tmp_path):
     """Isolate AGENTIC_OS_HOME so the tests don't pollute the real config.
 
     Also clears module-level caches (file_ops, active_environments,
@@ -55,7 +55,7 @@ def _bare_lf_count(b: bytes) -> int:
 
 
 class TestPatchCRLFPreservation:
-    def test_patch_on_crlf_file_stays_pure_crlf(self, hermes_home, tmp_path):
+    def test_patch_on_crlf_file_stays_pure_crlf(self, agentic_os_home, tmp_path):
         """LLM sends LF old/new; file has CRLF.  Result must be all CRLF,
         no mixed endings."""
         from tools.file_tools import _handle_patch
@@ -83,7 +83,7 @@ class TestPatchCRLFPreservation:
         assert _crlf_count(raw) == 5
         assert b"key=99\r\n" in raw
 
-    def test_patch_on_lf_file_stays_lf(self, hermes_home, tmp_path):
+    def test_patch_on_lf_file_stays_lf(self, agentic_os_home, tmp_path):
         """LF file with LF new_string stays LF — no spurious CRLF added."""
         from tools.file_tools import _handle_patch
 
@@ -107,7 +107,7 @@ class TestPatchCRLFPreservation:
             f"Spurious CRLF added to LF file: {raw!r}"
         )
 
-    def test_patch_multiline_replacement_on_crlf(self, hermes_home, tmp_path):
+    def test_patch_multiline_replacement_on_crlf(self, agentic_os_home, tmp_path):
         """Multi-line new_string with bare LFs should be CRLF-converted
         before write."""
         from tools.file_tools import _handle_patch
@@ -136,7 +136,7 @@ class TestPatchCRLFPreservation:
 
 class TestWriteFileCRLFPreservation:
     def test_overwrite_crlf_file_with_lf_content_preserves_crlf(
-        self, hermes_home, tmp_path
+        self, agentic_os_home, tmp_path
     ):
         """The agent typically sends bare-LF content; if the file existed
         with CRLF, the write should convert to CRLF rather than silently
@@ -162,7 +162,7 @@ class TestWriteFileCRLFPreservation:
         )
         assert _crlf_count(raw) == 3
 
-    def test_new_file_written_as_is(self, hermes_home, tmp_path):
+    def test_new_file_written_as_is(self, agentic_os_home, tmp_path):
         """No pre-existing file → write content verbatim (LF by default)."""
         from tools.file_tools import _handle_write_file
 
@@ -176,7 +176,7 @@ class TestWriteFileCRLFPreservation:
 
         assert target.read_bytes() == b"a\nb\nc\n"
 
-    def test_overwrite_lf_file_stays_lf(self, hermes_home, tmp_path):
+    def test_overwrite_lf_file_stays_lf(self, agentic_os_home, tmp_path):
         """Pre-existing LF file should not get spurious CRLFs."""
         from tools.file_tools import _handle_write_file
 

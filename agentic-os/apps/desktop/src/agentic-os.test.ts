@@ -37,7 +37,7 @@ describe('Hermes REST helpers', () => {
   beforeEach(() => {
     resetSidebarBatchCapability()
     api = vi.fn().mockResolvedValue(emptySessionsResponse)
-    Object.defineProperty(window, 'hermesDesktop', {
+    Object.defineProperty(window, 'agenticOSDesktop', {
       configurable: true,
       value: { api }
     })
@@ -45,7 +45,7 @@ describe('Hermes REST helpers', () => {
 
   afterEach(() => {
     vi.restoreAllMocks()
-    Reflect.deleteProperty(window, 'hermesDesktop')
+    Reflect.deleteProperty(window, 'agenticOSDesktop')
   })
 
   it('uses a longer timeout for the single-profile session list', async () => {

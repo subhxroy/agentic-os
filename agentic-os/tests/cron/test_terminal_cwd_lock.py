@@ -164,7 +164,7 @@ def test_run_job_releases_cwd_lock_when_body_raises(tmp_path):
 
     with patch("cron.scheduler._agentic_os_home", tmp_path), \
          patch("cron.scheduler._resolve_origin", return_value=None), \
-         patch("agentic_os_cli.env_loader.load_hermes_dotenv"), \
+         patch("agentic_os_cli.env_loader.load_agentic_os_dotenv"), \
          patch("agentic_os_cli.env_loader.reset_secret_source_cache"), \
          patch.object(sched.logger, "info", side_effect=_raise_on_workdir_log), \
          patch("agentic_os_state.SessionDB", return_value=MagicMock()):

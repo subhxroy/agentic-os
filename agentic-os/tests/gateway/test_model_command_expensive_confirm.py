@@ -69,22 +69,22 @@ def _fake_warning():
 def _setup_isolated_home(tmp_path, monkeypatch, *, warn):
     import gateway.run as gateway_run
 
-    hermes_home = tmp_path / ".hermes"
-    hermes_home.mkdir()
-    cfg_path = hermes_home / "config.yaml"
+    agentic_os_home = tmp_path / ".hermes"
+    agentic_os_home.mkdir()
+    cfg_path = agentic_os_home / "config.yaml"
     cfg_path.write_text(
         yaml.safe_dump({"model": {"default": "old-model", "provider": "openrouter"}, "providers": {}}),
         encoding="utf-8",
     )
 
-    monkeypatch.setattr(gateway_run, "_agentic_os_home", hermes_home)
+    monkeypatch.setattr(gateway_run, "_agentic_os_home", agentic_os_home)
     monkeypatch.setattr("agent.models_dev.fetch_models_dev", lambda: {})
     monkeypatch.setattr(
         "agentic_os_cli.model_switch.switch_model",
         lambda **kw: _fake_switch_result(),
     )
-    monkeypatch.setattr("agentic_os_constants.get_agentic_os_home", lambda: hermes_home)
-    monkeypatch.setattr("agentic_os_cli.config.get_agentic_os_home", lambda: hermes_home)
+    monkeypatch.setattr("agentic_os_constants.get_agentic_os_home", lambda: agentic_os_home)
+    monkeypatch.setattr("agentic_os_cli.config.get_agentic_os_home", lambda: agentic_os_home)
     monkeypatch.setattr(
         "agentic_os_cli.model_cost_guard.expensive_model_warning",
         (lambda *a, **kw: _fake_warning()) if warn else (lambda *a, **kw: None),

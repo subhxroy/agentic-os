@@ -19,8 +19,8 @@ export async function writeClipboardText(text: string) {
     return
   }
 
-  if (window.hermesDesktop?.writeClipboard) {
-    await window.hermesDesktop.writeClipboard(text)
+  if (window.agenticOSDesktop?.writeClipboard) {
+    await window.agenticOSDesktop.writeClipboard(text)
 
     return
   }

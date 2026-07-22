@@ -3,7 +3,7 @@
  * build time. The pipeline every non-bundled plugin takes:
  *
  *   source (plain ESM js) -> [integrity check] -> bare-specifier rewrite
- *   (`@hermes/plugin-sdk` / `react*` -> live shim blobs, see sdk/runtime.ts)
+ *   (`@agentic-os/plugin-sdk` / `react*` -> live shim blobs, see sdk/runtime.ts)
  *   -> blob `import()` -> validate default HermesPlugin -> register(ctx)
  *
  * Loading the same plugin id again disposes the previous registrations first
@@ -51,7 +51,7 @@ const loaded = new Map<string, (() => void)[]>()
 // literal or comment (e.g. `notify('react')`) is never touched.
 const importSpecifierRe = () => /(from\s*|import\s*\(\s*|import\s+)(['"])([^'"]+)\2/g
 
-/** Rewrite ONLY mapped import specifiers (@hermes/plugin-sdk, react*) to their
+/** Rewrite ONLY mapped import specifiers (@agentic-os/plugin-sdk, react*) to their
  *  live shim blob URLs — never occurrences inside strings/comments. */
 function rewriteSpecifiers(source: string): string {
   const map = sdkImportMap()
@@ -117,7 +117,7 @@ export async function loadRuntimePlugin(
     if (unsupported.length > 0) {
       throw new Error(
         `unsupported import${unsupported.length > 1 ? 's' : ''}: ${unsupported.join(', ')} — ` +
-          `runtime plugins may only import @hermes/plugin-sdk and react`
+          `runtime plugins may only import @agentic-os/plugin-sdk and react`
       )
     }
 
@@ -204,7 +204,7 @@ let watching = false
 let scanning = false
 
 async function loadDiskPlugin(name: string, file: string): Promise<void> {
-  const desktop = window.hermesDesktop!
+  const desktop = window.agenticOSDesktop!
   const entry = disk.get(name)
   const prevId = entry?.id
 
@@ -235,7 +235,7 @@ async function loadDiskPlugin(name: string, file: string): Promise<void> {
 }
 
 async function scanDiskPlugins(): Promise<void> {
-  const desktop = window.hermesDesktop
+  const desktop = window.agenticOSDesktop
 
   // Re-entrancy guard: the 5s poll must not overlap a slow in-flight scan
   // (reads/loads can exceed the interval).
@@ -246,8 +246,8 @@ async function scanDiskPlugins(): Promise<void> {
   scanning = true
 
   try {
-    const { hermes_home } = await getStatus()
-    const { entries } = await desktop.readDir(`${hermes_home}/desktop-plugins`)
+    const { agentic_os_home } = await getStatus()
+    const { entries } = await desktop.readDir(`${agentic_os_home}/desktop-plugins`)
     const seen = new Set<string>()
 
     for (const dir of entries.filter(e => e.isDirectory)) {
@@ -309,7 +309,7 @@ export const discoverRuntimePlugins = scanDiskPlugins
 /** Start the self-maintaining disk door: initial scan, per-file hot reload,
  *  slow folder reconciliation while the window is visible. Idempotent. */
 export function watchRuntimePlugins(): void {
-  const desktop = window.hermesDesktop
+  const desktop = window.agenticOSDesktop
 
   if (watching || !desktop) {
     return

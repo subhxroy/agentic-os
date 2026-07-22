@@ -22,7 +22,7 @@ Pick whichever fits the moment. They share state, so you can start a session in 
 
 ## Install
 
-Follow the [installation instructions for Hermes Desktop](../getting-started/installation.md).
+Follow the [installation instructions for Agentic OS Desktop](../getting-started/installation.md).
 
 If you already have Hermes installed, simply run
 
@@ -52,11 +52,11 @@ The bar along the bottom of the chat shows live session state and exposes quick 
 
 - **Per-session YOLO toggle** — flip YOLO on or off for just this session (matching the TUI). YOLO bypasses the dangerous-command approval prompts, so know what you're turning off — see [Security → YOLO Mode](./security.md#yolo-mode).
 
-Chatting against a Hermes instance on another machine instead of the bundled local backend? See [Connecting to a remote backend](#connecting-to-a-remote-backend) below — and for the full picture of how the remote-hosted dashboard connection works (the auth gate, the `/api/ws` chat socket, and WebSocket close-code triage), see [Web Dashboard → Connecting Hermes Desktop to a remote backend](./features/web-dashboard.md#connecting-hermes-desktop-to-a-remote-backend).
+Chatting against a Hermes instance on another machine instead of the bundled local backend? See [Connecting to a remote backend](#connecting-to-a-remote-backend) below — and for the full picture of how the remote-hosted dashboard connection works (the auth gate, the `/api/ws` chat socket, and WebSocket close-code triage), see [Web Dashboard → Connecting Agentic OS Desktop to a remote backend](./features/web-dashboard.md#connecting-agentic-os-desktop-to-a-remote-backend).
 
 #### Repository discovery
 
-Hermes Desktop discovers local Git repositories for the Projects sidebar by scanning your home directory to a bounded depth. You can change this per profile in **Settings → Workspace**, or in `config.yaml`:
+Agentic OS Desktop discovers local Git repositories for the Projects sidebar by scanning your home directory to a bounded depth. You can change this per profile in **Settings → Workspace**, or in `config.yaml`:
 
 ```yaml
 desktop:
@@ -82,7 +82,7 @@ The model picker lives in the **composer**, just left of the microphone. Click i
 
 ### File browser
 
-Explore and preview the working directory without leaving the app — useful for following along as the agent reads, writes, and edits files. Set the initial project directory with `hermes desktop --cwd <path>` (or the `HERMES_DESKTOP_CWD` environment variable).
+Explore and preview the working directory without leaving the app — useful for following along as the agent reads, writes, and edits files. Set the initial project directory with `hermes desktop --cwd <path>` (or the `AGENTIC_OS_DESKTOP_CWD` environment variable).
 
 ### Voice
 
@@ -155,14 +155,14 @@ To launch via the CLI, simply run `hermes desktop`. By default it installs works
 | `--force-build`      | Force a full rebuild even if the content stamp matches                                    |
 | `--build-only`       | Build the desktop app but do not launch it (used by `hermes update`)                      |
 | `--source`           | Launch via `electron .` against `apps/desktop/dist` instead of the packaged app           |
-| `--cwd PATH`         | Initial project directory for desktop chat sessions (sets `HERMES_DESKTOP_CWD`)           |
-| `--hermes-root PATH` | Override the Hermes source root the app uses (sets `HERMES_DESKTOP_AGENTIC_ROOT`)          |
+| `--cwd PATH`         | Initial project directory for desktop chat sessions (sets `AGENTIC_OS_DESKTOP_CWD`)           |
+| `--hermes-root PATH` | Override the Hermes source root the app uses (sets `AGENTIC_OS_DESKTOP_AGENTIC_ROOT`)          |
 | `--ignore-existing`  | Force the app to ignore any `hermes` CLI already on `PATH` during backend resolution      |
 | `--fake-boot`        | Enable deterministic boot delays for validating the startup UI                            |
 
 ## How it works
 
-The packaged app ships the Electron shell and a native React chat surface. On first launch it can install the Agentic OS runtime into `AGENTIC_OS_HOME` (`~/.agentic-os`, or `%LOCALAPPDATA%\agentic-os` on Windows) — **the same layout a CLI install uses**, which is why the two are interchangeable. Backend resolution first honours `HERMES_DESKTOP_AGENTIC_ROOT`, then a completed managed install, then a probed `hermes` on `PATH` (unless `--ignore-existing` / `HERMES_DESKTOP_IGNORE_EXISTING=1` is set), and finally an explicit `HERMES_DESKTOP_HERMES` command override for packagers such as Nix. The React renderer talks to a headless backend the app launches for you — a `hermes serve` process that serves the `tui_gateway` JSON-RPC/WebSocket API — and reuses the agent runtime rather than embedding `hermes --tui`. The desktop app is **self-contained**: it runs its own `hermes serve` backend and never opens or requires the [web dashboard](./features/web-dashboard.md). (Runtimes older than the `serve` command fall back to a headless `dashboard --no-open` automatically, so an app update never outruns its backend.) Install, backend-resolution, and self-update logic live in the Electron main process.
+The packaged app ships the Electron shell and a native React chat surface. On first launch it can install the Agentic OS runtime into `AGENTIC_OS_HOME` (`~/.agentic-os`, or `%LOCALAPPDATA%\agentic-os` on Windows) — **the same layout a CLI install uses**, which is why the two are interchangeable. Backend resolution first honours `AGENTIC_OS_DESKTOP_AGENTIC_ROOT`, then a completed managed install, then a probed `hermes` on `PATH` (unless `--ignore-existing` / `AGENTIC_OS_DESKTOP_IGNORE_EXISTING=1` is set), and finally an explicit `AGENTIC_OS_DESKTOP_HERMES` command override for packagers such as Nix. The React renderer talks to a headless backend the app launches for you — a `hermes serve` process that serves the `tui_gateway` JSON-RPC/WebSocket API — and reuses the agent runtime rather than embedding `hermes --tui`. The desktop app is **self-contained**: it runs its own `hermes serve` backend and never opens or requires the [web dashboard](./features/web-dashboard.md). (Runtimes older than the `serve` command fall back to a headless `dashboard --no-open` automatically, so an app update never outruns its backend.) Install, backend-resolution, and self-update logic live in the Electron main process.
 
 ## Connecting to a remote backend
 
@@ -222,7 +222,7 @@ The backend reads and writes your `.env` (API keys, secrets) and can run agent c
 2. **Sign in** — the app detects which provider the backend advertises and adapts the button. For a username/password backend it shows a **Sign in** button that opens a credential form (enter the credentials from step 1). For an OAuth backend it shows **Sign in with `<provider>`** (e.g. *Sign in with Nous Research*), which runs the provider's browser sign-in. Either way the app ends up with an authenticated session against the backend.
 3. **Save and reconnect** — switches the desktop shell onto the remote backend. The session refreshes automatically; you stay signed in across restarts when `HERMES_DASHBOARD_BASIC_AUTH_SECRET` is set.
 
-You can also set the backend URL without the UI via the `HERMES_DESKTOP_REMOTE_URL` environment variable before launching the app (it overrides the in-app setting); you still sign in from the Gateway settings panel.
+You can also set the backend URL without the UI via the `AGENTIC_OS_DESKTOP_REMOTE_URL` environment variable before launching the app (it overrides the in-app setting); you still sign in from the Gateway settings panel.
 
 :::note Per-profile remote hosts
 The remote gateway host is configured per [profile](./profiles.md), so each profile can point at its own remote backend (or stay on its local one). Switching profiles switches which remote host the app connects to.
@@ -235,7 +235,7 @@ The remote gateway host is configured per [profile](./profiles.md), so each prof
 - **Signed out on every restart** — set `HERMES_DASHBOARD_BASIC_AUTH_SECRET` to a stable value. Without it the token-signing key is regenerated per boot, invalidating all sessions.
 - **Connection refused / times out** — the backend bound to `127.0.0.1` (the default) or a firewall/VPN is blocking the port. Bind to `0.0.0.0` or the tailscale IP and open the port to your trusted network.
 
-For the same setup from the web-dashboard angle, see [Web Dashboard → Connecting Hermes Desktop to a remote backend](./features/web-dashboard.md#connecting-hermes-desktop-to-a-remote-backend); the env vars are catalogued under [Environment Variables → Web Dashboard & Hermes Desktop](../reference/environment-variables.md#web-dashboard--hermes-desktop).
+For the same setup from the web-dashboard angle, see [Web Dashboard → Connecting Agentic OS Desktop to a remote backend](./features/web-dashboard.md#connecting-agentic-os-desktop-to-a-remote-backend); the env vars are catalogued under [Environment Variables → Web Dashboard & Agentic OS Desktop](../reference/environment-variables.md#web-dashboard--agentic-os-desktop).
 
 ## Extending the desktop app
 
@@ -302,7 +302,7 @@ npm run dev          # Vite renderer + Electron, which boots the Python backend
 Point the app at a specific checkout, or sandbox it from your real config:
 
 ```bash
-HERMES_DESKTOP_AGENTIC_ROOT=/path/to/clone npm run dev
+AGENTIC_OS_DESKTOP_AGENTIC_ROOT=/path/to/clone npm run dev
 AGENTIC_OS_HOME=/tmp/throwaway npm run dev
 npm run dev:fake-boot   # exercise the startup overlay with deterministic delays
 ```

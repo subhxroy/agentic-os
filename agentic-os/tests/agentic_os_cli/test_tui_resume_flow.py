@@ -1666,7 +1666,7 @@ def test_launch_tui_exports_model_provider_and_toolsets(monkeypatch, main_mod):
     assert env["HERMES_INFERENCE_PROVIDER"] == "nous"
     assert env["AGENTIC_OS_TUI_TOOLSETS"] == "web,terminal"
     active_path = Path(env["AGENTIC_OS_TUI_ACTIVE_SESSION_FILE"])
-    assert active_path.name.startswith("hermes-tui-active-session-")
+    assert active_path.name.startswith("agentic-os-tui-active-session-")
     assert active_path.suffix == ".json"
     assert active_path_during_call == active_path
     assert not active_path.exists()

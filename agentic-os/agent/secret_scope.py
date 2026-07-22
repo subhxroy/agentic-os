@@ -194,12 +194,12 @@ def load_env_file(env_path: Path) -> Dict[str, str]:
     return secrets
 
 
-def build_profile_secret_scope(hermes_home: Path) -> Dict[str, str]:
+def build_profile_secret_scope(agentic_os_home: Path) -> Dict[str, str]:
     """Build a profile's secret mapping from its ``<home>/.env``.
 
     Returns a fresh dict (safe to install via ``set_secret_scope``). Genuinely
     global vars are intentionally NOT copied in — ``get_secret`` reads those
     from ``os.environ`` directly, so the scope holds only profile secrets.
     """
-    return load_env_file(Path(hermes_home) / ".env")
+    return load_env_file(Path(agentic_os_home) / ".env")
 

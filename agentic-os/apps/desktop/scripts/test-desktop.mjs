@@ -22,7 +22,7 @@ const APP = (() => {
     const appPath = path.join(RELEASE_ROOT, `mac-${ARCH}`, 'Hermes.app')
     return {
       appPath,
-      binary: path.join(appPath, 'Contents', 'MacOS', 'Hermes'),
+      binary: path.join(appPath, 'Contents', 'MacOS', 'Agentic OS'),
       resourcesPath: path.join(appPath, 'Contents', 'Resources'),
       asarPath: path.join(appPath, 'Contents', 'Resources', 'app.asar'),
       unpackedDistIndex: path.join(appPath, 'Contents', 'Resources', 'app.asar.unpacked', 'dist', 'index.html')
@@ -42,7 +42,7 @@ const APP = (() => {
   const unpacked = path.join(RELEASE_ROOT, 'linux-unpacked')
   return {
     appPath: unpacked,
-    binary: path.join(unpacked, 'Hermes'),
+    binary: path.join(unpacked, 'Agentic OS'),
     resourcesPath: path.join(unpacked, 'resources'),
     asarPath: path.join(unpacked, 'resources', 'app.asar'),
     unpackedDistIndex: path.join(unpacked, 'resources', 'app.asar.unpacked', 'dist', 'index.html')
@@ -60,7 +60,7 @@ const DEFAULT_AGENTIC_OS_HOME = (() => {
   return path.join(os.homedir(), '.hermes')
 })()
 const VENV_ROOT = path.join(DEFAULT_AGENTIC_OS_HOME, 'agentic-os', 'venv')
-const FRESH_SANDBOX_ROOT = path.join(os.tmpdir(), 'hermes-desktop-fresh-install')
+const FRESH_SANDBOX_ROOT = path.join(os.tmpdir(), 'agentic-os-desktop-fresh-install')
 
 function die(message) {
   console.error(`\n${message}`)
@@ -115,7 +115,7 @@ function ensurePlatformBuilds() {
 }
 
 function ensurePackagedApp() {
-  if (process.env.HERMES_DESKTOP_SKIP_BUILD === '1' && exists(APP.binary)) {
+  if (process.env.AGENTIC_OS_DESKTOP_SKIP_BUILD === '1' && exists(APP.binary)) {
     return
   }
 
@@ -162,7 +162,7 @@ function ensureDmg() {
   if (PLATFORM !== 'darwin') {
     die('DMG mode is macOS-only; on Windows use the `nsis` mode instead.')
   }
-  if (process.env.HERMES_DESKTOP_SKIP_BUILD === '1' && exists(resolveDmgPath())) {
+  if (process.env.AGENTIC_OS_DESKTOP_SKIP_BUILD === '1' && exists(resolveDmgPath())) {
     return
   }
   run('npm', ['run', 'dist:mac:dmg'])
@@ -172,7 +172,7 @@ function ensureNsis() {
   if (PLATFORM !== 'win32') {
     die('NSIS mode is win32-only; on macOS use the `dmg` mode instead.')
   }
-  if (process.env.HERMES_DESKTOP_SKIP_BUILD === '1' && resolveNsisPath()) {
+  if (process.env.AGENTIC_OS_DESKTOP_SKIP_BUILD === '1' && resolveNsisPath()) {
     return
   }
   run('npm', ['run', 'dist:win:nsis'])
@@ -242,11 +242,11 @@ function launchFresh() {
 
   const sandbox = fs.mkdtempSync(`${FRESH_SANDBOX_ROOT}-`)
   const userDataDir = path.join(sandbox, 'electron-user-data')
-  const hermesHome = path.join(sandbox, 'hermes-home')
+  const agenticOSHome = path.join(sandbox, 'hermes-home')
   const cwd = path.join(sandbox, 'workspace')
 
   fs.mkdirSync(userDataDir, { recursive: true })
-  fs.mkdirSync(hermesHome, { recursive: true })
+  fs.mkdirSync(agenticOSHome, { recursive: true })
   fs.mkdirSync(cwd, { recursive: true })
 
   // Strip every credential-shaped env var so the sandbox is actually fresh.
@@ -256,13 +256,13 @@ function launchFresh() {
     env[key] = value
   }
 
-  env.HERMES_DESKTOP_CWD = cwd
-  env.HERMES_DESKTOP_IGNORE_EXISTING = '1'
-  env.HERMES_DESKTOP_TEST_MODE = 'fresh-install'
-  env.HERMES_DESKTOP_USER_DATA_DIR = userDataDir
-  env.AGENTIC_OS_HOME = hermesHome
-  delete env.HERMES_DESKTOP_HERMES
-  delete env.HERMES_DESKTOP_AGENTIC_ROOT
+  env.AGENTIC_OS_DESKTOP_CWD = cwd
+  env.AGENTIC_OS_DESKTOP_IGNORE_EXISTING = '1'
+  env.AGENTIC_OS_DESKTOP_TEST_MODE = 'fresh-install'
+  env.AGENTIC_OS_DESKTOP_USER_DATA_DIR = userDataDir
+  env.AGENTIC_OS_HOME = agenticOSHome
+  delete env.AGENTIC_OS_DESKTOP_HERMES
+  delete env.AGENTIC_OS_DESKTOP_AGENTIC_ROOT
 
   const child = spawn(APP.binary, [], {
     cwd: os.homedir(),
@@ -275,10 +275,10 @@ function launchFresh() {
   console.log('\nFresh install sandbox:')
   console.log(`  root: ${sandbox}`)
   console.log(`  electron userData: ${userDataDir}`)
-  console.log(`  AGENTIC_OS_HOME: ${hermesHome}`)
+  console.log(`  AGENTIC_OS_HOME: ${agenticOSHome}`)
   console.log(`  cwd: ${cwd}`)
 
-  return { runtimeRoot: path.join(hermesHome, 'agentic-os', 'venv') }
+  return { runtimeRoot: path.join(agenticOSHome, 'agentic-os', 'venv') }
 }
 
 // Validate the packaged bundle matches the thin-installer architecture:
@@ -406,7 +406,7 @@ function help() {
   npm run test:desktop:all       # build installer, validate app payload, print paths
 
 Fast rerun (skip rebuild if the packaged app already exists):
-  HERMES_DESKTOP_SKIP_BUILD=1 npm run test:desktop:fresh
+  AGENTIC_OS_DESKTOP_SKIP_BUILD=1 npm run test:desktop:fresh
 `)
 }
 

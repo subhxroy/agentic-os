@@ -54,7 +54,7 @@ def test_call_cron_for_profile_routes_storage_without_mutating_globals(isolated_
 
     assert job["profile"] == "worker_alpha"
     assert job["profile_name"] == "worker_alpha"
-    assert job["hermes_home"] == str(isolated_profiles["worker_alpha"])
+    assert job["agentic_os_home"] == str(isolated_profiles["worker_alpha"])
     assert job["is_default_profile"] is False
     assert (isolated_profiles["worker_alpha"] / "cron" / "jobs.json").exists()
     assert not (isolated_profiles["default"] / "cron" / "jobs.json").exists()
@@ -218,10 +218,10 @@ async def test_list_cron_jobs_all_includes_default_and_named_profiles(isolated_p
     assert set(by_id) >= {default_job["id"], worker_job["id"]}
     assert by_id[default_job["id"]]["profile"] == "default"
     assert by_id[default_job["id"]]["is_default_profile"] is True
-    assert by_id[default_job["id"]]["hermes_home"] == str(isolated_profiles["default"])
+    assert by_id[default_job["id"]]["agentic_os_home"] == str(isolated_profiles["default"])
     assert by_id[worker_job["id"]]["profile"] == "worker_alpha"
     assert by_id[worker_job["id"]]["is_default_profile"] is False
-    assert by_id[worker_job["id"]]["hermes_home"] == str(isolated_profiles["worker_alpha"])
+    assert by_id[worker_job["id"]]["agentic_os_home"] == str(isolated_profiles["worker_alpha"])
 
 
 @pytest.mark.asyncio

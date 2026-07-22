@@ -1,4 +1,4 @@
-import type { UsageModelData } from '@hermes/shared/billing'
+import type { UsageModelData } from '@agentic-os/shared/billing'
 
 import type { SessionInfo, SlashCategory, SubagentStatus, Usage } from './types.js'
 
@@ -47,7 +47,7 @@ export interface SlashExecResponse {
 
 // ── Remote Spending (Phase 2b) ───────────────────────────────────────
 
-// Wire shapes now live in @hermes/shared for reuse by TypeScript clients.
+// Wire shapes now live in @agentic-os/shared for reuse by TypeScript clients.
 export type {
   BillingAutoReload,
   BillingCardInfo,
@@ -63,7 +63,7 @@ export type {
   SubscriptionUpgradeResponse,
   UsageBarData,
   UsageModelData
-} from '@hermes/shared/billing'
+} from '@agentic-os/shared/billing'
 
 export type CommandDispatchResponse =
   | { output?: string; type: 'exec' | 'plugin' }

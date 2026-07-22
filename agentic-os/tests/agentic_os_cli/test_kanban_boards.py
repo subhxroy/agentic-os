@@ -43,7 +43,7 @@ def fresh_home(tmp_path, monkeypatch):
     fixture layers a per-test AGENTIC_OS_HOME plus a path-init cache reset
     so each test sees a truly empty board set.
     """
-    home = tmp_path / "hermes_home"
+    home = tmp_path / "agentic_os_home"
     home.mkdir()
     monkeypatch.setenv("AGENTIC_OS_HOME", str(home))
     for var in (

@@ -2,7 +2,7 @@
  * Hermes Dashboard Plugin SDK — typed contract (SPIKE)
  * ====================================================
  *
- * This is the public type surface for ``window.__HERMES_PLUGIN_SDK__`` and
+ * This is the public type surface for ``window.__AGENTIC_OS_PLUGIN_SDK__`` and
  * ``window.__HERMES_PLUGINS__``, the globals the dashboard host exposes to
  * plugin bundles (see ``web/src/plugins/registry.ts::exposePluginSDK``).
  *
@@ -10,7 +10,7 @@
  * (in-repo IIFEs and external bundles alike) editor types without bundling
  * their own copies of React / the API client. It is intentionally a
  * hand-authored ambient declaration rather than ``typeof
- * window.__HERMES_PLUGIN_SDK__`` because:
+ * window.__AGENTIC_OS_PLUGIN_SDK__`` because:
  *   1. The runtime object is assembled from many internal modules
  *      (``@/lib/api``, ``@nous-research/ui``, …). Deriving the type would
  *      leak those internal import paths into the public contract and couple
@@ -88,7 +88,7 @@ export interface PluginRegistry {
 }
 
 // ---------------------------------------------------------------------------
-// SDK surface (window.__HERMES_PLUGIN_SDK__)
+// SDK surface (window.__AGENTIC_OS_PLUGIN_SDK__)
 // ---------------------------------------------------------------------------
 
 export interface HermesPluginSDK {
@@ -152,7 +152,7 @@ export interface HermesPluginSDK {
 
 declare global {
   interface Window {
-    __HERMES_PLUGIN_SDK__?: HermesPluginSDK;
+    __AGENTIC_OS_PLUGIN_SDK__?: HermesPluginSDK;
     __HERMES_PLUGINS__?: PluginRegistry;
   }
 }

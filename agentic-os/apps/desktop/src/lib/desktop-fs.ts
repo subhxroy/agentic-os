@@ -43,10 +43,10 @@ function fsPath(endpoint: string, filePath: string) {
 }
 
 function bridge() {
-  const desktop = window.hermesDesktop
+  const desktop = window.agenticOSDesktop
 
   if (!desktop) {
-    throw new Error('Hermes Desktop bridge is unavailable')
+    throw new Error('Agentic OS Desktop bridge is unavailable')
   }
 
   return desktop

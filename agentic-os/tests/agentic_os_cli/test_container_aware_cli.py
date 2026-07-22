@@ -24,12 +24,12 @@ from agentic_os_cli.config import (
 @pytest.fixture
 def container_env(tmp_path, monkeypatch):
     """Set up a fake AGENTIC_OS_HOME with .container-mode file."""
-    hermes_home = tmp_path / ".hermes"
-    hermes_home.mkdir()
-    monkeypatch.setenv("AGENTIC_OS_HOME", str(hermes_home))
+    agentic_os_home = tmp_path / ".hermes"
+    agentic_os_home.mkdir()
+    monkeypatch.setenv("AGENTIC_OS_HOME", str(agentic_os_home))
     monkeypatch.delenv("HERMES_DEV", raising=False)
 
-    container_mode = hermes_home / ".container-mode"
+    container_mode = agentic_os_home / ".container-mode"
     container_mode.write_text(
         "# Written by NixOS activation script. Do not edit manually.\n"
         "backend=podman\n"
@@ -37,7 +37,7 @@ def container_env(tmp_path, monkeypatch):
         "exec_user=hermes\n"
         "hermes_bin=/data/current-package/bin/hermes\n"
     )
-    return hermes_home
+    return agentic_os_home
 
 
 def test_get_container_exec_info_returns_metadata(container_env):
@@ -62,9 +62,9 @@ def test_get_container_exec_info_none_inside_container(container_env):
 
 def test_get_container_exec_info_none_without_file(tmp_path, monkeypatch):
     """Returns None when .container-mode doesn't exist (native mode)."""
-    hermes_home = tmp_path / ".hermes"
-    hermes_home.mkdir()
-    monkeypatch.setenv("AGENTIC_OS_HOME", str(hermes_home))
+    agentic_os_home = tmp_path / ".hermes"
+    agentic_os_home.mkdir()
+    monkeypatch.setenv("AGENTIC_OS_HOME", str(agentic_os_home))
     monkeypatch.delenv("HERMES_DEV", raising=False)
 
     with patch("agentic_os_constants.is_container", return_value=False):
@@ -98,14 +98,14 @@ def test_get_container_exec_info_defaults():
     import tempfile
 
     with tempfile.TemporaryDirectory() as tmpdir:
-        hermes_home = Path(tmpdir) / ".hermes"
-        hermes_home.mkdir()
-        (hermes_home / ".container-mode").write_text(
+        agentic_os_home = Path(tmpdir) / ".hermes"
+        agentic_os_home.mkdir()
+        (agentic_os_home / ".container-mode").write_text(
             "# minimal file with no keys\n"
         )
 
         with patch("agentic_os_constants.is_container", return_value=False), \
-             patch.dict(get_container_exec_info.__globals__, {"get_agentic_os_home": lambda: hermes_home}), \
+             patch.dict(get_container_exec_info.__globals__, {"get_agentic_os_home": lambda: agentic_os_home}), \
              patch.dict(os.environ, {}, clear=False):
             os.environ.pop("HERMES_DEV", None)
             info = get_container_exec_info()

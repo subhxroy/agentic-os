@@ -66,7 +66,7 @@ class MemoryProvider(ABC):
         establish connections, start background threads, etc.
 
         kwargs always include:
-          - hermes_home (str): The active AGENTIC_OS_HOME directory path. Use this
+          - agentic_os_home (str): The active AGENTIC_OS_HOME directory path. Use this
             for profile-scoped storage instead of hardcoding ``~/.agentic-os``.
           - platform (str): "cli", "telegram", "discord", "cron", etc.
 
@@ -260,12 +260,12 @@ class MemoryProvider(ABC):
         """
         return []
 
-    def save_config(self, values: Dict[str, Any], hermes_home: str) -> None:
+    def save_config(self, values: Dict[str, Any], agentic_os_home: str) -> None:
         """Write non-secret config to the provider's native location.
 
         Called by 'hermes memory setup' after collecting user inputs.
         ``values`` contains only non-secret fields (secrets go to .env).
-        ``hermes_home`` is the active AGENTIC_OS_HOME directory path.
+        ``agentic_os_home`` is the active AGENTIC_OS_HOME directory path.
 
         Providers with native config files (JSON, YAML) should override
         this to write to their expected location. Providers that use only

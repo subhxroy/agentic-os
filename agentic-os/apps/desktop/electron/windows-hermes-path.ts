@@ -173,11 +173,11 @@ export interface ResolveVenvHermesCommandDeps {
   getVenvPython: (venvRoot: string) => string
   getVenvSitePackagesEntries: (venvRoot: string) => string[]
   buildDesktopBackendEnv: (opts: {
-    hermesHome: string
+    agenticOSHome: string
     pythonPathEntries: string[]
     venvRoot: string
   }) => Record<string, string>
-  hermesHome: string
+  agenticOSHome: string
   resolvePath: (...segments: string[]) => string
   dirname: (p: string) => string
   basename: (p: string) => string
@@ -226,7 +226,7 @@ export function resolveVenvHermesCommand(
     getVenvPython,
     getVenvSitePackagesEntries,
     buildDesktopBackendEnv,
-    hermesHome,
+    agenticOSHome,
     resolvePath,
     dirname,
     basename,
@@ -280,7 +280,7 @@ export function resolveVenvHermesCommand(
     args: ['-m', 'agentic_os_cli.main', ...backendArgs],
     bootstrap: false,
     env: buildDesktopBackendEnv({
-      hermesHome,
+      agenticOSHome,
       pythonPathEntries: [...(directoryExists(root) ? [root] : []), ...getVenvSitePackagesEntries(venvRoot)],
       venvRoot
     }),

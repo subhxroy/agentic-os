@@ -804,7 +804,7 @@ class PluginContext:
 
         ``source`` must be an instance of
         :class:`agent.secret_sources.base.SecretSource`.  Registered
-        sources run during ``load_hermes_dotenv()`` startup — after
+        sources run during ``load_agentic_os_dotenv()`` startup — after
         ``~/.agentic-os/.env`` loads, before Hermes reads credentials — when
         their ``secrets.<source.name>`` config section is enabled.  The
         orchestrator (``agent.secret_sources.registry.apply_all``) owns
@@ -812,7 +812,7 @@ class PluginContext:
         provenance; the source only fetches.
 
         NOTE ON TIMING: plugin discovery happens later in startup than
-        the first ``load_hermes_dotenv()`` call, so a plugin-registered
+        the first ``load_agentic_os_dotenv()`` call, so a plugin-registered
         source is not consulted by the initial env load of the process
         that discovers it.  It IS consulted by every subsequently
         spawned Hermes process (gateway children, cron sessions,

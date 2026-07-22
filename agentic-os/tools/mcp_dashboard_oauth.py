@@ -23,7 +23,7 @@ class DashboardOAuthFlow:
     flow_id: str
     server_name: str
     profile: str | None
-    hermes_home: str
+    agentic_os_home: str
     redirect_uri: str
     reconnect_live: bool = False
     created_at: float = field(default_factory=time.time)

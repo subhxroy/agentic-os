@@ -766,14 +766,14 @@ class TestInstallArchiveMemberValidation:
         member.size = len(payload)
         archive, checksums = self._write_archive(tmp_path, member, payload)
 
-        hermes_home = tmp_path / "hermes-home"
-        monkeypatch.setenv("AGENTIC_OS_HOME", str(hermes_home))
+        agentic_os_home = tmp_path / "hermes-home"
+        monkeypatch.setenv("AGENTIC_OS_HOME", str(agentic_os_home))
         with patch("tools.tirith_security._download_file",
                    side_effect=self._download_side_effect(archive, checksums)):
             path, reason = _install_tirith(log_failures=False)
 
         assert reason == ""
-        assert path == str(hermes_home / "bin" / "tirith")
+        assert path == str(agentic_os_home / "bin" / "tirith")
         assert os.path.isfile(path)
         assert not os.path.islink(path)
         with open(path, "rb") as f:
@@ -793,15 +793,15 @@ class TestInstallArchiveMemberValidation:
         member.linkname = "/bin/sh"
         archive, checksums = self._write_archive(tmp_path, member)
 
-        hermes_home = tmp_path / "hermes-home"
-        monkeypatch.setenv("AGENTIC_OS_HOME", str(hermes_home))
+        agentic_os_home = tmp_path / "hermes-home"
+        monkeypatch.setenv("AGENTIC_OS_HOME", str(agentic_os_home))
         with patch("tools.tirith_security._download_file",
                    side_effect=self._download_side_effect(archive, checksums)):
             path, reason = _install_tirith(log_failures=False)
 
         assert path is None
         assert reason == "binary_not_regular_file"
-        assert not os.path.lexists(hermes_home / "bin" / "tirith")
+        assert not os.path.lexists(agentic_os_home / "bin" / "tirith")
 
 
 # ---------------------------------------------------------------------------
@@ -1178,9 +1178,9 @@ class TestHermesHomeIsolation:
 
     def test_conftest_isolation_prevents_real_home_writes(self):
         """The conftest autouse fixture sets AGENTIC_OS_HOME; verify it's active."""
-        hermes_home = os.getenv("AGENTIC_OS_HOME")
-        assert hermes_home is not None, "AGENTIC_OS_HOME should be set by conftest"
-        assert "hermes_test" in hermes_home, "Should point to test temp dir"
+        agentic_os_home = os.getenv("AGENTIC_OS_HOME")
+        assert agentic_os_home is not None, "AGENTIC_OS_HOME should be set by conftest"
+        assert "hermes_test" in agentic_os_home, "Should point to test temp dir"
 
     def test_get_agentic_os_home_fallback(self):
         """Without AGENTIC_OS_HOME set, falls back to the active OS home."""

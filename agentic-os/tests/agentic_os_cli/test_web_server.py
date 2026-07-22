@@ -263,7 +263,7 @@ class TestWebServerEndpoints:
         assert resp.status_code == 200
         data = resp.json()
         assert "version" in data
-        assert "hermes_home" in data
+        assert "agentic_os_home" in data
         assert "active_sessions" in data
         assert data["can_update_hermes"] is True
 
@@ -3839,7 +3839,7 @@ class TestWebServerEndpoints:
         assert seen_encodings == {"index": "utf-8", "css": "utf-8"}
 
     def test_headless_serve_disables_spa_even_with_a_dist(self, monkeypatch, tmp_path):
-        """`hermes serve` (HERMES_SERVE_HEADLESS) must NOT serve the SPA even
+        """`hermes serve` (AGENTIC_OS_SERVE_HEADLESS) must NOT serve the SPA even
         when a built dist is present — only the API/WS surface is reachable."""
         from fastapi import FastAPI
         from starlette.testclient import TestClient
@@ -3850,7 +3850,7 @@ class TestWebServerEndpoints:
         (dist / "index.html").write_text("<html><body>UI</body></html>", encoding="utf-8")
 
         monkeypatch.setattr(ws, "WEB_DIST", dist)
-        monkeypatch.setenv("HERMES_SERVE_HEADLESS", "1")
+        monkeypatch.setenv("AGENTIC_OS_SERVE_HEADLESS", "1")
         app_ = FastAPI()
         ws.mount_spa(app_)
 
@@ -4984,13 +4984,13 @@ class TestNewEndpoints:
         from agentic_os_constants import get_agentic_os_home
         import agentic_os_cli.profiles as profiles_mod
 
-        hermes_home = get_agentic_os_home()
-        hermes_home.mkdir(parents=True, exist_ok=True)
-        (hermes_home / "config.yaml").write_text(
+        agentic_os_home = get_agentic_os_home()
+        agentic_os_home.mkdir(parents=True, exist_ok=True)
+        (agentic_os_home / "config.yaml").write_text(
             "model:\n  provider: openrouter\n  name: anthropic/claude-sonnet-4.6\n",
             encoding="utf-8",
         )
-        named = hermes_home / "profiles" / "multi-agent"
+        named = agentic_os_home / "profiles" / "multi-agent"
         named.mkdir(parents=True)
         (named / ".env").write_text("EXAMPLE=1\n", encoding="utf-8")
         (named / "skills" / "demo").mkdir(parents=True)
@@ -7385,8 +7385,8 @@ class TestThemeBootstrapCSS:
     the default-teal first-paint flash for user YAML themes."""
 
     @staticmethod
-    def _write_theme(hermes_home, name="ocean"):
-        themes_dir = hermes_home / "dashboard-themes"
+    def _write_theme(agentic_os_home, name="ocean"):
+        themes_dir = agentic_os_home / "dashboard-themes"
         themes_dir.mkdir(exist_ok=True)
         (themes_dir / f"{name}.yaml").write_text(
             f"name: {name}\n"

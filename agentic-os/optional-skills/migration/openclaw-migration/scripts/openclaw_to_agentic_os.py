@@ -404,9 +404,9 @@ def backup_existing(path: Path, backup_root: Path) -> Optional[Path]:
 # like ``openclaw`` → ``hermes`` (so filesystem paths like ``~/.openclaw``
 # become ``~/.agentic-os`` — the real Hermes home — not the broken ``~/.Hermes``).
 _REBRAND_PATTERNS: List[Tuple[re.Pattern, str]] = [
-    (re.compile(r'\bOpen[\s-]?Claw\b', re.IGNORECASE), 'Hermes'),
-    (re.compile(r'\bClawdBot\b', re.IGNORECASE), 'Hermes'),
-    (re.compile(r'\bMoltBot\b', re.IGNORECASE), 'Hermes'),
+    (re.compile(r'\bOpen[\s-]?Claw\b', re.IGNORECASE), 'Agentic OS'),
+    (re.compile(r'\bClawdBot\b', re.IGNORECASE), 'Agentic OS'),
+    (re.compile(r'\bMoltBot\b', re.IGNORECASE), 'Agentic OS'),
 ]
 
 
@@ -1698,8 +1698,8 @@ class Migrator:
             self.record("model-config", source_path, destination, "error", "PyYAML is not available")
             return
 
-        hermes_config = load_yaml_file(destination)
-        current_model = hermes_config.get("model")
+        agentic_os_config = load_yaml_file(destination)
+        current_model = agentic_os_config.get("model")
         if current_model == model_str:
             self.record("model-config", source_path, destination, "skipped", "Model already set to the same value")
             return
@@ -1709,12 +1709,12 @@ class Migrator:
 
         if self.execute:
             backup_path = self.maybe_backup(destination)
-            existing_model = hermes_config.get("model")
+            existing_model = agentic_os_config.get("model")
             if isinstance(existing_model, dict):
                 existing_model["default"] = model_str
             else:
-                hermes_config["model"] = {"default": model_str}
-            dump_yaml_file(destination, hermes_config)
+                agentic_os_config["model"] = {"default": model_str}
+            dump_yaml_file(destination, agentic_os_config)
             self.record("model-config", source_path, destination, "migrated", backup=str(backup_path) if backup_path else "", model=model_str)
         else:
             self.record("model-config", source_path, destination, "migrated", "Would set model", model=model_str)
@@ -1800,8 +1800,8 @@ class Migrator:
             self.record("tts-config", source_path, destination, "skipped", "No compatible TTS settings found")
             return
 
-        hermes_config = load_yaml_file(destination)
-        existing_tts = hermes_config.get("tts", {})
+        agentic_os_config = load_yaml_file(destination)
+        existing_tts = agentic_os_config.get("tts", {})
         if not isinstance(existing_tts, dict):
             existing_tts = {}
 
@@ -1813,8 +1813,8 @@ class Migrator:
                     merged_tts[key] = {**merged_tts[key], **value}
                 else:
                     merged_tts[key] = value
-            hermes_config["tts"] = merged_tts
-            dump_yaml_file(destination, hermes_config)
+            agentic_os_config["tts"] = merged_tts
+            dump_yaml_file(destination, agentic_os_config)
             self.record("tts-config", source_path, destination, "migrated", backup=str(backup_path) if backup_path else "", settings=list(tts_data.keys()))
         else:
             self.record("tts-config", source_path, destination, "migrated", "Would set TTS config", settings=list(tts_data.keys()))

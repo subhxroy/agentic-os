@@ -80,10 +80,10 @@ hgui() {
 
   ( cd "$desktop"
     export PATH="$root/node_modules/.bin:$PATH"
-    HERMES_DESKTOP_AGENTIC_ROOT="$root" \
-    HERMES_DESKTOP_PYTHON="$HERMES_MAIN_CHECKOUT/.venv/bin/python" \
-    HERMES_DESKTOP_IGNORE_EXISTING=1 \
-    HERMES_DESKTOP_CWD="$root" \
+    AGENTIC_OS_DESKTOP_AGENTIC_ROOT="$root" \
+    AGENTIC_OS_DESKTOP_PYTHON="$HERMES_MAIN_CHECKOUT/.venv/bin/python" \
+    AGENTIC_OS_DESKTOP_IGNORE_EXISTING=1 \
+    AGENTIC_OS_DESKTOP_CWD="$root" \
     npm run dev )
 }
 ```
@@ -92,10 +92,10 @@ The desktop env vars it sets are all real backend-resolution knobs:
 
 | Variable | Role in `hgui` |
 |----------|----------------|
-| `HERMES_DESKTOP_AGENTIC_ROOT` | Runs the backend from **this worktree**, not the packaged/PATH `hermes`. |
-| `HERMES_DESKTOP_PYTHON` | Reuses the deps checkout's venv instead of re-resolving a Python. |
-| `HERMES_DESKTOP_IGNORE_EXISTING` | Ignores any `hermes` on `PATH` so it can't shadow the worktree. |
-| `HERMES_DESKTOP_CWD` | Opens the desktop chat rooted at the worktree. |
+| `AGENTIC_OS_DESKTOP_AGENTIC_ROOT` | Runs the backend from **this worktree**, not the packaged/PATH `hermes`. |
+| `AGENTIC_OS_DESKTOP_PYTHON` | Reuses the deps checkout's venv instead of re-resolving a Python. |
+| `AGENTIC_OS_DESKTOP_IGNORE_EXISTING` | Ignores any `hermes` on `PATH` so it can't shadow the worktree. |
+| `AGENTIC_OS_DESKTOP_CWD` | Opens the desktop chat rooted at the worktree. |
 
 Two footguns `hgui` handles that a bare `npm run dev` does not:
 

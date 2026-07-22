@@ -7,7 +7,7 @@ edition = "2021"
 rust-version = "1.77"
 
 # Rename the output binary so the distributed artifact is literally
-# `Hermes-Setup.exe` on disk — not `hermes-bootstrap.exe`. Grandma sees
+# `Agentic-OS-Setup.exe` on disk — not `hermes-bootstrap.exe`. Grandma sees
 # what we hand her, period. Tauri honors [[bin]] over [package].name
 # for the produced executable name.
 [[bin]]

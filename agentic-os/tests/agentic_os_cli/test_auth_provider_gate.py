@@ -5,16 +5,16 @@ import pytest
 
 
 def _write_config(tmp_path, config: dict) -> None:
-    hermes_home = tmp_path / "hermes"
-    hermes_home.mkdir(parents=True, exist_ok=True)
+    agentic_os_home = tmp_path / "hermes"
+    agentic_os_home.mkdir(parents=True, exist_ok=True)
     import yaml
-    (hermes_home / "config.yaml").write_text(yaml.dump(config))
+    (agentic_os_home / "config.yaml").write_text(yaml.dump(config))
 
 
 def _write_auth_store(tmp_path, payload: dict) -> None:
-    hermes_home = tmp_path / "hermes"
-    hermes_home.mkdir(parents=True, exist_ok=True)
-    (hermes_home / "auth.json").write_text(json.dumps(payload, indent=2))
+    agentic_os_home = tmp_path / "hermes"
+    agentic_os_home.mkdir(parents=True, exist_ok=True)
+    (agentic_os_home / "auth.json").write_text(json.dumps(payload, indent=2))
 
 
 @pytest.fixture(autouse=True)

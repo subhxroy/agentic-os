@@ -3,7 +3,7 @@
 Every ``delegate_task`` dispatch creates one append-only, human-readable log
 per child under::
 
-    <hermes_home>/cache/delegation/live/<delegation_id>/task-<n>.log
+    <agentic_os_home>/cache/delegation/live/<delegation_id>/task-<n>.log
 
 The files are pre-created with a header at dispatch time (so ``tail -f``
 attaches immediately) and then stream one line per child event: assistant

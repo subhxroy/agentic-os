@@ -180,7 +180,7 @@ _ENV_VAR_NAME_RE = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*$")
 # * ``SHELL`` — what subprocess uses with ``shell=True`` (we try to
 #   avoid that, but defense in depth).
 # * ``AGENTIC_OS_HOME`` / ``HERMES_PROFILE`` / ``HERMES_CONFIG`` /
-#   ``HERMES_ENV`` — Hermes runtime location flags. Writing these into
+#   ``AGENTIC_OS_ENV`` — Hermes runtime location flags. Writing these into
 #   ``.env`` would relocate state in ways the user did not request from
 #   the dashboard. ``config.yaml`` is the supported surface for these.
 #
@@ -211,7 +211,7 @@ _ENV_VAR_NAME_DENYLIST: frozenset[str] = frozenset({
     # Hermes runtime location — never via dashboard env writer.
     # NOT a HERMES_* blanket: integration credentials (HERMES_GEMINI_*,
     # HERMES_LANGFUSE_*, HERMES_SPOTIFY_*, ...) ARE allowed.
-    "AGENTIC_OS_HOME", "HERMES_PROFILE", "HERMES_CONFIG", "HERMES_ENV",
+    "AGENTIC_OS_HOME", "HERMES_PROFILE", "HERMES_CONFIG", "AGENTIC_OS_ENV",
 })
 
 
@@ -1084,7 +1084,7 @@ DEFAULT_CONFIG = {
         # prompt's environment-hints block. Lets a host that wraps Hermes
         # (sandbox runner, managed platform) explain the runtime environment
         # — proxy, credential handling, mount layout — without editing the
-        # identity slot (SOUL.md). Empty by default. The HERMES_ENVIRONMENT_HINT
+        # identity slot (SOUL.md). Empty by default. The AGENTIC_OS_ENVIRONMENT_HINT
         # env var overrides this (build-time/container mechanism).
         "environment_hint": "",
         # Coding posture — on interactive coding surfaces (CLI, TUI, desktop
@@ -2420,7 +2420,7 @@ DEFAULT_CONFIG = {
         # When true, every MoA turn that runs the reference fan-out writes the
         # FULL turn (each reference's exact input messages + output + usage/cost,
         # and the aggregator's exact input + output) to a JSONL file at
-        # <hermes_home>/moa-traces/<session_id>.jsonl. Off by default — turn it
+        # <agentic_os_home>/moa-traces/<session_id>.jsonl. Off by default — turn it
         # on to audit / improve MoA behavior from real runs. Set trace_dir to
         # override the output directory.
         "save_traces": False,
@@ -3452,7 +3452,7 @@ DEFAULT_CONFIG = {
         "cua_telemetry": False,
     },
 
-    # Hermes Desktop (Electron app) launch options. These only affect
+    # Agentic OS Desktop (Electron app) launch options. These only affect
     # `hermes desktop`; they do not touch the CLI/gateway.
     "desktop": {
         # Git repository discovery for the Desktop Projects sidebar. Empty
@@ -3471,7 +3471,7 @@ DEFAULT_CONFIG = {
         #   true    - always disable GPU acceleration (software rendering).
         #             Use on no-GPU VMs / Proxmox hosts where the GPU path hangs.
         #   false   - always keep GPU acceleration on, even over a remote display.
-        # Bridged to the HERMES_DESKTOP_DISABLE_GPU env var the Electron app reads.
+        # Bridged to the AGENTIC_OS_DESKTOP_DISABLE_GPU env var the Electron app reads.
         "disable_gpu": "auto",
     },
 
@@ -6699,7 +6699,7 @@ def _env_ref_snapshot(obj, snapshot=None):
     Stored alongside cached ``load_config()`` results so a cache hit can
     detect that the cached expansion was made against a *different*
     environment — e.g. a ``load_config()`` that ran before
-    ``load_hermes_dotenv()`` populated the process env, or an env var
+    ``load_agentic_os_dotenv()`` populated the process env, or an env var
     rotated in-process after the first load. File mtime/size alone cannot
     see either case (#58514).
     """
@@ -7344,7 +7344,7 @@ def _load_config_impl(*, want_deepcopy: bool) -> Dict[str, Any]:
         if cached is not None and cache_sig is not None and cached[:4] == cache_sig:
             # File signatures match, but the cached expansion is only valid if
             # every ${VAR} it was expanded against still has the same value.
-            # Without this, a load_config() that ran before load_hermes_dotenv()
+            # Without this, a load_config() that ran before load_agentic_os_dotenv()
             # pins unexpanded literals (e.g. auxiliary.<task>.api_key) for the
             # life of the process (#58514).
             env_snapshot = cached[5] if len(cached) > 5 else {}

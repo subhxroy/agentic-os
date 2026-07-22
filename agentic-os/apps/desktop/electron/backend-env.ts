@@ -61,26 +61,26 @@ function appendUniquePathEntries(entries, { delimiter = path.delimiter } = {}) {
 }
 
 function buildDesktopBackendPath({
-  hermesHome,
+  agenticOSHome,
   venvRoot,
   currentPath = '',
   platform = process.platform,
   pathModule = pathModuleForPlatform(platform)
 }: any = {}) {
   const delimiter = delimiterForPlatform(platform)
-  const hermesNodeBin = hermesHome ? pathModule.join(hermesHome, 'node', 'bin') : null
+  const hermesNodeBin = agenticOSHome ? pathModule.join(agenticOSHome, 'node', 'bin') : null
   const venvBin = venvRoot ? pathModule.join(venvRoot, platform === 'win32' ? 'Scripts' : 'bin') : null
   const saneEntries = platform === 'win32' ? [] : POSIX_SANE_PATH_ENTRIES
 
   return appendUniquePathEntries([hermesNodeBin, venvBin, currentPath, saneEntries], { delimiter })
 }
 
-function normalizeHermesHomeRoot(hermesHome, { pathModule = pathModuleForPlatform(process.platform) }: any = {}) {
-  if (!hermesHome) {
-    return hermesHome
+function normalizeHermesHomeRoot(agenticOSHome, { pathModule = pathModuleForPlatform(process.platform) }: any = {}) {
+  if (!agenticOSHome) {
+    return agenticOSHome
   }
 
-  const resolved = pathModule.resolve(String(hermesHome))
+  const resolved = pathModule.resolve(String(agenticOSHome))
   const parent = pathModule.dirname(resolved)
 
   if (pathModule.basename(parent).toLowerCase() === 'profiles') {
@@ -91,7 +91,7 @@ function normalizeHermesHomeRoot(hermesHome, { pathModule = pathModuleForPlatfor
 }
 
 function buildDesktopBackendEnv({
-  hermesHome,
+  agenticOSHome,
   pythonPathEntries = [],
   venvRoot,
   currentEnv = process.env,
@@ -105,7 +105,7 @@ function buildDesktopBackendEnv({
   return {
     PYTHONPATH: appendUniquePathEntries([...pythonPathEntries, currentPythonPath], { delimiter }),
     [key]: buildDesktopBackendPath({
-      hermesHome,
+      agenticOSHome,
       venvRoot,
       currentPath: currentPathValue(currentEnv, platform),
       platform,

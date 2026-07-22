@@ -402,8 +402,8 @@ class SessionManager:
             return self._db_instance
         try:
             from agentic_os_state import SessionDB
-            hermes_home = get_agentic_os_home()
-            self._db_instance = SessionDB(db_path=hermes_home / "state.db")
+            agentic_os_home = get_agentic_os_home()
+            self._db_instance = SessionDB(db_path=agentic_os_home / "state.db")
             return self._db_instance
         except Exception:
             logger.debug("SessionDB unavailable for ACP persistence", exc_info=True)

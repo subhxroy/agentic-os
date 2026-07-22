@@ -1,6 +1,6 @@
 // FPS counter overlay (AGENTIC_OS_TUI_FPS=1). Zero-cost when disabled.
 
-import { Text } from '@hermes/ink'
+import { Text } from '@agentic-os/ink'
 import { useStore } from '@nanostores/react'
 
 import { SHOW_FPS } from '../config/env.js'

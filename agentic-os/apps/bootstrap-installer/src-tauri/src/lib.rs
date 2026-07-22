@@ -21,7 +21,7 @@ use tokio::sync::Mutex;
 /// How the installer was invoked. Resolved once from the process args in
 /// `run()` and exposed to the frontend via `get_mode` so it can route to the
 /// install flow (first-run onboarding) or the update flow (driven by the
-/// desktop app handing off via `Hermes-Setup.exe --update`).
+/// desktop app handing off via `Agentic-OS-Setup.exe --update`).
 ///
 /// Bare launch (double-click, first-run) => Install.
 /// `--update` (spawned by the desktop's "Update" button) => Update.
@@ -130,7 +130,7 @@ pub fn run() {
             // `--reinstall`/`--repair` opts out so a broken install can be
             // repaired by re-running setup instead of launching the bad app.
             if cfg!(target_os = "macos") && mode == AppMode::Install && !force_setup {
-                let install_root = paths::hermes_home().join("agentic-os");
+                let install_root = paths::agentic_os_home().join("agentic-os");
                 if bootstrap::hermes_is_installed(&install_root) {
                     match bootstrap::spawn_installed_desktop(&install_root) {
                         Ok(()) => {

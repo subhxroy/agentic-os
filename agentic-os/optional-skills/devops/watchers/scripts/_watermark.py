@@ -33,8 +33,8 @@ def _state_dir() -> Path:
     if override:
         return Path(override)
     # Default: $AGENTIC_OS_HOME/watcher-state/, falling back to ~/.agentic-os/watcher-state/.
-    hermes_home = os.environ.get("AGENTIC_OS_HOME") or str(Path.home() / ".hermes")
-    return Path(hermes_home) / "watcher-state"
+    agentic_os_home = os.environ.get("AGENTIC_OS_HOME") or str(Path.home() / ".hermes")
+    return Path(agentic_os_home) / "watcher-state"
 
 
 class Watermark:

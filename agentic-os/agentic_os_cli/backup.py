@@ -798,14 +798,14 @@ _QUICK_SNAPSHOTS_DIR = "state-snapshots"
 _QUICK_DEFAULT_KEEP = 20
 
 
-def _quick_snapshot_root(hermes_home: Optional[Path] = None) -> Path:
-    home = hermes_home or get_agentic_os_home()
+def _quick_snapshot_root(agentic_os_home: Optional[Path] = None) -> Path:
+    home = agentic_os_home or get_agentic_os_home()
     return home / _QUICK_SNAPSHOTS_DIR
 
 
 def create_quick_snapshot(
     label: Optional[str] = None,
-    hermes_home: Optional[Path] = None,
+    agentic_os_home: Optional[Path] = None,
     keep: Optional[int] = None,
     max_file_size: Optional[int] = None,
 ) -> Optional[str]:
@@ -827,7 +827,7 @@ def create_quick_snapshot(
     Returns:
         Snapshot ID (timestamp-based), or None if no files found.
     """
-    home = hermes_home or get_agentic_os_home()
+    home = agentic_os_home or get_agentic_os_home()
     root = _quick_snapshot_root(home)
 
     def _too_large(path: Path, rel_name: str) -> bool:
@@ -941,10 +941,10 @@ def create_quick_snapshot(
 
 def list_quick_snapshots(
     limit: int = 20,
-    hermes_home: Optional[Path] = None,
+    agentic_os_home: Optional[Path] = None,
 ) -> List[Dict[str, Any]]:
     """List existing quick state snapshots, most recent first."""
-    root = _quick_snapshot_root(hermes_home)
+    root = _quick_snapshot_root(agentic_os_home)
     if not root.exists():
         return []
 
@@ -967,14 +967,14 @@ def list_quick_snapshots(
 
 def restore_quick_snapshot(
     snapshot_id: str,
-    hermes_home: Optional[Path] = None,
+    agentic_os_home: Optional[Path] = None,
 ) -> bool:
     """Restore state from a quick snapshot.
 
     Overwrites current state files with the snapshot's copies.
     Returns True if at least one file was restored.
     """
-    home = hermes_home or get_agentic_os_home()
+    home = agentic_os_home or get_agentic_os_home()
     root = _quick_snapshot_root(home)
 
     # Security: reject snapshot_id values that contain path separators or
@@ -1079,7 +1079,7 @@ def _count_cron_jobs(path: Path) -> Optional[int]:
 
 def restore_cron_jobs_if_emptied(
     snapshot_id: str,
-    hermes_home: Optional[Path] = None,
+    agentic_os_home: Optional[Path] = None,
 ) -> Optional[Dict[str, Any]]:
     """Safety net for silent cron-job loss across ``hermes update``.
 
@@ -1102,7 +1102,7 @@ def restore_cron_jobs_if_emptied(
     Args:
         snapshot_id: The pre-update quick-snapshot id (from
             :func:`create_quick_snapshot`).
-        hermes_home: Override for the Agentic OS home directory (tests).
+        agentic_os_home: Override for the Agentic OS home directory (tests).
 
     Returns:
         ``None`` when no action was taken (the common, healthy path). On a
@@ -1112,7 +1112,7 @@ def restore_cron_jobs_if_emptied(
     if not snapshot_id:
         return None
 
-    home = hermes_home or get_agentic_os_home()
+    home = agentic_os_home or get_agentic_os_home()
     live_path = home / _CRON_JOBS_REL
 
     live_count = _count_cron_jobs(live_path)
@@ -1177,10 +1177,10 @@ def _prune_quick_snapshots(root: Path, keep: int = _QUICK_DEFAULT_KEEP) -> int:
 
 def prune_quick_snapshots(
     keep: int = _QUICK_DEFAULT_KEEP,
-    hermes_home: Optional[Path] = None,
+    agentic_os_home: Optional[Path] = None,
 ) -> int:
     """Manually prune quick snapshots. Returns count deleted."""
-    return _prune_quick_snapshots(_quick_snapshot_root(hermes_home), keep=keep)
+    return _prune_quick_snapshots(_quick_snapshot_root(agentic_os_home), keep=keep)
 
 
 def run_quick_backup(args) -> None:
@@ -1290,8 +1290,8 @@ _PRE_UPDATE_PREFIX = "pre-update-"
 _PRE_UPDATE_DEFAULT_KEEP = 5
 
 
-def _pre_update_backup_dir(hermes_home: Optional[Path] = None) -> Path:
-    home = hermes_home or get_agentic_os_home()
+def _pre_update_backup_dir(agentic_os_home: Optional[Path] = None) -> Path:
+    home = agentic_os_home or get_agentic_os_home()
     return home / _PRE_UPDATE_BACKUPS_DIR
 
 
@@ -1333,7 +1333,7 @@ def _prune_pre_update_backups(backup_dir: Path, keep: int) -> int:
 
 
 def create_pre_update_backup(
-    hermes_home: Optional[Path] = None,
+    agentic_os_home: Optional[Path] = None,
     keep: int = _PRE_UPDATE_DEFAULT_KEEP,
 ) -> Optional[Path]:
     """Create a full zip backup of AGENTIC_OS_HOME under ``backups/``.
@@ -1346,7 +1346,7 @@ def create_pre_update_backup(
     found or the backup could not be created.  Never raises — the caller
     (``hermes update``) should continue even if the backup fails.
     """
-    hermes_root = hermes_home or get_default_agentic_os_root()
+    hermes_root = agentic_os_home or get_default_agentic_os_root()
     if not hermes_root.is_dir():
         return None
 
@@ -1405,7 +1405,7 @@ def _prune_pre_migration_backups(backup_dir: Path, keep: int) -> int:
 
 
 def create_pre_migration_backup(
-    hermes_home: Optional[Path] = None,
+    agentic_os_home: Optional[Path] = None,
     keep: int = _PRE_MIGRATION_DEFAULT_KEEP,
 ) -> Optional[Path]:
     """Create a full zip backup of AGENTIC_OS_HOME under ``backups/`` before a
@@ -1421,7 +1421,7 @@ def create_pre_migration_backup(
     to back up (fresh install) or the write failed.  Never raises — the
     caller decides whether to abort or proceed.
     """
-    hermes_root = hermes_home or get_default_agentic_os_root()
+    hermes_root = agentic_os_home or get_default_agentic_os_root()
     if not hermes_root.is_dir():
         return None
 

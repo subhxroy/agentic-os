@@ -228,9 +228,9 @@ class TestStatusEndpointTopology:
             assert data["profiles"] == ["default", "coder"]
             assert data["gateway_mode"] == "multiplex"
             # But the per-gateway detail (host ports = recon) stays gated,
-            # alongside hermes_home / gateway_pid.
+            # alongside agentic_os_home / gateway_pid.
             assert "gateways" not in data
-            assert "hermes_home" not in data
+            assert "agentic_os_home" not in data
             assert "gateway_pid" not in data
         finally:
             monkeypatch.setattr(

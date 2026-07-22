@@ -34,7 +34,7 @@ def _set_profile_env(monkeypatch, root: Path, profile_home: Path) -> None:
 def test_cron_storage_anchors_at_profile_home(tmp_path, monkeypatch):
     """Under a profile AGENTIC_OS_HOME (<root>/profiles/<name>), the cron store
     resolves to <profile>/cron, NOT the shared <root>/cron."""
-    root = tmp_path / "hermes_home"
+    root = tmp_path / "agentic_os_home"
     profile_home = root / "profiles" / "coder"
     profile_home.mkdir(parents=True)
 
@@ -70,7 +70,7 @@ def test_cron_storage_anchors_at_profile_home(tmp_path, monkeypatch):
 def test_cron_lock_path_anchors_at_profile_home(tmp_path, monkeypatch):
     """The tick lock is also profile-scoped, so two profile gateways tick
     independently instead of contending on one shared lock."""
-    root = tmp_path / "hermes_home"
+    root = tmp_path / "agentic_os_home"
     profile_home = root / "profiles" / "coder"
     profile_home.mkdir(parents=True)
 
@@ -88,7 +88,7 @@ def test_cron_execution_home_follows_active_profile(tmp_path, monkeypatch):
     """Execution-time home resolution (.env / config.yaml / scripts) follows
     the active profile, not the shared root — so a profile gateway runs its
     jobs with that profile's runtime config."""
-    root = tmp_path / "hermes_home"
+    root = tmp_path / "agentic_os_home"
     profile_home = root / "profiles" / "coder"
     profile_home.mkdir(parents=True)
 
@@ -105,7 +105,7 @@ def test_cron_execution_home_follows_active_profile(tmp_path, monkeypatch):
 def test_cron_storage_unaffected_when_no_profile(tmp_path, monkeypatch):
     """With no profile (AGENTIC_OS_HOME == root), the store is the root's cron dir
     — unchanged behavior for single-profile installs."""
-    root = tmp_path / "hermes_home"
+    root = tmp_path / "agentic_os_home"
     root.mkdir(parents=True)
 
     import agentic_os_constants

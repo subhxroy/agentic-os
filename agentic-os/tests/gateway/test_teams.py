@@ -379,8 +379,8 @@ class TestTeamsInteractiveSetup:
         from agentic_os_cli.cli_output (not agentic_os_cli.config) and persist
         credentials to .env without crashing.
         """
-        hermes_home = tmp_path / "hermes"
-        monkeypatch.setenv("AGENTIC_OS_HOME", str(hermes_home))
+        agentic_os_home = tmp_path / "hermes"
+        monkeypatch.setenv("AGENTIC_OS_HOME", str(agentic_os_home))
 
         import agentic_os_cli.cli_output as cli_output_mod
 
@@ -393,7 +393,7 @@ class TestTeamsInteractiveSetup:
 
         _teams_mod.interactive_setup()
 
-        env_text = (hermes_home / ".env").read_text(encoding="utf-8")
+        env_text = (agentic_os_home / ".env").read_text(encoding="utf-8")
         assert "TEAMS_CLIENT_ID=client-id" in env_text
         assert "TEAMS_TENANT_ID=tenant-id" in env_text
 

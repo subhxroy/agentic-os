@@ -22,7 +22,7 @@ use std::process::Command;
 use tracing_appender::non_blocking::WorkerGuard;
 
 /// Returns the canonical Hermes home directory, respecting $AGENTIC_OS_HOME if set.
-pub fn hermes_home() -> PathBuf {
+pub fn agentic_os_home() -> PathBuf {
     if let Ok(override_path) = std::env::var("AGENTIC_OS_HOME") {
         if !override_path.trim().is_empty() {
             return PathBuf::from(override_path);
@@ -49,7 +49,7 @@ pub fn hermes_home() -> PathBuf {
 }
 
 pub fn log_dir() -> PathBuf {
-    hermes_home().join("logs")
+    agentic_os_home().join("logs")
 }
 
 pub fn log_path() -> PathBuf {
@@ -57,7 +57,7 @@ pub fn log_path() -> PathBuf {
 }
 
 pub fn bootstrap_cache_dir() -> PathBuf {
-    hermes_home().join("bootstrap-cache")
+    agentic_os_home().join("bootstrap-cache")
 }
 
 /// Stable location the installer copies itself to after a successful install.
@@ -74,7 +74,7 @@ pub fn installer_dest() -> PathBuf {
     } else {
         "hermes-setup"
     };
-    hermes_home().join(name)
+    agentic_os_home().join(name)
 }
 
 /// Marker the updater writes for the duration of an in-app update and removes
@@ -87,7 +87,7 @@ pub fn installer_dest() -> PathBuf {
 /// Electron desktop — which resolves AGENTIC_OS_HOME identically and pins it into
 /// the updater's env — agrees on the exact path.
 pub fn update_in_progress_marker() -> PathBuf {
-    hermes_home().join(".hermes-update-in-progress")
+    agentic_os_home().join(".hermes-update-in-progress")
 }
 
 /// Copy the currently-running installer binary to `installer_dest()` so it's
@@ -197,7 +197,7 @@ pub fn get_log_path() -> String {
 
 #[tauri::command]
 pub fn get_agentic_os_home() -> String {
-    hermes_home().to_string_lossy().into_owned()
+    agentic_os_home().to_string_lossy().into_owned()
 }
 
 #[tauri::command]

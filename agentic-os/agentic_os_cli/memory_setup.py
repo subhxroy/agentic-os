@@ -223,8 +223,8 @@ def cmd_setup_provider(provider_name: str) -> None:
         config["memory"] = {}
 
     if hasattr(provider, "post_setup"):
-        hermes_home = str(get_agentic_os_home())
-        provider.post_setup(hermes_home, config)
+        agentic_os_home = str(get_agentic_os_home())
+        provider.post_setup(agentic_os_home, config)
         return
 
     # Fallback: generic schema-based setup (same as cmd_setup)
@@ -279,8 +279,8 @@ def cmd_setup(args) -> None:
     # If the provider has a post_setup hook, delegate entirely to it.
     # The hook handles its own config, connection test, and activation.
     if hasattr(provider, "post_setup"):
-        hermes_home = str(get_agentic_os_home())
-        provider.post_setup(hermes_home, config)
+        agentic_os_home = str(get_agentic_os_home())
+        provider.post_setup(agentic_os_home, config)
         return
 
     schema = provider.get_config_schema() if hasattr(provider, "get_config_schema") else []
@@ -359,10 +359,10 @@ def cmd_setup(args) -> None:
     save_config(config)
 
     # Write non-secret config to provider's native location
-    hermes_home = str(get_agentic_os_home())
+    agentic_os_home = str(get_agentic_os_home())
     if provider_config and hasattr(provider, "save_config"):
         try:
-            provider.save_config(provider_config, hermes_home)
+            provider.save_config(provider_config, agentic_os_home)
         except Exception as e:
             print(f"  Failed to write provider config: {e}")
 

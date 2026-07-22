@@ -227,7 +227,7 @@ variables by exact name:
 - `AGENTIC_OS_HOME`
 - `HERMES_PROFILE`
 - `HERMES_CONFIG`
-- `HERMES_ENV`
+- `AGENTIC_OS_ENV`
 
 (plus `HERMES_RPC_DIR` / `HERMES_RPC_SOCKET` / `TZ` / `HOME`, which Hermes
 injects explicitly so the RPC channel works).

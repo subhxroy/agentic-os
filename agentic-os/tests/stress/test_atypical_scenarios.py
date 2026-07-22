@@ -440,7 +440,7 @@ def _(home, kb):
             if not resolved_abs.startswith(home_abs) and resolved_abs.startswith("/tmp"):
                 # This is escaping the home dir. Whether that's actually
                 # a problem depends on the threat model. Flag for attention.
-                print(f"  ⚠ workspace resolved OUTSIDE hermes_home: {resolved}")
+                print(f"  ⚠ workspace resolved OUTSIDE agentic_os_home: {resolved}")
                 print("    (not necessarily a bug — dir: workspaces are intentionally arbitrary, but worth documenting)")
         except Exception as e:
             print(f"  resolve_workspace rejected: {e}")
@@ -527,7 +527,7 @@ def _(home, kb):
 # FILESYSTEM WEIRDNESS
 # =============================================================================
 
-@scenario("hermes_home_with_spaces")
+@scenario("agentic_os_home_with_spaces")
 def _(home, kb):
     """AGENTIC_OS_HOME at a path with spaces — should work but catches
     anyone doing string interpolation without quoting."""
@@ -554,7 +554,7 @@ def _(home, kb):
         shutil.rmtree(weird, ignore_errors=True)
 
 
-@scenario("hermes_home_with_unicode")
+@scenario("agentic_os_home_with_unicode")
 def _(home, kb):
     """AGENTIC_OS_HOME with non-ASCII chars."""
     # Pre-create directly since tempfile doesn't love unicode prefixes
@@ -576,7 +576,7 @@ def _(home, kb):
         shutil.rmtree(weird, ignore_errors=True)
 
 
-@scenario("hermes_home_via_symlink")
+@scenario("agentic_os_home_via_symlink")
 def _(home, kb):
     """AGENTIC_OS_HOME is a symlink to the real dir. _INITIALIZED_PATHS
     uses Path.resolve() — two different symlink names pointing at the
@@ -685,11 +685,11 @@ def _(home, kb):
 # CONCURRENCY CORNERS
 # =============================================================================
 
-def _idempotency_race_worker(hermes_home: str, key: str, result_file: str,
+def _idempotency_race_worker(agentic_os_home: str, key: str, result_file: str,
                              barrier_path: str) -> None:
     """Subprocess body for the idempotency race test."""
-    os.environ["AGENTIC_OS_HOME"] = hermes_home
-    os.environ["HOME"] = hermes_home
+    os.environ["AGENTIC_OS_HOME"] = agentic_os_home
+    os.environ["HOME"] = agentic_os_home
     sys.path.insert(0, str(WT))
     from agentic_os_cli import kanban_db as kb
 

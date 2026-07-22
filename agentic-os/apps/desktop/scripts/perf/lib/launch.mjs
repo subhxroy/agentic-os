@@ -7,7 +7,7 @@
 //     never collides with (or steals focus from) the user's running `hgui`.
 //   · its own AGENTIC_OS_HOME      → its own backend + sessions, no shared state.
 //   · its own --remote-debugging-port → a private CDP endpoint.
-//   · HERMES_DESKTOP_BOOT_FAKE=1 → deterministic boot overlay.
+//   · AGENTIC_OS_DESKTOP_BOOT_FAKE=1 → deterministic boot overlay.
 // The synthetic scenarios drive `$messages` directly, so no LLM credits are
 // spent regardless of the isolated backend.
 
@@ -167,7 +167,7 @@ export async function startIsolatedInstance({
   devPort = 5174,
   prod = false,
   coldStart = false,
-  hermesHome,
+  agenticOSHome,
   userDataDir,
   seedConfig = true,
   settleMs = 2500,
@@ -183,11 +183,11 @@ export async function startIsolatedInstance({
     return dir
   }
 
-  const home = hermesHome ?? mkTemp('hermes-perf-home-')
+  const home = agenticOSHome ?? mkTemp('hermes-perf-home-')
   const userData = userDataDir ?? mkTemp('hermes-perf-ud-')
   const devUrl = prod ? null : `http://127.0.0.1:${devPort}`
 
-  if (seedConfig && !hermesHome) {
+  if (seedConfig && !agenticOSHome) {
     seedConfigFrom(join(homedir(), '.hermes'), home)
   }
 
@@ -231,7 +231,7 @@ export async function startIsolatedInstance({
     // Isolated Electron: own --user-data-dir (single-instance lock scope) + own
     // AGENTIC_OS_HOME (backend + sessions). No DEV_SERVER env in prod → dist load.
     const electronBin = require('electron')
-    // NB: do NOT set HERMES_DESKTOP_BOOT_FAKE here — it injects artificial
+    // NB: do NOT set AGENTIC_OS_DESKTOP_BOOT_FAKE here — it injects artificial
     // per-phase sleeps into the boot overlay, which inflates cold-start timing
     // (and adds pointless startup latency to the steady-state runs). We want the
     // real boot sequence.
@@ -242,7 +242,7 @@ export async function startIsolatedInstance({
     }
 
     if (devUrl) {
-      env.HERMES_DESKTOP_DEV_SERVER = devUrl
+      env.AGENTIC_OS_DESKTOP_DEV_SERVER = devUrl
     }
 
     const spawnAt = Date.now()
@@ -350,7 +350,7 @@ export async function coldStartSamples({ runs = 3, port = 9222, devPort = 5174, 
           devPort: devPort + i,
           prod,
           coldStart: true,
-          hermesHome: home,
+          agenticOSHome: home,
           userDataDir,
           seedConfig: false
         })

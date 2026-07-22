@@ -5,8 +5,8 @@ from types import SimpleNamespace
 def test_postprocess_adds_agent_visible_image_for_active_ssh_env(monkeypatch, tmp_path):
     from tools import image_generation_tool
 
-    hermes_home = tmp_path / ".hermes"
-    image_dir = hermes_home / "cache" / "images"
+    agentic_os_home = tmp_path / ".hermes"
+    image_dir = agentic_os_home / "cache" / "images"
     image_dir.mkdir(parents=True)
     image_path = image_dir / "xai_grok-imagine-image_test.jpg"
     image_path.write_bytes(b"jpg")
@@ -22,7 +22,7 @@ def test_postprocess_adds_agent_visible_image_for_active_ssh_env(monkeypatch, tm
         _sync_manager=FakeSyncManager(),
     )
 
-    monkeypatch.setenv("AGENTIC_OS_HOME", str(hermes_home))
+    monkeypatch.setenv("AGENTIC_OS_HOME", str(agentic_os_home))
     monkeypatch.setattr(image_generation_tool, "_active_terminal_env", lambda task_id: env)
 
     raw = json.dumps({"success": True, "image": str(image_path)})
@@ -41,13 +41,13 @@ def test_postprocess_adds_agent_visible_image_for_active_ssh_env(monkeypatch, tm
 def test_postprocess_maps_docker_cache_path_without_active_env(monkeypatch, tmp_path):
     from tools import image_generation_tool
 
-    hermes_home = tmp_path / ".hermes"
-    image_dir = hermes_home / "cache" / "images"
+    agentic_os_home = tmp_path / ".hermes"
+    image_dir = agentic_os_home / "cache" / "images"
     image_dir.mkdir(parents=True)
     image_path = image_dir / "generated.png"
     image_path.write_bytes(b"png")
 
-    monkeypatch.setenv("AGENTIC_OS_HOME", str(hermes_home))
+    monkeypatch.setenv("AGENTIC_OS_HOME", str(agentic_os_home))
     monkeypatch.setenv("TERMINAL_ENV", "docker")
     monkeypatch.setattr(image_generation_tool, "_active_terminal_env", lambda task_id: None)
 
@@ -61,13 +61,13 @@ def test_postprocess_maps_docker_cache_path_without_active_env(monkeypatch, tmp_
 def test_postprocess_maps_ssh_cache_path_without_active_env(monkeypatch, tmp_path):
     from tools import image_generation_tool
 
-    hermes_home = tmp_path / ".hermes"
-    image_dir = hermes_home / "cache" / "images"
+    agentic_os_home = tmp_path / ".hermes"
+    image_dir = agentic_os_home / "cache" / "images"
     image_dir.mkdir(parents=True)
     image_path = image_dir / "first-call.png"
     image_path.write_bytes(b"png")
 
-    monkeypatch.setenv("AGENTIC_OS_HOME", str(hermes_home))
+    monkeypatch.setenv("AGENTIC_OS_HOME", str(agentic_os_home))
     monkeypatch.setenv("TERMINAL_ENV", "ssh")
     monkeypatch.setattr(image_generation_tool, "_active_terminal_env", lambda task_id: None)
 
@@ -91,8 +91,8 @@ def test_postprocess_leaves_remote_image_urls_unchanged(monkeypatch):
 def test_handle_image_generate_postprocesses_plugin_result(monkeypatch, tmp_path):
     from tools import image_generation_tool
 
-    hermes_home = tmp_path / ".hermes"
-    image_dir = hermes_home / "cache" / "images"
+    agentic_os_home = tmp_path / ".hermes"
+    image_dir = agentic_os_home / "cache" / "images"
     image_dir.mkdir(parents=True)
     image_path = image_dir / "plugin.png"
     image_path.write_bytes(b"png")
@@ -105,7 +105,7 @@ def test_handle_image_generate_postprocesses_plugin_result(monkeypatch, tmp_path
         seen_task_ids.append(task_id)
         return env
 
-    monkeypatch.setenv("AGENTIC_OS_HOME", str(hermes_home))
+    monkeypatch.setenv("AGENTIC_OS_HOME", str(agentic_os_home))
     monkeypatch.setattr(image_generation_tool, "_active_terminal_env", fake_active_env)
     monkeypatch.setattr(
         image_generation_tool,

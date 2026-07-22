@@ -72,12 +72,12 @@ def _isolated_config(tmp_path, monkeypatch):
     and deterministic (no real provider creds / network)."""
     import gateway.run as gateway_run
 
-    hermes_home = tmp_path / ".hermes"
-    hermes_home.mkdir()
-    (hermes_home / "config.yaml").write_text("model:\n  default: gpt-x\n  provider: openrouter\nproviders: {}\n", encoding="utf-8")
-    monkeypatch.setattr(gateway_run, "_agentic_os_home", hermes_home)
+    agentic_os_home = tmp_path / ".hermes"
+    agentic_os_home.mkdir()
+    (agentic_os_home / "config.yaml").write_text("model:\n  default: gpt-x\n  provider: openrouter\nproviders: {}\n", encoding="utf-8")
+    monkeypatch.setattr(gateway_run, "_agentic_os_home", agentic_os_home)
     monkeypatch.setattr("agent.models_dev.fetch_models_dev", lambda: {})
-    return hermes_home
+    return agentic_os_home
 
 
 # --------------------------------------------------------------------------- #

@@ -176,10 +176,10 @@ def check_env_vars():
 
     # Load .env
     try:
-        from agentic_os_cli.env_loader import load_hermes_dotenv
+        from agentic_os_cli.env_loader import load_agentic_os_dotenv
 
-        load_hermes_dotenv(
-            hermes_home=ENV_FILE.parent,
+        load_agentic_os_dotenv(
+            agentic_os_home=ENV_FILE.parent,
             project_env=PROJECT_ROOT / ".env",
         )
     except ImportError:

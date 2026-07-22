@@ -293,7 +293,7 @@
         description = ''
           Paths to environment files containing secrets (API keys, tokens).
           Contents are merged into $AGENTIC_OS_HOME/.env at activation time.
-          Hermes reads this file on every startup via load_hermes_dotenv().
+          Hermes reads this file on every startup via load_agentic_os_dotenv().
         '';
       };
 
@@ -513,7 +513,7 @@
         description = ''
           Python packages to add to PYTHONPATH for entry-point plugin discovery.
           These are pip-packaged plugins that register via the
-          hermes_agent.plugins entry-point group. Each package must be built
+          agentic_os.plugins entry-point group. Each package must be built
           with the same Python interpreter as hermes (python312).
         '';
         example = literalExpression ''
@@ -828,7 +828,7 @@
           ''}
 
           # Seed .env from Nix-declared environment + environmentFiles.
-          # Hermes reads $AGENTIC_OS_HOME/.env at startup via load_hermes_dotenv(),
+          # Hermes reads $AGENTIC_OS_HOME/.env at startup via load_agentic_os_dotenv(),
           # so this is the single source of truth for both native and container mode.
           ${lib.optionalString (cfg.environment != {} || cfg.environmentFiles != []) ''
             ENV_FILE="${cfg.stateDir}/.hermes/.env"
@@ -891,7 +891,7 @@
             WorkingDirectory = cfg.workingDirectory;
 
             # cfg.environment and cfg.environmentFiles are written to
-            # $AGENTIC_OS_HOME/.env by the activation script. load_hermes_dotenv()
+            # $AGENTIC_OS_HOME/.env by the activation script. load_agentic_os_dotenv()
             # reads them at Python startup — no systemd EnvironmentFile needed.
 
             ExecStart = lib.concatStringsSep " " ([

@@ -347,7 +347,7 @@ class HostSupervisor:
         hello = self._hello
         if not hello:
             raise RuntimeError("compute host missing hello")
-        got_home = str(hello.get("hermes_home") or "")
+        got_home = str(hello.get("agentic_os_home") or "")
         if got_home and got_home != self.expected_agentic_os_home:
             raise RuntimeError(f"compute host AGENTIC_OS_HOME mismatch: {got_home} != {self.expected_agentic_os_home}")
         got_sha = str(hello.get("build_sha") or "")

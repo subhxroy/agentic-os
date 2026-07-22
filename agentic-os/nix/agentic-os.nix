@@ -182,7 +182,7 @@ stdenv.mkDerivation (finalAttrs: {
     ln -s ${bundledPlugins} $out/share/agentic-os/plugins
     ln -s ${bundledLocales} $out/share/agentic-os/locales
     ln -s ${hermesWeb} $out/share/agentic-os/web_dist
-    ln -s ${hermesTui}/lib/hermes-tui $out/ui-tui
+    ln -s ${hermesTui}/lib/agentic-os-tui $out/ui-tui
 
     ${lib.concatMapStringsSep "\n"
       (name: ''
@@ -236,14 +236,14 @@ stdenv.mkDerivation (finalAttrs: {
         hermesVenv
         ;
 
-      # `hermesDesktop` references `finalAttrs.finalPackage` (this whole
+      # `agenticOSDesktop` references `finalAttrs.finalPackage` (this whole
       # derivation, after all overrides are applied) so the desktop wrapper
       # can prepend its `/bin` to PATH.  The desktop's resolver step 4
       # ("existing hermes on PATH") then picks up the fully wrapped
       # `hermes` binary — venv with all deps, bundled skills/plugins,
       # runtime PATH (ripgrep/git/ffmpeg/etc).  No re-implementation
       # of the agent resolution in the desktop wrapper.
-      hermesDesktop = callPackage ./desktop.nix {
+      agenticOSDesktop = callPackage ./desktop.nix {
         inherit hermesNpmLib electron;
         hermesAgent = finalAttrs.finalPackage;
       };

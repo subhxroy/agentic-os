@@ -43,7 +43,7 @@ class MyMemoryProvider(MemoryProvider):
         """Called once at agent startup.
 
         kwargs always includes:
-          hermes_home (str): Active AGENTIC_OS_HOME path. Use for storage.
+          agentic_os_home (str): Active AGENTIC_OS_HOME path. Use for storage.
         """
         self._api_key = os.environ.get("MY_API_KEY", "")
         self._session_id = session_id
@@ -68,7 +68,7 @@ class MyMemoryProvider(MemoryProvider):
 | Method | Purpose | Must Implement? |
 |--------|---------|-----------------|
 | `get_config_schema()` | Declare config fields for `hermes memory setup` | **Yes** |
-| `save_config(values, hermes_home)` | Write non-secret config to native location | **Yes** (unless env-var-only) |
+| `save_config(values, agentic_os_home)` | Write non-secret config to native location | **Yes** (unless env-var-only) |
 
 ### Optional Hooks
 
@@ -121,11 +121,11 @@ Every field in `get_config_schema()` is prompted during `hermes memory setup`. P
 ## Save Config
 
 ```python
-def save_config(self, values: dict, hermes_home: str) -> None:
+def save_config(self, values: dict, agentic_os_home: str) -> None:
     """Write non-secret config to your native location."""
     import json
     from pathlib import Path
-    config_path = Path(hermes_home) / "my-provider.json"
+    config_path = Path(agentic_os_home) / "my-provider.json"
     config_path.write_text(json.dumps(values, indent=2))
 ```
 
@@ -179,7 +179,7 @@ workspace data.
 
 ## Profile Isolation
 
-All storage paths **must** use the `hermes_home` kwarg from `initialize()`, not hardcoded `~/.agentic-os`:
+All storage paths **must** use the `agentic_os_home` kwarg from `initialize()`, not hardcoded `~/.agentic-os`:
 
 ```python
 # CORRECT — profile-scoped

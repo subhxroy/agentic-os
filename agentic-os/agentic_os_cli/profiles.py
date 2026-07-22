@@ -947,7 +947,7 @@ def list_profiles() -> List[ProfileInfo]:
 
 
 def profiles_to_serve(multiplex: bool) -> List[Tuple[str, Path]]:
-    """Return the ``(profile_name, hermes_home)`` pairs a gateway should serve.
+    """Return the ``(profile_name, agentic_os_home)`` pairs a gateway should serve.
 
     This is the single chokepoint for "which profiles does the inbound gateway
     handle" so later multiplexing phases never re-derive the set.
@@ -963,7 +963,7 @@ def profiles_to_serve(multiplex: bool) -> List[Tuple[str, Path]]:
     per-profile config reads, gateway-running probes, or skill counts like
     :func:`list_profiles`. It runs on gateway startup and must stay cheap.
 
-    The returned ``hermes_home`` is the path to pass to
+    The returned ``agentic_os_home`` is the path to pass to
     ``set_AGENTIC_OS_HOME_OVERRIDE`` when scoping a turn to that profile.
     """
     active = get_active_profile_name() or "default"
@@ -1837,8 +1837,8 @@ def get_active_profile_name() -> str:
     Returns ``"custom"`` if AGENTIC_OS_HOME is set to an unrecognized path.
     """
     from agentic_os_constants import get_agentic_os_home
-    hermes_home = get_agentic_os_home()
-    resolved = hermes_home.resolve()
+    agentic_os_home = get_agentic_os_home()
+    resolved = agentic_os_home.resolve()
 
     default_resolved = _get_default_agentic_os_home().resolve()
     if resolved == default_resolved:

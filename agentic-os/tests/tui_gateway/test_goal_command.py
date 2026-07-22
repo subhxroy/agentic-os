@@ -19,7 +19,7 @@ import pytest
 
 
 @pytest.fixture()
-def hermes_home(tmp_path, monkeypatch):
+def agentic_os_home(tmp_path, monkeypatch):
     home = tmp_path / ".hermes"
     home.mkdir()
     monkeypatch.setattr(Path, "home", lambda: tmp_path)
@@ -34,7 +34,7 @@ def hermes_home(tmp_path, monkeypatch):
 
 
 @pytest.fixture()
-def server(hermes_home):
+def server(agentic_os_home):
     with patch.dict(
         "sys.modules",
         {
@@ -211,8 +211,8 @@ def _write_moa_config(home, text):
     cfg_path.write_text(text)
 
 
-def test_moa_bare_returns_usage(server, session, hermes_home):
-    _write_moa_config(hermes_home, """
+def test_moa_bare_returns_usage(server, session, agentic_os_home):
+    _write_moa_config(agentic_os_home, """
 moa:
   default_preset: default
   presets:
@@ -231,10 +231,10 @@ moa:
     assert "model_override" not in s
 
 
-def test_moa_arg_is_always_one_shot(server, session, hermes_home):
+def test_moa_arg_is_always_one_shot(server, session, agentic_os_home):
     # Any arg (even a preset name) is a one-shot prompt through the DEFAULT
     # preset; /moa never does a sticky switch anymore.
-    _write_moa_config(hermes_home, """
+    _write_moa_config(agentic_os_home, """
 moa:
   default_preset: default
   presets:
@@ -259,8 +259,8 @@ moa:
     assert s["model_override"]["model"] == "default"
 
 
-def test_moa_non_preset_returns_one_shot_send(server, session, hermes_home):
-    _write_moa_config(hermes_home, """
+def test_moa_non_preset_returns_one_shot_send(server, session, agentic_os_home):
+    _write_moa_config(agentic_os_home, """
 moa:
   default_preset: default
   presets:

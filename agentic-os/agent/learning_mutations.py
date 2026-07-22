@@ -2,7 +2,7 @@
 
 The journey graph (``agent.learning_graph``) gives every node a stable id:
 
-- **skills** → the skill name (e.g. ``"debugging-hermes-desktop"``)
+- **skills** → the skill name (e.g. ``"debugging-agentic-os-desktop"``)
 - **memories** → ``memory:<source>:<index>`` where ``source`` is ``memory``
   (``MEMORY.md``) or ``profile`` (``USER.md``) and ``index`` is the node's
   position in the combined card list (``MEMORY.md`` cards first, then

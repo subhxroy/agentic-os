@@ -5,7 +5,7 @@ from unittest.mock import patch
 
 import pytest
 
-from agentic_os_cli import config as hermes_config
+from agentic_os_cli import config as agentic_os_config
 from agentic_os_cli import main as hermes_main
 
 
@@ -389,10 +389,10 @@ def _setup_update_mocks(monkeypatch, tmp_path):
     monkeypatch.setattr(hermes_main, "PROJECT_ROOT", tmp_path)
     monkeypatch.setattr(hermes_main, "_stash_local_changes_if_needed", lambda *a, **kw: None)
     monkeypatch.setattr(hermes_main, "_restore_stashed_changes", lambda *a, **kw: True)
-    monkeypatch.setattr(hermes_config, "get_missing_env_vars", lambda required_only=True: [])
-    monkeypatch.setattr(hermes_config, "get_missing_config_fields", lambda: [])
-    monkeypatch.setattr(hermes_config, "check_config_version", lambda: (5, 5))
-    monkeypatch.setattr(hermes_config, "migrate_config", lambda **kw: {"env_added": [], "config_added": []})
+    monkeypatch.setattr(agentic_os_config, "get_missing_env_vars", lambda required_only=True: [])
+    monkeypatch.setattr(agentic_os_config, "get_missing_config_fields", lambda: [])
+    monkeypatch.setattr(agentic_os_config, "check_config_version", lambda: (5, 5))
+    monkeypatch.setattr(agentic_os_config, "migrate_config", lambda **kw: {"env_added": [], "config_added": []})
     monkeypatch.setattr(hermes_main, "_refresh_active_lazy_features", lambda: None)
 
 
@@ -801,7 +801,7 @@ def _setup_setting_test(monkeypatch, tmp_path, mode):
         lambda *a, **kw: discard_calls.append(1) or True,
     )
     monkeypatch.setattr(
-        hermes_config, "load_config",
+        agentic_os_config, "load_config",
         lambda *a, **kw: {"updates": {"non_interactive_local_changes": mode}},
     )
     side_effect, recorded = _make_update_side_effect()
@@ -848,7 +848,7 @@ def test_non_interactive_defaults_to_stash_when_setting_absent(monkeypatch, tmp_
     """A config with no update section falls back to stash (safe default)."""
     restore_calls, discard_calls, _ = _setup_setting_test(monkeypatch, tmp_path, "stash")
     # Override load_config to return a config with NO update section at all.
-    monkeypatch.setattr(hermes_config, "load_config", lambda *a, **kw: {"model": {}})
+    monkeypatch.setattr(agentic_os_config, "load_config", lambda *a, **kw: {"model": {}})
 
     hermes_main.cmd_update(SimpleNamespace(gateway=True))
 

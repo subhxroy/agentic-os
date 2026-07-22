@@ -22,7 +22,7 @@ vi.mock('@/hermes', () => ({
   getHermesConfigDefaults: vi.fn().mockResolvedValue({})
 }))
 
-const WORKSPACE_CWD_KEY = 'hermes.desktop.workspace-cwd'
+const WORKSPACE_CWD_KEY = 'agentic-os.desktop.workspace-cwd'
 
 function deferred<T>() {
   let resolve!: (value: T | PromiseLike<T>) => void

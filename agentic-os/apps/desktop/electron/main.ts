@@ -171,7 +171,7 @@ import { isPackagedInstallPath as isPackagedInstallPathUnderRoots } from './work
 import { readWslWindowsClipboardImage } from './wsl-clipboard-image'
 import { resolvePickerDefaultPath } from './wsl-path-bridge'
 
-const USER_DATA_OVERRIDE = process.env.HERMES_DESKTOP_USER_DATA_DIR
+const USER_DATA_OVERRIDE = process.env.AGENTIC_OS_DESKTOP_USER_DATA_DIR
 
 if (USER_DATA_OVERRIDE) {
   const resolvedUserData = path.resolve(USER_DATA_OVERRIDE)
@@ -179,8 +179,8 @@ if (USER_DATA_OVERRIDE) {
   app.setPath('userData', resolvedUserData)
 }
 
-const DEV_SERVER = process.env.HERMES_DESKTOP_DEV_SERVER
-const IS_PACKAGED = app.isPackaged || Boolean(process.env.HERMES_DESKTOP_IS_PACKAGED)
+const DEV_SERVER = process.env.AGENTIC_OS_DESKTOP_DEV_SERVER
+const IS_PACKAGED = app.isPackaged || Boolean(process.env.AGENTIC_OS_DESKTOP_IS_PACKAGED)
 const IS_MAC = process.platform === 'darwin'
 const IS_WINDOWS = process.platform === 'win32'
 const IS_WSL = isWslEnvironment()
@@ -201,7 +201,7 @@ const PRELOAD_PATH = path.join(APP_ROOT, 'dist', 'electron-preload.js')
 // GPU and never see it. Fall back to software rendering when a remote display
 // is detected; it's rock-steady over the wire and the CPU cost is negligible
 // next to the connection's latency. Must run before app `ready` — these
-// switches only apply pre-launch. Override with HERMES_DESKTOP_DISABLE_GPU
+// switches only apply pre-launch. Override with AGENTIC_OS_DESKTOP_DISABLE_GPU
 // (1/true → always disable, 0/false → keep GPU on).
 const REMOTE_DISPLAY_REASON = detectRemoteDisplay()
 
@@ -427,7 +427,7 @@ if (INSTALL_STAMP) {
 // %LOCALAPPDATA%\agentic-os yet, prefer the legacy path so we don't orphan their
 // existing config / sessions / .env. New installs go to %LOCALAPPDATA%.
 //
-// HERMES_DESKTOP_USER_DATA_DIR (used by test:desktop:fresh) puts the sandbox
+// AGENTIC_OS_DESKTOP_USER_DATA_DIR (used by test:desktop:fresh) puts the sandbox
 // AGENTIC_OS_HOME beneath the throwaway userData dir so a fresh-install run never
 // touches the user's real ~/.agentic-os / %LOCALAPPDATA%\agentic-os.
 function resolveHermesHome() {
@@ -521,7 +521,7 @@ const DESKTOP_PROFILE_CONFIG_PATH = path.join(app.getPath('userData'), 'active-p
 const PROFILE_NAME_RE = /^[a-z0-9][a-z0-9_-]{0,63}$/
 // Branch we track for self-update. The GUI work has merged to main, so this
 // tracks main. User can also override at runtime via
-// hermesDesktop.updates.setBranch().
+// agenticOSDesktop.updates.setBranch().
 const DEFAULT_UPDATE_BRANCH = 'main'
 // desktop.log lives under AGENTIC_OS_HOME/logs/ so it sits next to agent.log,
 // errors.log, gateway.log produced by agentic_os_logging.setup_logging — one log
@@ -548,11 +548,11 @@ const DESKTOP_LOG_MAX_BYTES = 10 * 1024 * 1024
 const DESKTOP_LOG_BACKUP_COUNT = 3
 const DESKTOP_LOG_DISCARD_BYTES = DESKTOP_LOG_MAX_BYTES * 4
 const desktopLogBackupPath = n => `${DESKTOP_LOG_PATH}.${n}`
-const BOOT_FAKE_MODE = process.env.HERMES_DESKTOP_BOOT_FAKE === '1'
-const BOOT_FAKE_ERROR = process.env.HERMES_DESKTOP_BOOT_FAKE_ERROR || ''
+const BOOT_FAKE_MODE = process.env.AGENTIC_OS_DESKTOP_BOOT_FAKE === '1'
+const BOOT_FAKE_ERROR = process.env.AGENTIC_OS_DESKTOP_BOOT_FAKE_ERROR || ''
 
 const BOOT_FAKE_STEP_MS = (() => {
-  const raw = Number.parseInt(String(process.env.HERMES_DESKTOP_BOOT_FAKE_STEP_MS || ''), 10)
+  const raw = Number.parseInt(String(process.env.AGENTIC_OS_DESKTOP_BOOT_FAKE_STEP_MS || ''), 10)
 
   if (!Number.isFinite(raw) || raw <= 0) {
     return 650
@@ -561,7 +561,7 @@ const BOOT_FAKE_STEP_MS = (() => {
   return Math.max(120, raw)
 })()
 
-const APP_NAME = process.env.HERMES_DESKTOP_APP_NAME || 'Hermes'
+const APP_NAME = process.env.AGENTIC_OS_DESKTOP_APP_NAME || 'Agentic OS'
 const TITLEBAR_HEIGHT = 34
 const MACOS_TRAFFIC_LIGHTS_HEIGHT = 14
 
@@ -953,8 +953,8 @@ const backendPool = new Map() // profile -> { process, port, token, connectionPr
 // Keep the pool light: cap concurrent profile backends (LRU eviction) and reap
 // idle ones. A user idles at exactly the primary backend; pool backends only
 // exist while a non-primary profile is actively being chatted through.
-const POOL_MAX_BACKENDS = Math.max(1, Number(process.env.HERMES_DESKTOP_POOL_MAX) || 3)
-const POOL_IDLE_MS = Math.max(60_000, Number(process.env.HERMES_DESKTOP_POOL_IDLE_MS) || 10 * 60_000)
+const POOL_MAX_BACKENDS = Math.max(1, Number(process.env.AGENTIC_OS_DESKTOP_POOL_MAX) || 3)
+const POOL_IDLE_MS = Math.max(60_000, Number(process.env.AGENTIC_OS_DESKTOP_POOL_IDLE_MS) || 10 * 60_000)
 // A backend touched within this window has a live renderer socket (the keepalive
 // pings every 60s for every open profile). LRU eviction must spare these — a
 // concurrent multi-profile session keeps several backends "fresh" at once, and
@@ -1596,7 +1596,7 @@ function unwrapWindowsVenvHermesCommand(command, backendArgs) {
     getVenvPython,
     getVenvSitePackagesEntries,
     buildDesktopBackendEnv,
-    hermesHome: AGENTIC_OS_HOME,
+    agenticOSHome: AGENTIC_OS_HOME,
     resolvePath: (...segments) => path.resolve(...segments),
     dirname: p => path.dirname(p),
     basename: p => path.basename(p),
@@ -1717,7 +1717,7 @@ function isHermesSourceRoot(root) {
 }
 
 function findPythonForRoot(root) {
-  const override = process.env.HERMES_DESKTOP_PYTHON
+  const override = process.env.AGENTIC_OS_DESKTOP_PYTHON
 
   if (override && fileExists(override)) {
     return override
@@ -2116,10 +2116,10 @@ function writeZoomState(zoomLevel) {
 
 // Match the backend's source resolution but bias toward a real git checkout.
 // Dev → SOURCE_REPO_ROOT. Packaged/CLI install → ACTIVE_AGENTIC_ROOT.
-// HERMES_DESKTOP_AGENTIC_ROOT always wins so devs can pin a worktree.
+// AGENTIC_OS_DESKTOP_AGENTIC_ROOT always wins so devs can pin a worktree.
 function resolveUpdateRoot() {
   const candidates = [
-    process.env.HERMES_DESKTOP_AGENTIC_ROOT && path.resolve(process.env.HERMES_DESKTOP_AGENTIC_ROOT),
+    process.env.AGENTIC_OS_DESKTOP_AGENTIC_ROOT && path.resolve(process.env.AGENTIC_OS_DESKTOP_AGENTIC_ROOT),
     !IS_PACKAGED && isHermesSourceRoot(SOURCE_REPO_ROOT) ? SOURCE_REPO_ROOT : null,
     isHermesSourceRoot(ACTIVE_AGENTIC_ROOT) ? ACTIVE_AGENTIC_ROOT : null
   ].filter(Boolean)
@@ -2886,7 +2886,7 @@ async function applyUpdatesPosixInApp(opts: any) {
   // mid-update produces the boot→kill→crash loop in #37532 — the desktop
   // already restarts its own backend via the rebuild+relaunch below, so the
   // reap must spare it. Hand the live backend's PID to the update process;
-  // _kill_stale_dashboard_processes reads HERMES_DESKTOP_CHILD_PID and excludes
+  // _kill_stale_dashboard_processes reads AGENTIC_OS_DESKTOP_CHILD_PID and excludes
   // it while still reaping any genuinely-orphaned backends. (#37532)
   // Exclude every desktop-managed backend (primary + all pool profiles) from
   // the update reaper. _kill_stale_dashboard_processes accepts a comma-separated
@@ -2905,7 +2905,7 @@ async function applyUpdatesPosixInApp(opts: any) {
   }
 
   if (desktopChildPids.length) {
-    env.HERMES_DESKTOP_CHILD_PID = desktopChildPids.join(',')
+    env.AGENTIC_OS_DESKTOP_CHILD_PID = desktopChildPids.join(',')
   }
 
   // Branch-pin so a non-main checkout doesn't get switched to main (and self-heal
@@ -3016,7 +3016,7 @@ async function applyUpdatesPosixInApp(opts: any) {
         cwd: process.cwd()
       })
 
-      const scriptPath = path.join(app.getPath('temp'), `hermes-desktop-update-${Date.now()}.sh`)
+      const scriptPath = path.join(app.getPath('temp'), `agentic-os-desktop-update-${Date.now()}.sh`)
 
       try {
         fs.writeFileSync(scriptPath, relaunchScript, { mode: 0o755 })
@@ -3122,7 +3122,7 @@ fi
 /usr/bin/open "$DST"
 `
 
-  const scriptPath = path.join(app.getPath('temp'), `hermes-desktop-update-${Date.now()}.sh`)
+  const scriptPath = path.join(app.getPath('temp'), `agentic-os-desktop-update-${Date.now()}.sh`)
 
   try {
     fs.writeFileSync(scriptPath, swapScript, { mode: 0o755 })
@@ -3234,7 +3234,7 @@ function writeBootstrapMarker(payload) {
 }
 
 function resolveWebDist() {
-  const override = process.env.HERMES_DESKTOP_WEB_DIST
+  const override = process.env.AGENTIC_OS_DESKTOP_WEB_DIST
 
   if (override && directoryExists(path.resolve(override))) {
     return path.resolve(override)
@@ -3258,7 +3258,7 @@ function resolveWebDist() {
     rememberLog(
       `[web-dist] dashboard frontend dir resolved to an asar-internal path that ` +
         `is not a real directory: ${fallback}. Static routes will 404. ` +
-        `Ensure dist/** is unpacked (asarUnpack) or set HERMES_DESKTOP_WEB_DIST.`
+        `Ensure dist/** is unpacked (asarUnpack) or set AGENTIC_OS_DESKTOP_WEB_DIST.`
     )
   }
 
@@ -3310,7 +3310,7 @@ function resolveHermesCwd() {
   // real directory), then the home dir.
   const candidates = [
     readDefaultProjectDir(),
-    process.env.HERMES_DESKTOP_CWD,
+    process.env.AGENTIC_OS_DESKTOP_CWD,
     IS_PACKAGED ? null : process.env.INIT_CWD,
     IS_PACKAGED ? null : process.cwd(),
     !IS_PACKAGED ? SOURCE_REPO_ROOT : null,
@@ -3415,7 +3415,7 @@ function createPythonBackend(root, label, backendArgs, options: any = {}) {
     command,
     args: ['-m', 'agentic_os_cli.main', ...backendArgs],
     env: buildDesktopBackendEnv({
-      hermesHome: AGENTIC_OS_HOME,
+      agenticOSHome: AGENTIC_OS_HOME,
       pythonPathEntries: [root, ...getVenvSitePackagesEntries(venvRoot)],
       venvRoot
     }),
@@ -3439,7 +3439,7 @@ function createActiveBackend(backendArgs) {
     command,
     args: ['-m', 'agentic_os_cli.main', ...backendArgs],
     env: buildDesktopBackendEnv({
-      hermesHome: AGENTIC_OS_HOME,
+      agenticOSHome: AGENTIC_OS_HOME,
       pythonPathEntries: [ACTIVE_AGENTIC_ROOT, ...getVenvSitePackagesEntries(VENV_ROOT)],
       venvRoot: VENV_ROOT
     }),
@@ -3450,9 +3450,9 @@ function createActiveBackend(backendArgs) {
 }
 
 function resolveHermesBackend(backendArgs) {
-  // 1. Explicit override -- HERMES_DESKTOP_AGENTIC_ROOT points at a developer
+  // 1. Explicit override -- AGENTIC_OS_DESKTOP_AGENTIC_ROOT points at a developer
   //    checkout. Honour it as-is (no bootstrap; the user is driving).
-  const overrideRoot = process.env.HERMES_DESKTOP_AGENTIC_ROOT && path.resolve(process.env.HERMES_DESKTOP_AGENTIC_ROOT)
+  const overrideRoot = process.env.AGENTIC_OS_DESKTOP_AGENTIC_ROOT && path.resolve(process.env.AGENTIC_OS_DESKTOP_AGENTIC_ROOT)
 
   if (overrideRoot && isHermesSourceRoot(overrideRoot)) {
     const backend = createPythonBackend(overrideRoot, `Hermes source at ${overrideRoot}`, backendArgs)
@@ -3488,10 +3488,10 @@ function resolveHermesBackend(backendArgs) {
   //    a previous tool-only setup, or pip-installed system-wide. Use it but
   //    do NOT write a bootstrap marker; the user did this themselves and we
   //    don't want to take ownership of an install we didn't perform.
-  //    HERMES_DESKTOP_IGNORE_EXISTING=1 forces the bootstrap path for testing.
-  if (process.env.HERMES_DESKTOP_IGNORE_EXISTING !== '1') {
+  //    AGENTIC_OS_DESKTOP_IGNORE_EXISTING=1 forces the bootstrap path for testing.
+  if (process.env.AGENTIC_OS_DESKTOP_IGNORE_EXISTING !== '1') {
     let hermesCommand = null
-    const hermesOverride = process.env.HERMES_DESKTOP_HERMES
+    const hermesOverride = process.env.AGENTIC_OS_DESKTOP_HERMES
 
     if (hermesOverride) {
       const resolvedOverride = findOnPath(hermesOverride)
@@ -3657,7 +3657,7 @@ async function ensureRuntime(backend) {
       installStamp: backend.installStamp,
       activeRoot: backend.activeRoot,
       sourceRepoRoot: SOURCE_REPO_ROOT,
-      hermesHome: AGENTIC_OS_HOME,
+      agenticOSHome: AGENTIC_OS_HOME,
       logRoot: path.join(AGENTIC_OS_HOME, 'logs'),
       abortSignal: bootstrapAbortController.signal,
       onEvent: ev => {
@@ -6175,11 +6175,11 @@ async function sanitizeDesktopConnectionConfig(config = readDesktopConnectionCon
   const scoped = key ? config.profiles?.[key] || null : null
   const block = key ? scoped || {} : config.remote || {}
 
-  const envOverride = key ? false : Boolean(process.env.HERMES_DESKTOP_REMOTE_URL)
+  const envOverride = key ? false : Boolean(process.env.AGENTIC_OS_DESKTOP_REMOTE_URL)
 
   const remoteToken = decryptDesktopSecret(block.token)
   const authMode = normAuthMode(block.authMode)
-  const remoteUrl = envOverride ? String(process.env.HERMES_DESKTOP_REMOTE_URL || '') : String(block.url || '')
+  const remoteUrl = envOverride ? String(process.env.AGENTIC_OS_DESKTOP_REMOTE_URL || '') : String(block.url || '')
   // The env override forces a plain remote connection. Otherwise reflect the
   // saved mode, preserving 'cloud' (a Hermes Cloud connection — Q6) so the UI
   // reopens into the cloud picker; any non-remote-like value collapses to local.
@@ -6213,7 +6213,7 @@ async function sanitizeDesktopConnectionConfig(config = readDesktopConnectionCon
     remoteTokenPreview: tokenPreview(remoteToken),
     remoteTokenSet: Boolean(remoteToken),
     // The env override only forces the global/primary connection; a per-profile
-    // scope is never overridden by HERMES_DESKTOP_REMOTE_URL.
+    // scope is never overridden by AGENTIC_OS_DESKTOP_REMOTE_URL.
     envOverride
   }
 }
@@ -6376,7 +6376,7 @@ async function buildRemoteConnection(rawUrl, authMode, token, source) {
 // Resolve the remote backend for a given profile, or null when that profile
 // should run a LOCAL backend. Precedence:
 //   1. explicit per-profile remote override (connection.json `profiles[name]`)
-//   2. env override (HERMES_DESKTOP_REMOTE_URL/_TOKEN) — applies app-wide
+//   2. env override (AGENTIC_OS_DESKTOP_REMOTE_URL/_TOKEN) — applies app-wide
 //   3. global remote (connection.json `mode: 'remote'`)
 // A null/empty profile resolves the env/global remote, so legacy callers and
 // the connection test (which pass no profile) are unchanged.
@@ -6395,13 +6395,13 @@ async function resolveRemoteBackend(profile) {
   }
 
   // 2. Env override (global, token-auth only).
-  const rawEnvUrl = process.env.HERMES_DESKTOP_REMOTE_URL
-  const rawEnvToken = process.env.HERMES_DESKTOP_REMOTE_TOKEN
+  const rawEnvUrl = process.env.AGENTIC_OS_DESKTOP_REMOTE_URL
+  const rawEnvToken = process.env.AGENTIC_OS_DESKTOP_REMOTE_TOKEN
 
   if (rawEnvUrl) {
     if (!rawEnvToken) {
       throw new Error(
-        'HERMES_DESKTOP_REMOTE_URL is set but HERMES_DESKTOP_REMOTE_TOKEN is not. ' +
+        'AGENTIC_OS_DESKTOP_REMOTE_URL is set but AGENTIC_OS_DESKTOP_REMOTE_TOKEN is not. ' +
           'Both must be provided to connect to a remote Hermes backend.'
       )
     }
@@ -6439,7 +6439,7 @@ function configuredRemoteProfileNames() {
 // profile via ?profile=. Cloud counts — it resolves to a remote backend (Q6).
 // Distinct from per-profile overrides — here there's one host for all.
 function globalRemoteActive() {
-  if (process.env.HERMES_DESKTOP_REMOTE_URL) {
+  if (process.env.AGENTIC_OS_DESKTOP_REMOTE_URL) {
     return true
   }
 
@@ -6866,7 +6866,7 @@ async function spawnPoolBackend(profile, entry) {
         // scheduler tick loop (the gateway isn't running under the app).
         HERMES_DESKTOP: '1',
         HERMES_WEB_DIST: webDist,
-        ...(readyFile ? { HERMES_DESKTOP_READY_FILE: readyFile } : {})
+        ...(readyFile ? { AGENTIC_OS_DESKTOP_READY_FILE: readyFile } : {})
       },
       shell: backend.shell,
       stdio: ['ignore', 'pipe', 'pipe']
@@ -7126,7 +7126,7 @@ async function startHermes() {
           // scheduler tick loop (the gateway isn't running under the app).
           HERMES_DESKTOP: '1',
           HERMES_WEB_DIST: webDist,
-          ...(readyFile ? { HERMES_DESKTOP_READY_FILE: readyFile } : {})
+          ...(readyFile ? { AGENTIC_OS_DESKTOP_READY_FILE: readyFile } : {})
         },
         shell: backend.shell,
         stdio: ['ignore', 'pipe', 'pipe']
@@ -7351,7 +7351,7 @@ function spawnSecondaryWindow({ sessionId, watch }: { sessionId?: string; watch?
     height: SESSION_WINDOW_MIN_HEIGHT,
     minWidth: SESSION_WINDOW_MIN_WIDTH,
     minHeight: SESSION_WINDOW_MIN_HEIGHT,
-    title: 'Hermes',
+    title: 'Agentic OS',
     titleBarStyle: 'hidden',
     titleBarOverlay: getTitleBarOverlayOptions(),
     trafficLightPosition: IS_MAC ? WINDOW_BUTTON_POSITION : undefined,
@@ -7434,7 +7434,7 @@ function createInstanceWindow() {
     ...nextInstanceBounds(),
     minWidth: WINDOW_MIN_WIDTH,
     minHeight: WINDOW_MIN_HEIGHT,
-    title: 'Hermes',
+    title: 'Agentic OS',
     titleBarStyle: 'hidden',
     titleBarOverlay: getTitleBarOverlayOptions(),
     trafficLightPosition: IS_MAC ? WINDOW_BUTTON_POSITION : undefined,
@@ -7626,7 +7626,7 @@ function createWindow() {
     ...computeWindowOptions(savedWindowState, screen.getAllDisplays()),
     minWidth: WINDOW_MIN_WIDTH,
     minHeight: WINDOW_MIN_HEIGHT,
-    title: 'Hermes',
+    title: 'Agentic OS',
     // Frameless title bar on every platform so the renderer can paint the
     // "hide sidebar" button (and other left-side titlebar tools) flush with
     // the top edge — matching the macOS layout where the traffic lights sit
@@ -8534,7 +8534,7 @@ ipcMain.handle('hermes:notify', (_event, payload) => {
   const actions = Array.isArray(payload?.actions) ? payload.actions : []
 
   const notification = new Notification({
-    title: payload?.title || 'Hermes',
+    title: payload?.title || 'Agentic OS',
     body: payload?.body || '',
     silent: Boolean(payload?.silent),
     actions: actions.map(action => ({ type: 'button', text: String(action?.text || '') }))
@@ -8897,11 +8897,11 @@ function windowsShellSpec() {
 // Resolve the interactive shell for the embedded terminal: an explicit user
 // override wins, otherwise auto-detect the best one installed for the platform.
 function terminalShellCommand() {
-  // HERMES_DESKTOP_SHELL is the cross-platform escape hatch (a path or a bare
+  // AGENTIC_OS_DESKTOP_SHELL is the cross-platform escape hatch (a path or a bare
   // name on PATH); $SHELL is honored on POSIX, where it's the user's canonical
   // choice, but ignored on Windows, where it's usually a stray MSYS/Git path
   // node-pty can't spawn natively.
-  const override = (process.env.HERMES_DESKTOP_SHELL || (IS_WINDOWS ? '' : process.env.SHELL) || '').trim()
+  const override = (process.env.AGENTIC_OS_DESKTOP_SHELL || (IS_WINDOWS ? '' : process.env.SHELL) || '').trim()
 
   if (override) {
     const resolved = isExecutableFile(override) ? override : findOnPath(override)
@@ -8954,13 +8954,13 @@ function terminalShellEnv() {
   env.COLORTERM = 'truecolor'
   env.LC_CTYPE = env.LC_CTYPE || 'UTF-8'
   env.TERM = 'xterm-256color'
-  env.TERM_PROGRAM = 'Hermes'
+  env.TERM_PROGRAM = 'Agentic OS'
   env.TERM_PROGRAM_VERSION = app.getVersion()
 
   // Let a hermes/--tui launched in this pane know it's embedded in the desktop
   // GUI (build_environment_hints surfaces this). Distinct from HERMES_DESKTOP,
   // which marks the agent *backend* and gates cron/gateway behavior.
-  env.HERMES_DESKTOP_TERMINAL = '1'
+  env.AGENTIC_OS_DESKTOP_TERMINAL = '1'
 
   return env
 }
@@ -9419,7 +9419,7 @@ async function getUninstallSummary() {
   // Fast JS-side fallback used when the agent venv is gone (lite client) or the
   // probe fails — the renderer still needs *something* to render options from.
   const fallback = () => ({
-    hermes_home: AGENTIC_OS_HOME,
+    agentic_os_home: AGENTIC_OS_HOME,
     agent_installed: isHermesSourceRoot(agentRoot) && fileExists(py),
     gui_installed: true,
     source_built_artifacts: [],
@@ -9553,7 +9553,7 @@ async function runDesktopUninstall(mode) {
     agentRoot: ACTIVE_AGENTIC_ROOT,
     uninstallArgs,
     appPath: removeBundle,
-    hermesHome: AGENTIC_OS_HOME
+    agenticOSHome: AGENTIC_OS_HOME
   }
 
   let scriptPath

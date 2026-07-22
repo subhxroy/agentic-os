@@ -85,9 +85,9 @@ class TestMcpEndpoints:
         assert response.json()["auth"] == "header"
         assert "bearer_token" not in response.json()
 
-        hermes_home = get_agentic_os_home()
-        config_text = (hermes_home / "config.yaml").read_text()
-        env_text = (hermes_home / ".env").read_text()
+        agentic_os_home = get_agentic_os_home()
+        config_text = (agentic_os_home / "config.yaml").read_text()
+        env_text = (agentic_os_home / ".env").read_text()
         assert secret not in config_text
         assert "Bearer ${MCP_BEARER_SERVER_API_KEY}" in config_text
         assert f"MCP_BEARER_SERVER_API_KEY={secret}" in env_text

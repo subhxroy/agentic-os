@@ -320,15 +320,15 @@ class TestOneTurnNeverPersisted:
         from gateway.run import GatewayRunner
         from agentic_os_cli.model_switch import ModelSwitchResult
 
-        hermes_home = tmp_path / ".hermes"
-        hermes_home.mkdir()
-        (hermes_home / "config.yaml").write_text(
+        agentic_os_home = tmp_path / ".hermes"
+        agentic_os_home.mkdir()
+        (agentic_os_home / "config.yaml").write_text(
             _yaml.safe_dump(
                 {"model": {"default": "old-model", "provider": "openrouter"}}
             ),
             encoding="utf-8",
         )
-        monkeypatch.setattr(gateway_run, "_agentic_os_home", hermes_home)
+        monkeypatch.setattr(gateway_run, "_agentic_os_home", agentic_os_home)
         monkeypatch.setattr("agent.models_dev.fetch_models_dev", lambda: {})
         monkeypatch.setattr(
             "agentic_os_cli.model_switch.switch_model",
@@ -343,8 +343,8 @@ class TestOneTurnNeverPersisted:
                 provider_label="OpenRouter",
             ),
         )
-        monkeypatch.setattr("agentic_os_constants.get_agentic_os_home", lambda: hermes_home)
-        monkeypatch.setattr("agentic_os_cli.config.get_agentic_os_home", lambda: hermes_home)
+        monkeypatch.setattr("agentic_os_constants.get_agentic_os_home", lambda: agentic_os_home)
+        monkeypatch.setattr("agentic_os_cli.config.get_agentic_os_home", lambda: agentic_os_home)
 
         runner = object.__new__(GatewayRunner)
         runner.adapters = {}

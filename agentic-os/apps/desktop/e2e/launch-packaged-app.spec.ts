@@ -36,7 +36,7 @@ test.afterAll(async () => {
 
 test('window opens with the Hermes title', async () => {
   const title = await fixture!.page.title()
-  expect(title).toContain('Hermes')
+  expect(title).toContain('Agentic OS')
 })
 
 test('renderer loads and shows DOM content', async () => {

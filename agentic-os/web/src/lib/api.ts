@@ -1,4 +1,4 @@
-import { buildHermesWebSocketUrl } from "@hermes/shared";
+import { buildHermesWebSocketUrl } from "@agentic-os/shared";
 
 // The dashboard can be served either at the root of its host (e.g.
 // https://kanban.tilos.com/) or under a URL prefix when reverse-proxied
@@ -1816,7 +1816,7 @@ export interface StatusResponse {
   gateway_running: boolean;
   gateway_state: string | null;
   gateway_updated_at: string | null;
-  hermes_home: string;
+  agentic_os_home: string;
   latest_config_version: number;
   release_date: string;
   version: string;
@@ -2138,7 +2138,7 @@ export interface CronJob {
   id: string;
   profile?: string | null;
   profile_name?: string | null;
-  hermes_home?: string | null;
+  agentic_os_home?: string | null;
   is_default_profile?: boolean;
   name?: string | null;
   prompt?: string | null;

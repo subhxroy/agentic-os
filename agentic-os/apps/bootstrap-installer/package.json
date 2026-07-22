@@ -1,5 +1,5 @@
 {
-  "name": "@hermes/bootstrap-installer",
+  "name": "@agentic-os/bootstrap-installer",
   "private": true,
   "version": "0.0.1",
   "description": "Hermes Setup — signed installer that drives scripts/install.ps1 with a polished native UI.",

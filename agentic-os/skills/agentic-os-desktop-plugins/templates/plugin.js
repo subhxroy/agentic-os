@@ -7,10 +7,10 @@
  * Then run "Reload desktop plugins" from ⌘K in the desktop app.
  *
  * Plain ESM, loaded uncompiled — UI is jsx() calls, not JSX syntax.
- * Only these imports resolve: @hermes/plugin-sdk, react, react/jsx-runtime.
+ * Only these imports resolve: @agentic-os/plugin-sdk, react, react/jsx-runtime.
  */
 
-import { cn, haptic, host, Tip, usePluginI18n, useValue } from '@hermes/plugin-sdk'
+import { cn, haptic, host, Tip, usePluginI18n, useValue } from '@agentic-os/plugin-sdk'
 import { jsx, jsxs } from 'react/jsx-runtime'
 
 // Ship your OWN strings (never edit core en.ts). `usePluginI18n` resolves them

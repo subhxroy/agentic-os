@@ -2,7 +2,7 @@
 
 Two behaviours are covered:
 
-1. ``load_hermes_dotenv()`` auto-loads ``~/.agentic-os/.op.env`` so the
+1. ``load_agentic_os_dotenv()`` auto-loads ``~/.agentic-os/.op.env`` so the
    ``OP_SERVICE_ACCOUNT_TOKEN`` bootstrap token is available to
    ``apply_onepassword_secrets()`` in cron / subprocess / macOS / Docker
    contexts that inherit no shell state (no systemd EnvironmentFile, no
@@ -64,7 +64,7 @@ def test_op_env_autoloads_bootstrap_token_in_cron_context(tmp_path, monkeypatch)
 
     assert os.environ.get("OP_SERVICE_ACCOUNT_TOKEN") is None
 
-    env_loader.load_hermes_dotenv(hermes_home=home)
+    env_loader.load_agentic_os_dotenv(agentic_os_home=home)
 
     assert os.environ["OP_SERVICE_ACCOUNT_TOKEN"] == "test-token"
 
@@ -80,7 +80,7 @@ def test_op_env_does_not_override_existing_token(tmp_path, monkeypatch):
 
     monkeypatch.setenv("OP_SERVICE_ACCOUNT_TOKEN", "live-token")
 
-    env_loader.load_hermes_dotenv(hermes_home=home)
+    env_loader.load_agentic_os_dotenv(agentic_os_home=home)
 
     # override=False AND the explicit guard both protect the live token.
     assert os.environ["OP_SERVICE_ACCOUNT_TOKEN"] == "live-token"
@@ -92,7 +92,7 @@ def test_missing_op_env_is_a_noop(tmp_path):
     home.mkdir()
     (home / ".env").write_text("FOO=bar\n", encoding="utf-8")
 
-    env_loader.load_hermes_dotenv(hermes_home=home)
+    env_loader.load_agentic_os_dotenv(agentic_os_home=home)
 
     assert os.environ.get("OP_SERVICE_ACCOUNT_TOKEN") is None
 

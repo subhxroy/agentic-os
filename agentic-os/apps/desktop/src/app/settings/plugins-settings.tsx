@@ -17,15 +17,15 @@ import { EmptyState, ListRow, Pill, SectionHeading, SettingsContent } from './pr
 const KIND_ORDER: Record<PluginRecord['kind'], number> = { disk: 0, runtime: 1, bundled: 2 }
 
 function reveal(file: string) {
-  void window.hermesDesktop?.revealPath?.(file)?.catch(() => undefined)
+  void window.agenticOSDesktop?.revealPath?.(file)?.catch(() => undefined)
 }
 
 async function revealPluginsDir() {
   try {
-    const { hermes_home } = await getStatus()
+    const { agentic_os_home } = await getStatus()
     // openDir (not reveal): the door often doesn't exist on first use, and
     // showItemInFolder on a missing path silently no-ops (esp. Windows).
-    const result = await window.hermesDesktop?.openDir?.(`${hermes_home}/desktop-plugins`)
+    const result = await window.agenticOSDesktop?.openDir?.(`${agentic_os_home}/desktop-plugins`)
 
     if (result && !result.ok) {
       notifyError(result.error ?? 'unknown error', 'Could not open the plugins folder')

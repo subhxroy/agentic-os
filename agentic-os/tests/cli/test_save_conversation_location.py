@@ -20,12 +20,12 @@ import pytest
 
 
 @pytest.fixture
-def hermes_home(tmp_path, monkeypatch):
+def agentic_os_home(tmp_path, monkeypatch):
     home = tmp_path / ".hermes"
     home.mkdir()
     monkeypatch.setattr(Path, "home", lambda: tmp_path)
     monkeypatch.setenv("AGENTIC_OS_HOME", str(home))
-    # Clear any cached hermes_home computation
+    # Clear any cached agentic_os_home computation
     import agentic_os_constants
     if hasattr(agentic_os_constants, "_agentic_os_home_cache"):
         agentic_os_constants._agentic_os_home_cache = None
@@ -42,7 +42,7 @@ def _make_stub_cli(history):
     )
 
 
-def test_save_conversation_writes_under_agentic_os_home(hermes_home, tmp_path, monkeypatch, capsys):
+def test_save_conversation_writes_under_agentic_os_home(agentic_os_home, tmp_path, monkeypatch, capsys):
     """Snapshot must land under ~/.agentic-os/sessions/saved/, not CWD."""
     # Change CWD to a different directory to prove the file does NOT go there.
     work = tmp_path / "somewhere-else"
@@ -68,7 +68,7 @@ def test_save_conversation_writes_under_agentic_os_home(hermes_home, tmp_path, m
     assert not cwd_leak, f"snapshot leaked to CWD: {cwd_leak}"
 
     # File MUST be under ~/.agentic-os/sessions/saved/
-    saved_dir = hermes_home / "sessions" / "saved"
+    saved_dir = agentic_os_home / "sessions" / "saved"
     assert saved_dir.is_dir(), "expected saved/ subdirectory to be created"
     files = list(saved_dir.glob("hermes_conversation_*.json"))
     assert len(files) == 1, files
@@ -87,7 +87,7 @@ def test_save_conversation_writes_under_agentic_os_home(hermes_home, tmp_path, m
     assert "hermes --resume 20260101_120000_abc123" in out, out
 
 
-def test_save_conversation_empty_history_does_nothing(hermes_home, capsys):
+def test_save_conversation_empty_history_does_nothing(agentic_os_home, capsys):
     for mod in [m for m in sys.modules if m.startswith("cli") or m == "agentic_os_constants"]:
         sys.modules.pop(mod, None)
     import cli
@@ -95,7 +95,7 @@ def test_save_conversation_empty_history_does_nothing(hermes_home, capsys):
     stub = _make_stub_cli([])
     cli.HermesCLI.save_conversation(stub)
 
-    saved_dir = hermes_home / "sessions" / "saved"
+    saved_dir = agentic_os_home / "sessions" / "saved"
     assert not saved_dir.exists() or not list(saved_dir.iterdir())
     out = capsys.readouterr().out
     assert "No conversation to save" in out

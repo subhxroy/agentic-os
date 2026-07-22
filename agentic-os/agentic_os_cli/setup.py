@@ -392,7 +392,7 @@ def _prompt_api_key(var: dict):
         print_warning("  Skipped (configure later with 'hermes setup')")
 
 
-def _print_setup_summary(config: dict, hermes_home):
+def _print_setup_summary(config: dict, agentic_os_home):
     """Print the setup completion summary."""
     # Tool availability summary
     print()
@@ -637,7 +637,7 @@ def _print_setup_summary(config: dict, hermes_home):
     print(f"   {color('Settings:', Colors.YELLOW)}  {get_config_path()}")
     print(f"   {color('API Keys:', Colors.YELLOW)}  {get_env_path()}")
     print(
-        f"   {color('Data:', Colors.YELLOW)}      {hermes_home}/cron/, sessions/, logs/"
+        f"   {color('Data:', Colors.YELLOW)}      {agentic_os_home}/cron/, sessions/, logs/"
     )
     print()
 
@@ -1679,10 +1679,10 @@ def _setup_telegram_auto_result():
     return auto_setup_telegram_bot_result(profile_name=profile_name)
 
 
-def _profile_name_from_agentic_os_home(hermes_home) -> str | None:
+def _profile_name_from_agentic_os_home(agentic_os_home) -> str | None:
     """Return the active profile name when AGENTIC_OS_HOME is a profile dir."""
-    if hermes_home.parent.name == "profiles":
-        return hermes_home.name
+    if agentic_os_home.parent.name == "profiles":
+        return agentic_os_home.name
     return None
 
 
@@ -2464,7 +2464,7 @@ def _print_migration_preview(report: dict):
         print()
 
 
-def _offer_openclaw_migration(hermes_home: Path) -> bool:
+def _offer_openclaw_migration(agentic_os_home: Path) -> bool:
     """Detect ~/.openclaw and offer to migrate during first-time setup.
 
     Runs a dry-run first to show the user exactly what would be imported,
@@ -2512,7 +2512,7 @@ def _offer_openclaw_migration(hermes_home: Path) -> bool:
         selected = mod.resolve_selected_options(None, None, preset="full")
         dry_migrator = mod.Migrator(
             source_root=openclaw_dir.resolve(),
-            target_root=hermes_home.resolve(),
+            target_root=agentic_os_home.resolve(),
             execute=False,  # dry-run — no files modified
             workspace_target=None,
             overwrite=True,  # show everything including conflicts
@@ -2557,7 +2557,7 @@ def _offer_openclaw_migration(hermes_home: Path) -> bool:
     try:
         migrator = mod.Migrator(
             source_root=openclaw_dir.resolve(),
-            target_root=hermes_home.resolve(),
+            target_root=agentic_os_home.resolve(),
             execute=True,
             workspace_target=None,
             overwrite=False,  # preserve existing Hermes config
@@ -2722,7 +2722,7 @@ def run_setup_wizard(args):
     quick_requested = bool(getattr(args, "quick", False))
 
     config = load_config()
-    hermes_home = get_agentic_os_home()
+    agentic_os_home = get_agentic_os_home()
 
     # Back up existing config before setup modifies it (#3522)
     config_path = get_config_path()
@@ -2838,7 +2838,7 @@ def run_setup_wizard(args):
         # missing items" flow (useful after a partial OpenClaw migration
         # or when a required API key got cleared).
         if quick_requested:
-            _run_quick_setup(config, hermes_home)
+            _run_quick_setup(config, agentic_os_home)
             return
 
         print()
@@ -2863,7 +2863,7 @@ def run_setup_wizard(args):
             print()
 
         # Offer OpenClaw migration before configuration begins
-        migration_ran = _offer_openclaw_migration(hermes_home)
+        migration_ran = _offer_openclaw_migration(agentic_os_home)
         if migration_ran:
             config = load_config()
 
@@ -2878,17 +2878,17 @@ def run_setup_wizard(args):
         )
 
         if setup_mode == 0:
-            _run_first_time_quick_setup(config, hermes_home, is_existing)
+            _run_first_time_quick_setup(config, agentic_os_home, is_existing)
             return
         if setup_mode == 2:
-            _run_blank_slate_setup(config, hermes_home, is_existing)
+            _run_blank_slate_setup(config, agentic_os_home, is_existing)
             return
 
     # ── Full Setup — run all sections ──
     print_header("Configuration Location")
     print_info(f"Config file:  {get_config_path()}")
     print_info(f"Secrets file: {get_env_path()}")
-    print_info(f"Data folder:  {hermes_home}")
+    print_info(f"Data folder:  {agentic_os_home}")
     print_info(f"Install dir:  {PROJECT_ROOT}")
     print()
     print_info("You can edit these files directly or use 'hermes config edit'")
@@ -2927,10 +2927,10 @@ def run_setup_wizard(args):
         print_info(f"Previous config backed up to: {_backup_path}")
         print_info("If setup changed a value you customized, restore it with:")
         print_info(f"  cp {_backup_path} {config_path}")
-    _print_setup_summary(config, hermes_home)
+    _print_setup_summary(config, agentic_os_home)
 
 
-def _run_first_time_quick_setup(config: dict, hermes_home, is_existing: bool):
+def _run_first_time_quick_setup(config: dict, agentic_os_home, is_existing: bool):
     """Streamlined first-time setup via Nous Portal: OAuth, model, terminal & messaging.
 
     Routes straight to the Nous Portal provider — runs the device-code OAuth
@@ -3000,7 +3000,7 @@ def _run_first_time_quick_setup(config: dict, hermes_home, is_existing: bool):
         print_info("  Connect Telegram/Discord:  hermes setup gateway")
     print()
 
-    _print_setup_summary(config, hermes_home)
+    _print_setup_summary(config, agentic_os_home)
 
 
 def _blank_slate_minimal_toolsets(config: dict):
@@ -3076,7 +3076,7 @@ def _blank_slate_minimize_config(config: dict):
     config.setdefault("display", {})["tool_progress"] = "all"
 
 
-def _run_blank_slate_setup(config: dict, hermes_home, is_existing: bool):
+def _run_blank_slate_setup(config: dict, agentic_os_home, is_existing: bool):
     """Blank Slate setup — start with everything off except the bare minimum.
 
     Forces only the essentials to run an agent (provider + model, the file and
@@ -3150,14 +3150,14 @@ def _run_blank_slate_setup(config: dict, hermes_home, is_existing: bool):
         print_info("  Enable plugins:      hermes plugins")
         print_info("  Tune agent settings: hermes setup agent")
         print()
-        _print_setup_summary(config, hermes_home)
+        _print_setup_summary(config, agentic_os_home)
         return
 
     # ── Walkthrough path — opt in to each capability ──
-    _blank_slate_walkthrough(config, hermes_home)
+    _blank_slate_walkthrough(config, agentic_os_home)
 
 
-def _blank_slate_walkthrough(config: dict, hermes_home):
+def _blank_slate_walkthrough(config: dict, agentic_os_home):
     """Opt-in walkthrough for Blank Slate: skills, tools, plugins, MCP, gateway."""
     from agentic_os_cli.config import load_config
 
@@ -3237,10 +3237,10 @@ def _blank_slate_walkthrough(config: dict, hermes_home):
     print_info("  Tune agent settings: hermes setup agent")
     print()
 
-    _print_setup_summary(config, hermes_home)
+    _print_setup_summary(config, agentic_os_home)
 
 
-def _run_quick_setup(config: dict, hermes_home):
+def _run_quick_setup(config: dict, agentic_os_home):
     """Quick setup — only configure items that are missing."""
     from agentic_os_cli.config import (
         get_missing_env_vars,
@@ -3403,4 +3403,4 @@ def _run_quick_setup(config: dict, hermes_home):
         save_config(config)
 
     # Jump to summary
-    _print_setup_summary(config, hermes_home)
+    _print_setup_summary(config, agentic_os_home)

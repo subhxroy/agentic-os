@@ -555,7 +555,7 @@ const $previewVisible = computed([$previewTarget, $filePreviewTarget], (target, 
 bindPaneVisibility('preview', $previewVisible, closeRightRail)
 
 // Logs are optional chrome: off by default, toggled from ⌘K, persisted.
-const $logsOpen = persistentAtom('hermes.desktop.logsOpen', false, Codecs.bool)
+const $logsOpen = persistentAtom('agentic-os.desktop.logsOpen', false, Codecs.bool)
 
 bindPaneCollapse(
   'logs',

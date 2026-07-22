@@ -1650,7 +1650,7 @@ class TestEnvWriteDenylist:
             "AGENTIC_OS_HOME",
             "HERMES_PROFILE",
             "HERMES_CONFIG",
-            "HERMES_ENV",
+            "AGENTIC_OS_ENV",
         ],
     )
     def test_denylisted_keys_rejected(self, denied_key):

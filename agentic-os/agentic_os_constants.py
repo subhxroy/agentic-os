@@ -722,10 +722,10 @@ def _norm_home_path(path: str | None) -> str:
 
 def _profile_home_path(env: dict[str, str] | None = None) -> str | None:
     """Return ``{AGENTIC_OS_HOME}/home`` when the profile-home directory exists."""
-    hermes_home = get_agentic_os_home_override() or (env or {}).get("AGENTIC_OS_HOME") or os.getenv("AGENTIC_OS_HOME")
-    if not hermes_home:
+    agentic_os_home = get_agentic_os_home_override() or (env or {}).get("AGENTIC_OS_HOME") or os.getenv("AGENTIC_OS_HOME")
+    if not agentic_os_home:
         return None
-    profile_home = os.path.join(hermes_home, "home")
+    profile_home = os.path.join(agentic_os_home, "home")
     if os.path.isdir(profile_home):
         return profile_home
     return None

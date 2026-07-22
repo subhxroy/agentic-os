@@ -1,5 +1,5 @@
 {
-  "name": "@hermes/root-tests",
+  "name": "@agentic-os/root-tests",
   "private": true,
   "type": "module",
   "scripts": {

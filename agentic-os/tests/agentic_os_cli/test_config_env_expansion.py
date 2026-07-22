@@ -96,7 +96,7 @@ class TestLoadConfigExpansion:
 
 class TestLoadConfigCacheEnvStaleness:
     """The load_config() cache must not pin expansions made against a stale
-    environment (#58514): a load before load_hermes_dotenv() runs, or an env
+    environment (#58514): a load before load_agentic_os_dotenv() runs, or an env
     var rotated in-process, must not keep serving the old expansion."""
 
     def test_env_var_appearing_after_first_load_invalidates_cache(self, tmp_path, monkeypatch):

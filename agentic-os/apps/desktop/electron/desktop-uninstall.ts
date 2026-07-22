@@ -95,7 +95,7 @@ function resolveRemovableAppPath(execPath, platform, env: any = {}) {
     // NSIS per-user installs Hermes.exe directly in the install dir.
     const dir = p.dirname(exe)
 
-    if (/[\\/]Hermes$/i.test(dir) || /[\\/]hermes-desktop$/i.test(dir)) {
+    if (/[\\/]Hermes$/i.test(dir) || /[\\/]agentic-os-desktop$/i.test(dir)) {
       return dir
     }
 
@@ -138,7 +138,7 @@ function shouldRemoveAppBundle(isPackaged, appPath) {
  * resolves from the agent source. `q()` single-quote-escapes for the shell
  * (closes-escapes-reopens any embedded apostrophe), defending against spaces.
  */
-function buildPosixCleanupScript({ desktopPid, pythonExe, pythonPath, agentRoot, uninstallArgs, appPath, hermesHome }) {
+function buildPosixCleanupScript({ desktopPid, pythonExe, pythonPath, agentRoot, uninstallArgs, appPath, agenticOSHome }) {
   const q = s => `'${String(s).replace(/'/g, `'\\''`)}'`
 
   const lines = [
@@ -153,7 +153,7 @@ function buildPosixCleanupScript({ desktopPid, pythonExe, pythonPath, agentRoot,
     '    sleep 0.5',
     '  done',
     'fi',
-    `export AGENTIC_OS_HOME=${q(hermesHome)}`
+    `export AGENTIC_OS_HOME=${q(agenticOSHome)}`
   ]
 
   if (pythonPath) {
@@ -198,7 +198,7 @@ function buildWindowsCleanupScript({
   agentRoot,
   uninstallArgs,
   appPath,
-  hermesHome
+  agenticOSHome
 }) {
   const pid = Number(desktopPid) || 0
   // cmd.exe has no string escaping inside quotes; strip embedded quotes (paths
@@ -209,7 +209,7 @@ function buildWindowsCleanupScript({
   const lines = [
     '@echo off',
     'setlocal enableextensions',
-    `set "AGENTIC_OS_HOME=${String(hermesHome).replace(/"/g, '')}"`,
+    `set "AGENTIC_OS_HOME=${String(agenticOSHome).replace(/"/g, '')}"`,
     `set "PID=${pid}"`
   ]
 

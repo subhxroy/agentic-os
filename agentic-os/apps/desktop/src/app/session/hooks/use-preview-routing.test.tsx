@@ -66,7 +66,7 @@ describe('usePreviewRouting', () => {
     handleEvent = () => undefined
     window.localStorage.clear()
 
-    Object.defineProperty(window, 'hermesDesktop', {
+    Object.defineProperty(window, 'agenticOSDesktop', {
       configurable: true,
       value: {
         normalizePreviewTarget: vi.fn(async (target: string) => previewTarget(target))
@@ -117,7 +117,7 @@ describe('usePreviewRouting', () => {
     })
 
     expect($previewTarget.get()).toBeNull()
-    expect(window.hermesDesktop.normalizePreviewTarget).not.toHaveBeenCalled()
+    expect(window.agenticOSDesktop.normalizePreviewTarget).not.toHaveBeenCalled()
   })
 
   it('does not auto-open a preview from tool results', async () => {
@@ -139,6 +139,6 @@ describe('usePreviewRouting', () => {
     act(() => handleEvent({ payload: { path: './dist/index.html' }, session_id: 'session-1', type: 'tool.complete' }))
 
     expect($previewTarget.get()).toBeNull()
-    expect(window.localStorage.getItem('hermes.desktop.sessionPreviews.v1')).toBeNull()
+    expect(window.localStorage.getItem('agentic-os.desktop.sessionPreviews.v1')).toBeNull()
   })
 })

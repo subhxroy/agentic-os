@@ -843,11 +843,11 @@ def test_s6_lifecycle_persists_named_profile_desired_state(
 ) -> None:
     import json
 
-    hermes_home = tmp_path / "hermes-home"
-    profile_dir = hermes_home / "profiles" / "coder"
+    agentic_os_home = tmp_path / "hermes-home"
+    profile_dir = agentic_os_home / "profiles" / "coder"
     profile_dir.mkdir(parents=True)
     (s6_scandir / "gateway-coder").mkdir()
-    monkeypatch.setenv("AGENTIC_OS_HOME", str(hermes_home))
+    monkeypatch.setenv("AGENTIC_OS_HOME", str(agentic_os_home))
 
     mgr = S6ServiceManager(scandir=s6_scandir)
     mgr.start("gateway-coder")
@@ -866,14 +866,14 @@ def test_s6_lifecycle_persists_default_profile_desired_state(
 ) -> None:
     import json
 
-    hermes_home = tmp_path / "hermes-home"
-    hermes_home.mkdir()
+    agentic_os_home = tmp_path / "hermes-home"
+    agentic_os_home.mkdir()
     (s6_scandir / "gateway-default").mkdir()
-    monkeypatch.setenv("AGENTIC_OS_HOME", str(hermes_home / "profiles" / "coder"))
+    monkeypatch.setenv("AGENTIC_OS_HOME", str(agentic_os_home / "profiles" / "coder"))
 
     mgr = S6ServiceManager(scandir=s6_scandir)
     mgr.start("gateway-default")
-    state = json.loads((hermes_home / "gateway_state.json").read_text())
+    state = json.loads((agentic_os_home / "gateway_state.json").read_text())
     assert state["desired_state"] == "running"
 
 

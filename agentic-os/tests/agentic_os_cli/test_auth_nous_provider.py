@@ -124,7 +124,7 @@ class TestResolveVerifyFallback:
 
 
 def _setup_nous_auth(
-    hermes_home: Path,
+    agentic_os_home: Path,
     *,
     access_token: str = "",
     refresh_token: str = "refresh-old",
@@ -135,7 +135,7 @@ def _setup_nous_auth(
     agent_key_expires_at: str | None = None,
 ) -> None:
     access_token = access_token or _invoke_jwt(seconds=3600, scope=scope)
-    hermes_home.mkdir(parents=True, exist_ok=True)
+    agentic_os_home.mkdir(parents=True, exist_ok=True)
     auth_store = {
         "version": 1,
         "active_provider": "nous",
@@ -160,7 +160,7 @@ def _setup_nous_auth(
             }
         },
     }
-    (hermes_home / "auth.json").write_text(json.dumps(auth_store, indent=2))
+    (agentic_os_home / "auth.json").write_text(json.dumps(auth_store, indent=2))
 
 
 def _jwt_with_claims(claims: dict) -> str:
@@ -189,16 +189,16 @@ def test_resolve_nous_runtime_credentials_prefers_invoke_jwt_and_mirrors(
 ):
     import agentic_os_cli.auth as auth_mod
 
-    hermes_home = tmp_path / "hermes"
+    agentic_os_home = tmp_path / "hermes"
     token = _invoke_jwt(seconds=3600)
     _setup_nous_auth(
-        hermes_home,
+        agentic_os_home,
         access_token=token,
         scope=auth_mod.DEFAULT_NOUS_SCOPE,
         expires_at=_future_iso(3600),
         expires_in=3600,
     )
-    monkeypatch.setenv("AGENTIC_OS_HOME", str(hermes_home))
+    monkeypatch.setenv("AGENTIC_OS_HOME", str(agentic_os_home))
 
     creds = auth_mod.resolve_nous_runtime_credentials()
 
@@ -206,7 +206,7 @@ def test_resolve_nous_runtime_credentials_prefers_invoke_jwt_and_mirrors(
     assert creds["source"] == auth_mod.NOUS_AUTH_PATH_INVOKE_JWT
     assert creds["auth_path"] == auth_mod.NOUS_AUTH_PATH_INVOKE_JWT
 
-    payload = json.loads((hermes_home / "auth.json").read_text())
+    payload = json.loads((agentic_os_home / "auth.json").read_text())
     singleton = payload["providers"]["nous"]
     assert singleton["agent_key"] == token
     assert datetime.fromisoformat(singleton["agent_key_expires_at"]).timestamp() > time.time() + 300
@@ -232,18 +232,18 @@ def test_resolve_nous_runtime_credentials_env_override_wins_live_not_persisted(
     """
     import agentic_os_cli.auth as auth_mod
 
-    hermes_home = tmp_path / "hermes"
+    agentic_os_home = tmp_path / "hermes"
     override_url = "https://ai.wildebeest-newton.ts.net/v1"
     network_url = "https://inference-api.nousresearch.com/v1"
     refreshed_token = _invoke_jwt(seconds=3600)
     _setup_nous_auth(
-        hermes_home,
+        agentic_os_home,
         access_token=_invoke_jwt(seconds=-60),
         refresh_token="refresh-old",
         expires_at=_future_iso(-60),
         expires_in=0,
     )
-    monkeypatch.setenv("AGENTIC_OS_HOME", str(hermes_home))
+    monkeypatch.setenv("AGENTIC_OS_HOME", str(agentic_os_home))
     monkeypatch.setenv("NOUS_INFERENCE_BASE_URL", override_url)
 
     def _fake_refresh_access_token(*, client, portal_base_url, client_id, refresh_token):
@@ -265,7 +265,7 @@ def test_resolve_nous_runtime_credentials_env_override_wins_live_not_persisted(
 
     # ...but it is deliberately NOT persisted: every durable store keeps the
     # network-validated URL, so the ephemeral override can't poison auth.json.
-    payload = json.loads((hermes_home / "auth.json").read_text())
+    payload = json.loads((agentic_os_home / "auth.json").read_text())
     assert payload["providers"]["nous"]["inference_base_url"] == network_url
     assert payload["providers"]["nous"]["inference_base_url"] != override_url
     assert payload["credential_pool"]["nous"][0]["inference_base_url"] == network_url
@@ -280,8 +280,8 @@ def test_resolve_nous_runtime_credentials_invoke_jwt_is_idempotent(
 ):
     import agentic_os_cli.auth as auth_mod
 
-    hermes_home = tmp_path / "hermes"
-    hermes_home.mkdir(parents=True, exist_ok=True)
+    agentic_os_home = tmp_path / "hermes"
+    agentic_os_home.mkdir(parents=True, exist_ok=True)
     exp = int(time.time() + 3600)
     expires_at = datetime.fromtimestamp(exp, tz=timezone.utc).isoformat()
     token = _jwt_with_claims({
@@ -315,11 +315,11 @@ def test_resolve_nous_runtime_credentials_invoke_jwt_is_idempotent(
             },
         },
     }
-    auth_path = hermes_home / "auth.json"
+    auth_path = agentic_os_home / "auth.json"
     auth_path.write_text(json.dumps(auth_store, indent=2))
     before_content = auth_path.read_text()
     before_mtime = auth_path.stat().st_mtime_ns
-    monkeypatch.setenv("AGENTIC_OS_HOME", str(hermes_home))
+    monkeypatch.setenv("AGENTIC_OS_HOME", str(agentic_os_home))
 
     def _unexpected_shared_write(*args, **kwargs):
         raise AssertionError("unchanged invoke JWT resolution should not sync shared store")
@@ -353,10 +353,10 @@ def test_resolve_nous_runtime_credentials_trusts_invoke_jwt_exp_over_stale_metad
 ):
     import agentic_os_cli.auth as auth_mod
 
-    hermes_home = tmp_path / "hermes"
+    agentic_os_home = tmp_path / "hermes"
     token = _invoke_jwt(seconds=3600)
     _setup_nous_auth(
-        hermes_home,
+        agentic_os_home,
         access_token=token,
         scope=auth_mod.DEFAULT_NOUS_SCOPE,
         expires_at="2000-01-01T00:00:00+00:00",
@@ -364,7 +364,7 @@ def test_resolve_nous_runtime_credentials_trusts_invoke_jwt_exp_over_stale_metad
         agent_key=token,
         agent_key_expires_at="2000-01-01T00:00:00+00:00",
     )
-    monkeypatch.setenv("AGENTIC_OS_HOME", str(hermes_home))
+    monkeypatch.setenv("AGENTIC_OS_HOME", str(agentic_os_home))
 
     def _unexpected_refresh(*args, **kwargs):
         raise AssertionError("valid invoke JWT should not be refreshed because metadata is stale")
@@ -375,7 +375,7 @@ def test_resolve_nous_runtime_credentials_trusts_invoke_jwt_exp_over_stale_metad
 
     assert creds["api_key"] == token
     assert creds["source"] == auth_mod.NOUS_AUTH_PATH_INVOKE_JWT
-    payload = json.loads((hermes_home / "auth.json").read_text())
+    payload = json.loads((agentic_os_home / "auth.json").read_text())
     singleton = payload["providers"]["nous"]
     assert singleton["agent_key"] == token
     assert datetime.fromisoformat(singleton["expires_at"]).timestamp() > time.time() + 300
@@ -388,22 +388,22 @@ def test_resolve_nous_runtime_credentials_does_not_apply_agent_key_ttl_to_invoke
 ):
     import agentic_os_cli.auth as auth_mod
 
-    hermes_home = tmp_path / "hermes"
+    agentic_os_home = tmp_path / "hermes"
     token = _invoke_jwt(seconds=900)
     _setup_nous_auth(
-        hermes_home,
+        agentic_os_home,
         access_token=token,
         scope=auth_mod.DEFAULT_NOUS_SCOPE,
         expires_at=_future_iso(900),
         expires_in=900,
     )
-    monkeypatch.setenv("AGENTIC_OS_HOME", str(hermes_home))
+    monkeypatch.setenv("AGENTIC_OS_HOME", str(agentic_os_home))
 
     creds = auth_mod.resolve_nous_runtime_credentials()
 
     assert creds["api_key"] == token
     assert creds["source"] == auth_mod.NOUS_AUTH_PATH_INVOKE_JWT
-    payload = json.loads((hermes_home / "auth.json").read_text())
+    payload = json.loads((agentic_os_home / "auth.json").read_text())
     assert payload["providers"]["nous"]["agent_key"] == token
     assert payload["credential_pool"]["nous"][0]["agent_key"] == token
 
@@ -414,10 +414,10 @@ def test_resolve_nous_runtime_credentials_refreshes_legacy_agent_key_to_invoke_j
 ):
     import agentic_os_cli.auth as auth_mod
 
-    hermes_home = tmp_path / "hermes"
+    agentic_os_home = tmp_path / "hermes"
     refreshed_token = _invoke_jwt(seconds=3600)
     _setup_nous_auth(
-        hermes_home,
+        agentic_os_home,
         access_token="legacy-access-token",
         refresh_token="refresh-old",
         scope=auth_mod.DEFAULT_NOUS_SCOPE,
@@ -426,7 +426,7 @@ def test_resolve_nous_runtime_credentials_refreshes_legacy_agent_key_to_invoke_j
         agent_key="legacy-opaque-session-key",
         agent_key_expires_at=_future_iso(3600),
     )
-    monkeypatch.setenv("AGENTIC_OS_HOME", str(hermes_home))
+    monkeypatch.setenv("AGENTIC_OS_HOME", str(agentic_os_home))
 
     refresh_calls = []
 
@@ -448,7 +448,7 @@ def test_resolve_nous_runtime_credentials_refreshes_legacy_agent_key_to_invoke_j
     assert refresh_calls == ["refresh-old"]
     assert creds["api_key"] == refreshed_token
     assert creds["source"] == auth_mod.NOUS_AUTH_PATH_INVOKE_JWT
-    payload = json.loads((hermes_home / "auth.json").read_text())
+    payload = json.loads((agentic_os_home / "auth.json").read_text())
     singleton = payload["providers"]["nous"]
     assert singleton["access_token"] == refreshed_token
     assert singleton["refresh_token"] == "refresh-new"
@@ -463,28 +463,28 @@ def test_resolve_nous_runtime_credentials_reauths_when_invoke_scope_missing(
 ):
     import agentic_os_cli.auth as auth_mod
 
-    hermes_home = tmp_path / "hermes"
+    agentic_os_home = tmp_path / "hermes"
     token = _jwt_with_claims({
         "sub": "test-user",
         "scope": "inference:mint_agent_key",
         "exp": int(time.time() + 3600),
     })
     _setup_nous_auth(
-        hermes_home,
+        agentic_os_home,
         access_token=token,
         refresh_token="",
         scope="inference:mint_agent_key",
         expires_at=_future_iso(3600),
         expires_in=3600,
     )
-    monkeypatch.setenv("AGENTIC_OS_HOME", str(hermes_home))
+    monkeypatch.setenv("AGENTIC_OS_HOME", str(agentic_os_home))
 
     with pytest.raises(AuthError) as exc:
         auth_mod.resolve_nous_runtime_credentials()
 
     assert exc.value.code == "missing_inference_invoke_scope"
     assert exc.value.relogin_required is True
-    payload = json.loads((hermes_home / "auth.json").read_text())
+    payload = json.loads((agentic_os_home / "auth.json").read_text())
     assert payload["providers"]["nous"]["agent_key"] is None
     assert "credential_pool" not in payload or not payload["credential_pool"].get("nous")
 
@@ -524,22 +524,22 @@ def test_nous_device_code_login_does_not_retry_legacy_scope_when_invoke_refused(
 def test_removed_legacy_session_env_var_does_not_change_jwt_auth(tmp_path, monkeypatch):
     import agentic_os_cli.auth as auth_mod
 
-    hermes_home = tmp_path / "hermes"
+    agentic_os_home = tmp_path / "hermes"
     token = _invoke_jwt(seconds=3600)
     _setup_nous_auth(
-        hermes_home,
+        agentic_os_home,
         access_token=token,
         scope=auth_mod.DEFAULT_NOUS_SCOPE,
         expires_at=_future_iso(3600),
         expires_in=3600,
     )
-    monkeypatch.setenv("AGENTIC_OS_HOME", str(hermes_home))
+    monkeypatch.setenv("AGENTIC_OS_HOME", str(agentic_os_home))
     monkeypatch.setenv("HERMES_AGENT_USE_LEGACY_SESSION_KEYS", "true")
 
     creds = auth_mod.resolve_nous_runtime_credentials()
 
     assert creds["api_key"] == token
-    payload = json.loads((hermes_home / "auth.json").read_text())
+    payload = json.loads((agentic_os_home / "auth.json").read_text())
     assert payload["providers"]["nous"]["agent_key"] == token
 
     requested_scopes = []
@@ -587,19 +587,19 @@ def test_nous_inference_auth_logs_do_not_include_secret_values(
 ):
     import agentic_os_cli.auth as auth_mod
 
-    hermes_home = tmp_path / "hermes"
+    agentic_os_home = tmp_path / "hermes"
     token = _invoke_jwt(seconds=3600)
     refreshed_token = _invoke_jwt(seconds=7200)
     refresh_token = "refresh-secret-token"
     _setup_nous_auth(
-        hermes_home,
+        agentic_os_home,
         access_token=token,
         refresh_token=refresh_token,
         scope=auth_mod.DEFAULT_NOUS_SCOPE,
         expires_at=_future_iso(3600),
         expires_in=3600,
     )
-    monkeypatch.setenv("AGENTIC_OS_HOME", str(hermes_home))
+    monkeypatch.setenv("AGENTIC_OS_HOME", str(agentic_os_home))
 
     def _fake_refresh_access_token(*, client, portal_base_url, client_id, refresh_token):
         del client, portal_base_url, client_id, refresh_token
@@ -633,13 +633,13 @@ def test_get_nous_auth_status_checks_credential_pool(tmp_path, monkeypatch):
     """
     from agentic_os_cli.auth import get_nous_auth_status
 
-    hermes_home = tmp_path / "hermes"
-    hermes_home.mkdir(parents=True, exist_ok=True)
+    agentic_os_home = tmp_path / "hermes"
+    agentic_os_home.mkdir(parents=True, exist_ok=True)
     # Empty auth store — no Nous provider entry
-    (hermes_home / "auth.json").write_text(json.dumps({
+    (agentic_os_home / "auth.json").write_text(json.dumps({
         "version": 1, "providers": {},
     }))
-    monkeypatch.setenv("AGENTIC_OS_HOME", str(hermes_home))
+    monkeypatch.setenv("AGENTIC_OS_HOME", str(agentic_os_home))
 
     # Seed the credential pool with a Nous entry
     from agent.credential_pool import PooledCredential, load_pool
@@ -669,12 +669,12 @@ def test_get_nous_auth_status_checks_credential_pool(tmp_path, monkeypatch):
 def test_get_nous_auth_status_pool_opaque_key_is_not_inference_credential(tmp_path, monkeypatch):
     from agentic_os_cli.auth import get_nous_auth_status, invalidate_nous_auth_status_cache
 
-    hermes_home = tmp_path / "hermes"
-    hermes_home.mkdir(parents=True, exist_ok=True)
-    (hermes_home / "auth.json").write_text(json.dumps({
+    agentic_os_home = tmp_path / "hermes"
+    agentic_os_home.mkdir(parents=True, exist_ok=True)
+    (agentic_os_home / "auth.json").write_text(json.dumps({
         "version": 1, "providers": {},
     }))
-    monkeypatch.setenv("AGENTIC_OS_HOME", str(hermes_home))
+    monkeypatch.setenv("AGENTIC_OS_HOME", str(agentic_os_home))
     invalidate_nous_auth_status_cache()
 
     from agent.credential_pool import PooledCredential, load_pool
@@ -708,9 +708,9 @@ def test_get_nous_auth_status_auth_store_fallback(tmp_path, monkeypatch):
     """
     from agentic_os_cli.auth import get_nous_auth_status
 
-    hermes_home = tmp_path / "hermes"
-    _setup_nous_auth(hermes_home, access_token="at-123")
-    monkeypatch.setenv("AGENTIC_OS_HOME", str(hermes_home))
+    agentic_os_home = tmp_path / "hermes"
+    _setup_nous_auth(agentic_os_home, access_token="at-123")
+    monkeypatch.setenv("AGENTIC_OS_HOME", str(agentic_os_home))
     monkeypatch.setattr(
         "agentic_os_cli.auth.resolve_nous_runtime_credentials",
         lambda **kwargs: {
@@ -730,9 +730,9 @@ def test_get_nous_auth_status_prefers_runtime_auth_store_over_stale_pool(tmp_pat
     from agentic_os_cli.auth import get_nous_auth_status
     from agent.credential_pool import PooledCredential, load_pool
 
-    hermes_home = tmp_path / "hermes"
-    _setup_nous_auth(hermes_home, access_token="at-fresh")
-    monkeypatch.setenv("AGENTIC_OS_HOME", str(hermes_home))
+    agentic_os_home = tmp_path / "hermes"
+    _setup_nous_auth(agentic_os_home, access_token="at-fresh")
+    monkeypatch.setenv("AGENTIC_OS_HOME", str(agentic_os_home))
 
     pool = load_pool("nous")
     stale = PooledCredential.from_dict("nous", {
@@ -771,9 +771,9 @@ def test_get_nous_auth_status_prefers_runtime_auth_store_over_stale_pool(tmp_pat
 def test_get_nous_auth_status_reports_revoked_refresh_session(tmp_path, monkeypatch):
     from agentic_os_cli.auth import get_nous_auth_status
 
-    hermes_home = tmp_path / "hermes"
-    _setup_nous_auth(hermes_home, access_token="at-123")
-    monkeypatch.setenv("AGENTIC_OS_HOME", str(hermes_home))
+    agentic_os_home = tmp_path / "hermes"
+    _setup_nous_auth(agentic_os_home, access_token="at-123")
+    monkeypatch.setenv("AGENTIC_OS_HOME", str(agentic_os_home))
 
     def _boom(**kwargs):
         raise AuthError("Refresh session has been revoked", provider="nous", relogin_required=True)
@@ -793,25 +793,25 @@ def test_get_nous_auth_status_empty_returns_not_logged_in(tmp_path, monkeypatch)
     """
     from agentic_os_cli.auth import get_nous_auth_status
 
-    hermes_home = tmp_path / "hermes"
-    hermes_home.mkdir(parents=True, exist_ok=True)
-    (hermes_home / "auth.json").write_text(json.dumps({
+    agentic_os_home = tmp_path / "hermes"
+    agentic_os_home.mkdir(parents=True, exist_ok=True)
+    (agentic_os_home / "auth.json").write_text(json.dumps({
         "version": 1, "providers": {},
     }))
-    monkeypatch.setenv("AGENTIC_OS_HOME", str(hermes_home))
+    monkeypatch.setenv("AGENTIC_OS_HOME", str(agentic_os_home))
 
     status = get_nous_auth_status()
     assert status["logged_in"] is False
 
 
 def test_refresh_token_persisted_when_refreshed_jwt_lacks_invoke_scope(tmp_path, monkeypatch):
-    hermes_home = tmp_path / "hermes"
+    agentic_os_home = tmp_path / "hermes"
     _setup_nous_auth(
-        hermes_home,
+        agentic_os_home,
         access_token="access-old",
         refresh_token="refresh-old",
     )
-    monkeypatch.setenv("AGENTIC_OS_HOME", str(hermes_home))
+    monkeypatch.setenv("AGENTIC_OS_HOME", str(agentic_os_home))
 
     refresh_calls = []
     bad_jwt = _jwt_with_claims({
@@ -852,13 +852,13 @@ def test_refresh_token_persisted_when_refreshed_jwt_lacks_invoke_scope(tmp_path,
 
 
 def test_refresh_token_persisted_when_refreshed_token_is_not_jwt(tmp_path, monkeypatch):
-    hermes_home = tmp_path / "hermes"
+    agentic_os_home = tmp_path / "hermes"
     _setup_nous_auth(
-        hermes_home,
+        agentic_os_home,
         access_token="access-old",
         refresh_token="refresh-old",
     )
-    monkeypatch.setenv("AGENTIC_OS_HOME", str(hermes_home))
+    monkeypatch.setenv("AGENTIC_OS_HOME", str(agentic_os_home))
 
     def _fake_refresh_access_token(*, client, portal_base_url, client_id, refresh_token):
         return {
@@ -886,13 +886,13 @@ def test_terminal_refresh_failure_quarantines_tokens(
     """A revoked/invalid Nous refresh token must not be replayed forever."""
     from agentic_os_cli import auth as auth_mod
 
-    hermes_home = tmp_path / "hermes"
+    agentic_os_home = tmp_path / "hermes"
     _setup_nous_auth(
-        hermes_home,
+        agentic_os_home,
         access_token="access-old",
         refresh_token="refresh-old",
     )
-    monkeypatch.setenv("AGENTIC_OS_HOME", str(hermes_home))
+    monkeypatch.setenv("AGENTIC_OS_HOME", str(agentic_os_home))
     from agent.credential_pool import load_pool
 
     assert load_pool("nous").select() is not None
@@ -926,7 +926,7 @@ def test_terminal_refresh_failure_quarantines_tokens(
     assert not state_after_failure.get("agent_key")
     assert state_after_failure["last_auth_error"]["code"] == "invalid_grant"
     assert auth_mod._read_shared_nous_state() is None
-    payload = json.loads((hermes_home / "auth.json").read_text())
+    payload = json.loads((agentic_os_home / "auth.json").read_text())
     assert payload.get("credential_pool", {}).get("nous") == []
 
     with pytest.raises(AuthError, match="No access token found"):
@@ -940,9 +940,9 @@ def test_managed_access_token_refresh_failure_quarantines_tokens(
 ):
     from agentic_os_cli import auth as auth_mod
 
-    hermes_home = tmp_path / "hermes"
-    _setup_nous_auth(hermes_home, refresh_token="refresh-old")
-    monkeypatch.setenv("AGENTIC_OS_HOME", str(hermes_home))
+    agentic_os_home = tmp_path / "hermes"
+    _setup_nous_auth(agentic_os_home, refresh_token="refresh-old")
+    monkeypatch.setenv("AGENTIC_OS_HOME", str(agentic_os_home))
     from agent.credential_pool import load_pool
 
     assert load_pool("nous").select() is not None
@@ -968,7 +968,7 @@ def test_managed_access_token_refresh_failure_quarantines_tokens(
     assert not state_after_failure.get("refresh_token")
     assert not state_after_failure.get("access_token")
     assert state_after_failure["last_auth_error"]["message"] == "Invalid refresh token"
-    payload = json.loads((hermes_home / "auth.json").read_text())
+    payload = json.loads((agentic_os_home / "auth.json").read_text())
     assert payload.get("credential_pool", {}).get("nous") == []
 
     with pytest.raises(AuthError, match="No access token found"):
@@ -978,13 +978,13 @@ def test_managed_access_token_refresh_failure_quarantines_tokens(
 
 
 def test_unusable_access_token_refresh_uses_latest_rotated_refresh_token(tmp_path, monkeypatch):
-    hermes_home = tmp_path / "hermes"
+    agentic_os_home = tmp_path / "hermes"
     _setup_nous_auth(
-        hermes_home,
+        agentic_os_home,
         access_token="access-old",
         refresh_token="refresh-old",
     )
-    monkeypatch.setenv("AGENTIC_OS_HOME", str(hermes_home))
+    monkeypatch.setenv("AGENTIC_OS_HOME", str(agentic_os_home))
 
     refresh_calls = []
     good_jwt = _invoke_jwt(seconds=3600)
@@ -1027,11 +1027,11 @@ class TestLoginNousSkipKeepsCurrent:
 
     def _setup_home_with_openrouter(self, tmp_path, monkeypatch):
         import yaml
-        hermes_home = tmp_path / "hermes"
-        hermes_home.mkdir(parents=True, exist_ok=True)
-        monkeypatch.setenv("AGENTIC_OS_HOME", str(hermes_home))
+        agentic_os_home = tmp_path / "hermes"
+        agentic_os_home.mkdir(parents=True, exist_ok=True)
+        monkeypatch.setenv("AGENTIC_OS_HOME", str(agentic_os_home))
 
-        config_path = hermes_home / "config.yaml"
+        config_path = agentic_os_home / "config.yaml"
         config_path.write_text(yaml.safe_dump({
             "model": {
                 "provider": "openrouter",
@@ -1039,13 +1039,13 @@ class TestLoginNousSkipKeepsCurrent:
             },
         }, sort_keys=False))
 
-        auth_path = hermes_home / "auth.json"
+        auth_path = agentic_os_home / "auth.json"
         auth_path.write_text(json.dumps({
             "version": 1,
             "active_provider": "openrouter",
             "providers": {"openrouter": {"api_key": "sk-or-fake"}},
         }))
-        return hermes_home, config_path, auth_path
+        return agentic_os_home, config_path, auth_path
 
     def _patch_login_internals(self, monkeypatch, *, prompt_returns):
         """Patch OAuth + model-list + prompt so _login_nous doesn't hit network."""
@@ -1090,7 +1090,7 @@ class TestLoginNousSkipKeepsCurrent:
         import yaml
         from agentic_os_cli.auth import PROVIDER_REGISTRY, _login_nous
 
-        hermes_home, config_path, auth_path = self._setup_home_with_openrouter(
+        agentic_os_home, config_path, auth_path = self._setup_home_with_openrouter(
             tmp_path, monkeypatch,
         )
         self._patch_login_internals(monkeypatch, prompt_returns=None)
@@ -1121,7 +1121,7 @@ class TestLoginNousSkipKeepsCurrent:
         import yaml
         from agentic_os_cli.auth import PROVIDER_REGISTRY, _login_nous
 
-        hermes_home, config_path, auth_path = self._setup_home_with_openrouter(
+        agentic_os_home, config_path, auth_path = self._setup_home_with_openrouter(
             tmp_path, monkeypatch,
         )
         free_tier_calls = self._patch_login_internals(
@@ -1149,11 +1149,11 @@ class TestLoginNousSkipKeepsCurrent:
         import yaml
         from agentic_os_cli.auth import PROVIDER_REGISTRY, _login_nous
 
-        hermes_home = tmp_path / "hermes"
-        hermes_home.mkdir(parents=True, exist_ok=True)
-        monkeypatch.setenv("AGENTIC_OS_HOME", str(hermes_home))
+        agentic_os_home = tmp_path / "hermes"
+        agentic_os_home.mkdir(parents=True, exist_ok=True)
+        monkeypatch.setenv("AGENTIC_OS_HOME", str(agentic_os_home))
 
-        config_path = hermes_home / "config.yaml"
+        config_path = agentic_os_home / "config.yaml"
         config_path.write_text(yaml.safe_dump({"model": {}}, sort_keys=False))
 
         # No auth.json yet — simulates first-run before any OAuth
@@ -1165,7 +1165,7 @@ class TestLoginNousSkipKeepsCurrent:
         )
         _login_nous(args, PROVIDER_REGISTRY["nous"])
 
-        auth_path = hermes_home / "auth.json"
+        auth_path = agentic_os_home / "auth.json"
         auth_after = json.loads(auth_path.read_text())
         # active_provider should NOT be set to "nous" after Skip
         assert auth_after.get("active_provider") in {None, ""}
@@ -1216,12 +1216,12 @@ def test_persist_nous_credentials_writes_both_pool_and_providers(tmp_path, monke
     """
     from agentic_os_cli.auth import persist_nous_credentials, NOUS_DEVICE_CODE_SOURCE
 
-    hermes_home = tmp_path / "hermes"
-    hermes_home.mkdir(parents=True, exist_ok=True)
-    (hermes_home / "auth.json").write_text(json.dumps({
+    agentic_os_home = tmp_path / "hermes"
+    agentic_os_home.mkdir(parents=True, exist_ok=True)
+    (agentic_os_home / "auth.json").write_text(json.dumps({
         "version": 1, "providers": {},
     }))
-    monkeypatch.setenv("AGENTIC_OS_HOME", str(hermes_home))
+    monkeypatch.setenv("AGENTIC_OS_HOME", str(agentic_os_home))
 
     state = _full_state_fixture()
     entry = persist_nous_credentials(state)
@@ -1230,7 +1230,7 @@ def test_persist_nous_credentials_writes_both_pool_and_providers(tmp_path, monke
     assert entry.provider == "nous"
     assert entry.source == NOUS_DEVICE_CODE_SOURCE
 
-    payload = json.loads((hermes_home / "auth.json").read_text())
+    payload = json.loads((agentic_os_home / "auth.json").read_text())
 
     # providers.nous populated with the full state (new behaviour)
     singleton = payload["providers"]["nous"]
@@ -1261,12 +1261,12 @@ def test_persist_nous_credentials_allows_recovery_from_401(tmp_path, monkeypatch
         resolve_nous_runtime_credentials,
     )
 
-    hermes_home = tmp_path / "hermes"
-    hermes_home.mkdir(parents=True, exist_ok=True)
-    (hermes_home / "auth.json").write_text(json.dumps({
+    agentic_os_home = tmp_path / "hermes"
+    agentic_os_home.mkdir(parents=True, exist_ok=True)
+    (agentic_os_home / "auth.json").write_text(json.dumps({
         "version": 1, "providers": {},
     }))
-    monkeypatch.setenv("AGENTIC_OS_HOME", str(hermes_home))
+    monkeypatch.setenv("AGENTIC_OS_HOME", str(agentic_os_home))
 
     persist_nous_credentials(_full_state_fixture())
     new_jwt = _invoke_jwt(seconds=3600)
@@ -1303,12 +1303,12 @@ def test_persist_nous_credentials_idempotent_no_duplicate_pool_entries(tmp_path,
     """
     from agentic_os_cli.auth import persist_nous_credentials, NOUS_DEVICE_CODE_SOURCE
 
-    hermes_home = tmp_path / "hermes"
-    hermes_home.mkdir(parents=True, exist_ok=True)
-    (hermes_home / "auth.json").write_text(json.dumps({
+    agentic_os_home = tmp_path / "hermes"
+    agentic_os_home.mkdir(parents=True, exist_ok=True)
+    (agentic_os_home / "auth.json").write_text(json.dumps({
         "version": 1, "providers": {},
     }))
-    monkeypatch.setenv("AGENTIC_OS_HOME", str(hermes_home))
+    monkeypatch.setenv("AGENTIC_OS_HOME", str(agentic_os_home))
 
     first = _full_state_fixture()
     persist_nous_credentials(first)
@@ -1320,7 +1320,7 @@ def test_persist_nous_credentials_idempotent_no_duplicate_pool_entries(tmp_path,
     second["agent_key_expires_at"] = _future_iso(7200)
     persist_nous_credentials(second)
 
-    payload = json.loads((hermes_home / "auth.json").read_text())
+    payload = json.loads((agentic_os_home / "auth.json").read_text())
 
     # providers.nous reflects the latest write (singleton semantics)
     assert payload["providers"]["nous"]["access_token"] == second_token
@@ -1344,12 +1344,12 @@ def test_persist_nous_credentials_reloads_pool_after_singleton_write(tmp_path, m
     """
     from agentic_os_cli.auth import persist_nous_credentials, NOUS_DEVICE_CODE_SOURCE
 
-    hermes_home = tmp_path / "hermes"
-    hermes_home.mkdir(parents=True, exist_ok=True)
-    (hermes_home / "auth.json").write_text(json.dumps({
+    agentic_os_home = tmp_path / "hermes"
+    agentic_os_home.mkdir(parents=True, exist_ok=True)
+    (agentic_os_home / "auth.json").write_text(json.dumps({
         "version": 1, "providers": {},
     }))
-    monkeypatch.setenv("AGENTIC_OS_HOME", str(hermes_home))
+    monkeypatch.setenv("AGENTIC_OS_HOME", str(agentic_os_home))
 
     state = _full_state_fixture()
     entry = persist_nous_credentials(state)
@@ -1371,12 +1371,12 @@ def test_persist_nous_credentials_embeds_custom_label(tmp_path, monkeypatch):
     """
     from agentic_os_cli.auth import persist_nous_credentials, NOUS_DEVICE_CODE_SOURCE
 
-    hermes_home = tmp_path / "hermes"
-    hermes_home.mkdir(parents=True, exist_ok=True)
-    (hermes_home / "auth.json").write_text(json.dumps({
+    agentic_os_home = tmp_path / "hermes"
+    agentic_os_home.mkdir(parents=True, exist_ok=True)
+    (agentic_os_home / "auth.json").write_text(json.dumps({
         "version": 1, "providers": {},
     }))
-    monkeypatch.setenv("AGENTIC_OS_HOME", str(hermes_home))
+    monkeypatch.setenv("AGENTIC_OS_HOME", str(agentic_os_home))
 
     entry = persist_nous_credentials(_full_state_fixture(), label="my-personal")
     assert entry is not None
@@ -1385,7 +1385,7 @@ def test_persist_nous_credentials_embeds_custom_label(tmp_path, monkeypatch):
 
     # providers.nous carries the label so re-seeding on the next load_pool
     # doesn't overwrite it with the auto-derived fingerprint.
-    payload = json.loads((hermes_home / "auth.json").read_text())
+    payload = json.loads((agentic_os_home / "auth.json").read_text())
     assert payload["providers"]["nous"]["label"] == "my-personal"
 
 
@@ -1396,12 +1396,12 @@ def test_persist_nous_credentials_custom_label_survives_reseed(tmp_path, monkeyp
     from agentic_os_cli.auth import persist_nous_credentials
     from agent.credential_pool import load_pool
 
-    hermes_home = tmp_path / "hermes"
-    hermes_home.mkdir(parents=True, exist_ok=True)
-    (hermes_home / "auth.json").write_text(json.dumps({
+    agentic_os_home = tmp_path / "hermes"
+    agentic_os_home.mkdir(parents=True, exist_ok=True)
+    (agentic_os_home / "auth.json").write_text(json.dumps({
         "version": 1, "providers": {},
     }))
-    monkeypatch.setenv("AGENTIC_OS_HOME", str(hermes_home))
+    monkeypatch.setenv("AGENTIC_OS_HOME", str(agentic_os_home))
 
     persist_nous_credentials(_full_state_fixture(), label="work-acct")
 
@@ -1419,12 +1419,12 @@ def test_persist_nous_credentials_no_label_uses_auto_derived(tmp_path, monkeypat
     """
     from agentic_os_cli.auth import persist_nous_credentials
 
-    hermes_home = tmp_path / "hermes"
-    hermes_home.mkdir(parents=True, exist_ok=True)
-    (hermes_home / "auth.json").write_text(json.dumps({
+    agentic_os_home = tmp_path / "hermes"
+    agentic_os_home.mkdir(parents=True, exist_ok=True)
+    (agentic_os_home / "auth.json").write_text(json.dumps({
         "version": 1, "providers": {},
     }))
-    monkeypatch.setenv("AGENTIC_OS_HOME", str(hermes_home))
+    monkeypatch.setenv("AGENTIC_OS_HOME", str(agentic_os_home))
 
     entry = persist_nous_credentials(_full_state_fixture())
     assert entry is not None
@@ -1435,7 +1435,7 @@ def test_persist_nous_credentials_no_label_uses_auto_derived(tmp_path, monkeypat
     assert entry.label != "my-personal"
 
     # No "label" key embedded in providers.nous when the caller didn't supply one.
-    payload = json.loads((hermes_home / "auth.json").read_text())
+    payload = json.loads((agentic_os_home / "auth.json").read_text())
     assert "label" not in payload["providers"]["nous"]
 
 
@@ -1718,17 +1718,17 @@ def test_persist_nous_credentials_mirrors_to_shared_store(
         persist_nous_credentials,
     )
 
-    hermes_home = tmp_path / "hermes"
-    hermes_home.mkdir(parents=True, exist_ok=True)
-    (hermes_home / "auth.json").write_text(
+    agentic_os_home = tmp_path / "hermes"
+    agentic_os_home.mkdir(parents=True, exist_ok=True)
+    (agentic_os_home / "auth.json").write_text(
         json.dumps({"version": 1, "providers": {}})
     )
-    monkeypatch.setenv("AGENTIC_OS_HOME", str(hermes_home))
+    monkeypatch.setenv("AGENTIC_OS_HOME", str(agentic_os_home))
 
     persist_nous_credentials(_full_state_fixture())
 
     # Per-profile auth.json populated
-    payload = json.loads((hermes_home / "auth.json").read_text())
+    payload = json.loads((agentic_os_home / "auth.json").read_text())
     assert "nous" in payload.get("providers", {})
 
     # Shared store populated with the same refresh_token
@@ -2388,16 +2388,16 @@ class TestStalePortalBaseUrlMigration:
         """
         from agentic_os_cli import auth as auth_mod
 
-        hermes_home = tmp_path / "hermes"
-        monkeypatch.setenv("AGENTIC_OS_HOME", str(hermes_home))
+        agentic_os_home = tmp_path / "hermes"
+        monkeypatch.setenv("AGENTIC_OS_HOME", str(agentic_os_home))
         _setup_nous_auth(
-            hermes_home,
+            agentic_os_home,
             access_token=_invoke_jwt(seconds=-60),
             refresh_token="valid-refresh",
             expires_at=_future_iso(-60),
             expires_in=0,
         )
-        auth_file = hermes_home / "auth.json"
+        auth_file = agentic_os_home / "auth.json"
         store = json.loads(auth_file.read_text())
         store["providers"]["nous"]["portal_base_url"] = "https://evil.example.com"
         auth_file.write_text(json.dumps(store, indent=2))
@@ -2428,16 +2428,16 @@ class TestStalePortalBaseUrlMigration:
         """An allowlisted production host is still unsafe over plain HTTP."""
         from agentic_os_cli import auth as auth_mod
 
-        hermes_home = tmp_path / "hermes"
-        monkeypatch.setenv("AGENTIC_OS_HOME", str(hermes_home))
+        agentic_os_home = tmp_path / "hermes"
+        monkeypatch.setenv("AGENTIC_OS_HOME", str(agentic_os_home))
         _setup_nous_auth(
-            hermes_home,
+            agentic_os_home,
             access_token=_invoke_jwt(seconds=-60),
             refresh_token="valid-refresh",
             expires_at=_future_iso(-60),
             expires_in=0,
         )
-        auth_file = hermes_home / "auth.json"
+        auth_file = agentic_os_home / "auth.json"
         store = json.loads(auth_file.read_text())
         store["providers"]["nous"]["portal_base_url"] = (
             "http://portal.nousresearch.com"

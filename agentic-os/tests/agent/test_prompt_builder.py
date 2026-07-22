@@ -762,30 +762,30 @@ class TestBuildContextFilesPrompt:
         assert "type hints" in result
 
     def test_loads_soul_md_from_agentic_os_home_only(self, tmp_path, monkeypatch):
-        monkeypatch.setenv("AGENTIC_OS_HOME", str(tmp_path / "hermes_home"))
-        hermes_home = tmp_path / "hermes_home"
-        hermes_home.mkdir()
-        (hermes_home / "SOUL.md").write_text("Be concise and friendly.", encoding="utf-8")
+        monkeypatch.setenv("AGENTIC_OS_HOME", str(tmp_path / "agentic_os_home"))
+        agentic_os_home = tmp_path / "agentic_os_home"
+        agentic_os_home.mkdir()
+        (agentic_os_home / "SOUL.md").write_text("Be concise and friendly.", encoding="utf-8")
         (tmp_path / "SOUL.md").write_text("cwd soul should be ignored", encoding="utf-8")
         result = build_context_files_prompt(cwd=str(tmp_path))
         assert "Be concise and friendly." in result
         assert "cwd soul should be ignored" not in result
 
     def test_soul_md_has_no_wrapper_text(self, tmp_path, monkeypatch):
-        monkeypatch.setenv("AGENTIC_OS_HOME", str(tmp_path / "hermes_home"))
-        hermes_home = tmp_path / "hermes_home"
-        hermes_home.mkdir()
-        (hermes_home / "SOUL.md").write_text("Be concise and friendly.", encoding="utf-8")
+        monkeypatch.setenv("AGENTIC_OS_HOME", str(tmp_path / "agentic_os_home"))
+        agentic_os_home = tmp_path / "agentic_os_home"
+        agentic_os_home.mkdir()
+        (agentic_os_home / "SOUL.md").write_text("Be concise and friendly.", encoding="utf-8")
         result = build_context_files_prompt(cwd=str(tmp_path))
         assert "Be concise and friendly." in result
         assert "If SOUL.md is present" not in result
         assert "## SOUL.md" not in result
 
     def test_empty_soul_md_adds_nothing(self, tmp_path, monkeypatch):
-        monkeypatch.setenv("AGENTIC_OS_HOME", str(tmp_path / "hermes_home"))
-        hermes_home = tmp_path / "hermes_home"
-        hermes_home.mkdir()
-        (hermes_home / "SOUL.md").write_text("\n\n", encoding="utf-8")
+        monkeypatch.setenv("AGENTIC_OS_HOME", str(tmp_path / "agentic_os_home"))
+        agentic_os_home = tmp_path / "agentic_os_home"
+        agentic_os_home.mkdir()
+        (agentic_os_home / "SOUL.md").write_text("\n\n", encoding="utf-8")
         result = build_context_files_prompt(cwd=str(tmp_path))
         assert result == ""
 
@@ -1366,11 +1366,11 @@ class TestEnvironmentHints:
             )
 
     def test_environment_hint_from_env_var_is_appended(self, monkeypatch):
-        """HERMES_ENVIRONMENT_HINT lets an embedder describe the runtime env."""
+        """AGENTIC_OS_ENVIRONMENT_HINT lets an embedder describe the runtime env."""
         import agent.prompt_builder as _pb
         monkeypatch.setattr(_pb, "is_wsl", lambda: False)
         monkeypatch.delenv("TERMINAL_ENV", raising=False)
-        monkeypatch.setenv("HERMES_ENVIRONMENT_HINT", "Running inside an OpenShell sandbox.")
+        monkeypatch.setenv("AGENTIC_OS_ENVIRONMENT_HINT", "Running inside an OpenShell sandbox.")
         _pb._clear_backend_probe_cache()
         result = _pb.build_environment_hints()
         assert "Running inside an OpenShell sandbox." in result
@@ -1382,7 +1382,7 @@ class TestEnvironmentHints:
         import agent.prompt_builder as _pb
         monkeypatch.setattr(_pb, "is_wsl", lambda: False)
         monkeypatch.delenv("TERMINAL_ENV", raising=False)
-        monkeypatch.setenv("HERMES_ENVIRONMENT_HINT", "ENV-WINS")
+        monkeypatch.setenv("AGENTIC_OS_ENVIRONMENT_HINT", "ENV-WINS")
         monkeypatch.setattr(
             "agentic_os_cli.config.load_config",
             lambda: {"agent": {"environment_hint": "CONFIG-VALUE"}},
@@ -1397,7 +1397,7 @@ class TestEnvironmentHints:
         import agent.prompt_builder as _pb
         monkeypatch.setattr(_pb, "is_wsl", lambda: False)
         monkeypatch.delenv("TERMINAL_ENV", raising=False)
-        monkeypatch.delenv("HERMES_ENVIRONMENT_HINT", raising=False)
+        monkeypatch.delenv("AGENTIC_OS_ENVIRONMENT_HINT", raising=False)
         monkeypatch.setattr(
             "agentic_os_cli.config.load_config",
             lambda: {"agent": {"environment_hint": "CONFIG-VALUE"}},
@@ -1411,7 +1411,7 @@ class TestEnvironmentHints:
         import agent.prompt_builder as _pb
         monkeypatch.setattr(_pb, "is_wsl", lambda: False)
         monkeypatch.delenv("TERMINAL_ENV", raising=False)
-        monkeypatch.delenv("HERMES_ENVIRONMENT_HINT", raising=False)
+        monkeypatch.delenv("AGENTIC_OS_ENVIRONMENT_HINT", raising=False)
         monkeypatch.setattr("agentic_os_cli.config.load_config", lambda: {"agent": {}})
         _pb._clear_backend_probe_cache()
         result = _pb.build_environment_hints()

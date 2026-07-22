@@ -1146,7 +1146,7 @@ class TestMediaDeliveryDefaultMode:
 
         assert BasePlatformAdapter.validate_media_delivery_path(str(secret)) is None
 
-    def test_denylist_blocks_hermes_config_in_active_profile(self, tmp_path, monkeypatch):
+    def test_denylist_blocks_agentic_os_config_in_active_profile(self, tmp_path, monkeypatch):
         """The active profile config stays blocked in default mode."""
         self._patch_roots(monkeypatch)
 

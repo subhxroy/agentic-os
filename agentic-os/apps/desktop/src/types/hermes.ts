@@ -923,7 +923,7 @@ export interface StatusResponse {
   gateway_running: boolean
   gateway_state: string | null
   gateway_updated_at: string | null
-  hermes_home: string
+  agentic_os_home: string
   latest_config_version: number
   release_date: string
   version: string

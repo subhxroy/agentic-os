@@ -52,7 +52,7 @@ def _run_with_current_provider(job, current_provider, tmp_path):
     fake_db = MagicMock()
     with patch("cron.scheduler._agentic_os_home", tmp_path), \
          patch("cron.scheduler._resolve_origin", return_value=None), \
-         patch("agentic_os_cli.env_loader.load_hermes_dotenv"), \
+         patch("agentic_os_cli.env_loader.load_agentic_os_dotenv"), \
          patch("agentic_os_cli.env_loader.reset_secret_source_cache"), \
          patch("agentic_os_state.SessionDB", return_value=fake_db), \
          patch(
@@ -253,7 +253,7 @@ def _run_with_current_provider_and_model(job, current_provider, current_model, t
     with patch("cron.scheduler._agentic_os_home", tmp_path), \
          patch("cron.scheduler._get_agentic_os_home", return_value=tmp_path), \
          patch("cron.scheduler._resolve_origin", return_value=None), \
-         patch("agentic_os_cli.env_loader.load_hermes_dotenv"), \
+         patch("agentic_os_cli.env_loader.load_agentic_os_dotenv"), \
          patch("agentic_os_cli.env_loader.reset_secret_source_cache"), \
          patch("agentic_os_state.SessionDB", return_value=fake_db), \
          patch(
@@ -358,7 +358,7 @@ class TestRuntimeResolutionTargetModel:
         fake_db = MagicMock()
         with patch("cron.scheduler._agentic_os_home", tmp_path), \
              patch("cron.scheduler._resolve_origin", return_value=None), \
-             patch("agentic_os_cli.env_loader.load_hermes_dotenv"), \
+             patch("agentic_os_cli.env_loader.load_agentic_os_dotenv"), \
              patch("agentic_os_cli.env_loader.reset_secret_source_cache"), \
              patch("agentic_os_state.SessionDB", return_value=fake_db), \
              patch(

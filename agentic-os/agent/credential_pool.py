@@ -2312,7 +2312,7 @@ def _seed_from_env(provider: str, entries: List[PooledCredential]) -> Tuple[bool
         env_val = os.environ.get(key, "").strip()
         # If .env contains an unresolved op:// reference, prefer the
         # already-resolved value from os.environ (set by
-        # load_hermes_dotenv() -> apply_onepassword_secrets()).  The raw
+        # load_agentic_os_dotenv() -> apply_onepassword_secrets()).  The raw
         # "op://Vault/Item/field" string would otherwise win and every
         # provider auth attempt would receive a URL instead of a key.  This
         # happens during a partial migration, or when the user wrote op://

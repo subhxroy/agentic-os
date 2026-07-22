@@ -2983,7 +2983,7 @@ async def get_status(profile: Optional[str] = None):
         # split ``should_require_auth`` draws.
         if not auth_required:
             status.update({
-                "hermes_home": str(get_agentic_os_home()),
+                "agentic_os_home": str(get_agentic_os_home()),
                 "config_path": str(get_config_path()),
                 "env_path": str(get_env_path()),
                 "gateway_pid": gateway_pid,
@@ -3956,7 +3956,7 @@ async def transcribe_audio_upload(payload: AudioTranscriptionRequest):
     try:
         suffix = _audio_extension_for_mime(mime_type)
         with tempfile.NamedTemporaryFile(
-            prefix="hermes-desktop-voice-",
+            prefix="agentic-os-desktop-voice-",
             suffix=suffix,
             delete=False,
         ) as tmp:
@@ -5538,13 +5538,13 @@ def _read_json_file(path: Path) -> Dict[str, Any]:
 def _read_memory_provider_existing_values(name: str) -> Dict[str, Any]:
     """Best-effort read of existing provider config across legacy/native stores."""
 
-    hermes_home = get_agentic_os_home()
+    agentic_os_home = get_agentic_os_home()
     values: Dict[str, Any] = {}
 
     # Common native provider stores.
     for path in (
-        hermes_home / f"{name}.json",
-        hermes_home / name / "config.json",
+        agentic_os_home / f"{name}.json",
+        agentic_os_home / name / "config.json",
     ):
         values.update(_read_json_file(path))
 
@@ -9158,7 +9158,7 @@ def _anthropic_oauth_status() -> Dict[str, Any]:
     2. ``ANTHROPIC_API_KEY`` → ``ANTHROPIC_TOKEN`` → ``CLAUDE_CODE_OAUTH_TOKEN``
        env vars (registry order) — from ``.env``, the shell, or an external
        secret source like Bitwarden (whose keys are injected into the process
-       env during ``load_hermes_dotenv()``, so the same check covers them)
+       env during ``load_agentic_os_dotenv()``, so the same check covers them)
 
     Claude Code's ``~/.claude/.credentials.json`` is deliberately NOT read
     here — it has its own dedicated catalog entry (``claude-code`` →
@@ -11445,7 +11445,7 @@ def _annotate_cron_job(job: Dict[str, Any], profile: str, home: Path) -> Dict[st
     annotated = dict(job)
     annotated["profile"] = profile
     annotated["profile_name"] = profile
-    annotated["hermes_home"] = str(home)
+    annotated["agentic_os_home"] = str(home)
     annotated["is_default_profile"] = profile == "default"
     return annotated
 
@@ -12234,7 +12234,7 @@ def _mcp_oauth_callback_url(request: Request, server_name: str) -> str:
 
 
 def _mcp_oauth_transaction(flow) -> threading.Lock:
-    key = (flow.hermes_home, flow.server_name)
+    key = (flow.agentic_os_home, flow.server_name)
     with _mcp_oauth_transactions_lock:
         return _mcp_oauth_transactions.setdefault(key, threading.Lock())
 
@@ -12257,8 +12257,8 @@ def _run_dashboard_mcp_oauth(flow, cfg: dict) -> None:
         from tools.mcp_oauth import HermesTokenStorage, force_interactive_oauth
         from tools.mcp_oauth_manager import get_manager
 
-        home_token = set_AGENTIC_OS_HOME_OVERRIDE(flow.hermes_home)
-        secret_token = set_secret_scope(build_profile_secret_scope(Path(flow.hermes_home)))
+        home_token = set_AGENTIC_OS_HOME_OVERRIDE(flow.agentic_os_home)
+        secret_token = set_secret_scope(build_profile_secret_scope(Path(flow.agentic_os_home)))
         try:
             transaction = _mcp_oauth_transaction(flow)
             with transaction, force_interactive_oauth(), dashboard_oauth_flow(flow):
@@ -12269,7 +12269,7 @@ def _run_dashboard_mcp_oauth(flow, cfg: dict) -> None:
                 try:
                     previous_entry = manager.remove(
                         flow.server_name,
-                        hermes_home=flow.hermes_home,
+                        agentic_os_home=flow.agentic_os_home,
                     )
                     tools = _probe_single_server(
                         flow.server_name,
@@ -12293,7 +12293,7 @@ def _run_dashboard_mcp_oauth(flow, cfg: dict) -> None:
                     manager.restore_entry(
                         flow.server_name,
                         previous_entry,
-                        hermes_home=flow.hermes_home,
+                        agentic_os_home=flow.agentic_os_home,
                     )
                     raise
         finally:
@@ -12347,7 +12347,7 @@ async def auth_mcp_server(name: str, request: Request, profile: Optional[str] = 
         flow_id=flow_id,
         server_name=name,
         profile=profile,
-        hermes_home=flow_home,
+        agentic_os_home=flow_home,
         redirect_uri=(cfg.get("oauth") or {}).get("redirect_uri")
         or _mcp_oauth_callback_url(request, name),
         reconnect_live=flow_home == process_home,
@@ -12364,7 +12364,7 @@ async def auth_mcp_server(name: str, request: Request, profile: Optional[str] = 
             )
         if any(
             flow.server_name == name
-            and flow.hermes_home == flow_home
+            and flow.agentic_os_home == flow_home
             and not flow.worker_done
             for flow in _mcp_oauth_flows.values()
         ):
@@ -13540,7 +13540,7 @@ async def delete_hook(body: HookDelete):
 @app.get("/api/ops/checkpoints")
 async def list_checkpoints():
     """List the /rollback shadow store checkpoints (read-only)."""
-    # Checkpoints live under <hermes_home>/checkpoints/.  Surface a count +
+    # Checkpoints live under <agentic_os_home>/checkpoints/.  Surface a count +
     # total size so the dashboard can show what a prune would reclaim; the
     # actual prune is a spawned action so confirmation/pruning logic stays
     # in one place (the CLI).
@@ -17879,7 +17879,7 @@ def mount_spa(application: FastAPI):
     # `hermes serve` is the headless backend: it must NEVER serve the browser
     # SPA, even if a dist is lying around from a prior `dashboard`/build. Take
     # the no-frontend path so only the JSON-RPC/WS/API surface is reachable.
-    _headless = os.environ.get("HERMES_SERVE_HEADLESS") == "1"
+    _headless = os.environ.get("AGENTIC_OS_SERVE_HEADLESS") == "1"
     if _headless or not WEB_DIST.exists():
         _msg = (
             "Headless backend (hermes serve): web UI disabled — use "
@@ -19061,10 +19061,10 @@ def _write_dashboard_ready_file(actual_port: int) -> None:
 
     Windows Desktop can launch dashboard backends with ``pythonw.exe`` to avoid
     console flashes. That path cannot rely on stdout for the port announcement,
-    so Electron passes ``HERMES_DESKTOP_READY_FILE`` and waits for this JSON.
+    so Electron passes ``AGENTIC_OS_DESKTOP_READY_FILE`` and waits for this JSON.
     Normal CLI/dashboard launches still use the stdout READY line below.
     """
-    target = os.environ.get("HERMES_DESKTOP_READY_FILE")
+    target = os.environ.get("AGENTIC_OS_DESKTOP_READY_FILE")
     if not target:
         return
 
@@ -19154,7 +19154,7 @@ def start_server(
     machine dashboard.
 
     ``headless`` is the ``serve`` path: the JSON-RPC/WS backend with no UI
-    build and no SPA mount (mount_spa() honours ``HERMES_SERVE_HEADLESS``), so
+    build and no SPA mount (mount_spa() honours ``AGENTIC_OS_SERVE_HEADLESS``), so
     the banner announces the bind rather than a browser URL.
     """
     import uvicorn

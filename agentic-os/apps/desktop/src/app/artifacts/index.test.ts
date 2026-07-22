@@ -76,7 +76,7 @@ describe('collectArtifactsForSession', () => {
       throw new Error(`unexpected path ${path}`)
     })
 
-    vi.stubGlobal('window', { hermesDesktop: { api } })
+    vi.stubGlobal('window', { agenticOSDesktop: { api } })
     $connection.set({ baseUrl: 'https://gw', mode: 'remote', token: 'secret' } as never)
 
     const path = '/Users/me/.hermes/skills/work-esab/references/images/manual-step03.jpeg'

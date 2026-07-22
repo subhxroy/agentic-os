@@ -27,10 +27,10 @@ import { $workspaceChangeTick } from './workspace-events'
 // event is addressed by pane id).
 export const REVIEW_PANE_ID = 'review'
 
-const OPEN_KEY = 'hermes.desktop.reviewOpen'
-const COMMIT_DEFAULT_KEY = 'hermes.desktop.reviewCommitDefault'
-const TREE_MODE_KEY = 'hermes.desktop.reviewTreeMode'
-const SELECTED_KEY = 'hermes.desktop.reviewSelectedPath'
+const OPEN_KEY = 'agentic-os.desktop.reviewOpen'
+const COMMIT_DEFAULT_KEY = 'agentic-os.desktop.reviewCommitDefault'
+const TREE_MODE_KEY = 'agentic-os.desktop.reviewTreeMode'
+const SELECTED_KEY = 'agentic-os.desktop.reviewSelectedPath'
 const REVIEW_REFRESH_DEBOUNCE_MS = 100
 const SHIP_INFO_STALE_MS = 30_000
 
@@ -86,7 +86,7 @@ export const $reviewCommitMsgBusy = atom(false)
 
 const repoCwd = (): null | string => $currentCwd.get()?.trim() || null
 
-type ReviewBridge = NonNullable<NonNullable<NonNullable<Window['hermesDesktop']>['git']>['review']>
+type ReviewBridge = NonNullable<NonNullable<NonNullable<Window['agenticOSDesktop']>['git']>['review']>
 let reviewRefreshSeq = 0
 let reviewRefreshTimer: ReturnType<typeof setTimeout> | null = null
 let shipInfoSeq = 0
@@ -438,7 +438,7 @@ export async function createOrOpenPr(): Promise<void> {
   const existing = $reviewShipInfo.get().pr
 
   if (existing?.url) {
-    void window.hermesDesktop?.openExternal?.(existing.url)
+    void window.agenticOSDesktop?.openExternal?.(existing.url)
 
     return
   }
@@ -447,7 +447,7 @@ export async function createOrOpenPr(): Promise<void> {
     const { url } = await ctx.review.createPr(ctx.cwd)
 
     if (url) {
-      void window.hermesDesktop?.openExternal?.(url)
+      void window.agenticOSDesktop?.openExternal?.(url)
     }
 
     void refreshShipInfo()

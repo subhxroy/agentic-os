@@ -2,8 +2,8 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { canOpenNewWindow, canOpenSessionWindow, openNewWindow, openSessionInNewWindow } from './windows'
 
-const desktopWindow = window as unknown as { hermesDesktop?: Window['hermesDesktop'] }
-const initialHermesDesktop = desktopWindow.hermesDesktop
+const desktopWindow = window as unknown as { agenticOSDesktop?: Window['agenticOSDesktop'] }
+const initialHermesDesktop = desktopWindow.agenticOSDesktop
 
 const notifyError = vi.fn()
 
@@ -12,13 +12,13 @@ vi.mock('./notifications', () => ({
 }))
 
 function installBridge(
-  openSessionWindow?: Window['hermesDesktop']['openSessionWindow'],
-  openWindow?: Window['hermesDesktop']['openWindow']
+  openSessionWindow?: Window['agenticOSDesktop']['openSessionWindow'],
+  openWindow?: Window['agenticOSDesktop']['openWindow']
 ) {
-  desktopWindow.hermesDesktop = {
+  desktopWindow.agenticOSDesktop = {
     ...(openSessionWindow ? { openSessionWindow } : {}),
     ...(openWindow ? { openWindow } : {})
-  } as unknown as Window['hermesDesktop']
+  } as unknown as Window['agenticOSDesktop']
 }
 
 beforeEach(() => {
@@ -27,15 +27,15 @@ beforeEach(() => {
 
 afterEach(() => {
   if (initialHermesDesktop) {
-    desktopWindow.hermesDesktop = initialHermesDesktop
+    desktopWindow.agenticOSDesktop = initialHermesDesktop
   } else {
-    delete desktopWindow.hermesDesktop
+    delete desktopWindow.agenticOSDesktop
   }
 })
 
 describe('canOpenSessionWindow', () => {
   it('is false when the desktop bridge is absent', () => {
-    delete desktopWindow.hermesDesktop
+    delete desktopWindow.agenticOSDesktop
     expect(canOpenSessionWindow()).toBe(false)
   })
 
@@ -62,7 +62,7 @@ describe('openSessionInNewWindow', () => {
   })
 
   it('no-ops gracefully when the bridge is absent (web fallback)', async () => {
-    delete desktopWindow.hermesDesktop
+    delete desktopWindow.agenticOSDesktop
 
     await openSessionInNewWindow('s1')
 
@@ -108,7 +108,7 @@ describe('openSessionInNewWindow', () => {
 
 describe('canOpenNewWindow', () => {
   it('is false when the desktop bridge is absent', () => {
-    delete desktopWindow.hermesDesktop
+    delete desktopWindow.agenticOSDesktop
     expect(canOpenNewWindow()).toBe(false)
   })
 
@@ -125,7 +125,7 @@ describe('canOpenNewWindow', () => {
 
 describe('openNewWindow', () => {
   it('no-ops gracefully when the bridge is absent (web fallback)', async () => {
-    delete desktopWindow.hermesDesktop
+    delete desktopWindow.agenticOSDesktop
 
     await openNewWindow()
 

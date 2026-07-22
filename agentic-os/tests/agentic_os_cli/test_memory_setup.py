@@ -96,7 +96,7 @@ def test_cmd_setup_clears_interactive_picker_before_provider_post_setup(monkeypa
     events = []
 
     class PostSetupProvider:
-        def post_setup(self, hermes_home, config):
+        def post_setup(self, agentic_os_home, config):
             events.append("post_setup")
 
     monkeypatch.setattr(memory_setup, "_get_available_providers", lambda: [("openviking", "local", PostSetupProvider())])
@@ -115,7 +115,7 @@ def test_cmd_setup_provider_clears_before_provider_post_setup(monkeypatch):
     events = []
 
     class PostSetupProvider:
-        def post_setup(self, hermes_home, config):
+        def post_setup(self, agentic_os_home, config):
             events.append("post_setup")
 
     monkeypatch.setattr(memory_setup, "_get_available_providers", lambda: [("openviking", "local", PostSetupProvider())])

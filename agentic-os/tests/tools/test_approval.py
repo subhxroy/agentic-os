@@ -935,7 +935,7 @@ class TestSensitiveCopyMovePattern:
         dangerous, key, desc = detect_dangerous_command("cp /tmp/e ~/.bashrc")
         assert dangerous is True
 
-    def test_cp_to_hermes_config(self):
+    def test_cp_to_agentic_os_config(self):
         dangerous, key, desc = detect_dangerous_command("cp /tmp/evil.yaml ~/.agentic-os/config.yaml")
         assert dangerous is True
 

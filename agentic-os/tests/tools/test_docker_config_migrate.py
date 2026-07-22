@@ -23,11 +23,11 @@ def _load_script_module():
     return module
 
 
-def _run_migration(hermes_home: Path, **env_overrides: str) -> subprocess.CompletedProcess[str]:
+def _run_migration(agentic_os_home: Path, **env_overrides: str) -> subprocess.CompletedProcess[str]:
     env = os.environ.copy()
     env.update(
         {
-            "AGENTIC_OS_HOME": str(hermes_home),
+            "AGENTIC_OS_HOME": str(agentic_os_home),
             "HERMES_SKIP_CHMOD": "1",
             "PYTHONPATH": str(REPO_ROOT),
         }
