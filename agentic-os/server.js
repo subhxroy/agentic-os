@@ -2,7 +2,7 @@
 /**
  * Agentic OS — Interactive Node.js Launcher
  * ============================================
- * Launches Agentic OS surfaces: CLI, TUI, Localhost Web Dashboard, or Electron Desktop App.
+ * Launches Agentic OS surfaces: CLI, TUI, Localhost Web Dashboard, Electron Desktop, or Custom LLM Provider Setup.
  *
  * Usage:
  *   node server.js              # Interactive selection menu
@@ -12,6 +12,7 @@
  *   node server.js --voice      # Voice Mode
  *   node server.js --gateway    # Platform Gateway
  *   node server.js --status     # System & API status
+ *   node server.js --add-provider # Add custom LLM provider & API key
  */
 
 const { spawn, execSync } = require('child_process');
@@ -147,6 +148,7 @@ function promptSelection() {
     console.log('    \x1b[32m[5]\x1b[0m Voice Mode           (Push-to-talk speech-to-text & TTS)');
     console.log('    \x1b[32m[6]\x1b[0m Multi-Platform Gateway (Telegram, Discord, Slack, etc.)');
     console.log('    \x1b[32m[7]\x1b[0m System Status Check  (API keys & Obsidian vault status)');
+    console.log('    \x1b[32m[8]\x1b[0m Add Custom Provider  (Base URL, API Key & Bearer / x-api-key / Custom Header)');
     console.log('');
 
     const rl = readline.createInterface({
@@ -154,7 +156,7 @@ function promptSelection() {
         output: process.stdout,
     });
 
-    rl.question('  Enter choice [1-7] (default: 1): ', (answer) => {
+    rl.question('  Enter choice [1-8] (default: 1): ', (answer) => {
         rl.close();
         const choice = (answer || '1').trim();
         console.log('');
@@ -185,6 +187,11 @@ function promptSelection() {
             case '7':
                 launchPythonMode('--status');
                 break;
+            case '8':
+            case 'add-provider':
+            case 'custom-provider':
+                launchPythonMode('--add-provider');
+                break;
             default:
                 console.log('Invalid selection, launching default CLI mode...');
                 launchPythonMode(null);
@@ -205,6 +212,8 @@ function main() {
         launchElectron();
     } else if (flag === '--localhost' || flag === '--web') {
         launchPythonMode('--dashboard');
+    } else if (flag === '--add-provider' || flag === '--custom-provider') {
+        launchPythonMode('--add-provider');
     } else {
         launchPythonMode(rawArgs[0]);
     }

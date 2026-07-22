@@ -294,6 +294,12 @@ def _has_value(env_text: str, key: str) -> bool:
     return False
 
 
+
+def cmd_add_provider(args):
+    setup_environment()
+    from agentic_os_cli.custom_provider_wizard import run_custom_provider_wizard
+    run_custom_provider_wizard()
+
 def cmd_setup(args):
     setup_environment()
     print("\n  Agentic OS — Setup\n")
@@ -328,6 +334,7 @@ Modes:
     parser.add_argument("--dashboard", action="store_true", help="Start web dashboard")
     parser.add_argument("--status", action="store_true", help="Show status")
     parser.add_argument("--setup", action="store_true", help="Setup instructions")
+    parser.add_argument("--add-provider", action="store_true", help="Add custom LLM provider & API key")
 
     args = parser.parse_args()
 
@@ -343,6 +350,8 @@ Modes:
         cmd_status(args)
     elif args.setup:
         cmd_setup(args)
+    elif args.add_provider:
+        cmd_add_provider(args)
     else:
         cmd_cli(args)
 
