@@ -21,7 +21,7 @@ import {
   resetSidebarBatchCapability,
   speakText,
   transcribeAudio
-} from './hermes'
+} from './agentic-os'
 import { refreshActiveProfile } from './store/profile'
 
 const emptySessionsResponse = {

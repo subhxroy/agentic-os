@@ -47,7 +47,7 @@ vi.mock('@/store/gateway', () => ({
 
 vi.mock('@/lib/desktop-git', () => ({ desktopGit: vi.fn() }))
 
-vi.mock('@/hermes', () => ({
+vi.mock('@/agentic-os', () => ({
   getHermesConfig: vi.fn(),
   getProfiles: vi.fn(),
   setApiRequestProfile: vi.fn(),
@@ -66,7 +66,7 @@ const gatewayAtom = gw.$gateway
 const git = await import('@/lib/desktop-git')
 const desktopGit = vi.mocked(git.desktopGit)
 
-const hermes = await import('@/hermes')
+const hermes = await import('@/agentic-os')
 const getHermesConfig = vi.mocked(hermes.getHermesConfig)
 const notifications = await import('@/store/notifications')
 const notify = vi.mocked(notifications.notify)

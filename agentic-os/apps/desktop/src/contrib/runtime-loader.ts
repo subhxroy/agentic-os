@@ -27,7 +27,7 @@
  * trust seam.
  */
 
-import { getStatus } from '@/hermes'
+import { getStatus } from '@/agentic-os'
 import { installPluginSdk, sdkImportMap } from '@/sdk/runtime'
 import { notifyError } from '@/store/notifications'
 

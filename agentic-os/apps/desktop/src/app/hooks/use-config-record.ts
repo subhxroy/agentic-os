@@ -1,8 +1,8 @@
 import { useQuery } from '@tanstack/react-query'
 
-import { getHermesConfigRecord } from '@/hermes'
+import { getHermesConfigRecord } from '@/agentic-os'
 import { queryClient, writeCache } from '@/lib/query-client'
-import type { HermesConfigRecord } from '@/types/hermes'
+import type { HermesConfigRecord } from '@/types/agentic-os'
 
 // One shared cache for the whole profile config record (`GET /api/config`).
 // Every settings surface (MCP, model, config) reads and writes through this key

@@ -7,7 +7,7 @@ import type { ClientSessionState } from '@/app/types'
 import { createClientSessionState } from '@/lib/chat-runtime'
 import type { TodoItem } from '@/lib/todos'
 import { $todosBySession, clearSessionTodos, setSessionTodos } from '@/store/todos'
-import type { RpcEvent } from '@/types/hermes'
+import type { RpcEvent } from '@/types/agentic-os'
 
 import { useMessageStream } from './index'
 

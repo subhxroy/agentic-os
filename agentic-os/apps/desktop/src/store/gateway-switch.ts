@@ -1,6 +1,6 @@
 import { atom } from 'nanostores'
 
-import { resetSidebarBatchCapability } from '@/hermes'
+import { resetSidebarBatchCapability } from '@/agentic-os'
 import { invalidateProfileScopedQueries } from '@/lib/query-client'
 import { resetSessionsLimit } from '@/store/layout'
 import {

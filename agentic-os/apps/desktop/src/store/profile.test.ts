@@ -2,7 +2,7 @@ import { atom } from 'nanostores'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import type { HermesConnection } from '@/global'
-import type { ProfileInfo } from '@/types/hermes'
+import type { ProfileInfo } from '@/types/agentic-os'
 
 // Keep profile.ts's side-effecting imports inert: the gateway socket layer and
 // the REST query client must not run for real in a unit test.
@@ -12,7 +12,7 @@ const $gateway = atom<unknown>({ id: 'live-socket' })
 const resetStarmapGraph = vi.fn()
 
 vi.mock('@/store/gateway', () => ({ $gateway, ensureGatewayForProfile, openGatewayForProfile }))
-vi.mock('@/hermes', () => ({
+vi.mock('@/agentic-os', () => ({
   getProfiles: vi.fn(async () => ({ profiles: [] })),
   setApiRequestProfile: vi.fn()
 }))
@@ -24,7 +24,7 @@ const { $activeGatewayProfile, $profiles, ensureGatewayProfile, prewarmProfileBa
 
 const { $connection } = await import('./session')
 const { invalidateProfileScopedQueries } = await import('@/lib/query-client')
-const { getProfiles } = await import('@/hermes')
+const { getProfiles } = await import('@/agentic-os')
 
 const profile = (name: string, isDefault = false): ProfileInfo => ({
   has_env: false,

@@ -1,5 +1,5 @@
 import type { HermesGitWorktree } from '@/global'
-import type { ProjectInfo, SessionInfo } from '@/hermes'
+import type { ProjectInfo, SessionInfo } from '@/agentic-os'
 import { normalize } from '@/lib/text'
 
 // Session grouping is now computed authoritatively on the backend

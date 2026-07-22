@@ -9,7 +9,7 @@ import {
   setCurrentCwd,
   setNewChatWorkspaceTarget
 } from '@/store/session'
-import type { SessionRuntimeInfo } from '@/types/hermes'
+import type { SessionRuntimeInfo } from '@/types/agentic-os'
 
 interface CwdActionsOptions {
   activeSessionId: string | null

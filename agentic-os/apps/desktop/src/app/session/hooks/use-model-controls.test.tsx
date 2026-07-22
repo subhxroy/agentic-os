@@ -2,7 +2,7 @@ import { QueryClient } from '@tanstack/react-query'
 import { cleanup, render, renderHook } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
-import { getGlobalModelInfo } from '@/hermes'
+import { getGlobalModelInfo } from '@/agentic-os'
 import {
   $activeSessionId,
   $currentModel,
@@ -29,7 +29,7 @@ function deferred<T>() {
   return { promise, resolve }
 }
 
-vi.mock('@/hermes', () => ({
+vi.mock('@/agentic-os', () => ({
   getGlobalModelInfo: vi.fn(),
   setApiRequestProfile: vi.fn(),
   setGlobalModel: (...args: Parameters<typeof setGlobalModel>) => setGlobalModel(...args)

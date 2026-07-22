@@ -2,7 +2,7 @@
 import { act, renderHook } from '@testing-library/react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-import { getHermesConfig } from '@/hermes'
+import { getHermesConfig } from '@/agentic-os'
 import { persistString } from '@/lib/storage'
 import {
   $currentCwd,
@@ -17,7 +17,7 @@ import {
 
 import { useAgenticOSConfig } from './use-agentic-os-config'
 
-vi.mock('@/hermes', () => ({
+vi.mock('@/agentic-os', () => ({
   getHermesConfig: vi.fn(),
   getHermesConfigDefaults: vi.fn().mockResolvedValue({})
 }))

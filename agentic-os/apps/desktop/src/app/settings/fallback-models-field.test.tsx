@@ -11,7 +11,7 @@ beforeAll(() => {
 
 const getGlobalModelOptions = vi.fn()
 
-vi.mock('@/hermes', () => ({
+vi.mock('@/agentic-os', () => ({
   getGlobalModelOptions: () => getGlobalModelOptions()
 }))
 

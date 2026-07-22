@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import { PageLoader } from '@/components/page-loader'
 import { useI18n } from '@/i18n'
 import { $starmapError, $starmapGraph, $starmapLoading, loadStarmapGraph } from '@/store/starmap'
-import type { StarmapGraph } from '@/types/hermes'
+import type { StarmapGraph } from '@/types/agentic-os'
 
 import { Panel, PanelEmpty } from '../overlays/panel'
 

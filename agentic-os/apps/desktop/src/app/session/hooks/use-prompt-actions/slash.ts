@@ -1,6 +1,6 @@
 import { type MutableRefObject, useCallback } from 'react'
 
-import { getProfiles } from '@/hermes'
+import { getProfiles } from '@/agentic-os'
 import type { Translations } from '@/i18n'
 import { type ChatMessage } from '@/lib/chat-messages'
 import { parseCommandDispatch, parseSlashCommand, sessionTitle } from '@/lib/chat-runtime'

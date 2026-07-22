@@ -1,7 +1,7 @@
 import { type ConnectionState, type GatewayEvent, resolveGatewayWsUrl } from '@agentic-os/shared'
 import { atom } from 'nanostores'
 
-import { HermesGateway } from '@/hermes'
+import { HermesGateway } from '@/agentic-os'
 import { setGatewayState } from '@/store/session'
 
 // ── Multi-profile gateway routing ──────────────────────────────────────────

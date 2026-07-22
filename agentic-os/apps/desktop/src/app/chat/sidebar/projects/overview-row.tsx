@@ -3,7 +3,7 @@ import { useRef } from 'react'
 
 import { Codicon } from '@/components/ui/codicon'
 import { DisclosureCaret } from '@/components/ui/disclosure-caret'
-import type { SessionInfo } from '@/hermes'
+import type { SessionInfo } from '@/agentic-os'
 import { useI18n } from '@/i18n'
 import { cn } from '@/lib/utils'
 

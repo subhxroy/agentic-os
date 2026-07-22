@@ -1,7 +1,7 @@
 import type * as React from 'react'
 
 import type { ChatMessage } from '@/lib/chat-messages'
-import type { UsageStats } from '@/types/hermes'
+import type { UsageStats } from '@/types/agentic-os'
 
 export interface ContextSuggestion {
   text: string

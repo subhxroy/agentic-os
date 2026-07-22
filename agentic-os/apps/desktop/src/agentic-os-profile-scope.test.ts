@@ -9,7 +9,7 @@ import {
   saveMemoryProviderConfig,
   setApiRequestProfile,
   updateHermes
-} from './hermes'
+} from './agentic-os'
 
 // Contract: every backend-targeted action helper must carry the active gateway
 // profile, so a multi-profile / global-remote user's restart, status poll, and

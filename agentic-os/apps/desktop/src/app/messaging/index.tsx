@@ -14,7 +14,7 @@ import {
   type MessagingEnvVarInfo,
   type MessagingPlatformInfo,
   updateMessagingPlatform
-} from '@/hermes'
+} from '@/agentic-os'
 import { type Translations, useI18n } from '@/i18n'
 import { openExternalLink } from '@/lib/external-link'
 import { ExternalLink, Save, Trash2 } from '@/lib/icons'

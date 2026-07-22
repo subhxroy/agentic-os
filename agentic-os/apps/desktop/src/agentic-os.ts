@@ -59,7 +59,7 @@ import type {
   ToolsetConfig,
   ToolsetInfo,
   ToolsetModelsResponse
-} from '@/types/hermes'
+} from '@/types/agentic-os'
 
 // Desktop startup fires a burst of read-only data calls (config, profiles,
 // model info/options, cron) the moment the backend passes readiness. On a
@@ -203,7 +203,7 @@ export type {
   ToolsetInfo,
   ToolsetModel,
   ToolsetModelsResponse
-} from '@/types/hermes'
+} from '@/types/agentic-os'
 
 export class HermesGateway extends JsonRpcGatewayClient {
   constructor() {

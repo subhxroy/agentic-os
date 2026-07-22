@@ -1,9 +1,9 @@
 import { useEffect } from 'react'
 
-import { getSessionMessages, PROMPT_SUBMIT_REQUEST_TIMEOUT_MS } from '@/hermes'
+import { getSessionMessages, PROMPT_SUBMIT_REQUEST_TIMEOUT_MS } from '@/agentic-os'
 import { toChatMessages } from '@/lib/chat-messages'
 import { publishSessionState, setSessionTileDelegate } from '@/store/session-states'
-import type { SessionResumeResponse } from '@/types/hermes'
+import type { SessionResumeResponse } from '@/types/agentic-os'
 
 import type { usePromptActions } from '../../session/hooks/use-prompt-actions'
 import type { useSessionStateCache } from '../../session/hooks/use-session-state-cache'

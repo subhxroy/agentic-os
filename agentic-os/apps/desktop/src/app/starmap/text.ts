@@ -1,5 +1,5 @@
 import { fmtDate } from '@/lib/time'
-import type { StarmapNode } from '@/types/hermes'
+import type { StarmapNode } from '@/types/agentic-os'
 
 export function formatDate(ts?: null | number): string {
   if (!ts) {

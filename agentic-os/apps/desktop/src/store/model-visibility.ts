@@ -1,7 +1,7 @@
 import { atom } from 'nanostores'
 
 import { persistString, storedString } from '@/lib/storage'
-import type { ModelOptionProvider } from '@/types/hermes'
+import type { ModelOptionProvider } from '@/types/agentic-os'
 
 const STORAGE_KEY = 'agentic-os.desktop.visible-models'
 

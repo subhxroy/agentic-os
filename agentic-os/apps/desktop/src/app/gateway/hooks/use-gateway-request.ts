@@ -2,7 +2,7 @@ import { isGatewayReauthRequired, resolveGatewayWsUrl } from '@agentic-os/shared
 import { useStore } from '@nanostores/react'
 import { useCallback, useEffect, useRef } from 'react'
 
-import type { HermesGateway } from '@/hermes'
+import type { HermesGateway } from '@/agentic-os'
 import { $gateway, ensureActiveGatewayOpen, isActivePrimary } from '@/store/gateway'
 import { $activeGatewayProfile } from '@/store/profile'
 import { $gatewayState, setConnection } from '@/store/session'

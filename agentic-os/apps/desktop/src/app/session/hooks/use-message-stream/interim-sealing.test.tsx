@@ -7,7 +7,7 @@ import type { ClientSessionState } from '@/app/types'
 import { chatMessageText } from '@/lib/chat-messages'
 import { createClientSessionState } from '@/lib/chat-runtime'
 import { clearSessionTodos } from '@/store/todos'
-import type { RpcEvent } from '@/types/hermes'
+import type { RpcEvent } from '@/types/agentic-os'
 
 import { useMessageStream } from './index'
 

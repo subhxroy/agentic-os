@@ -1,5 +1,5 @@
-import { getGlobalModelOptions, type HermesGateway, type ModelOptionsResponse } from '@/hermes'
-import type { ModelOptionProvider } from '@/types/hermes'
+import { getGlobalModelOptions, type HermesGateway, type ModelOptionsResponse } from '@/agentic-os'
+import type { ModelOptionProvider } from '@/types/agentic-os'
 
 /**
  * True only when a persisted **manual** composer pick has been removed from the

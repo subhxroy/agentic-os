@@ -5,9 +5,9 @@ import { useI18n } from '@/i18n'
 import { requestModelOptions } from '@/lib/model-options'
 import { currentPickerSelection } from '@/lib/model-status-label'
 import { normalize } from '@/lib/text'
-import type { ModelOptionProvider, ModelPricing } from '@/types/hermes'
+import type { ModelOptionProvider, ModelPricing } from '@/types/agentic-os'
 
-import type { HermesGateway } from '../hermes'
+import type { HermesGateway } from '../agentic-os'
 import { cn } from '../lib/utils'
 import { startManualOnboarding } from '../store/onboarding'
 
