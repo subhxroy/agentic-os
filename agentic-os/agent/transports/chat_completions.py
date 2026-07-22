@@ -1,3 +1,31 @@
+
+def _normalize_model_for_completion(model: str, base_url: str = "", provider: str = "") -> str:
+    """Normalize model string before sending payload to inference endpoint.
+
+    Strips provider prefixes (e.g. 'ollama/qwen2.5-coder:7b' -> 'qwen2.5-coder:7b')
+    so local servers like Ollama/vLLM/LMStudio receive their exact local model tag.
+    """
+    if not model or not isinstance(model, str):
+        return model
+
+    eff_base = (base_url or "").lower()
+    prov_lower = (provider or "").lower()
+    is_ollama = "11434" in eff_base or "ollama" in eff_base or prov_lower in {"ollama", "ollama-local", "ollama-cloud"}
+
+    if "/" in model:
+        prefix, tag = model.split("/", 1)
+        prefix_lower = prefix.strip().lower()
+        if prefix_lower in {"ollama", "ollama-local", "ollama-cloud", "custom", "lmstudio"} or is_ollama:
+            return tag
+
+    if ":" in model and not model.startswith("http"):
+        parts = model.split(":", 1)
+        prefix_lower = parts[0].strip().lower()
+        if prefix_lower in {"ollama", "custom", "local"}:
+            return parts[1]
+
+    return model
+
 """OpenAI Chat Completions transport.
 
 Handles the default api_mode ('chat_completions') used by ~16 OpenAI-compatible
@@ -355,8 +383,9 @@ class ChatCompletionsTransport(ProviderTransport):
             sanitized = list(sanitized)
             sanitized[0] = {**sanitized[0], "role": "developer"}
 
+        eff_model = _normalize_model_for_completion(model, base_url=params.get("base_url", ""), provider=params.get("provider", ""))
         api_kwargs: dict[str, Any] = {
-            "model": model,
+            "model": eff_model,
             "messages": sanitized,
         }
 
@@ -533,8 +562,9 @@ class ChatCompletionsTransport(ProviderTransport):
             sanitized = list(sanitized)
             sanitized[0] = {**sanitized[0], "role": "developer"}
 
+        eff_model = _normalize_model_for_completion(model, base_url=params.get("base_url", ""), provider=params.get("provider", ""))
         api_kwargs: dict[str, Any] = {
-            "model": model,
+            "model": eff_model,
             "messages": sanitized,
         }
 
