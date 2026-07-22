@@ -23,6 +23,7 @@
 ```text
 agentic-os/
 ├── README.md               # Main project overview & quickstart
+├── server.js               # Node.js entry point (node server.js)
 ├── launch.py               # Unified launcher (CLI, TUI, Voice, Gateway, Dashboard)
 ├── obsidian-brain/         # Persistent Obsidian markdown memory vault & knowledge graph
 │   ├── README.md
@@ -44,26 +45,17 @@ agentic-os/
 Run the unified launcher from the workspace root:
 
 ```bash
-# 1. Interactive CLI Mode (default)
-python launch.py
+# Node.js Launcher (Node.js)
+node server.js              # Interactive CLI (or pass flags like --tui, --voice, --gateway)
 
-# 2. Modern Terminal UI (Ink/React TUI)
-python launch.py --tui
-
-# 3. Voice Mode (Push-to-talk speech-to-text & text-to-speech)
-python launch.py --voice
-
-# 4. Multi-Platform Gateway (Telegram, Discord, Slack, WhatsApp, Signal)
-python launch.py --gateway
-
-# 5. Web Dashboard (Localhost SPA & API server)
-python launch.py --dashboard
-
-# 6. Check System Status & API Configuration
-python launch.py --status
-
-# 7. Setup Guide
-python launch.py --setup
+# Python Launcher
+python launch.py            # Interactive CLI Mode (default)
+python launch.py --tui      # Modern Terminal UI (Ink/React TUI)
+python launch.py --voice    # Voice Mode (Push-to-talk STT & TTS)
+python launch.py --gateway  # Multi-Platform Gateway (Telegram, Discord, Slack, etc.)
+python launch.py --dashboard# Web Dashboard (Localhost SPA & API server)
+python launch.py --status   # Check System Status & API Configuration
+python launch.py --setup    # Setup Guide
 ```
 
 ---
