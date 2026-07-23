@@ -8,9 +8,21 @@ token budget tracking, cache-aware routing, and graceful fallback chains.
 from __future__ import annotations
 
 import json
+import re
 import time
 from pathlib import Path
 from typing import Dict, List, Any, Optional
+
+# Standard Model Pricing Table (USD per 1,000 tokens)
+MODEL_PRICING_PER_1K: Dict[str, Dict[str, float]] = {
+    "gpt-4o": {"input": 0.0025, "output": 0.0100},
+    "gpt-4o-mini": {"input": 0.00015, "output": 0.0006},
+    "claude-3-5-sonnet": {"input": 0.0030, "output": 0.0150},
+    "claude-3-haiku": {"input": 0.00025, "output": 0.00125},
+    "deepseek-chat": {"input": 0.00014, "output": 0.00028},
+    "ollama/llama3": {"input": 0.0, "output": 0.0},
+    "local": {"input": 0.0, "output": 0.0},
+}
 
 
 class SmartModelRouter:
@@ -54,14 +66,16 @@ class SmartModelRouter:
         word_count = len(text.split())
 
         indicators_complex = [
-            "refactor", "architect", "debug", "benchmark", "optimize",
-            "proof", "theorem", "multi-step", "security audit", "vulnerability"
+            r"\brefactor\b", r"\barchitect\b", r"\bdebug\b", r"\bbenchmark\b",
+            r"\boptimize\b", r"\bproof\b", r"\btheorem\b", r"\bsecurity audit\b",
+            r"\bvulnerability\b", r"\bmulti-step\b"
         ]
-        indicators_simple = ["hi", "hello", "thanks", "status", "version", "help", "who are you"]
+        indicators_simple = [r"\bhi\b", r"\bhello\b", r"\bthanks\b", r"\bstatus\b", r"\bversion\b", r"\bwho are you\b"]
 
-        complex_matches = sum(1 for kw in indicators_complex if kw in text)
+        complex_matches = sum(1 for kw in indicators_complex if re.search(kw, text))
+        simple_matches = sum(1 for kw in indicators_simple if re.search(kw, text))
 
-        if word_count < 30 and any(s in text for s in indicators_simple) and complex_matches == 0:
+        if word_count < 30 and simple_matches > 0 and complex_matches == 0:
             return "simple"
         elif complex_matches >= 2 or word_count > 400 or tools_count > 15:
             return "complex"
@@ -117,12 +131,21 @@ class SmartModelRouter:
             "daily_budget_usd": self.daily_budget_usd,
         }
 
-    def record_usage(self, model: str, prompt_tokens: int, completion_tokens: int, estimated_cost_usd: float):
+    def calculate_cost(self, model: str, prompt_tokens: int, completion_tokens: int) -> float:
+        """Estimates cost in USD based on token counts and model pricing."""
+        rates = MODEL_PRICING_PER_1K.get(model, {"input": 0.0015, "output": 0.0030})
+        cost = (prompt_tokens / 1000.0 * rates["input"]) + (completion_tokens / 1000.0 * rates["output"])
+        return round(cost, 6)
+
+    def record_usage(self, model: str, prompt_tokens: int, completion_tokens: int, cost_usd: Optional[float] = None):
         """Records token spend for analytics and budget tracking."""
+        if cost_usd is None:
+            cost_usd = self.calculate_cost(model, prompt_tokens, completion_tokens)
+
         today = time.strftime("%Y-%m-%d")
         if "daily_spend" not in self.usage_data:
             self.usage_data["daily_spend"] = {}
-        self.usage_data["daily_spend"][today] = self.usage_data["daily_spend"].get(today, 0.0) + estimated_cost_usd
+        self.usage_data["daily_spend"][today] = round(self.usage_data["daily_spend"].get(today, 0.0) + cost_usd, 6)
 
         record = {
             "timestamp": time.time(),
@@ -130,7 +153,7 @@ class SmartModelRouter:
             "model": model,
             "prompt_tokens": prompt_tokens,
             "completion_tokens": completion_tokens,
-            "cost_usd": estimated_cost_usd,
+            "cost_usd": cost_usd,
         }
         self.usage_data.setdefault("records", []).append(record)
         self._save_usage()

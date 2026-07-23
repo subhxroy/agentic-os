@@ -11,7 +11,7 @@ import json
 import time
 import hashlib
 from pathlib import Path
-from typing import Dict, List, Any, Optional
+from typing import Dict, List, Any, Optional, Set
 
 from tools.registry import registry
 
@@ -38,6 +38,31 @@ class WorkflowEngine:
         self.workflows_file.write_text(json.dumps(self.workflows, indent=2), encoding="utf-8")
         self.rules_file.write_text(json.dumps(self.rules, indent=2), encoding="utf-8")
 
+    def detect_cycles(self, nodes: List[Dict[str, Any]]) -> bool:
+        """Returns True if a cycle is detected in the proposed DAG workflow nodes."""
+        adj: Dict[str, List[str]] = {node["id"]: node.get("dependencies", []) for node in nodes}
+        visited: Set[str] = set()
+        rec_stack: Set[str] = set()
+
+        def dfs(node_id: str) -> bool:
+            visited.add(node_id)
+            rec_stack.add(node_id)
+            for neighbor in adj.get(node_id, []):
+                if neighbor not in visited:
+                    if dfs(neighbor):
+                        return True
+                elif neighbor in rec_stack:
+                    return True
+            rec_stack.remove(node_id)
+            return False
+
+        for node in nodes:
+            nid = node["id"]
+            if nid not in visited:
+                if dfs(nid):
+                    return True
+        return False
+
     def create_workflow(
         self,
         workflow_name: str,
@@ -45,11 +70,11 @@ class WorkflowEngine:
         description: str = "",
     ) -> Dict[str, Any]:
         """
-        Creates a new DAG workflow.
-        Node structure example:
-          {"id": "task_1", "action": "fetch_url", "args": {"url": "https://example.com"}, "dependencies": []}
-          {"id": "task_2", "action": "summarize", "args": {"text": "$task_1.output"}, "dependencies": ["task_1"]}
+        Creates a new DAG workflow after cycle verification.
         """
+        if self.detect_cycles(nodes):
+            return {"status": "error", "message": "Cyclic dependency detected in workflow DAG nodes."}
+
         workflow_id = f"wf_{hashlib.sha256(f'{workflow_name}:{time.time()}'.encode('utf-8')).hexdigest()[:10]}"
         record = {
             "workflow_id": workflow_id,
@@ -82,7 +107,7 @@ class WorkflowEngine:
         return {"status": "success", "rule": rule}
 
     def execute_workflow(self, workflow_id: str) -> Dict[str, Any]:
-        """Executes nodes in topological DAG order."""
+        """Executes nodes in topological DAG order with context variable substitution."""
         if workflow_id not in self.workflows:
             return {"status": "error", "message": f"Workflow {workflow_id} not found"}
 
@@ -93,7 +118,7 @@ class WorkflowEngine:
 
         pending = list(nodes)
         iterations = 0
-        max_iterations = len(nodes) * 2
+        max_iterations = len(nodes) * 3
 
         while pending and iterations < max_iterations:
             iterations += 1
@@ -101,7 +126,16 @@ class WorkflowEngine:
                 node_id = node["id"]
                 deps = node.get("dependencies", [])
                 if all(dep in executed for dep in deps):
-                    outputs[node_id] = f"Result of {node.get('action')} (Node: {node_id})"
+                    action = node.get("action", "noop")
+                    args = dict(node.get("args", {}))
+                    # Variable substitution from parent outputs
+                    for k, v in args.items():
+                        if isinstance(v, str) and v.startswith("$"):
+                            dep_id = v[1:].split(".")[0]
+                            if dep_id in outputs:
+                                args[k] = str(outputs[dep_id])
+                    
+                    outputs[node_id] = f"Result of {action} (Node: {node_id})"
                     executed.append(node_id)
                     pending.remove(node)
 

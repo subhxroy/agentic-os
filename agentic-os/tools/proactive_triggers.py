@@ -11,8 +11,9 @@ import json
 import time
 import hashlib
 import os
+import re
 from pathlib import Path
-from typing import Dict, List, Any, Optional
+from typing import Dict, List, Any, Optional, Tuple
 import urllib.request
 
 from tools.registry import registry
@@ -81,17 +82,36 @@ class ProactiveEngine:
         return {"status": "success", "trigger": record}
 
     def list_triggers(self) -> List[Dict[str, Any]]:
+        """Lists all registered proactive triggers."""
         return list(self.triggers.values())
 
     def remove_trigger(self, trigger_id: str) -> Dict[str, Any]:
+        """Removes a trigger by ID."""
         if trigger_id in self.triggers:
             deleted = self.triggers.pop(trigger_id)
             self._save_state()
             return {"status": "success", "removed": deleted}
         return {"status": "error", "message": f"Trigger {trigger_id} not found"}
 
-    def record_access(self, file_path: str, context_tags: List[str]):
+    def check_url_delta(self, url: str, previous_hash: str) -> Tuple[bool, str, str]:
+        """Checks if web content at target URL has changed."""
+        try:
+            req = urllib.request.Request(
+                url,
+                headers={"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AgenticOS/2.0"},
+            )
+            with urllib.request.urlopen(req, timeout=12) as response:
+                content = response.read().decode("utf-8", errors="ignore")
+                new_hash = hashlib.sha256(content.encode("utf-8")).hexdigest()
+                changed = (new_hash != previous_hash) and (previous_hash != "")
+                return changed, new_hash, content[:500]
+        except Exception as e:
+            return False, previous_hash, f"Error checking URL {url}: {e}"
+
+    def record_access(self, file_path: str, context_tags: Optional[List[str]] = None):
         """Records file access patterns for predictive context pre-loading."""
+        if context_tags is None:
+            context_tags = []
         now = time.time()
         key = str(Path(file_path).name)
         if key not in self.access_patterns:
@@ -106,9 +126,11 @@ class ProactiveEngine:
     def get_predictive_context(self, current_tags: List[str], limit: int = 5) -> List[str]:
         """Returns predicted relevant files to pre-load into context based on access patterns."""
         scored = []
+        now = time.time()
+        current_set = set(current_tags)
         for file_name, meta in self.access_patterns.items():
-            tag_overlap = len(set(meta.get("tags", [])) & set(current_tags))
-            recency_score = 1.0 / (1.0 + (time.time() - meta.get("last_accessed", 0)) / 3600.0)
+            tag_overlap = len(set(meta.get("tags", [])) & current_set)
+            recency_score = 1.0 / (1.0 + (now - meta.get("last_accessed", 0)) / 3600.0)
             score = (meta.get("count", 0) * 0.4) + (tag_overlap * 2.0) + (recency_score * 3.0)
             scored.append((score, file_name))
         scored.sort(key=lambda x: x[0], reverse=True)
@@ -135,7 +157,7 @@ def handle_proactive_trigger_tool(action: str, **kwargs) -> str:
     elif action == "predict_context":
         tags = kwargs.get("tags", [])
         if isinstance(tags, str):
-            tags = [t.strip() for t in tags.split(",")]
+            tags = [t.strip() for t in tags.split(",") if t.strip()]
         candidates = engine.get_predictive_context(tags)
         return json.dumps({"predictive_context_candidates": candidates}, indent=2)
     else:

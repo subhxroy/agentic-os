@@ -44,7 +44,7 @@ class FederatedNetwork:
         self.reputation_file.write_text(json.dumps(self.reputation, indent=2), encoding="utf-8")
 
     def register_peer(self, peer_id: str, endpoint: str, capabilities: List[str]) -> Dict[str, Any]:
-        """Registers a remote peer Agentic OS instance."""
+        """Registers or updates a remote peer Agentic OS instance."""
         record = {
             "peer_id": peer_id,
             "endpoint": endpoint,
@@ -55,6 +55,19 @@ class FederatedNetwork:
         self.peers[peer_id] = record
         self._save_state()
         return {"status": "success", "peer": record}
+
+    def prune_offline_peers(self, ttl_seconds: float = 3600.0) -> int:
+        """Marks peers offline if no heartbeat received within TTL."""
+        now = time.time()
+        pruned = 0
+        for peer_id, data in self.peers.items():
+            if now - data.get("last_seen", 0) > ttl_seconds:
+                if data.get("status") != "offline":
+                    data["status"] = "offline"
+                    pruned += 1
+        if pruned > 0:
+            self._save_state()
+        return pruned
 
     def propose_contract(
         self,
@@ -79,7 +92,13 @@ class FederatedNetwork:
         self._save_state()
         return {"status": "success", "contract": contract}
 
-    def rate_skill(self, skill_name: str, score: float, feedback: str = ""):
+    def get_contracts(self, status: Optional[str] = None) -> List[Dict[str, Any]]:
+        """Returns registered negotiation contracts."""
+        if status:
+            return [c for c in self.contracts.values() if c.get("status") == status]
+        return list(self.contracts.values())
+
+    def rate_skill(self, skill_name: str, score: float, feedback: str = "") -> Dict[str, Any]:
         """Submits a reputation score (0.0 to 5.0) for a skill or agent capability."""
         score = max(0.0, min(5.0, score))
         if skill_name not in self.reputation:

@@ -29,8 +29,13 @@ class KnowledgeGraphMemory:
         self.db_path.parent.mkdir(parents=True, exist_ok=True)
         self._init_db()
 
+    def _get_connection(self) -> sqlite3.Connection:
+        conn = sqlite3.connect(self.db_path, timeout=15.0)
+        conn.execute("PRAGMA journal_mode=WAL;")
+        return conn
+
     def _init_db(self):
-        with sqlite3.connect(self.db_path) as conn:
+        with self._get_connection() as conn:
             cursor = conn.cursor()
             cursor.execute("""
                 CREATE TABLE IF NOT EXISTS entities (
@@ -62,17 +67,32 @@ class KnowledgeGraphMemory:
 
     def add_entity(self, entity_id: str, entity_type: str = "concept", properties: Optional[Dict[str, Any]] = None) -> str:
         now = time.time()
-        props_str = json.dumps(properties or {})
-        with sqlite3.connect(self.db_path) as conn:
+        new_props = properties or {}
+        with self._get_connection() as conn:
             cursor = conn.cursor()
-            cursor.execute("""
-                INSERT INTO entities (entity_id, entity_type, properties_json, created_at, last_accessed, access_count)
-                VALUES (?, ?, ?, ?, ?, 1)
-                ON CONFLICT(entity_id) DO UPDATE SET
-                    properties_json=?,
-                    last_accessed=?,
-                    access_count=access_count+1
-            """, (entity_id, entity_type, props_str, now, now, props_str, now))
+            cursor.execute("SELECT properties_json FROM entities WHERE entity_id=?", (entity_id,))
+            row = cursor.fetchone()
+            if row:
+                try:
+                    existing_props = json.loads(row[0]) if row[0] else {}
+                except Exception:
+                    existing_props = {}
+                existing_props.update(new_props)
+                props_str = json.dumps(existing_props)
+                cursor.execute("""
+                    UPDATE entities SET
+                        entity_type=?,
+                        properties_json=?,
+                        last_accessed=?,
+                        access_count=access_count+1
+                    WHERE entity_id=?
+                """, (entity_type, props_str, now, entity_id))
+            else:
+                props_str = json.dumps(new_props)
+                cursor.execute("""
+                    INSERT INTO entities (entity_id, entity_type, properties_json, created_at, last_accessed, access_count)
+                    VALUES (?, ?, ?, ?, ?, 1)
+                """, (entity_id, entity_type, props_str, now, now))
             conn.commit()
         return entity_id
 
@@ -92,7 +112,7 @@ class KnowledgeGraphMemory:
         relation_id = hashlib.sha256(raw_sig.encode("utf-8")).hexdigest()[:16]
         lineage_hash = hashlib.sha256(f"{relation_id}:{source_conversation_id}".encode("utf-8")).hexdigest()
 
-        with sqlite3.connect(self.db_path) as conn:
+        with self._get_connection() as conn:
             cursor = conn.cursor()
             cursor.execute("""
                 INSERT INTO relations (relation_id, subject_id, predicate, object_id, confidence, source_conversation_id, lineage_hash, created_at, last_accessed, decay_score)
@@ -123,7 +143,7 @@ class KnowledgeGraphMemory:
         params.append(limit)
 
         results = []
-        with sqlite3.connect(self.db_path) as conn:
+        with self._get_connection() as conn:
             cursor = conn.cursor()
             for row in cursor.execute(query, params).fetchall():
                 results.append({
@@ -138,11 +158,37 @@ class KnowledgeGraphMemory:
                 })
         return results
 
+    def search_entities(self, query_string: str, limit: int = 10) -> List[Dict[str, Any]]:
+        """Searches entities matching query string in entity_id or properties."""
+        pattern = f"%{query_string}%"
+        results = []
+        with self._get_connection() as conn:
+            cursor = conn.cursor()
+            rows = cursor.execute("""
+                SELECT entity_id, entity_type, properties_json, created_at, access_count
+                FROM entities
+                WHERE entity_id LIKE ? OR properties_json LIKE ?
+                ORDER BY access_count DESC LIMIT ?
+            """, (pattern, pattern, limit)).fetchall()
+            for row in rows:
+                try:
+                    props = json.loads(row[2]) if row[2] else {}
+                except Exception:
+                    props = {}
+                results.append({
+                    "entity_id": row[0],
+                    "entity_type": row[1],
+                    "properties": props,
+                    "created_at": row[3],
+                    "access_count": row[4],
+                })
+        return results
+
     def apply_decay(self, half_life_days: float = 30.0):
         """Recalculates decay scores for memories based on age and access recency."""
         now = time.time()
         half_life_seconds = half_life_days * 86400.0
-        with sqlite3.connect(self.db_path) as conn:
+        with self._get_connection() as conn:
             cursor = conn.cursor()
             rows = cursor.execute("SELECT relation_id, last_accessed, decay_score FROM relations").fetchall()
             for rel_id, last_access, current_decay in rows:
@@ -155,7 +201,7 @@ class KnowledgeGraphMemory:
         """Idle memory consolidation: deduplicates redundant relations and applies decay."""
         self.apply_decay()
         merged_count = 0
-        with sqlite3.connect(self.db_path) as conn:
+        with self._get_connection() as conn:
             cursor = conn.cursor()
             cursor.execute("""
                 DELETE FROM relations WHERE rowid NOT IN (
