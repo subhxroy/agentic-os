@@ -11,6 +11,7 @@ Usage:
 
 from contextlib import asynccontextmanager, contextmanager
 
+import anyio
 import asyncio
 import atexit
 import base64
@@ -2377,8 +2378,8 @@ async def fs_read_text(path: str):
         raise HTTPException(status_code=413, detail="File too large")
     bytes_to_read = min(st.st_size, _FS_TEXT_PREVIEW_MAX_BYTES)
     try:
-        with target.open("rb") as handle:
-            data = handle.read(bytes_to_read)
+        async with await anyio.Path(target).open("rb") as handle:
+            data = await handle.read(bytes_to_read)
     except PermissionError:
         raise HTTPException(status_code=403, detail="File is not readable")
     except OSError as exc:
