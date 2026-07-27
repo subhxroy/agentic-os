@@ -87,10 +87,13 @@ class MyOrganism(Organism):
 # 2. EVALUATOR — score organisms and surface failures the mutator can learn from.
 # ---------------------------------------------------------------------------
 class MyFailureCase(EvaluationFailureCase):
-    # TODO: include enough context for the LLM to diagnose the failure.
+    """Provides context for the LLM to diagnose the failure."""
     input: str
     expected: str
     actual: str
+    error_message: str | None = None
+    traceback: str | None = None
+    context: dict | None = None
 
 
 class MyEvaluator(Evaluator[MyOrganism, EvaluationResult, MyFailureCase]):
