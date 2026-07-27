@@ -107,7 +107,6 @@ def cmd_voice(args):
         quiet_mode=False,
     )
 
-    import threading
     import tempfile
     import json
 
