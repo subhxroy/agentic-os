@@ -159,6 +159,22 @@ def test_set_paused_roundtrip(curator_env):
     assert c.is_paused() is False
 
 
+def test_is_paused(curator_env):
+    c = curator_env["curator"]
+
+    # Test empty state
+    c.save_state({})
+    assert c.is_paused() is False
+
+    # Test True
+    c.save_state({"paused": True})
+    assert c.is_paused() is True
+
+    # Test False
+    c.save_state({"paused": False})
+    assert c.is_paused() is False
+
+
 # ---------------------------------------------------------------------------
 # Automatic state transitions
 # ---------------------------------------------------------------------------
