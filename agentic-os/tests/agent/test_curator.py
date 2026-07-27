@@ -101,6 +101,36 @@ def test_curator_config_overrides(curator_env, monkeypatch):
     assert c.get_archive_after_days() == 60
 
 
+def test_curator_config_invalid_values(curator_env, monkeypatch):
+    """When config values are invalid (wrong type, unparseable string),
+    the getters must gracefully fall back to defaults rather than crashing."""
+    c = curator_env["curator"]
+
+    # Test ValueError path (unparseable string)
+    monkeypatch.setattr(c, "_load_config", lambda: {
+        "interval_hours": "not-a-number",
+        "min_idle_hours": "invalid",
+        "stale_after_days": "nope",
+        "archive_after_days": "bad-value",
+    })
+    assert c.get_interval_hours() == c.DEFAULT_INTERVAL_HOURS
+    assert c.get_min_idle_hours() == c.DEFAULT_MIN_IDLE_HOURS
+    assert c.get_stale_after_days() == c.DEFAULT_STALE_AFTER_DAYS
+    assert c.get_archive_after_days() == c.DEFAULT_ARCHIVE_AFTER_DAYS
+
+    # Test TypeError path (None, List, etc)
+    monkeypatch.setattr(c, "_load_config", lambda: {
+        "interval_hours": None,
+        "min_idle_hours": [],
+        "stale_after_days": {},
+        "archive_after_days": None,
+    })
+    assert c.get_interval_hours() == c.DEFAULT_INTERVAL_HOURS
+    assert c.get_min_idle_hours() == c.DEFAULT_MIN_IDLE_HOURS
+    assert c.get_stale_after_days() == c.DEFAULT_STALE_AFTER_DAYS
+    assert c.get_archive_after_days() == c.DEFAULT_ARCHIVE_AFTER_DAYS
+
+
 # ---------------------------------------------------------------------------
 # should_run_now
 # ---------------------------------------------------------------------------
