@@ -57,9 +57,11 @@ Usage:
 # ``hermes update`` to recover.  Missing the bootstrap means UTF-8 stdio
 # setup is skipped on Windows — degraded, not broken.  POSIX is unaffected.
 try:
-    import agentic_os_bootstrap  # noqa: F401
+    import agentic_os_bootstrap
 except ModuleNotFoundError:
     pass
+else:
+    agentic_os_bootstrap.harden_import_path()
 
 import os
 import sys
