@@ -53,7 +53,18 @@ The following key features, architectural enhancements, and integrations have be
 
 ---
 
-## Architecture
+## Architecture Documentation
+
+Agentic OS utilizes a modular, closed-loop learning architecture designed for persistence, cross-platform deployment, and extensible tool execution.
+
+### Core Modules
+- **Agent Reasoning Engine**: The heart of the system (`agentic-os/agent/`), responsible for LLM provider integration, prompt assembly, tool selection, and managing the reasoning loop.
+- **Obsidian Brain (Knowledge Graph)**: A dedicated persistent memory vault (`obsidian-brain/`) that auto-syncs agent memories, session logs, projects, and learned skills using standard Markdown. It uses bidirectional linking, creating a readable knowledge graph accessible to both the user (via Obsidian) and the agent.
+- **Unified Launchers**:
+  - `launch.py`: Python CLI for initializing the agent across multiple modes (CLI, TUI, Voice, Gateway, Dashboard).
+  - `server.js`: Node.js wrapper that provides an interactive menu and bridges the execution environment to native tools (like the Electron app).
+- **Multi-Platform Gateway**: Located in `agentic-os/gateway/`, this module orchestrates multi-tenant connections to platforms like Telegram, Discord, Slack, and Email.
+- **Desktop Application Surface**: Built with Electron and React (`agentic-os/apps/desktop/`), providing a rich native desktop GUI interface while communicating with the local core engine.
 
 The repository is structured into distinct workspace modules:
 
@@ -114,6 +125,44 @@ Explore the full specification in **[ROADMAP.md](ROADMAP.md)**:
 
 ---
 
+## Installation Instructions
+
+### Prerequisites
+- **Python 3.11+**
+- **Node.js 18+** (for the Node.js launcher and Electron desktop app)
+
+### Setup Steps
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/subhxroy/agentic-os.git
+   cd agentic-os
+   ```
+
+2. **Set up the Python Virtual Environment:**
+   ```bash
+   cd agentic-os
+   python -m venv .venv
+   source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+   pip install -e .[all] pytest pytest-cov
+   cd ..
+   ```
+
+3. **Install Desktop App Dependencies (Optional, for Electron UI):**
+   ```bash
+   cd agentic-os/apps/desktop
+   npm install
+   cd ../../../
+   ```
+
+4. **Environment Configuration:**
+   - Copy the example `.env` file to set up your API keys:
+   ```bash
+   cp agentic-os/.env.example agentic-os/.env
+   ```
+   - Edit `agentic-os/.env` to configure your LLM providers (e.g., OpenAI, OpenRouter, Custom Providers) and tool API keys.
+
+---
+
 ## Quickstart & Launch Modes
 
 ### 1. Interactive Node.js Launcher
@@ -160,6 +209,62 @@ python launch.py --setup       # Guided Environment Setup
 - 🔌 **Custom Provider & Flexible Auth**: Full support for custom LLM providers, local endpoints (Ollama, vLLM, LM Studio), and arbitrary HTTP header authentication schemes (Bearer, `x-api-key`, custom headers).
 - 🛠️ **Autonomous Learning Loop**: Self-improving agent architecture that synthesizes reusable skills from completed complex tasks following the open `agentskills.io` specification.
 - 🖥️ **Native Windows & Cross-Platform Support**: Works natively on Windows without requiring WSL, using bundled MinGit detection, robust process spawning, and optimized SQLite persistence.
+
+---
+
+## Configuration
+
+In addition to `.env` variables, the agent supports configuration via a `.yaml` file.
+- Look at `agentic-os/cli-config.yaml.example` for comprehensive settings on terminal backends, privacy redaction, web dashboard OIDC routing, external secret managers, and update behaviors.
+- The active configuration is typically stored in `~/.agentic-os/config.yaml`.
+- The CLI command `python launch.py --setup` assists with the initial configuration.
+
+---
+
+## Environment Variables
+
+Key settings are configured via `agentic-os/.env`. Here are some of the crucial variables:
+
+- **LLM Providers**:
+  - `OPENROUTER_API_KEY`: API key for OpenRouter.
+  - `OPENAI_API_KEY`: API key for OpenAI.
+  - Custom providers can also be configured (e.g., `OLLAMA_BASE_URL`, `NOVITA_API_KEY`).
+- **Tool APIs**:
+  - `EXA_API_KEY`, `FIRECRAWL_API_KEY`: For AI web search and crawling.
+  - `FAL_KEY`: For image generation.
+- **Voice & Speech**:
+  - `GROQ_API_KEY`: For fast Groq Whisper transcription.
+  - `ELEVENLABS_API_KEY`: For TTS capabilities.
+- **Terminal Execution Environment**:
+  - `TERMINAL_ENV`: Sets the backend for running terminal commands (`local`, `docker`, `ssh`, `modal`, `singularity`).
+
+Please refer to `agentic-os/.env.example` for a complete list of supported environment variables.
+
+---
+
+## Troubleshooting
+
+### Missing Audio Dependencies (Voice Mode)
+If you see a `Missing audio dependencies!` error when running `--voice`:
+1. Ensure your Python environment is active.
+2. Install the necessary packages manually:
+   ```bash
+   pip install sounddevice numpy edge-tts faster-whisper
+   ```
+
+### Module Not Found Errors
+If the `agentic-os` engine fails to launch because a module is missing:
+1. Make sure you are using the correct Python virtual environment (`.venv/bin/activate`).
+2. Reinstall the project in editable mode:
+   ```bash
+   cd agentic-os
+   pip install -e .[all]
+   ```
+
+### Electron App `EINVAL` Errors on Windows
+If the Desktop app fails to spawn properly on Windows through Node:
+1. Ensure `node server.js` is run from a standard terminal (PowerShell/CMD).
+2. The `server.js` script automatically uses `shell: true` on Windows to bypass common `EINVAL` cross-platform spawning issues when calling `npm`.
 
 ---
 

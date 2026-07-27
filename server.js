@@ -127,6 +127,10 @@ function launchElectron() {
 }
 
 function launchPythonMode(flag) {
+    // Bridges the Node.js context to the core Python engine.
+    // Finds the best available Python executable and the `launch.py` script,
+    // then spawns the Python process with the selected arguments (e.g., --voice, --tui).
+    // This allows users to start all modes from a single unified Node menu.
     const pythonBin = findPython();
     const launchScript = findLaunchScript();
     const args = [launchScript];
