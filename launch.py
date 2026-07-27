@@ -67,6 +67,8 @@ def _parse_env_file(path: Path):
 
 
 def cmd_cli(args):
+    # Initializes the default interactive CLI mode.
+    # Uses the standard Terminal execution engine and relies on prompt selection from `agentic_os_cli`.
     setup_environment()
     from agentic_os_cli.main import main
     sys.argv = ["agentic-os"]
@@ -74,6 +76,8 @@ def cmd_cli(args):
 
 
 def cmd_tui(args):
+    # Initializes the Modern Terminal UI mode (React/Ink-based).
+    # Sets the environment variable to enable the TUI surface in the main CLI entrypoint.
     setup_environment()
     os.environ["AGENTIC_OS_TUI"] = "1"
     os.environ["AGENTIC_OS_TUI"] = "1"
@@ -83,6 +87,9 @@ def cmd_tui(args):
 
 
 def cmd_voice(args):
+    # Initializes the multi-modal Voice Mode.
+    # Runs an independent push-to-talk loop handling Speech-to-Text (STT) parsing via Whisper/Groq,
+    # passes the transcribed input to the Agent reasoning engine, and triggers Edge/ElevenLabs Text-to-Speech (TTS).
     setup_environment()
     print("\n  Agentic OS — Voice Mode")
     print("  Speak when you see [LISTENING]")
@@ -247,6 +254,8 @@ def cmd_voice(args):
 
 
 def cmd_gateway(args):
+    # Initializes the multi-platform messaging Gateway.
+    # Connects the agent logic to external platforms (Telegram, Discord, Slack, etc.).
     setup_environment()
     from agentic_os_cli.main import main
     sys.argv = ["agentic-os", "gateway"]
@@ -254,6 +263,8 @@ def cmd_gateway(args):
 
 
 def cmd_dashboard(args):
+    # Initializes the Web Dashboard SPA and local API server.
+    # Allows visual management of sessions, tools, and configurations.
     setup_environment()
     from agentic_os_cli.main import main
     sys.argv = ["agentic-os", "dashboard"]
@@ -261,6 +272,7 @@ def cmd_dashboard(args):
 
 
 def cmd_status(args):
+    # Performs a diagnostic check of API configurations and the Obsidian Brain vault status.
     setup_environment()
     print("\n  Agentic OS — Status\n")
 
