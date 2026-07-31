@@ -196,10 +196,12 @@ class MSGraphWebhookAdapter(BasePlatformAdapter):
     async def _handle_health(self, request: "web.Request") -> "web.Response":
         if not self._source_ip_allowed(request):
             return web.Response(status=403)
+        from gateway.platforms.api_server import _hermes_version
         return web.json_response(
             {
                 "status": "ok",
                 "platform": self.platform.value,
+                "version": _hermes_version(),
                 "webhook_path": self._webhook_path,
                 "accepted": self._accepted_count,
                 "duplicates": self._duplicate_count,

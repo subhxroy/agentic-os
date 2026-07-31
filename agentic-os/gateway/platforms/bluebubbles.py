@@ -273,7 +273,7 @@ class BlueBubblesAdapter(BasePlatformAdapter):
         # cap on every read path — including chunked requests that carry no
         # Content-Length (same pattern as webhook.py / raft, #58536/#58902).
         app = web.Application(client_max_size=_WEBHOOK_MAX_BODY_BYTES)
-        app.router.add_get("/health", lambda _: web.Response(text="ok"))
+        app.router.add_get("/health", self._handle_health)
         app.router.add_post(self.webhook_path, self._handle_webhook)
         # The webhook auth value is carried in the query string because the
         # BlueBubbles webhook API cannot send custom headers. Do not let
@@ -869,6 +869,17 @@ class BlueBubblesAdapter(BasePlatformAdapter):
             if isinstance(candidate, str) and candidate.strip():
                 return candidate.strip()
         return None
+
+    async def _handle_health(self, request: "web.Request") -> "web.Response":
+        from aiohttp import web
+        from gateway.platforms.api_server import _hermes_version
+        return web.json_response(
+            {
+                "status": "ok",
+                "platform": self.platform.value,
+                "version": _hermes_version(),
+            }
+        )
 
     async def _handle_webhook(self, request):
         from aiohttp import web

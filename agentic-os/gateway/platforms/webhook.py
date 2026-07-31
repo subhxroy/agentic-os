@@ -198,9 +198,12 @@ class WebhookAdapter(BasePlatformAdapter):
         self._rate_limit: int = int(config.extra.get("rate_limit", 30))  # per minute
 
         # Body size limit (auth-before-body pattern)
-        self._max_body_bytes: int = int(
-            config.extra.get("max_body_bytes", 1_048_576)
-        )  # 1MB
+        # Cap the limit at 10MB to prevent the gateway from being OOMed by
+        # an arbitrarily large config value.
+        self._max_body_bytes: int = min(
+            int(config.extra.get("max_body_bytes", 1_048_576)),
+            10_485_760
+        )  # 1MB default, 10MB hard limit
         self._script_timeout_seconds: int = int(
             config.extra.get(
                 "script_timeout_seconds",
@@ -433,7 +436,8 @@ class WebhookAdapter(BasePlatformAdapter):
 
     async def _handle_health(self, request: "web.Request") -> "web.Response":
         """GET /health — simple health check."""
-        return web.json_response({"status": "ok", "platform": "webhook"})
+        from gateway.platforms.api_server import _hermes_version
+        return web.json_response({"status": "ok", "platform": "webhook", "version": _hermes_version()})
 
     def _reload_dynamic_routes(self) -> None:
         """Reload agent-created subscriptions from disk if the file changed."""

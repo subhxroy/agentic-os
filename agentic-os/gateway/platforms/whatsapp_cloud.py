@@ -1377,10 +1377,12 @@ class WhatsAppCloudAdapter(WhatsAppBehaviorMixin, BasePlatformAdapter):
 
     # ------------------------------------------------------------------ inbound
     async def _handle_health(self, request: "web.Request") -> "web.Response":
+        from gateway.platforms.api_server import _hermes_version
         return web.json_response(
             {
                 "status": "ok",
                 "platform": self.platform.value,
+                "version": _hermes_version(),
                 "phone_number_id": self._phone_number_id,
                 "webhook_path": self._webhook_path,
                 "verify_token_configured": bool(self._verify_token),
